@@ -4264,6 +4264,7 @@ function addCube() {
     const plane = new THREE.Mesh(geometry, material);
     plane.rotation.x = -Math.PI / 2; // Rotate to lay flat on the ground
     addObjectToScene(plane, 'Plane');
+     updateMeshVisuals();
 }
 
 
@@ -4887,7 +4888,6 @@ function addSphere() {
     const geometry = new THREE.SphereGeometry(0.5, 32, 32);
     const material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
     const sphere = new THREE.Mesh(geometry, material);
-    meshes.push(sphere);
     updateMeshVisuals();
     addObjectToScene(sphere, 'Sphere');
 }
@@ -4897,8 +4897,7 @@ function addSphere() {
      const material = new THREE.MeshStandardMaterial({ color: 0x0000ff });
      const cylinder = new THREE.Mesh(geometry, material);
      addObjectToScene(cylinder, 'Cylinder');
-    meshes.push(cylinder);
-    updateMeshVisuals();
+     updateMeshVisuals();
  }
  
  // Function to add a Pyramid
@@ -4907,7 +4906,6 @@ function addPyramid() {
     const material = new THREE.MeshStandardMaterial({ color: 0xFFD700 });
     const pyramid = new THREE.Mesh(geometry, material);
     pyramid.position.set(0, 1, 0);
-    meshes.push(pyramid);
     updateMeshVisuals();
     addObjectToScene(pyramid, 'Pyramid');
 }
@@ -4918,7 +4916,6 @@ function addRectangularPrism() {
     const material = new THREE.MeshStandardMaterial({ color: 0x8A2BE2 });
     const rectangularPrism = new THREE.Mesh(geometry, material);
     rectangularPrism.position.set(0, 1, 0);
-    meshes.push(rectangularPrism);
     updateMeshVisuals();
     addObjectToScene(rectangularPrism, 'Rectangular Prism');
 }
@@ -4929,7 +4926,6 @@ function addTorus() {
     const material = new THREE.MeshStandardMaterial({ color: 0xFF4500 });
     const torus = new THREE.Mesh(geometry, material);
     torus.position.set(0, 1, 0);
-    meshes.push(torus);
     updateMeshVisuals();
     addObjectToScene(torus, 'Torus');
 }
