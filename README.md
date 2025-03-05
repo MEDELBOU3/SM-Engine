@@ -1,7 +1,22 @@
+<div align="center" style="
+    width: 100%;
+    height: 450px;
+    background: #f5f5f5;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+">
+    <img src="screenshoots/logo.png" alt="3D Editor Logo" style="
+        max-width: 250px;
+        height: auto;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    ">
+</div>
+
 # 3D Modeling Editor Project
 
 A modular 3D modeling editor with physics simulation capabilities and node-based editing.
-![brandmark](screenshoots/logo%20.png)
 ![Interface Overview](screenshoots/Screenshot%20(93).png)
 ![Interface Overview](screenshoots/Screenshot%20(92).png)
 ![Interface Overview](screenshoots/Screenshot%20(56).png)
