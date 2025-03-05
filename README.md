@@ -8,7 +8,7 @@
     align-items: center;
 ">
     <img src="screenshoots/logo.png" alt="3D Editor Logo" style="
-        max-width: 500px;
+        max-width: 250px;
         height: auto;
         filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
     ">
