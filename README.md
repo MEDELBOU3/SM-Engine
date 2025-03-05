@@ -1,7 +1,7 @@
 # 3D Modeling Editor Project
 
 A modular 3D modeling editor with physics simulation capabilities and node-based editing.
-![brandmark](screenshoots/logo.png)
+![brandmark](screenshoots/logo%20.png)
 ![Interface Overview](screenshoots/Screenshot%20(93).png)
 ![Interface Overview](screenshoots/Screenshot%20(92).png)
 ![Interface Overview](screenshoots/Screenshot%20(56).png)
