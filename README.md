@@ -3,6 +3,7 @@
 A modular 3D modeling editor with physics simulation capabilities and node-based editing.
 
 ![Interface Overview](screenshoots/Screenshot%20(93).png)
+![Interface Overview](screenshoots/Screenshot%20(92).png)
 ![Interface Overview](screenshoots/Screenshot%20(56).png)
 ![Workspace Example](screenshoots/Screenshot%20(91).png)
 ![Workspace Example](screenshoots/Screenshot%20(54).png)
