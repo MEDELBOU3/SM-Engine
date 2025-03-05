@@ -68,25 +68,20 @@ A modular 3D modeling editor with physics simulation capabilities and node-based
    - Real-time FPS counter
    - Active object counter
    - Recording status
-```
 
 Quick Start
 Create new scene: File > New
+   Add physics environment from Hierarchy
+   Use brush tools to sculpt/modify models
+   Adjust camera views using orthographic presets
+   Monitor performance through Output panel
 
-Add physics environment from Hierarchy
+   Development Requirements
+   OpenGL 4.0+ compatible GPU
 
-Use brush tools to sculpt/modify models
-
-Adjust camera views using orthographic presets
-
-Monitor performance through Output panel
-
-Development Requirements
-OpenGL 4.0+ compatible GPU
-
-.NET Framework 4.8
-
-8GB VRAM recommended for complex models
+   .NET Framework 4.8
+   8GB VRAM recommended for complex models
+```
 
 
-*Note: Make sure to place the screenshots in your project root directory or update the image paths accordingly. You may want to add installation instructions and license information specific to your project.*
+
