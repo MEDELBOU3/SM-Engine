@@ -1,0 +1,50 @@
+#gui-container {
+    position: relative;
+    margin: 10px auto;
+    width: 100%;
+    min-height: 4vh;
+    max-height: 55vh;
+    overflow-y: auto;
+    background: rgb(32, 32, 32);
+}
+
+.dat.GUI .main {
+    background-color: #222;
+    color: #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+}
+
+.dat.GUI .folder {
+    background-color: #333;
+    border-radius: 5px;
+    margin: 8px 0;
+}
+
+.dat.GUI .folder > .title {
+    color: #ffcc00;
+}
+
+.dat.GUI .controller label {
+    font-size: 14px;
+    color: #bbb;
+}
+
+.dat.GUI .controller input[type="range"],
+.dat.GUI .controller input[type="color"] {
+    width: 100%;
+    background-color: #444;
+    border: 1px solid #555;
+    border-radius: 5px;
+}
+
+.dat.GUI .controller input[type="range"]:focus,
+.dat.GUI .controller input[type="color"]:focus {
+    border-color: #ffcc00;
+}
+
+.dat.GUI .controller input[type="checkbox"] {
+    background-color: #444;
+    border: 1px solid #555;
+}
