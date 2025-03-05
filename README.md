@@ -53,6 +53,7 @@ A modular 3D modeling editor with physics simulation capabilities and node-based
    - Real-time FPS counter
    - Active object counter
    - Recording status
+```
 
 Quick Start
 Create new scene: File > New
