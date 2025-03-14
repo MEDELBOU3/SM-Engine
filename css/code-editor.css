@@ -1,0 +1,236 @@
+#code-editor-panel {
+    position: fixed;
+    right: -800px;
+    top: 0;
+    width: 800px;
+    height: 100vh;
+    background: #1e1e1e;
+    transition: right 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+    resize: horizontal;
+    overflow: auto;
+}
+
+.CodeMirror {
+    height: 100% !important;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    overflow: auto;
+}
+
+#code-editor-panel.open {
+    right: 0;
+}
+
+.split-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.main-editor {
+    flex: 7;
+    height: 80%;
+    border-bottom: 4px solid #333;
+    resize: vertical;
+    overflow: auto;
+}
+
+.console-container {
+    flex: 3;
+    background: #1a1a1a;
+    color: #fff;
+    overflow-y: auto;
+    padding: 10px;
+    font-family: monospace;
+}
+
+.console-line {
+    padding: 4px 8px;
+    border-bottom: 1px solid #333;
+}
+
+.console-error {
+    color: #ff4444;
+}
+
+.console-warning {
+    color: #ffaa00;
+}
+
+.console-info {
+    color: #00aaff;
+}
+
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #252526;
+    border-bottom: 1px solid #333;
+}
+
+.resize-handle {
+    width: 5px;
+    height: 100%;
+    cursor: ew-resize;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: #333;
+}
+
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #252526;
+    border-bottom: 1px solid #333;
+}
+
+.close-editor {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+}
+
+.close-editor:hover {
+    color: #ff4444;
+}
+
+.editor-tabs {
+    display: flex;
+    background: #2d2d2d;
+    border-bottom: 1px solid #333;
+}
+
+.editor-tab {
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-right: 1px solid #333;
+}
+
+.editor-tab.active {
+    background: #1e1e1e;
+}
+
+.editor-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.editor {
+    flex: 1;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', monospace;
+    padding: 10px;
+    border: none;
+    resize: none;
+    font-size: 14px;
+    line-height: 1.5;
+    tab-size: 4;
+}
+
+.editor:focus {
+    outline: none;
+}
+
+.editor-footer {
+    padding: 10px;
+    background: #252526;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#filename-input {
+    flex: 1;
+    padding: 6px;
+    background: #3c3c3c;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+}
+
+.editor-btn {
+    padding: 6px 12px;
+    background: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.editor-btn:hover {
+    background: #0052a3;
+}
+
+/* Status bar */
+.status-bar-code {
+    padding: 5px 10px;
+    background: #007acc;
+    color: white;
+    font-size: 12px;
+}
+
+/* Error display */
+.error-display {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ff4444;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    display: none;
+    z-index: 1001;
+}
+
+#preview-container { 
+    position: absolute; 
+    top: 6vh; 
+    left: 23%; 
+    width: 54%; 
+    height: 65%; 
+    background: #000; 
+    display: none; 
+    z-index: 1;
+    border: 1px solid var(border-color);
+    overflow: hidden;
+}
+
+#close-preview {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: red;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: 0.3s;
+    z-index: 1001;
+}
+
+#close-preview:hover {
+    background: darkred;
+}
