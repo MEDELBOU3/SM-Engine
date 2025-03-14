@@ -1,0 +1,111 @@
+/* Main Submenu Bar */
+.submenu-main-bar {
+    display: none;
+    position: absolute;
+    top: 6.7vh;
+    background: var(--border-color);
+    padding: 4px;
+    min-width: 100px;
+    border-radius: 4px;
+    font-size: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    transform: translateY(-10px);
+}
+
+.submenu-main-bar.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Menu Items */
+.menu-item-br {
+    background: transparent;
+    color: var(--text-primary);
+    display: flex;
+    border-bottom:  1 solid var(--text-secondary);
+    padding: 3px 5px;  /* Reduced padding */
+    cursor: pointer;
+    align-items: center;
+    gap: 3px;  /* Reduced gap */
+    font-size: 12px;  /* Smaller text */
+    transition: background 0.2s;
+}
+
+.menu-item-br:hover {
+    background:  var(--panel-bg);
+}
+
+
+
+/* Child Submenu */
+.child-submenu {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100px;
+    background: var(--border-color);
+    min-width: 100px;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    transform: translateX(-10px);
+}
+
+/* Show effect */
+.child-submenu.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+.child-submenu div {
+    padding: 3px 5px;  /* Reduced padding */
+    border-bottom: 1px solid var(--text-secondary);
+    color: white;
+    cursor: pointer;
+    font-size: 12px;  /* Smaller text */
+}
+
+.child-submenu div:hover {
+    background: var( --panel-bg);
+}
+
+
+#path-animation-container {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+#path-animation-container.hidden {
+    display: none;
+    transform: translateX(120%);
+    opacity: 0;
+}
+
+
+
+/* Status indicator for toggle state */
+.toggle-status {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1001;
+}
+
+.toggle-status.visible {
+    opacity: 1;
+}
