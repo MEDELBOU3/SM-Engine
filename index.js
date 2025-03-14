@@ -78,67 +78,323 @@
     });
     
 
-    function updateHistoryPanel() {
-        const historyPanel = document.getElementById('history-items');
-        historyPanel.innerHTML = ''; // Clear old history
+    const ACTION_TYPES = {
+        // Object actions
+        ADD: 'add',
+        REMOVE: 'remove',
+        CHANGE: 'change',
+        SELECT: 'select',
+        DESELECT: 'deselect',
+        MOVE: 'move',
+        ROTATE: 'rotate',
+        SCALE: 'scale',
+        COLOR: 'color',
+        MATERIAL: 'material',
+        TEXTURE: 'texture',
+        GEOMETRY: 'geometry',
+        VISIBILITY: 'visibility',
+        OPACITY: 'opacity',
+        SHADOW: 'shadow',
+        RECEIVE_SHADOW: 'receiveShadow',
+        CAST_SHADOW: 'castShadow',
     
-        history.forEach((action, index) => {
-            const historyItem = document.createElement('div');
-            historyItem.classList.add('history-item');
-            historyItem.textContent = `${index + 1}. ${action.type || 'Action'}`;
+        // Light-specific actions
+        LIGHT_COLOR: 'lightColor',
+        LIGHT_INTENSITY: 'lightIntensity',
+        LIGHT_DISTANCE: 'lightDistance',
+        LIGHT_ANGLE: 'lightAngle',
+        LIGHT_PENUMBRA: 'lightPenumbra',
+        LIGHT_DECAY: 'lightDecay',
+        LIGHT_TARGET: 'lightTarget',
+        LIGHT_SHADOW: 'lightShadow',
+        LIGHT_SHADOW_BIAS: 'lightShadowBias',
+        LIGHT_SHADOW_RADIUS: 'lightShadowRadius',
+        LIGHT_SHADOW_MAP_SIZE: 'lightShadowMapSize',
+        LIGHT_SHADOW_CAMERA: 'lightShadowCamera',
+        LIGHT_SHADOW_CAMERA_NEAR: 'lightShadowCameraNear',
+        LIGHT_SHADOW_CAMERA_FAR: 'lightShadowCameraFar',
+        LIGHT_SHADOW_CAMERA_LEFT: 'lightShadowCameraLeft',
+        LIGHT_SHADOW_CAMERA_RIGHT: 'lightShadowCameraRight',
+        LIGHT_SHADOW_CAMERA_TOP: 'lightShadowCameraTop',
+        LIGHT_SHADOW_CAMERA_BOTTOM: 'lightShadowCameraBottom',
+        LIGHT_SHADOW_CAMERA_FOV: 'lightShadowCameraFov',
+        LIGHT_SHADOW_CAMERA_ZOOM: 'lightShadowCameraZoom',
+        LIGHT_SHADOW_CAMERA_FOCUS: 'lightShadowCameraFocus',
+        LIGHT_SHADOW_CAMERA_FILM_GAUGE: 'lightShadowCameraFilmGauge',
+        LIGHT_SHADOW_CAMERA_FILM_OFFSET: 'lightShadowCameraFilmOffset',
+        LIGHT_SHADOW_CAMERA_VIEW: 'lightShadowCameraView',
+        LIGHT_SHADOW_CAMERA_PROJECTION: 'lightShadowCameraProjection',
+        LIGHT_SHADOW_CAMERA_CUSTOM_NEAR: 'lightShadowCameraCustomNear',
+        LIGHT_SHADOW_CAMERA_CUSTOM_FAR: 'lightShadowCameraCustomFar',
+        LIGHT_SHADOW_CAMERA_CUSTOM_LEFT: 'lightShadowCameraCustomLeft',
+        LIGHT_SHADOW_CAMERA_CUSTOM_RIGHT: 'lightShadowCameraCustomRight',
+        LIGHT_SHADOW_CAMERA_CUSTOM_TOP: 'lightShadowCameraCustomTop',
+        LIGHT_SHADOW_CAMERA_CUSTOM_BOTTOM: 'lightShadowCameraCustomBottom',
+        LIGHT_SHADOW_CAMERA_CUSTOM_FOV: 'lightShadowCameraCustomFov',
+        LIGHT_SHADOW_CAMERA_CUSTOM_ZOOM: 'lightShadowCameraCustomZoom',
+        LIGHT_SHADOW_CAMERA_CUSTOM_FOCUS: 'lightShadowCameraCustomFocus',
+        LIGHT_SHADOW_CAMERA_CUSTOM_FILM_GAUGE: 'lightShadowCameraCustomFilmGauge',
+        LIGHT_SHADOW_CAMERA_CUSTOM_FILM_OFFSET: 'lightShadowCameraCustomFilmOffset',
+        LIGHT_SHADOW_CAMERA_CUSTOM_VIEW: 'lightShadowCameraCustomView',
+        LIGHT_SHADOW_CAMERA_CUSTOM_PROJECTION: 'lightShadowCameraCustomProjection',
+    };
     
-            // Click to undo/redo
-            historyItem.addEventListener('click', () => {
-                currentHistoryIndex = index;
-                applyHistoryAction(action);
-            });
+    // Apply a history action (e.g., add or remove an object from the scene)
+    function applyHistoryAction(action) {
+        if (action.type === ACTION_TYPES.ADD) {
+            scene.add(action.object);
+        } else if (action.type === ACTION_TYPES.REMOVE) {
+            scene.remove(action.object);
+        }
     
-            historyPanel.appendChild(historyItem);
-        });
+        updateHistoryPanel();
     }
     
-   
-
-    let buildings = [];
+    // Add an action to the history stack
+    function addHistoryAction(action) {
+        // Remove all future actions
+        history.splice(currentHistoryIndex + 1);
     
-    // 🌟 وظيفة لإنشاء مبنى باستخدام القيم المدخلة
-    function createBuilding() {
-        const width = parseFloat(document.getElementById('building-width').value);
-        const height = parseFloat(document.getElementById('building-height').value);
-        const depth = parseFloat(document.getElementById('building-depth').value);
+        // Add new action
+        history.push(action);
+        currentHistoryIndex = history.length - 1;
     
-        const geometry = new THREE.BoxGeometry(width, height, depth);
-        const material = new THREE.MeshStandardMaterial({
-            color: 0xaaaaaa,
-            metalness: 0.3,
-            roughness: 0.7
-        });
-    
-        const building = new THREE.Mesh(geometry, material);
-        building.position.set(0, height / 2, 0);
-        building.castShadow = true;
-        building.receiveShadow = true;
-    
-        scene.add(building);
-        addObjectToScene(building, 'building');
-        buildings.push(building);
+        updateHistoryPanel();
     }
     
-    // 🌟 وظيفة لإضافة زخرفة على المبنى المحدد
-    function addDecoration() {
-        if (!selectedObject) {
-            alert("يرجى تحديد مبنى أولاً!");
+    // Generic handler for all object changes
+    function handleObjectChange(type, object) {
+        // Validate the action type
+        if (!Object.values(ACTION_TYPES).includes(type)) {
+            console.warn(`Invalid action type: ${type}`);
             return;
         }
     
-        const decorationGeometry = new THREE.TorusGeometry(1, 0.2, 16, 100);
-        const decorationMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00 });
-        const decoration = new THREE.Mesh(decorationGeometry, decorationMaterial);
-    
-        decoration.position.copy(selectedObject.position);
-        decoration.position.y += selectedObject.geometry.parameters.height / 2 + 1;
-    
-        scene.add(decoration);
-        addObjectToScene(decoration, 'decoration');
+        addHistoryAction({
+            type: type,
+            object: object
+        });
     }
     
+    // Specific event handlers using the generic handler
+    function onObjectAdded(object) {
+        handleObjectChange(ACTION_TYPES.ADD, object);
+    }
+    
+    function onObjectRemoved(object) {
+        handleObjectChange(ACTION_TYPES.REMOVE, object);
+    }
+    
+    function onObjectChanged(object) {
+        handleObjectChange(ACTION_TYPES.CHANGE, object);
+    }
+    
+    function onObjectSelected(object) {
+        handleObjectChange(ACTION_TYPES.SELECT, object);
+    }
+    
+    function onObjectDeselected(object) {
+        handleObjectChange(ACTION_TYPES.DESELECT, object);
+    }
+    
+    function onObjectMoved(object) {
+        handleObjectChange(ACTION_TYPES.MOVE, object);
+    }
+    
+    function onObjectRotated(object) {
+        handleObjectChange(ACTION_TYPES.ROTATE, object);
+    }
+    
+    function onObjectScaled(object) {
+        handleObjectChange(ACTION_TYPES.SCALE, object);
+    }
+    
+    function onObjectColorChanged(object) {
+        handleObjectChange(ACTION_TYPES.COLOR, object);
+    }
+    
+    function onObjectMaterialChanged(object) {
+        handleObjectChange(ACTION_TYPES.MATERIAL, object);
+    }
+    
+    function onObjectTextureChanged(object) {
+        handleObjectChange(ACTION_TYPES.TEXTURE, object);
+    }
+    
+    function onObjectGeometryChanged(object) {
+        handleObjectChange(ACTION_TYPES.GEOMETRY, object);
+    }
+    
+    function onObjectVisibilityChanged(object) {
+        handleObjectChange(ACTION_TYPES.VISIBILITY, object);
+    }
+    
+    function onObjectOpacityChanged(object) {
+        handleObjectChange(ACTION_TYPES.OPACITY, object);
+    }
+    
+    function onObjectShadowChanged(object) {
+        handleObjectChange(ACTION_TYPES.SHADOW, object);
+    }
+    
+    function onObjectReceiveShadowChanged(object) {
+        handleObjectChange(ACTION_TYPES.RECEIVE_SHADOW, object);
+    }
+    
+    function onObjectCastShadowChanged(object) {
+        handleObjectChange(ACTION_TYPES.CAST_SHADOW, object);
+    }
+    
+    function onObjectLightColorChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_COLOR, object);
+    }
+    
+    function onObjectLightIntensityChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_INTENSITY, object);
+    }
+    
+    function onObjectLightDistanceChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_DISTANCE, object);
+    }
+    
+    function onObjectLightAngleChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_ANGLE, object);
+    }
+    
+    function onObjectLightPenumbraChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_PENUMBRA, object);
+    }
+    
+    function onObjectLightDecayChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_DECAY, object);
+    }
+    
+    function onObjectLightTargetChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_TARGET, object);
+    }
+    
+    function onObjectLightShadowChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW, object);
+    }
+    
+    function onObjectLightShadowBiasChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_BIAS, object);
+    }
+    
+    function onObjectLightShadowRadiusChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_RADIUS, object);
+    }
+    
+    function onObjectLightShadowMapSizeChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_MAP_SIZE, object);
+    }
+    
+    function onObjectLightShadowCameraChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA, object);
+    }
+    
+    function onObjectLightShadowCameraNearChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_NEAR, object);
+    }
+    
+    function onObjectLightShadowCameraFarChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_FAR, object);
+    }
+    
+    function onObjectLightShadowCameraLeftChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_LEFT, object);
+    }
+    
+    function onObjectLightShadowCameraRightChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_RIGHT, object);
+    }
+    
+    function onObjectLightShadowCameraTopChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_TOP, object);
+    }
+    
+    function onObjectLightShadowCameraBottomChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_BOTTOM, object);
+    }
+    
+    function onObjectLightShadowCameraFovChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_FOV, object);
+    }
+    
+    function onObjectLightShadowCameraZoomChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_ZOOM, object);
+    }
+    
+    function onObjectLightShadowCameraFocusChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_FOCUS, object);
+    }
+    
+    function onObjectLightShadowCameraFilmGaugeChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_FILM_GAUGE, object);
+    }
+    
+    function onObjectLightShadowCameraFilmOffsetChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_FILM_OFFSET, object);
+    }
+    
+    function onObjectLightShadowCameraViewChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_VIEW, object);
+    }
+    
+    function onObjectLightShadowCameraProjectionChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_PROJECTION, object);
+    }
+    
+    function onObjectLightShadowCameraCustomNearChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_NEAR, object);
+    }
+    
+    function onObjectLightShadowCameraCustomFarChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_FAR, object);
+    }
+    
+    function onObjectLightShadowCameraCustomLeftChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_LEFT, object);
+    }
+    
+    function onObjectLightShadowCameraCustomRightChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_RIGHT, object);
+    }
+    
+    function onObjectLightShadowCameraCustomTopChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_TOP, object);
+    }
+    
+    function onObjectLightShadowCameraCustomBottomChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_BOTTOM, object);
+    }
+    
+    function onObjectLightShadowCameraCustomFovChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_FOV, object);
+    }
+    
+    function onObjectLightShadowCameraCustomZoomChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_ZOOM, object);
+    }
+    
+    function onObjectLightShadowCameraCustomFocusChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_FOCUS, object);
+    }
+    
+    function onObjectLightShadowCameraCustomFilmGaugeChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_FILM_GAUGE, object);
+    }
+    
+    function onObjectLightShadowCameraCustomFilmOffsetChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_FILM_OFFSET, object);
+    }
+    
+    function onObjectLightShadowCameraCustomViewChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_VIEW, object);
+    }
+    
+    function onObjectLightShadowCameraCustomProjectionChanged(object) {
+        handleObjectChange(ACTION_TYPES.LIGHT_SHADOW_CAMERA_CUSTOM_PROJECTION, object);
+    }
+    
+   
