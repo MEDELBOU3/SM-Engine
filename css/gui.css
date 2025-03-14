@@ -11,14 +11,12 @@
 .dat.GUI .main {
     background-color: #222;
     color: #ddd;
-    border-radius: 8px;
-    padding: 10px;
+    padding: 5px;
     font-family: Arial, sans-serif;
 }
 
 .dat.GUI .folder {
     background-color: #333;
-    border-radius: 5px;
     margin: 8px 0;
 }
 
@@ -36,7 +34,6 @@
     width: 100%;
     background-color: #444;
     border: 1px solid #555;
-    border-radius: 5px;
 }
 
 .dat.GUI .controller input[type="range"]:focus,
