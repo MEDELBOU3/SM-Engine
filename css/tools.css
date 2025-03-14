@@ -1,16 +1,20 @@
 .sidebar {
     position: absolute;
-    left: 24%; /* جعله على يمين الـ Hierarchy */
     top: 50px;
     max-height: 60vh;
-    width: auto;
+    overflow: hidden;
+    padding: 3px;
+    left: 22%; /* Start just after hierarchy-panel */
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap; /* Allow icons to wrap to the next line */
+    flex-wrap: wrap;
     gap: 10px;
-    z-index: 1;
-    overflow-y: auto; /* Allows scrolling if the content exceeds the max-height */
+    z-index: 3;
+    overflow-y: auto;
+    transition: width 0.3s ease, opacity 0.3s ease, left 0.3s ease;
 }
+
+
 
 
 .tool-btn {
@@ -32,7 +36,9 @@
     background: #615e5e;
 }
 
-
+#guiControls {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 .effect-button{
     background: #005f50;
     padding: 5px 8px;
@@ -46,3 +52,73 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0,4);
   
 }
+
+
+.asset-preview-container {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #2a2a2a;
+}
+
+.asset-preview-container canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+#toolbar-group-shapes, #toolbar-group-camera{
+    position: relative;
+    display: inline-block;
+}
+
+/* Menu styling */
+.menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #373737;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 5px;
+    z-index: 5;
+}
+.menu button {
+    width: 100%;
+    padding: 5px;
+    background: none;
+    border: none;
+    color: #fff;
+    text-align: left;
+}
+/* Show the menu when the 'show' class is added */
+.menu.show {
+    display: block;
+}
+
+
+.camera-tape{
+    position: absolute;
+    top: 6%;
+    right: 23%;
+    width: 54%;
+    height: 40px;
+    background: #292929;
+    color: #fff;
+    padding: 3px 6px;
+    border: none;
+    z-index: 1;
+}
+.camera-path-btn{
+    margin: 5px;
+    background: #373737;
+    color: #fff;
+    border: none;
+    padding: 5px;
+    font-size: 14px;
+}
+
+
