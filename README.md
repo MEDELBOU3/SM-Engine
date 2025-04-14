@@ -106,7 +106,7 @@ This project leverages the following technologies:
 
 The editor employs a modular, panel-based layout designed for flexibility:
 
-```plaintext
+
 +---------------------------------------------------------------+
 | Main Toolbar (File, Edit, Assets, Export, View, Help...)    |
 +--------------------------+------------------------------------+
@@ -184,11 +184,13 @@ Ensure you have the .NET Framework 4.8 Runtime installed.
 
 Option 2: Building from Source (For Developers)
 Clone the Repository:
-
+```
 git clone https://github.com/medelbou3/SM-Engine.git
 cd SM-Engine
 Use code with caution.
 Bash
+```
+
 Prerequisites:
 
 Install Visual Studio (Specify required version, e.g., 2019 or 2022) with the ".NET desktop development" workload.
