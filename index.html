@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SM-Engine</title>
+    <title>Advanced 3D Editor</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -15,6 +15,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldgutter.min.css">
 
+     <!--Nanite-->
+     <script src="https://threejs.org/examples/jsm/utils/BufferGeometryUtils.js"></script>
+     <script src="https://threejs.org/examples/jsm/modifiers/SimplifyModifier.js"></script>
+     <script src="https://unpkg.com/three@0.126.0/examples/js/modifiers/SubdivisionModifier.js"></script>
     
     <!--Coding librarys-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
@@ -44,6 +48,9 @@
     <link rel="stylesheet" href="css/assets-panel.css">
     <link rel="stylesheet" href="css/code-editor.css">
     <link rel="stylesheet" href="css/meuni-bar.css">
+    <link rel="stylesheet" href="css/timeline.css">
+    <link rel="stylesheet" href="css/stor.css">
+    <link rel="stylesheet" href="css/sound-editor.css">
 </head>
 <body>
     
@@ -99,10 +106,71 @@
                 <button class="tool-btn" id="drawingControls">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M1.999 15V2h13v5h-2V4h-9v9h3v2zm6 5V8h12v5.5h-2V10h-8v8h3.5v2zm8.778 3.684L13.41 13.378l10.258 3.407l-4.656 2.227z"/></svg>
                 </button>
+                <button class="tool-btn" id="soundControls">
+                    <i class='fa-solid fa-volume-high'></i>
+                </button>
         </div>
     
         
         <div class="toolbar">
+            <div class="logo">
+                <svg width="30" height="30" viewBox="0 0 150 125" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Enhanced Definitions for Gradient and Glow -->
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1A1A1A;stop-opacity:1" /> <!-- Deeper metallic gray -->
+                            <stop offset="40%" style="stop-color:#3B82F6;stop-opacity:1" /> <!-- Stronger blue highlight -->
+                            <stop offset="60%" style="stop-color:#93C5FD;stop-opacity:1" /> <!-- Mid-tone blue -->
+                            <stop offset="100%" style="stop-color:#F0F0F0;stop-opacity:1" /> <!-- Brighter silver -->
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <filter id="softShadow">
+                            <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.3" />
+                        </filter>
+                    </defs>
+                    
+                    <!-- Dark Background Circle for Contrast -->
+                    <circle cx="75" cy="75" r="70" fill="#111827" opacity="0.8"/>
+                    
+                    <!-- Outer Orbital Frame (Enhanced) -->
+                    <circle cx="75" cy="75" r="60" 
+                        stroke="url(#grad1)" stroke-width="3.5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+                    
+                    <!-- Secondary Orbital Element -->
+                    <circle cx="75" cy="75" r="53" 
+                        stroke="url(#grad1)" stroke-width="1" fill="none" stroke-dasharray="2,4" opacity="0.7"/>
+                    
+                    <!-- Inner Stylized "S" Shape (Refined) -->
+                    <path d="M 55 45 C 40 60, 60 90, 75 105 C 90 120, 110 105, 95 90 C 80 75, 60 60, 55 45" 
+                        stroke="url(#grad1)" stroke-width="4.5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+                    
+                    <!-- Inner "M" Shape (Enhanced) -->
+                    <path d="M 65 50 L 75 70 L 85 50 M 75 70 L 75 100" 
+                        stroke="url(#grad1)" stroke-width="3.5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+                    
+                    <!-- Connection Points (Professional Touch) -->
+                    <circle cx="65" cy="50" r="3" fill="url(#grad1)" filter="url(#glow)"/>
+                    <circle cx="75" cy="70" r="3" fill="url(#grad1)" filter="url(#glow)"/>
+                    <circle cx="85" cy="50" r="3" fill="url(#grad1)" filter="url(#glow)"/>
+                    <circle cx="75" cy="100" r="3" fill="url(#grad1)" filter="url(#glow)"/>
+                    
+                    <!-- Precision Dots (Enhanced) -->
+                    <circle cx="75" cy="15" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
+                    <circle cx="75" cy="135" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
+                    <circle cx="15" cy="75" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
+                    <circle cx="135" cy="75" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
+                    
+                    <!-- SM Typography (Enhanced) -->
+                    <text x="52" y="130" font-family="Arial, sans-serif" font-size="28" 
+                        fill="url(#grad1)" font-weight="700" letter-spacing="1" filter="url(#softShadow)">SM</text>
+                </svg>
+            </div>
             <div class="toolbar-group">
                 <button class="tool-button" id="newScene">
                     <i class="fas fa-file"></i> New
@@ -307,7 +375,9 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
             <div class="toolbar-group">
                 <div  class="tool-button-status" id="statusBar">
-                    <span id="recordingStatus">Recording: Stopped</span>
+                    <span id="recordingStatus">
+                        Reco: Stop
+                    </span>
                     <span id="recordingTimer">00:00</span>
                 </div>
             </div>
@@ -315,10 +385,63 @@ document.addEventListener("DOMContentLoaded", function() {
                 <button class="tool-button"  id="node-editor-toggle">Node</button>
             </div>
 
+            <div class="toolbar-group" id="node-editor-button-grp">
+                
+            </div>
+
             <div class="toolbar-group">
                 <button class="tool-button"  id="toggleAnimator">Animator</button>
             </div>
+            <div class="toolbar-group">
+                <button id="siteModalBtn" class="tool-button">Stor</button>
+            </div>
         </div>
+
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+    const siteModal = document.getElementById("siteModal");
+    const siteModalBtn = document.getElementById("siteModalBtn");
+    const closeSiteModal = document.getElementById("closeSiteModal");
+    const siteIframe = document.getElementById("siteIframe");
+
+    // Check if elements exist
+    if (!siteModal || !siteModalBtn || !closeSiteModal || !siteIframe) {
+        console.error("One or more modal elements not found!");
+        return;
+    }
+
+    // URL of the site to display in the iframe
+    const siteURL = "https://medelbou3.github.io/SM-studio-stor/";
+
+    // Open modal when clicking the "Stor" button
+    siteModalBtn.addEventListener("click", function () {
+        siteIframe.src = siteURL; // Load the site in the iframe
+        siteModal.style.display = "flex"; // Show the modal
+    });
+
+    // Close modal when clicking the close button
+    closeSiteModal.addEventListener("click", function () {
+        siteModal.style.display = "none"; // Hide the modal
+        siteIframe.src = ""; // Clear iframe
+    });
+
+    // Close modal when clicking outside the content
+    siteModal.addEventListener("click", function (event) {
+        if (event.target === siteModal) {
+            siteModal.style.display = "none";
+            siteIframe.src = "";
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && siteModal.style.display === "flex") {
+            siteModal.style.display = "none";
+            siteIframe.src = "";
+        }
+    });
+});
+        </script>
 
         <!-- Left Panel - Hierarchy -->
         <div id="hierarchy-panel"  class="hierarchy-panel">
@@ -419,10 +542,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
           
           
-            <div class="physics-controls"  id="physics-controls" style="display: none;">
+            <div class="physics-controls" id="physics-controls" style="display: none;">
                 <h3>Physics Forces</h3>
                 <button class="panel-button" id="apply-physics">Apply Physics</button>
-
+            
                 <div class="control-group">
                     <div class="slider-container">
                         <label>Gravity:</label>
@@ -430,6 +553,48 @@ document.addEventListener("DOMContentLoaded", function() {
                         <span id="gravity-value">-9.81</span>
                     </div>
                 </div>
+            
+                <!-- إضافة خصائص الفيزياء للكائنات -->
+                <div class="control-group">
+                    <h4>Object Physics Properties</h4>
+                    <div class="slider-container">
+                        <label>Mass:</label>
+                        <input type="range" id="mass" min="0" max="20" value="5" step="0.1">
+                        <span id="mass-value">5</span>
+                    </div>
+                    <div class="slider-container">
+                        <label>Friction:</label>
+                        <input type="range" id="friction" min="0" max="1" value="0.9" step="0.01">
+                        <span id="friction-value">0.9</span>
+                    </div>
+                    <div class="slider-container">
+                        <label>Restitution (Bounciness):</label>
+                        <input type="range" id="restitution" min="0" max="1" value="0.7" step="0.01">
+                        <span id="restitution-value">0.7</span>
+                    </div>
+                </div>
+            
+                <!-- إضافة إعدادات التصادم -->
+                <div class="control-group">
+                    <h4>Collision Settings</h4>
+                    <label>Collision Group:</label>
+                    <select id="collision-group">
+                        <option value="1">Default (1)</option>
+                        <option value="4" selected>Dynamic Objects (4)</option>
+                        <option value="8">Kinematic (8)</option>
+                        <option value="16">Wind Affected (16)</option>
+                    </select>
+            
+                    <label>Collision Mask:</label>
+                    <div>
+                        <input type="checkbox" id="mask-default" value="1" checked> Default (1)<br>
+                        <input type="checkbox" id="mask-terrain" value="2" checked> Terrain (2)<br>
+                        <input type="checkbox" id="mask-dynamic" value="4" checked> Dynamic Objects (4)<br>
+                        <input type="checkbox" id="mask-kinematic" value="8"> Kinematic (8)<br>
+                        <input type="checkbox" id="mask-wind" value="16"> Wind Affected (16)
+                    </div>
+                </div>
+            
                 <div class="control-group">
                     <h4>Wind Zone</h4>
                     <div class="slider-container">
@@ -447,15 +612,16 @@ document.addEventListener("DOMContentLoaded", function() {
                     <button class="force-button" id="add-wind">Add Wind Zone</button>
                     <button class="force-button" id="add-vortex">Add Vortex</button>
                 </div>
+            
                 <div class="card">
                     <h2>Cloth Physics Controls</h2>
                     <div id="controls">
                         <button class="panel-button" id="addCloth">Add cloth</button>
-                        <button class="panel-button"  id="toggleWind">Change Wind</button>
+                        <button class="panel-button" id="toggleWind">Change Wind</button>
                         <button class="panel-button" id="removeCloth">Remove cloth</button>
                     </div>
-                </div>              
-            </div>
+                </div>
+            </div> 
             <style>
                 .card { width: 100%; padding: 5px;  }
                 .slider-container { margin-bottom: 15px; }
@@ -468,65 +634,237 @@ document.addEventListener("DOMContentLoaded", function() {
 
             <script>
                 document.getElementById('apply-physics').addEventListener('click', () => {
-               if (!selectedObject) {
-                console.warn("No object selected.");
-                return;
-              }
+    // قراءة القيم من المدخلات
+    const mass = parseFloat(document.getElementById('mass').value);
+    const friction = parseFloat(document.getElementById('friction').value);
+    const restitution = parseFloat(document.getElementById('restitution').value);
+    const collisionGroup = parseInt(document.getElementById('collision-group').value);
 
-            physicsManager.addPhysicsToObject(selectedObject, {
-                mass: 5,
-                friction: 0.9,
-                restitution: 0.7
-            });
+    // حساب Collision Mask باستخدام الـ checkboxes
+    let collisionMask = 0;
+    if (document.getElementById('mask-default').checked) collisionMask |= physicsManager.collisionGroups.DEFAULT;
+    if (document.getElementById('mask-terrain').checked) collisionMask |= physicsManager.collisionGroups.TERRAIN;
+    if (document.getElementById('mask-dynamic').checked) collisionMask |= physicsManager.collisionGroups.DYNAMIC_OBJECTS;
+    if (document.getElementById('mask-kinematic').checked) collisionMask |= physicsManager.collisionGroups.KINEMATIC;
+    if (document.getElementById('mask-wind').checked) collisionMask |= physicsManager.collisionGroups.WIND_AFFECTED;
 
-           console.log("Physics applied to", selectedObject.name);
-           });
-
-
-  function applyPhysicsToSelectedObject(object) {
-    const shape = getCannonShapeFromObject(object);
-    if (!shape) {
-        console.error("Unable to determine physics shape for object.");
-        return;
+    // تطبيق الفيزياء على الكائن المختار
+    if (selectedObject && !selectedObject.userData.physicsBody) {
+        physicsManager.addPhysicsToObject(selectedObject, {
+            mass: mass,
+            friction: friction,
+            restitution: restitution,
+            group: collisionGroup,
+            mask: collisionMask
+        });
+        console.log("Physics applied to", selectedObject.name, "with values:", {
+            mass, friction, restitution, collisionGroup, collisionMask
+        });
+    } else if (selectedObject && selectedObject.userData.physicsBody) {
+        console.warn("Physics already applied to", selectedObject.name);
+    } else {
+        console.warn("No object selected.");
     }
 
-    const body = new CANNON.Body({
-        mass: 5, // Set mass to make it fall
-        shape: shape,
-        position: new CANNON.Vec3(object.position.x, object.position.y, object.position.z),
-        quaternion: new CANNON.Quaternion(object.quaternion.x, object.quaternion.y, object.quaternion.z, object.quaternion.w),
+    // تطبيق أو تحديث الفيزياء للتضاريس
+    if (terrain) {
+        applyPhysicsToTerrain();
+        console.log("Physics applied/updated for terrain");
+    } else {
+        console.warn("No terrain found in the scene.");
+    }
+});
+
+function applyPhysicsToTerrain() {
+    const width = 50;
+    const height = 50;
+    const widthSegments = 100;
+    const heightSegments = 100;
+
+    if (terrain.userData.physicsBody) {
+        world.removeBody(terrain.userData.physicsBody);
+    }
+
+    const vertices = terrain.geometry.attributes.position.array;
+    const matrix = [];
+
+    for (let z = 0; z <= heightSegments; z++) {
+        const row = [];
+        for (let x = 0; x <= widthSegments; x++) {
+            const index = (z * (widthSegments + 1) + x) * 3 + 1;
+            row.push(vertices[index]);
+        }
+        matrix.push(row);
+    }
+
+    const heightfieldShape = new CANNON.Heightfield(matrix, {
+        elementSize: width / widthSegments
     });
 
-    world.addBody(body);
-    object.userData.physicsBody = body;
+    const heightfieldBody = new CANNON.Body({
+        mass: 0, // ثابت (static)
+        shape: heightfieldShape,
+        material: physicsManager.materials.default,
+        collisionFilterGroup: physicsManager.collisionGroups.TERRAIN,
+        collisionFilterMask: physicsManager.collisionGroups.DEFAULT | physicsManager.collisionGroups.DYNAMIC_OBJECTS
+    });
+
+    heightfieldBody.position.set(-width / 2, 0, height / 2);
+    heightfieldBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+
+    world.addBody(heightfieldBody);
+    terrain.userData.physicsBody = heightfieldBody;
 }
 
-// Function to determine the appropriate CANNON.js shape
-function getCannonShapeFromObject(object) {
-    if (object.geometry instanceof THREE.BoxGeometry) {
-        const size = new THREE.Vector3();
-        object.geometry.computeBoundingBox();
-        object.geometry.boundingBox.getSize(size);
-        return new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 2, size.z / 2));
-    }
-    if (object.geometry instanceof THREE.SphereGeometry) {
-        return new CANNON.Sphere(object.geometry.parameters.radius);
-    }
-    return null;
-}
+                document.addEventListener('DOMContentLoaded', () => {
+                    // تحديث قيم العرض لـ Mass
+                    const massInput = document.getElementById('mass');
+                    const massValue = document.getElementById('mass-value');
+                    massInput.addEventListener('input', () => {
+                      massValue.textContent = massInput.value;
+                    });
 
-</script>
+                    // تحديث قيم العرض لـ Friction
+                    const frictionInput = document.getElementById('friction');
+                    const frictionValue = document.getElementById('friction-value');
+                    frictionInput.addEventListener('input', () => {
+                        frictionValue.textContent = frictionInput.value;
+                    });
+       
+                    // تحديث قيم العرض لـ Restitution
+                    const restitutionInput = document.getElementById('restitution');
+                    const restitutionValue = document.getElementById('restitution-value');
+                    restitutionInput.addEventListener('input', () => {
+                        restitutionValue.textContent = restitutionInput.value;
+                    });
+
+                    // Gravity listener (موجود بالفعل، لكن نضمن تحديث العرض)
+                    const gravityInput = document.getElementById('gravity-strength');
+                    const gravityValue = document.getElementById('gravity-value');
+                    gravityInput.addEventListener('input', (e) => {
+                        const value = parseFloat(e.target.value);
+                        world.gravity.set(0, value, 0);
+                        gravityValue.textContent = value.toFixed(2);
+                    });
+                });
+
+                
+                function applyPhysicsToSelectedObject(object) {
+                    const shape = getCannonShapeFromObject(object);
+                    if (!shape) {
+                        console.error("Unable to determine physics shape for object.");
+                        return;
+                    }
+
+                    const body = new CANNON.Body({
+                        mass: 5, // Set mass to make it fall
+                        shape: shape,
+                        position: new CANNON.Vec3(object.position.x, object.position.y, object.position.z),
+                        quaternion: new CANNON.Quaternion(object.quaternion.x, object.quaternion.y, object.quaternion.z, object.quaternion.w),
+                    });
+               
+                    world.addBody(body);
+                    object.userData.physicsBody = body;
+                }
+
+                // Function to determine the appropriate CANNON.js shape
+                function getCannonShapeFromObject(object) {
+                    if (object.geometry instanceof THREE.BoxGeometry) {
+                        const size = new THREE.Vector3();
+                        object.geometry.computeBoundingBox();
+                        object.geometry.boundingBox.getSize(size);
+                        return new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 2, size.z / 2));
+                    }
+                    if (object.geometry instanceof THREE.SphereGeometry) {
+                      return new CANNON.Sphere(object.geometry.parameters.radius);
+                    }
+                    return null;
+                }
+
+            </script>
 
 
-<div class="viewport-container" style="display: none;">                
-    <div class="model-preview-container">
-        <canvas id="preview-canvas"></canvas>
-        <div class="model-info">
-            <span class="model-name"></span>
-            <div class="model-stats"></div>
+                <div class="viewport-container" style="display: none;">                
+                    <div class="model-preview-container">
+                    <canvas id="preview-canvas"></canvas>
+                    <div class="model-info">
+                    <span class="model-name"></span>
+                    <div class="model-stats"></div>
+                </div>
+            </div>
+           </div>
+
+           <div class="sound-controls-meter" id="sound-controls-meter" style="display: none;">
+            <div class="meter-section">
+                <div class="meter-group">
+                    <h3 class="meter-title">Input Meters</h3>
+                    <div class="meter-container">
+                        <div class="meter-fill" id="leftMeter"></div>
+                    </div>
+                    <div class="meter-container">
+                        <div class="meter-fill" id="rightMeter"></div>
+                    </div>
+                </div>
+            
+                <div class="meter-group">
+                    <h3 class="meter-title">Master Output</h3>
+                    <div class="meter-container">
+                        <div class="meter-fill" id="masterMeter"></div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
-    </div>
-</div>
+
+        <div class="sound-controls-header-vis"  id="sound-controls-vis"  style="display: none;">
+            <main class="main-content-sound">
+                <div class="visualization-container">
+                    <div class="viz-panel">
+                        <div class="viz-header">Spectrum Analyzer</div>
+                        <canvas id="spectrumCanvas"></canvas>
+                    </div>
+                    <div class="viz-panel">
+                        <div class="viz-header">Waveform & Vectorscope</div>
+                        <canvas id="waveformCanvas"></canvas>
+                    </div>
+                    <div class="viz-panel">
+                        <div class="viz-header">Phase Correlation</div>
+                        <canvas id="phaseCanvas"></canvas>
+                    </div>
+                </div>
+    
+                <div class="effect-rack">
+                    <div class="effect-module">
+                        <div class="effect-header">
+                            <span class="effect-title">Parametric EQ</span>
+                            <button class="btn" id="eqToggle">On</button>
+                        </div>
+                        <canvas id="eqCanvas" height=" 180"></canvas>
+                        <div class="eq-controls" style="display: flex; flex-wrap: wrap; gap: 15px;"></div>
+                    </div>
+    
+                    <div class="effect-module">
+                        <div class="effect-header">
+                            <span class="effect-title">Dynamics Processor</span>
+                            <button class="btn" id="dynToggle">On</button>
+                        </div>
+                        <canvas id="dynamicsCanvas" height=" 180"></canvas>
+                        <div class="dynamics-controls"></div>
+                    </div>
+    
+                    <div class="effect-module">
+                        <div class="effect-header">
+                            <span class="effect-title">Reverb</span>
+                            <button class="btn" id="reverbToggle">On</button>
+                        </div>
+                        <div class="reverb-controls"></div>
+                    </div>
+                </div>
+            </main>
+           </div>
+
+           
+
             
             <div class="modeling-tools" id="modelingTools" style="display: none;">
                 <div class="panel-header">
@@ -541,24 +879,18 @@ function getCannonShapeFromObject(object) {
                         <div class="button-container">
                             <button id="select-vertex" class="panel-button-tool" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <!-- Adjusted Cube -->
                                     <path d="M4 6L12 4L20 6L20 14L12 16L4 14L4 6Z" fill="none" stroke="currentColor" stroke-width="2"/>
                                     <path d="M4 6L12 8L20 6" fill="none" stroke="currentColor" stroke-width="2"/>
                                     <path d="M12 8L12 16" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    
-                                    <!-- Vertex (red circle) -->
                                     <circle cx="12" cy="8" r="1" fill="red"/>
                                 </svg>
                             </button>
                         
                             <button id="select-edge" class="panel-button-tool" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <!-- Adjusted Cube -->
                                     <path d="M4 6L12 4L20 6L20 14L12 16L4 14L4 6Z" fill="none" stroke="currentColor" stroke-width="2"/>
                                     <path d="M4 6L12 8L20 6" fill="none" stroke="currentColor" stroke-width="2"/>
                                     <path d="M12 8L12 16" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    
-                                    <!-- Edge (blue lines) -->
                                     <line x1="4" y1="6" x2="12" y2="8" stroke="blue" stroke-width="2"/>
                                     <line x1="12" y1="8" x2="20" y2="6" stroke="blue" stroke-width="2"/>
                                 </svg>
@@ -566,12 +898,9 @@ function getCannonShapeFromObject(object) {
                         
                             <button id="select-face" class="panel-button-tool" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <!-- Adjusted Cube -->
                                     <path d="M4 6L12 4L20 6L20 14L12 16L4 14L4 6Z" fill="none" stroke="currentColor" stroke-width="2"/>
                                     <path d="M4 6L12 8L20 6" fill="none" stroke="currentColor" stroke-width="2"/>
                                     <path d="M12 8L12 16" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    
-                                    <!-- Face (green square) -->
                                     <rect x="8" y="10" width="6" height="6" fill="green"/>
                                 </svg>
                             </button>
@@ -824,6 +1153,17 @@ function getCannonShapeFromObject(object) {
                     <div class="panel-header">Advanced Snow System</div>
                     <div class="property-group">
                         <button class="panel-button" id="toggleSnow">Toggle Snow</button>
+
+                        <!-- Snow Mode Selection -->
+                        <div class="control-group">
+                            <label>Snow Mode:</label>
+                            <select id="snowMode">
+                                <option value="normal">Normal Falling</option>
+                                <option value="vortex">Vortex</option>
+                            </select>
+                        </div>
+
+
                         <div class="control-group">
                             <label>Density: <span id="densityValue">1000</span></label>
                             <input type="range" id="density" min="100" max="5000" value="1000">
@@ -881,20 +1221,11 @@ function getCannonShapeFromObject(object) {
 
                     <div class="property-group">
                         <div id="controls">
+                             <!-- Toggle Particles -->
+                             <button class="panel-button" id="toggleParticles" title="Toggle Particles">
+                                Toggle Particls
+                             </button>
                             <div class="button-container">
-                                <!-- Toggle Particles -->
-                                <button class="panel-button-tool" id="toggleParticles" title="Toggle Particles">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                        <!-- Particle dots -->
-                                        <circle cx="8" cy="10" r="1" fill="#ffffff" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="12" cy="14" r="1" fill="#ffffff" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="16" cy="10" r="1" fill="#ffffff" stroke="#ffffff" stroke-width="2"/>
-                                        <!-- Toggle switch -->
-                                        <rect x="10" y="16" width="4" height="2" fill="none" stroke="#ffffff" stroke-width="2"/>
-                                        <line x1="12" y1="16" x2="12" y2="18" stroke="#ffffff" stroke-width="2"/>
-                                    </svg>
-                                </button>
-                            
                                 <!-- Increase Particles -->
                                 <button class="panel-button-tool" id="increaseParticles" title="Increase Particles">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -1072,6 +1403,8 @@ function getCannonShapeFromObject(object) {
                     <!-- Texture Upload -->
                     <input type="file" id="uploadTexture" accept="image/*" style="display: none;">
                     <button class="panel-button" id="selectTexture">Upload Texture</button>
+
+                    <canvas id="texturePreview" width="64" height="64" style="display: block;"></canvas>
                 </div>
 
                 <div class="advanced-tools">
@@ -1164,6 +1497,57 @@ function getCannonShapeFromObject(object) {
                         </label>
                         <label>Ridge Height:
                             <input type="range" id="ridgeHeight" min="0.1" max="2.0" value="1.0">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="material-tools" style="padding: 5px;">
+                    <button class="panel-button-tool" id="materialPaint" title="Material Paint">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M6 18L12 6" fill="none" stroke="#ffffff" stroke-width="2"/>
+                            <rect x="10" y="10" width="4" height="4" fill="none" stroke="#ffffff" stroke-width="2"/>
+                            <circle cx="12" cy="12" r="2" fill="#ffffff"/>
+                        </svg>
+                    </button>
+
+                    <div class="property-group" >
+                        <input type="file" id="uploadMaterial" accept="image/*" style="display: none;">
+                        <button class="panel-button" id="selectMaterial">Upload Material</button>
+                        <canvas id="materialPreview" width="64" height="64" style="display: block;"></canvas>
+                        
+                        <label>Brush Size:
+                            <input type="range" id="materialBrushSize" min="0.5" max="5" step="0.1" value="1.5">
+                        </label>
+                        <label>Strength:
+                            <input type="range" id="materialStrength" min="0.1" max="1" step="0.01" value="0.5">
+                        </label>
+                        <label>Falloff:
+                            <input type="range" id="materialFalloff" min="0.1" max="1" step="0.01" value="0.7">
+                        </label>
+                        <label>Rotation:
+                            <input type="range" id="materialRotation" min="0" max="360" step="1" value="0">
+                        </label>
+                        <label>Scale:
+                            <input type="range" id="materialScale" min="0.1" max="2" step="0.01" value="1">
+                        </label>
+                        <label>Opacity:
+                            <input type="range" id="materialOpacity" min="0.1" max="1" step="0.01" value="1">
+                        </label>
+                        <label>Pattern:
+                            <select id="materialPattern">
+                                <option value="uniform">Uniform</option>
+                                <option value="noise">Noise</option>
+                                <option value="radial">Radial</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </label>
+                        <label>Blend Mode:
+                            <select id="materialBlendMode">
+                                <option value="normal">Normal</option>
+                                <option value="multiply">Multiply</option>
+                                <option value="overlay">Overlay</option>
+                                <option value="add">Add</option>
+                            </select>
                         </label>
                     </div>
                 </div>
@@ -1548,6 +1932,31 @@ function getCannonShapeFromObject(object) {
             </div>
         </div>
 
+         <!-- Add this new modal container right before the existing model-viewer-container -->
+         <div class="site-modal-container" id="siteModal">
+            <button class="close-site-modal" id="closeSiteModal"><i class="fas fa-times"></i></button>
+            <div class="site-modal-content" id="siteModalContent">
+                <iframe id="siteIframe" frameborder="0"></iframe>
+            </div>
+        </div>
+
+        <div class="sound-controls-header"  id="sound-controls-header" style="display: none;">
+            <header class="header-bar">
+                <div class="transport-controls">
+                    <button class="btn" id="playBtn"><i class="fas fa-play"></i></button>
+                    <button class="btn" id="stopBtn"><i class="fa-solid fa-stop"></i></button>
+                    <button class="btn" id="loopBtn"><i class="fa-solid fa-repeat"></i></button>
+                    <div class="time-display">
+                        <span id="currentTime">00:00</span>
+                    </div>
+                </div>
+                <div class="master-controls">
+                    <input type="file" id="fileInput" accept="audio/*" style="display: none">
+                    <label for="fileInput" class="btn"><i class="fa-solid fa-spinner"></i></label>
+                </div>
+            </header>
+        </div>
+
     <style>
    .animator-container {
         display: none;
@@ -1579,23 +1988,6 @@ function getCannonShapeFromObject(object) {
         background-color: #383838;
         border-right: 1px solid #222;
         overflow-y: auto;
-    }
-
-
-    .layer-item {
-        padding: 8px 12px;
-        display: flex;
-        align-items: center;
-         cursor: pointer;
-        user-select: none;
-    }
-
-    .layer-item:hover {
-        background-color: #454545;
-    }
-
-    .layer-item.selected {
-         background-color: #2C5D87;
     }
 
     .layer-icon {
@@ -1894,37 +2286,97 @@ class AnimatorInterface {
         </script>
          <!-- Timeline -->
          <div class="timeline">
-            <div class="status-bar">
-                <span id="fps">FPS: 60</span>
-                <span id="objects">Objects: 0</span>
-                <span id="triangles">Triangles: 0</span>
-
-            </div>
+            <div class="resize-handle-timeline"></div>
+            <div class="status-bar"> 
+                <span id="fps">FPS: 60</span>                 
+                <span id="objects">Objects: 0</span>                 
+                <span id="triangles">Triangles: 0</span>              
+            </div>             
             <div class="timeline-controls">
-                <button class="tool-button" id="play">
-                    <i class="fas fa-play"></i>
+                <button class="tool-button" id="play">                     
+                    <i class="fas fa-play"></i>                 
+                </button>                 
+                <button class="tool-button" id="pause">                     
+                    <i class="fas fa-pause"></i>                 
+                </button>                 
+                <button class="tool-button" id="stop">                     
+                    <i class="fas fa-stop"></i>                 
                 </button>
-                <button class="tool-button" id="pause">
-                    <i class="fas fa-pause"></i>
+                <button class="tool-button" id="add-keyframe" title="Add Keyframe">
+                    <i class="fas fa-diamond"></i>
                 </button>
-                <button class="tool-button" id="stop">
-                    <i class="fas fa-stop"></i>
+                <button class="tool-button" id="delete-keyframe" title="Delete Keyframe">
+                    <i class="fas fa-trash"></i>
                 </button>
-                <span id="time-display">00:00:00</span>
-                <div class="zoom-controls">
-                    <button class="tool-button" id="zoom-out">-</button>
-                    <button class="tool-button" id="zoom-in">+</button>
-                </div>
+                <span id="time-display">00:00:00</span>                 
+                <div class="zoom-controls">                     
+                    <button class="tool-button" id="zoom-out">-</button>                     
+                    <button class="tool-button" id="zoom-in">+</button>                 
+                </div>             
             </div>
-            <div class="timeline-track">
-                <div class="timeline-scale"></div>
-                <div class="timeline-content">
-                    <div class="playhead"></div>
+
+            <div class="timeline-body">
+                <div class="timeline-layers">
+                    <div class="layers-list" id="layers-list"></div>
+                </div>
+                <div class="timeline-track">
+                    <div class="timeline-scale"></div>
+                    <div class="timeline-content" id="timeline-content">
+                        <div class="playhead" id="playhead"></div>
+                        <div class="keyframes-container" id="keyframes-container"></div>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
+
+    <script>
+       const resizeHandle = document.querySelector('.resize-handle-timeline');
+const timelineRes = document.querySelector('.timeline');
+const rendererContainer = document.getElementById('renderer-container');
+const viewport = document.querySelector('.viewport');
+// Variables to track the resizing
+let isResizing = false;
+let initialHeight = 0;
+let initialMouseY = 0;
+
+// Define min and max heights for timeline (in pixels)
+const MIN_HEIGHT = window.innerHeight * 0.15; // 29% of viewport height
+const MAX_HEIGHT = 400; // Maximum height in pixels
+
+resizeHandle.addEventListener('mousedown', (event) => {
+    isResizing = true;
+    initialHeight = timelineRes.offsetHeight;
+    initialMouseY = event.clientY;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+});
+
+function handleMouseMove(event) {
+    if (isResizing) {
+        // Calculate the height change (inverted since we're resizing from top)
+        const deltaY = initialMouseY - event.clientY;
+        let newTimelineHeight = initialHeight + deltaY;
+
+        // Apply height constraints to timeline
+        newTimelineHeight = Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, newTimelineHeight));
+
+        // Update the timeline height
+        timelineRes.style.height = `${newTimelineHeight}px`;
+
+        // Calculate and update renderer container height
+        const viewportHeight = viewport.offsetHeight;
+        const newRendererHeight = viewportHeight - newTimelineHeight;
+        rendererContainer.style.height = `${newRendererHeight}px`;
+    }
+}
+
+function handleMouseUp() {
+    isResizing = false;
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+}
+    </script>
 
     <div class="node-editor">
         <div class="node-editor-header">
@@ -2001,14 +2453,13 @@ class AnimatorInterface {
         <div class="node-canvas" id="node-canvas"></div>
     </div>
 
-   
-
     <div class="camera-preview" id="cameraPreview">
         <div class="preview-controls">
-            <button id="minimizePreview"><i class="fas fa-window-minimize"></i></button>
-            <button id="expandPreview"><i class="fas fa-expand-arrows-alt"></i></button>
+           <button id="minimizePreview"><i class="fas fa-window-minimize"></i></button>
+           <button id="expandPreview"><i class="fas fa-expand-arrows-alt"></i></button>
         </div>
     </div>
+    
     
 
     <!-- Context Menu -->
@@ -2065,6 +2516,8 @@ class AnimatorInterface {
         const nodeEditorExpend = document.querySelector('.node-editor');
         const animatorEditor = document.querySelector('.animator-container');
         const axisControls = document.querySelector('.axis-controls');
+        const soundHeader = document.querySelector('.sound-controls-header');
+        const storModal = document.querySelector('.site-modal-container');
         toggleButton.addEventListener('click', () => {
             const isInspectorOpen = !inspectorPanel.classList.contains('closed');
             
@@ -2076,12 +2529,16 @@ class AnimatorInterface {
                 nodeEditorExpend.classList.add('expanded');
                 axisControls.classList.add('expanded');
                 animatorEditor.classList.add('expanded');
+                storModal.classList.add('expanded');
+                soundHeader.classList.add('expanded');
             } else {
                 // Restore timeline size when inspector is open
                 timeline1.classList.remove('expanded');
                 nodeEditorExpend.classList.remove('expanded');
                 axisControls.classList.remove('expanded');
                 animatorEditor.classList.remove('expanded');
+                storModal.classList.remove('expanded');
+                soundHeader.classList.remove('expanded');
             }
         });
         
@@ -2157,67 +2614,71 @@ class AnimatorInterface {
     }
 
     addPhysicsToObject(object, options = {}) {
-        const box = new THREE.Box3().setFromObject(object);
-        const size = new THREE.Vector3();
-        box.getSize(size);
+    const box = new THREE.Box3().setFromObject(object);
+    const size = new THREE.Vector3();
+    box.getSize(size);
 
-        let shape;
-        if (object.geometry instanceof THREE.BoxGeometry) {
-            shape = new CANNON.Box(new CANNON.Vec3(size.x/2, size.y/2, size.z/2));
-        } else if (object.geometry instanceof THREE.SphereGeometry) {
-            shape = new CANNON.Sphere(object.geometry.parameters.radius);
-        } else if (object.geometry instanceof THREE.CylinderGeometry) {
-            shape = new CANNON.Cylinder(
-                object.geometry.parameters.radiusTop,
-                object.geometry.parameters.radiusBottom,
-                object.geometry.parameters.height,
-                object.geometry.parameters.radialSegments
-            );
-        } else {
-            // Default to box if geometry type is unknown
-            shape = new CANNON.Box(new CANNON.Vec3(size.x/2, size.y/2, size.z/2));
-        }
-
-        const bodyOptions = {
-            mass: options.mass || 1,
-            position: new CANNON.Vec3(object.position.x, object.position.y, object.position.z),
-            shape: shape,
-            material: this.materials[options.material] || this.materials.default,
-            linearDamping: options.linearDamping || 0.1,
-            angularDamping: options.angularDamping || 0.1,
-            collisionFilterGroup: options.group || this.collisionGroups.DYNAMIC_OBJECTS,
-            collisionFilterMask: options.mask || 
-                (this.collisionGroups.DEFAULT | this.collisionGroups.TERRAIN | this.collisionGroups.DYNAMIC_OBJECTS)
-        };
-
-        const body = new CANNON.Body(bodyOptions);
-
-        if (options.velocity) {
-            body.velocity.copy(options.velocity);
-        }
-
-        if (options.angularVelocity) {
-            body.angularVelocity.copy(options.angularVelocity);
-        }
-
-        this.world.addBody(body);
-        this.physicsBodies.set(object, body);
-
-        // Set up collision event listeners
-        body.addEventListener("collide", (event) => {
-            if (options.onCollide) {
-                options.onCollide(event);
-            }
-            this.handleCollision(event, object);
-        });
-
-        object.userData.physics = {
-            enabled: true,
-            body: body
-        };
-
-        return body;
+    let shape;
+    if (object.geometry instanceof THREE.BoxGeometry) {
+        shape = new CANNON.Box(new CANNON.Vec3(size.x/2, size.y/2, size.z/2));
+    } else if (object.geometry instanceof THREE.SphereGeometry) {
+        shape = new CANNON.Sphere(object.geometry.parameters.radius);
+    } else if (object.geometry instanceof THREE.CylinderGeometry) {
+        shape = new CANNON.Cylinder(
+            object.geometry.parameters.radiusTop,
+            object.geometry.parameters.radiusBottom,
+            object.geometry.parameters.height,
+            object.geometry.parameters.radialSegments
+        );
+    } else {
+        shape = new CANNON.Box(new CANNON.Vec3(size.x/2, size.y/2, size.z/2));
     }
+
+    // إنشاء مادة مخصصة بناءً على friction و restitution من الخيارات
+    const customMaterial = new CANNON.Material({
+        friction: options.friction !== undefined ? options.friction : 0.5,
+        restitution: options.restitution !== undefined ? options.restitution : 0.3
+    });
+
+    const bodyOptions = {
+        mass: options.mass || 1,
+        position: new CANNON.Vec3(object.position.x, object.position.y, object.position.z),
+        shape: shape,
+        material: customMaterial, // استخدام المادة المخصصة
+        linearDamping: options.linearDamping || 0.1,
+        angularDamping: options.angularDamping || 0.1,
+        collisionFilterGroup: options.group || this.collisionGroups.DYNAMIC_OBJECTS,
+        collisionFilterMask: options.mask || 
+            (this.collisionGroups.DEFAULT | this.collisionGroups.TERRAIN | this.collisionGroups.DYNAMIC_OBJECTS)
+    };
+
+    const body = new CANNON.Body(bodyOptions);
+
+    if (options.velocity) {
+        body.velocity.copy(options.velocity);
+    }
+
+    if (options.angularVelocity) {
+        body.angularVelocity.copy(options.angularVelocity);
+    }
+
+    this.world.addBody(body);
+    this.physicsBodies.set(object, body);
+
+    body.addEventListener("collide", (event) => {
+        if (options.onCollide) {
+            options.onCollide(event);
+        }
+        this.handleCollision(event, object);
+    });
+
+    object.userData.physics = {
+        enabled: true,
+        body: body
+    };
+
+    return body;
+}
 
     handleCollision(event, object) {
         const impact = event.contact.getImpactVelocityAlongNormal();
@@ -3273,6 +3734,8 @@ if (!hairBrushSettings.turbulence) {
     hairBrushSettings.turbulence = 0.02; // Default turbulence
 }
 
+
+
 // Character modeling variables
 let selectedCharacterTool = null;
 let isCharacterSculpting = false;
@@ -3537,7 +4000,7 @@ function setupCharacterSculptingEvents() {
     const canvas = renderer.domElement;
     
     // Existing tool selection code
-    document.querySelectorAll('.panel-button').forEach(button => {
+    document.querySelectorAll('.panel-button-tool').forEach(button => {
         button.addEventListener('click', () => {
             selectedCharacterTool = button.id;
             updateToolUI();
@@ -4392,14 +4855,21 @@ document.addEventListener('keydown', (event) => {
     </script>
    
     <script src="index.js"></script>
-    <script src="js/cloth.js"></script>
-    <script src="js/node-editor-ex.js"></script>
-    <script src="js/lighting-stystem.js"></script>
+    <script src="physics/cloth.js"></script>
+    <script src="nodes/node-editor-ex.js"></script>
+    <script src="physics/lighting-stystem.js"></script>
     <script src="js/code-editor.js"></script>
     <script src="js/export.js"></script>
-    <script src="js/animation-path.js"></script>
-    
+    <script src="animations/animation-path.js"></script>
+    <script src="js/timeline.js"></script>
+    <script src="processing/nanite-ex.js"></script>
+    <script src="soundes/sound-editor.js"></script>
+    <script src="physics/material-brush-system.js"></script>
+    <script src="nodes/vfx.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://threejs.org/examples/jsm/controls/OrbitControls.js"></script>
+    <script src="https://threejs.org/examples/jsm/controls/TransformControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/TransformControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/FontLoader.js"></script>
@@ -4437,6 +4907,7 @@ document.addEventListener('keydown', (event) => {
   
     <!-- Physics -->
     <script src="https://cdn.jsdelivr.net/npm/dat.gui@0.7.7/build/dat.gui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"></script>
 
     <!--Gui-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
@@ -4457,7 +4928,8 @@ document.addEventListener('keydown', (event) => {
     <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/postprocessing/RenderPass.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/postprocessing/OutlinePass.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/FBXLoader.js"></script>
-   
+   <script src="https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.min.js"></script>
+
    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/OBJLoader.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/FBXLoader.js"></script>
@@ -4491,7 +4963,25 @@ document.addEventListener('keydown', (event) => {
 <script>
 // First, add these global variables at the top of your 
 
+const vertexShader = `
+    uniform float size;
+    attribute float lifetime;
+    varying float vLifetime;
+    void main() {
+        vLifetime = lifetime;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = size;
+    }
+`;
 
+const fragmentShader = `
+    uniform sampler2D map;
+    varying float vLifetime;
+    void main() {
+        vec4 texColor = texture2D(map, gl_PointCoord);
+        gl_FragColor = texColor * vec4(1.0, 1.0, 1.0, vLifetime * 0.8);
+    }
+`;
 
 let objects = [];
 let snowParticles = [];
@@ -4502,18 +4992,19 @@ let snowSpeed = 0.5;
 let windForce = 0.5;
 let turbulence = 0.5;
 let stormMode = false;
+let isSnowing = true;
 let snowMaterial;
 
-
-let isSnowing = true;
 let params = {
-    density: 1500,
-    size: 0.15,
-    speed: 0.6,
-    wind: 0.3,
+    density: 1000,
+    size: 0.1,
+    speed: 1,
+    wind: 0,
     turbulence: 0.5,
     groundLevel: -10,
-    mode: 'normal'
+    mode: 'normal',  // Default mode
+    vortexStrength: 1.0,  // For vortex mode
+    vortexRadius: 5.0    // For vortex mode
 };
 
 const textureLoader = new THREE.TextureLoader();
@@ -4523,6 +5014,41 @@ let snowAccumulation = new Map(); // Store accumulated snow particles
 const maxAccumulatedParticles = 1000; // Maximum particles that can accumulate at one spot
 const meltingRate = 0.01; // Rate at which snow melts
 const gridY = params.groundLevel; // Y position of the grid
+
+function setupSnowControls() {
+    // Toggle snow
+    document.getElementById('toggleSnow').addEventListener('click', () => {
+        isSnowing = !isSnowing;
+        if (isSnowing) {
+            createSnow();
+        } else {
+            snowParticles.forEach(particle => scene.remove(particle));
+            snowParticles = [];
+        }
+    });
+
+    // Mode selection
+    document.getElementById('snowMode').addEventListener('change', (e) => {
+        params.mode = e.target.value;
+        recreateSnow();
+    });
+
+    // Parameter controls
+    ['density', 'size', 'speed', 'wind', 'turbulence'].forEach(param => {
+        const slider = document.getElementById(param);
+        const valueDisplay = document.getElementById(`${param}Value`);
+        
+        slider.addEventListener('input', (e) => {
+            params[param] = parseFloat(e.target.value);
+            valueDisplay.textContent = e.target.value;
+            if (param === 'density') recreateSnow();
+            if (param === 'size') updateSnowSize();
+        });
+    });
+
+    // Weather presets
+    setupWeatherEffects();
+}
 
 function createSnow() {
     const snowGeometry = new THREE.BufferGeometry();
@@ -4557,29 +5083,10 @@ function createSnow() {
         blending: THREE.AdditiveBlending
     });
 
-    // In your createSnow function, add these attributes:
-snowGeometry.setAttribute('random', new THREE.Float32BufferAttribute(
-    new Float32Array(params.density).map(() => Math.random()),
-    1
-));
-
-// Optional: Add size variation
-snowGeometry.setAttribute('size', new THREE.Float32BufferAttribute(
-    new Float32Array(params.density).fill(params.size),
-    1
-));
-
-// Optional: Add opacity variation
-snowGeometry.setAttribute('opacity', new THREE.Float32BufferAttribute(
-    new Float32Array(params.density).fill(1.0),
-    1
-));
-
     const snow = new THREE.Points(snowGeometry, snowMaterial);
     snowParticles.push(snow);
     scene.add(snow);
 }
-
 
 function createSnowflakeTexture() {
     const canvas = document.createElement('canvas');
@@ -4596,7 +5103,7 @@ function createSnowflakeTexture() {
 }
 
 function updateSnow() {
-    const time = Date.now() * 0.001; // Current time for animations
+    const time = Date.now() * 0.001;
     
     snowParticles.forEach(particle => {
         const positions = particle.geometry.attributes.position.array;
@@ -4604,83 +5111,67 @@ function updateSnow() {
         const randomFactors = particle.geometry.attributes.random.array;
 
         for (let i = 0; i < positions.length; i += 3) {
-            // Add swirling effect
-            const swirl = Math.sin(time + positions[i] * 0.1) * 0.2;
-            const vortex = Math.cos(time + positions[i + 2] * 0.1) * 0.2;
-            
-            // Variable wind based on height
-            const heightFactor = Math.max(0, (positions[i + 1] - params.groundLevel) / 50);
-            const windEffect = params.wind * heightFactor;
-            
-            // Add spiral motion
-            const angle = time * 0.5 + randomFactors[i / 3] * Math.PI * 2;
-            const radius = Math.max(0, (positions[i + 1] - params.groundLevel) / 10);
-            const spiralX = Math.cos(angle) * radius * 0.1;
-            const spiralZ = Math.sin(angle) * radius * 0.1;
-            
-            // Add turbulent motion
-            const turbX = Math.sin(time * 2 + positions[i] * 0.1) * params.turbulence;
-            const turbZ = Math.cos(time * 2 + positions[i + 2] * 0.1) * params.turbulence;
-            
-            // Update positions with combined effects
-            positions[i] += velocities[i] * windEffect + swirl + spiralX + turbX;
-            positions[i + 1] += velocities[i + 1] * params.speed * (0.8 + Math.sin(time + randomFactors[i / 3]) * 0.2);
-            positions[i + 2] += velocities[i + 2] * windEffect + vortex + spiralZ + turbZ;
+            if (params.mode === 'normal') {
+                // Normal falling snow
+                positions[i] += velocities[i] + params.wind * 0.1;
+                positions[i + 1] += velocities[i + 1];
+                positions[i + 2] += velocities[i + 2];
 
-            // Ground collision with bounce effect
-            if (positions[i + 1] < params.groundLevel) {
-                // Random bounce chance
-                if (Math.random() < 0.3) {
-                    // Small bounce
-                    positions[i + 1] = params.groundLevel;
-                    velocities[i + 1] = Math.abs(velocities[i + 1]) * 0.2;
-                    
-                    // Horizontal scatter on impact
-                    velocities[i] = (Math.random() - 0.5) * 0.2;
-                    velocities[i + 2] = (Math.random() - 0.5) * 0.2;
-                    
-                    // Fade out effect (if using opacity attribute)
-                    if (particle.geometry.attributes.opacity) {
-                        particle.geometry.attributes.opacity.array[i / 3] *= 0.9;
-                    }
-                } else {
-                    // Reset to top with random offset
-                    positions[i + 1] = 50 + Math.random() * 10;
-                    positions[i] = (Math.random() - 0.5) * 50;
-                    positions[i + 2] = (Math.random() - 0.5) * 50;
-                    
-                    // Reset velocities with slight randomization
-                    velocities[i] = (Math.random() - 0.5) * 0.05;
-                    velocities[i + 1] = -Math.random() * params.speed;
-                    velocities[i + 2] = (Math.random() - 0.5) * 0.05;
-                    
-                    // Reset opacity if using it
-                    if (particle.geometry.attributes.opacity) {
-                        particle.geometry.attributes.opacity.array[i / 3] = 1.0;
-                    }
-                }
+                // Add some gentle turbulence
+                positions[i] += Math.sin(time + randomFactors[i / 3]) * params.turbulence * 0.1;
+                positions[i + 2] += Math.cos(time + randomFactors[i / 3]) * params.turbulence * 0.1;
+            } else if (params.mode === 'vortex') {
+                // Vortex snow
+                const x = positions[i];
+                const z = positions[i + 2];
+                const distance = Math.sqrt(x * x + z * z);
+                
+                // Calculate vortex motion
+                const angle = Math.atan2(z, x) + time * params.vortexStrength;
+                const radius = Math.min(distance, params.vortexRadius);
+                
+                positions[i] = Math.cos(angle) * radius;
+                positions[i + 2] = Math.sin(angle) * radius;
+                positions[i + 1] += velocities[i + 1] - params.speed * 0.5;
+
+                // Add turbulence to vortex
+                positions[i] += Math.sin(time + randomFactors[i / 3]) * params.turbulence * 0.2;
+                positions[i + 2] += Math.cos(time + randomFactors[i / 3]) * params.turbulence * 0.2;
             }
 
-            // Add size variation based on height
-            if (particle.geometry.attributes.size) {
-                const size = 1.0 + Math.sin(time + randomFactors[i / 3] * 10) * 0.3;
-                particle.geometry.attributes.size.array[i / 3] = params.size * size;
+            // Ground collision and reset
+            if (positions[i + 1] < params.groundLevel) {
+                positions[i + 1] = 50 + Math.random() * 10;
+                positions[i] = (Math.random() - 0.5) * 50;
+                positions[i + 2] = (Math.random() - 0.5) * 50;
+                
+                velocities[i] = (Math.random() - 0.5) * 0.05;
+                velocities[i + 1] = -Math.random() * params.speed;
+                velocities[i + 2] = (Math.random() - 0.5) * 0.05;
             }
         }
 
-        // Update all modified attributes
         particle.geometry.attributes.position.needsUpdate = true;
-        if (particle.geometry.attributes.size) particle.geometry.attributes.size.needsUpdate = true;
-        if (particle.geometry.attributes.opacity) particle.geometry.attributes.opacity.needsUpdate = true;
     });
 }
 
+function updateSnowSize() {
+    snowParticles.forEach(particle => {
+        particle.material.size = params.size;
+    });
+}
+
+function recreateSnow() {
+    snowParticles.forEach(particle => scene.remove(particle));
+    snowParticles = [];
+    if (isSnowing) createSnow();
+}
 
 function setupWeatherEffects() {
     const effects = {
-        storm: { speed: 3, wind: 3, turbulence: 2 },
-        blizzard: { speed: 4, wind: 4, turbulence: 2.5 },
-        gentle: { speed: 0.5, wind: 0.2, turbulence: 0.3 }
+        storm: { speed: 3, wind: 3, turbulence: 2, mode: 'vortex', vortexStrength: 2.0 },
+        blizzard: { speed: 4, wind: 4, turbulence: 2.5, mode: 'normal' },
+        gentle: { speed: 0.5, wind: 0.2, turbulence: 0.3, mode: 'normal' }
     };
 
     Object.keys(effects).forEach(effect => {
@@ -4688,40 +5179,30 @@ function setupWeatherEffects() {
             const settings = effects[effect];
             Object.keys(settings).forEach(param => {
                 params[param] = settings[param];
-                document.getElementById(param).value = settings[param];
-                document.getElementById(`${param}Value`).textContent = settings[param];
+                const slider = document.getElementById(param);
+                const valueDisplay = document.getElementById(`${param}Value`);
+                if (slider && valueDisplay) {
+                    slider.value = settings[param];
+                    valueDisplay.textContent = settings[param];
+                }
             });
+            document.getElementById('snowMode').value = settings.mode;
+            recreateSnow();
         });
     });
 }
 
-        function updateSnowSize() {
-            snowParticles.forEach(particles => {
-                particles.material.size = params.size;
-            });
-        }
-
-        function recreateSnow() {
-            snowParticles.forEach(particles => {
-                scene.remove(particles);
-            });
-            snowParticles = [];
-            createSnow();
-        }
-
-
 </script>
 
 <script>
- 
-
-
 let scene, camera, renderer, controls, transformControls, raycaster, mouse;
 let selectedObject = null;
-let isPlaying = false;
 let clock = new THREE.Clock();
-
-
+let isPlaying = false;
+let isDragging = false;
+let timelineDuration = 300; // 5 minutes in seconds
+let currentTime = 0;
+const keyframes = new Map();
 
 
 let particles, particlesGeometry,  particlesMaterial;
@@ -4731,8 +5212,6 @@ let isParticlesVisible = true;
 let isLocked = false;
 
 let textureLoaded = null; 
-
-
 
 function toggleParticles() {
     if (particles) {
@@ -4832,7 +5311,6 @@ let orbitControls = true;
 let transformControlsActive = false;
 
 
-
 let isModelingMode = false;
 let selectionMode = 'vertex';
 let activeObject = null;
@@ -4840,6 +5318,7 @@ let selectedElements = [];
 let vertexHelpers = new THREE.Group();
 let edgeHelpers = new THREE.Group();
 let faceHelpers = new THREE.Group();
+
 
 function createGradientBackground() {
     const canvas = document.createElement('canvas');
@@ -4856,24 +5335,26 @@ function createGradientBackground() {
 
     const texture = new THREE.CanvasTexture(canvas);
     scene.background = texture;
+    texture.dispose(); // Dispose of the texture when no longer needed to avoid memory leaks
 }
-
 
 function init() {
     // Scene setup
     scene = new THREE.Scene();
     createGradientBackground();
+    scene.background = new THREE.Color(0x333333); // Default to a neutral gray color
+
     // Camera setup
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
+    camera.position.set(0, 5, 10);
 
     updateCameraPosition();
     // Renderer setup
-    renderer = new THREE.WebGLRenderer({ 
+    renderer = new THREE.WebGLRenderer({
         antialias: true,
         // Enable tone mapping for better HDR rendering
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.0,
+        toneMappingExposure: 1.0,  // Adjust for overall brightness
         powerPreference: "high-performance",
         stencil: true,
         depth: true,
@@ -4885,11 +5366,8 @@ function init() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.autoClear = false;
     renderer.antialias = true; // تنعيم الحواف
+    renderer.physicallyCorrectLights = true;
     renderer.setPixelRatio(window.devicePixelRatio); // دقة أفضل
-    renderer.toneMappingExposure = 1.0;
-
-   
-
 
     // Remove OrbitControls (if you prefer full manual control)
     if (controls) {
@@ -4899,8 +5377,6 @@ function init() {
 
     transformControls = new THREE.TransformControls(camera, renderer.domElement);
     scene.add(transformControls);
-
-   
 
 
     // Axes helper
@@ -4926,9 +5402,13 @@ function init() {
         if (controls && !isLocked) {
             controls.enabled = false;
         }
+
+        selectedObject = transformControls.object;
+        updateLayersUI();
+
         console.log("Transform started, orbit controls disabled");
     });
-    
+
     transformControls.addEventListener('mouseUp', function() {
         transformControlsActive = false;
         if (controls && !isLocked) {
@@ -4936,7 +5416,7 @@ function init() {
         }
         console.log("Transform ended, orbit controls restored");
     });
-    
+
     // This is still helpful as a backup
     transformControls.addEventListener('dragging-changed', function(event) {
         if (controls && !isLocked) {
@@ -4944,7 +5424,7 @@ function init() {
         }
     });
 
-  
+
     const nodeEditor = new NodeEditor(scene, camera, raycaster);
     // Pass nodeEditor to global scope if needed
     window.nodeEditor = nodeEditor;
@@ -4960,40 +5440,49 @@ function init() {
     scene.add(faceHelpers);
 
 
-
-    // Enhanced lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    // World-Class Lighting Setup
+    // 1. Ambient Light (soft global illumination)
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // Soft gray light
     scene.add(ambientLight);
 
-    const spotLight = new THREE.SpotLight(0xffffff, 2);
-    spotLight.position.set(5, 10, 5);
-    spotLight.castShadow = true;
-    spotLight.shadow.mapSize.width = 2048;
-    spotLight.shadow.mapSize.height = 2048;
-    spotLight.angle = Math.PI / 6;
-    spotLight.penumbra = 0.5;
-    spotLight.shadow.bias = -0.0001;
-    spotLight.shadow.normalBias = 0.05;
-    scene.add(spotLight);
+    // 2. Hemisphere Light (sky + ground simulation)
+    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x8b4513, 0.6); // Sky blue and ground brown
+    hemiLight.position.set(0, 50, 0);
+    scene.add(hemiLight);
 
-    const rectLight = new THREE.RectAreaLight(0xffffff, 2, 10, 10);
-    rectLight.position.set(0, 5, 0);
-    rectLight.lookAt(0, 0, 0);
-    scene.add(rectLight);
-
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(10, 20, 10);
+    // 3. Directional Light (Sun-like main light)
+    const directionalLight = new THREE.DirectionalLight(0xfff8e1, 2.0); // Warm sunlight
+    directionalLight.position.set(20, 30, 10);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 4096;
     directionalLight.shadow.mapSize.height = 4096;
-    directionalLight.shadow.bias = -0.0001;
+    directionalLight.shadow.camera.near = 0.5;
+    directionalLight.shadow.camera.far = 100;
+    directionalLight.shadow.camera.left = -50;
+    directionalLight.shadow.camera.right = 50;
+    directionalLight.shadow.camera.top = 50;
+    directionalLight.shadow.camera.bottom = -50;
+    directionalLight.shadow.bias = -0.00005;
     directionalLight.shadow.normalBias = 0.02;
     scene.add(directionalLight);
 
-    const pointLight = new THREE.PointLight(0xffffff, 1, 100);
-    pointLight.position.set(10, 10, 10);
-    scene.add(pointLight);
+    // Add helper for directional light (optional for debugging)
+    const dirLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
+    // scene.add(dirLightHelper); // Uncomment to visualize
+
+    // 4. Fill Light (Soft secondary light)
+    const fillLight = new THREE.SpotLight(0xe6e6fa, 1.5, 50, Math.PI / 4, 0.5);
+    fillLight.position.set(-10, 15, 20);
+    fillLight.castShadow = true;
+    fillLight.shadow.mapSize.width = 2048;
+    fillLight.shadow.mapSize.height = 2048;
+    scene.add(fillLight);
+
+    // 5. Rect Area Light (Environment bounce)
+    const rectLight = new THREE.RectAreaLight(0xadd8e6, 3, 20, 20);
+    rectLight.position.set(0, 10, -15);
+    rectLight.lookAt(0, 0, 0);
+    scene.add(rectLight);
 
     // Grid helper
     const advancedGrid = createAdvancedGridHelper(1000, 1000);
@@ -5012,34 +5501,61 @@ function init() {
 
 
     // Enhanced fog
-    scene.fog = new THREE.FogExp2(0x2a2a2a, 1, 50);
+    scene.fog = new THREE.FogExp2(0x2a2a2a, 0.01);
     // GUI setup
     const settings = addGUI(scene, renderer, camera);
-   
+
     // Event listeners and initialization
     window.addEventListener('DOMContentLoaded', () => {
-    const lockButton = document.getElementById('toggle-lock');
-    if (lockButton) {
-        lockButton.addEventListener('click', toggleLock);
-        console.log("Lock button listener attached");
-    } else {
-        console.error("Lock button not found!");
-    }
+        const lockButton = document.getElementById('toggle-lock');
+        if (lockButton) {
+            lockButton.addEventListener('click', toggleLock);
+            console.log("Lock button listener attached");
+        } else {
+            console.error("Lock button not found!");
+        }
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-    // Wait a short time to ensure THREE.js is initialized
-    setTimeout(() => {
-        initPathAnimationSystem();
-        addPathAnimationStyles();
-    }, 1000);
+        // Wait a short time to ensure THREE.js is initialized
+        setTimeout(() => {
+            initPathAnimationSystem();
+            addPathAnimationStyles();
+        }, 1000);
     });
 
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshStandardMaterial({
+        color: 0x00ff00,
+        roughness: 0.5,
+        metalness: 0.2
+    });
+    const cube = new THREE.Mesh(geometry, material);
+    cube.castShadow = true;
+    cube.receiveShadow = true;
+    scene.add(cube);
+    activeObject = cube;
+
+    // Override scene.add to auto-add objects to timeline
+    const originalSceneAdd = scene.add;
+    scene.add = function(object) {
+    originalSceneAdd.apply(scene, arguments); // Call original add
+        if (object.isObject3D) { // Ensure it’s a 3D object
+           addObjectToTimeline(object);
+        }
+        return object;
+   };
+
+    initializeTimeline();
+    setupTimelineEventListeners();
 
     setupSceneElements();
     initModeling();
+    setupSnowControls();
     createSnow();
+
     setupEventListeners();
+    activatePanelButtonTool();
     initPhysics();
     addDemonstrationObjects();
     createParticles();
@@ -5047,7 +5563,23 @@ function init() {
     optimizeScene();
     initBrush();
     initCharacterSculpting();
+
+     // Add an environment map (optional, but highly recommended)
+     const pmremGenerator = new THREE.PMREMGenerator(renderer);
+     pmremGenerator.compileEquirectangularShader();
+
+     new THREE.TextureLoader().load('path/to/your/environment.hdr', (texture) => {  //Use of hdr format images
+         const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+
+         scene.environment = envMap;
+         texture.dispose();
+         pmremGenerator.dispose();
+     }, undefined, (error) => {
+         console.error('Error loading environment map:', error);
+     });
 }
+
+
 
 
 
@@ -5552,7 +6084,7 @@ function createMajorAxes(size) {
     return axesGroup;
 }
 
-function createAdvancedGridHelper(size = 1000, divisions = 1000) {
+function createAdvancedGridHelper(size = 800, divisions = 800) {
     const gridGroup = new THREE.Group();
 
     // Main grid
@@ -6354,6 +6886,19 @@ function setupEventListeners() {
     }
     });
 
+    document.getElementById("soundControls").addEventListener("click", function() {
+        const meterSection = document.getElementById("sound-controls-meter");
+        const visSection = document.getElementById("sound-controls-vis");
+        const headerSection = document.getElementById("sound-controls-header");
+
+        // Toggle all sections
+        const isHidden = meterSection.style.display === "none" || meterSection.style.display === "";
+    
+        meterSection.style.display = isHidden ? "block" : "none";
+        visSection.style.display = isHidden ? "block" : "none";
+        headerSection.style.display = isHidden ? "block" : "none";
+    });
+
     document.getElementById("drawingControls").addEventListener("click", function() {
        const drawingTools = document.getElementById("drawingMode");
       // Toggle visibility
@@ -6504,15 +7049,6 @@ function setupEventListeners() {
         document.getElementById('turbulenceValue').textContent = params.turbulence;
     });
 
-    document.getElementById('toggleSnow').addEventListener('click', () => {
-    isSnowing = !isSnowing;
-    if (isSnowing) {
-        createSnow();
-    } else {
-        snowParticles.forEach(particle => scene.remove(particle));
-        snowParticles = [];
-    }
-    });
 
     function resetSnow() {
        snowParticles.forEach(p => scene.remove(p));
@@ -6552,6 +7088,68 @@ function setupEventListeners() {
             }
         });
     });
+
+    //material brush system listeners
+    document.getElementById('materialPaint').addEventListener('click', () => {
+        selectedTool = TOOLS.MATERIAL_PAINT;
+        updateToolUI('materialPaint');
+    });
+
+    // Material Upload
+    document.getElementById('selectMaterial').addEventListener('click', () => {
+        document.getElementById('uploadMaterial').click();
+    });
+
+    document.getElementById('uploadMaterial').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const image = new Image();
+                image.onload = () => {
+                    uploadedMaterial = image;
+                    updateMaterialPreview();
+                };
+                image.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Material Brush Controls
+    document.getElementById('materialBrushSize').addEventListener('input', (e) => {
+        materialBrushSettings.size = parseFloat(e.target.value);
+        updateBrushPreview();
+    });
+
+    document.getElementById('materialStrength').addEventListener('input', (e) => {
+        materialBrushSettings.strength = parseFloat(e.target.value);
+    });
+
+    document.getElementById('materialFalloff').addEventListener('input', (e) => {
+        materialBrushSettings.falloff = parseFloat(e.target.value);
+    });
+
+    document.getElementById('materialRotation').addEventListener('input', (e) => {
+        materialBrushSettings.rotation = parseFloat(e.target.value);
+    });
+
+    document.getElementById('materialScale').addEventListener('input', (e) => {
+        materialBrushSettings.scale = parseFloat(e.target.value);
+    });
+
+    document.getElementById('materialOpacity').addEventListener('input', (e) => {
+        materialBrushSettings.opacity = parseFloat(e.target.value);
+    });
+
+    document.getElementById('materialPattern').addEventListener('change', (e) => {
+        materialBrushSettings.pattern = e.target.value;
+    });
+
+    document.getElementById('materialBlendMode').addEventListener('change', (e) => {
+        materialBrushSettings.blendMode = e.target.value;
+    });
+
 
  
    
@@ -6630,7 +7228,6 @@ function setupEventListeners() {
     });
 
 
-    
     document.getElementById('uploadTexture').addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -6638,19 +7235,16 @@ function setupEventListeners() {
             reader.onload = (e) => {
                 const image = new Image();
                 image.onload = () => {
-                    // Create a texture that can be used for both preview and painting
-                    uploadedTexture = new THREE.Texture(image);
-                    uploadedTexture.needsUpdate = true;
-                    
-                    // Optional: Create a preview of the uploaded texture
+                    uploadedTextureImage = image; // Store raw image for painting
+                    console.log('Texture uploaded for painting');
+
+                    // Optional preview
                     const previewCanvas = document.getElementById('texturePreview');
                     if (previewCanvas) {
                         const ctx = previewCanvas.getContext('2d');
                         ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
                         ctx.drawImage(image, 0, 0, previewCanvas.width, previewCanvas.height);
                     }
-                    
-                    console.log('Texture loaded and ready for painting');
                 };
                 image.src = e.target.result;
             };
@@ -6658,7 +7252,6 @@ function setupEventListeners() {
         }
     });
 
-    // Texture paint tool activation
     document.getElementById('texturePaint').addEventListener('click', () => {
         selectedTool = TOOLS.TEXTURE_PAINT;
         updateToolUI('texturePaint');
@@ -6693,27 +7286,23 @@ function setupEventListeners() {
     // Add pointer events for sculpting and painting
     renderer.domElement.addEventListener('pointerdown', (event) => {
         isSculpting = true;
-        if (selectedTool === 'texturePaint') {
+        if (selectedTool === TOOLS.TEXTURE_PAINT) {
             applyTexturePaint(event);
-        } else if (selectedTool === 'colorPaint') {
-            applyColorPaint(event);
-        } else {
+        } else if (selectedTool) {
             applySculpting(event);
         }
     });
 
     renderer.domElement.addEventListener('pointermove', (event) => {
+        updateBrushPreview(event); // Blue brush for feedback
         if (isSculpting) {
-            if (selectedTool === 'texturePaint') {
+            if (selectedTool === TOOLS.TEXTURE_PAINT) {
                 applyTexturePaint(event);
-            } else if (selectedTool === 'colorPaint') {
-                applyColorPaint(event);
-            } else {
+            } else if (selectedTool) {
                 applySculpting(event);
             }
         }
     });
-    
 
     renderer.domElement.addEventListener('pointerup', () => {
         isSculpting = false;
@@ -6835,593 +7424,12 @@ function setupEventListeners() {
      });
  
      transformControls.addEventListener('change', updateInspector);
+
  }
 
 
-
- let isTransforming = false;
- function setupTransformControls() {
-    if (transformControls && controls) {
-        // This event fires when starting/ending a transform operation
-        transformControls.addEventListener('dragging-changed', function(event) {
-            isTransforming = event.value;
-            
-            // Only disable controls if we're not in locked mode already
-            if (!isLocked) {
-                controls.enabled = !isTransforming;
-            }
-            
-            console.log("Transform dragging:", isTransforming, "Controls enabled:", controls.enabled);
-        });
-        
-        // Additional event listener to ensure controls get re-enabled
-        transformControls.addEventListener('mouseUp', function() {
-            if (!isLocked && isTransforming) {
-                isTransforming = false;
-                controls.enabled = true;
-                console.log("Transform mouseUp - Controls re-enabled");
-            }
-        });
-    }
-}
-
-// Initialize the transform controls
-function initTransformControls() {
-    transformControls.setSize(0.75);
-    transformControls.setSpace('local'); // Use local space for intuitive control
-    transformControls.setMode('translate'); // Default mode; can be changed to 'rotate' or 'scale'
-    scene.add(vertexHelpers);
-    scene.add(edgeHelpers);
-    scene.add(faceHelpers);
-
-    transformControls.addEventListener('objectChange', () => {
-        if (activeObject && transformControls.object) {
-            updateMeshGeometry();
-        }
-    });
-
-    transformControls.addEventListener('dragging-changed', (event) => {
-        if (controls) {
-            controls.enabled = !event.value;
-        }
-    });
-
-    // Add key bindings for transform modes
-    window.addEventListener('keydown', (event) => {
-        if (!isModelingMode) return;
-        switch (event.key) {
-            case 't': transformControls.setMode('translate'); break;
-            case 'r': transformControls.setMode('rotate'); break;
-            case 's': transformControls.setMode('scale'); break;
-        }
-    });
-}
-
-// Toggle modeling mode
-function toggleModelingMode() {
-    isModelingMode = !isModelingMode;
-    const modelingButtons = ['select-vertex', 'select-edge', 'select-face'];
-    modelingButtons.forEach(id => {
-        document.getElementById(id).disabled = !isModelingMode;
-    });
-
-    if (isModelingMode && activeObject) {
-        showMeshStructure(activeObject);
-    } else {
-        clearMeshStructure();
-        transformControls.detach();
-    }
-}
-
-
-
-function setSelectionMode(mode) {
-    if (!isModelingMode) return;
-    selectionMode = mode;
-    clearSelection();
-    if (activeObject) {
-        showMeshStructure(activeObject);
-    }
-}
-
-
-function showMeshStructure(object) {
-    clearMeshStructure();
-    if (!object || !object.geometry) return;
-    
-    activeObject = object;
-    const geometry = object.geometry;
-    const positions = geometry.attributes.position;
-    const matrix = object.matrixWorld;
-    
-    const vertexSize = parseFloat(document.getElementById('vertexSizeSlider').value) * 0.1; // Increased for testing
-    const edgeThickness = parseFloat(document.getElementById('edgeThicknessSlider').value);
-    const faceOpacity = parseFloat(document.getElementById('faceOpacitySlider').value);
-    
-    if (selectionMode === 'vertex' || selectionMode === 'all') {
-        for (let i = 0; i < positions.count; i++) {
-            const vertex = new THREE.Vector3().fromBufferAttribute(positions, i).applyMatrix4(matrix);
-            const sphereGeom = new THREE.SphereGeometry(vertexSize);
-            const sphereMat = new THREE.MeshBasicMaterial({ color: 0x2222FF, transparent: true, opacity: 0.8 });
-            const vertexMesh = new THREE.Mesh(sphereGeom, sphereMat);
-            vertexMesh.position.copy(vertex);
-            vertexMesh.userData = { type: 'vertex', vertexIndex: i };
-            vertexHelpers.add(vertexMesh);
-        }
-    }
-    updateEdgeFaceHelpers(); // Call to populate edges and faces
-}
-
-function clearMeshStructure() {
-    vertexHelpers.clear();
-    edgeHelpers.clear();
-    faceHelpers.clear();
-}
-
-
-function onModelingMouseMove(event) {
-    if (!isModelingMode || !activeObject) return;
-
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-
-    // Reset all materials to default
-    resetHighlights();
-    
-    // Highlight elements based on selection mode
-    switch (selectionMode) {
-        case 'vertex':
-            highlightVertices();
-            break;
-        case 'edge':
-            highlightEdges();
-            break;
-        case 'face':
-            highlightFaces();
-            break;
-    }
-}
-
-
-
-function onModelingClick(event) {
-    if (!isModelingMode || !activeObject) return;
-
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-
-    switch (selectionMode) {
-        case 'vertex':
-            selectVertex();
-            break;
-        case 'edge':
-            selectEdge();
-            break;
-        case 'face':
-            selectFace();
-            break;
-    }
-}
-        
-// Highlight vertices on hover
-function highlightVertices() {
-    resetHighlights(); // Reset before highlighting
-    const intersects = raycaster.intersectObjects(vertexHelpers.children);
-    if (intersects.length > 0) {
-        intersects[0].object.material.color.set(0xFF0000);
-    }
-}
-
-// Highlight edges on hover
-function highlightEdges() {
-    resetHighlights();
-    const intersects = raycaster.intersectObjects(edgeHelpers.children);
-    if (intersects.length > 0) {
-        intersects[0].object.material.color.set(0xFF0000);
-    }
-}
-
-// Highlight faces on hover
-function highlightFaces() {
-    resetHighlights();
-    const intersects = raycaster.intersectObjects(faceHelpers.children);
-    if (intersects.length > 0) {
-        intersects[0].object.material.color.set(0xFF0000);
-    }
-}
-
-
-function resetHighlights() {
-    vertexHelpers.children.forEach(child => {
-        if (selectedElements.length === 0 || !selectedElements.includes(child)) {
-            child.material.color.set(0x2222FF);
-        }
-    });
-    
-    edgeHelpers.children.forEach(child => {
-        if (selectedElements.length === 0 || 
-            !selectedElements.some(elem => elem.userData.edge === child)) {
-            child.material.color.set(0xE67E22);
-        }
-    });
-    
-    faceHelpers.children.forEach(child => {
-        if (selectedElements.length === 0 || 
-            !selectedElements.some(elem => elem.userData.face === child)) {
-            child.material.color.set(0x44DD88);
-        }
-    });
-}
-
-function selectVertex() {
-    // Adjust raycaster threshold for larger spheres
-    raycaster.params.Points = { threshold: 0.5 }; // Increase if needed
-
-    const intersects = raycaster.intersectObjects(vertexHelpers.children);
-    
-    if (intersects.length > 0) {
-        const vertexMesh = intersects[0].object;
-
-        // Clear previous selection
-        clearSelection();
-
-        // Mark as selected
-        selectedElements = [vertexMesh];
-        vertexMesh.material.color.set(0xFF0000);
-
-        // Attach transform controls
-        transformControls.attach(vertexMesh);
-        console.log("Selected vertex:", vertexMesh.userData.vertexIndex);
-    } else {
-        console.log("No vertex intersected");
-    }
-}
-
-function selectEdge() {
-    const intersects = raycaster.intersectObjects(edgeHelpers.children);
-    if (intersects.length > 0) {
-        // Clear previous selection
-        clearSelection();
-        
-        const edge = intersects[0].object;
-        const edgeCenter = new THREE.Object3D();
-        
-        // Get vertices from the edge
-        const indices = edge.userData.indices;
-        
-        // Store vertices in world space
-        const vertices = indices.map(index => 
-            new THREE.Vector3().fromBufferAttribute(activeObject.geometry.attributes.position, index)
-                .applyMatrix4(activeObject.matrixWorld)
-        );
-        
-        // Calculate edge center
-        const center = vertices[0].clone().add(vertices[1]).multiplyScalar(0.5);
-        edgeCenter.position.copy(center);
-        scene.add(edgeCenter);
-
-        // Store original state with deep copies
-        edgeCenter.userData = {
-            type: 'edge',
-            edge: edge,
-            originalPosition: center.clone(),
-            originalRotation: edgeCenter.quaternion.clone(),
-            originalScale: edgeCenter.scale.clone(),
-            indices: indices,
-            originalVertices: vertices  // Store the original vertex positions
-        };
-
-        // Mark as selected
-        selectedElements = [edgeCenter];
-        edge.material.color.set(0xFF0000);
-        
-        // Attach transform controls
-        transformControls.attach(edgeCenter);
-    }
-}
-
-function selectFace() {
-    const intersects = raycaster.intersectObjects(faceHelpers.children);
-    
-    if (intersects.length > 0) {
-        // Clear previous selection
-        clearSelection();
-        
-        const face = intersects[0].object;
-        const faceCenter = new THREE.Object3D();
-        
-        // Get face vertices
-        const indices = face.userData.indices;
-        const vertices = indices.map(index => 
-            new THREE.Vector3().fromBufferAttribute(
-                activeObject.geometry.attributes.position, index
-            ).applyMatrix4(activeObject.matrixWorld)
-        );
-        
-        // Calculate the center of the face
-        const center = new THREE.Vector3();
-        vertices.forEach(v => center.add(v));
-        center.divideScalar(vertices.length);
-        
-        faceCenter.position.copy(center);
-        scene.add(faceCenter);
-        
-        // Store the original state and metadata
-        faceCenter.userData = {
-            type: 'face',
-            face: face,
-            originalPosition: center.clone(),
-            originalRotation: faceCenter.quaternion.clone(),
-            originalScale: faceCenter.scale.clone(),
-            indices: indices,
-            originalVertices: vertices  // Store the original vertex positions
-        };
-        
-        // Mark as selected
-        selectedElements = [faceCenter];
-        face.material.color.set(0xFF0000);
-        
-        // Attach transform controls
-        transformControls.attach(faceCenter);
-    }
-}
-
-function updateMeshGeometry() {
-    if (!activeObject || selectedElements.length === 0) return;
-    
-    const selectedElement = selectedElements[0];
-    const geometry = activeObject.geometry;
-    const positions = geometry.attributes.position;
-    const mode = transformControls.getMode();
-
-    // Store original matrix for converting back to local space correctly
-    const originalMatrix = activeObject.matrixWorld.clone();
-    const inverseMatrix = new THREE.Matrix4().copy(originalMatrix).invert();
-
-    if (selectedElement.userData.type === 'vertex') {
-        // Handle vertex transformation
-        const vertexIndex = selectedElement.userData.vertexIndex;
-        const worldPos = selectedElement.position.clone();
-        const localPos = worldPos.clone().applyMatrix4(inverseMatrix);
-        positions.setXYZ(vertexIndex, localPos.x, localPos.y, localPos.z);
-    } else if (selectedElement.userData.type === 'edge' || selectedElement.userData.type === 'face') {
-        const indices = selectedElement.userData.indices;
-        const originalVertices = selectedElement.userData.originalVertices || [];
-        const center = selectedElement.userData.originalPosition.clone();
-
-        if (mode === 'translate') {
-            // Calculate transformation delta in world space
-            const delta = selectedElement.position.clone().sub(selectedElement.userData.originalPosition);
-            
-            // Apply delta to each affected vertex
-            indices.forEach((index, i) => {
-                // Use stored original vertices if available
-                let worldVertex;
-                if (originalVertices[i]) {
-                    worldVertex = originalVertices[i].clone().add(delta);
-                } else {
-                    // Fallback if original vertices weren't stored
-                    const vertex = new THREE.Vector3().fromBufferAttribute(positions, index);
-                    worldVertex = vertex.clone().applyMatrix4(originalMatrix).add(delta);
-                }
-                
-                // Convert back to local space
-                const localVertex = worldVertex.clone().applyMatrix4(inverseMatrix);
-                positions.setXYZ(index, localVertex.x, localVertex.y, localVertex.z);
-            });
-        } else if (mode === 'rotate') {
-            // Create a matrix from the rotation quaternion
-            const rotationMatrix = new THREE.Matrix4().makeRotationFromQuaternion(selectedElement.quaternion);
-            
-            // Apply rotation around center point to each vertex
-            indices.forEach((index, i) => {
-                let worldVertex;
-                if (originalVertices[i]) {
-                    // Get vector from center to vertex
-                    const vertexRelativeToCenter = originalVertices[i].clone().sub(center);
-                    // Apply rotation matrix
-                    vertexRelativeToCenter.applyMatrix4(rotationMatrix);
-                    // Move back relative to center
-                    worldVertex = vertexRelativeToCenter.add(center);
-                } else {
-                    // Fallback
-                    const vertex = new THREE.Vector3().fromBufferAttribute(positions, index);
-                    const worldPos = vertex.clone().applyMatrix4(originalMatrix);
-                    const vertexRelativeToCenter = worldPos.clone().sub(center);
-                    vertexRelativeToCenter.applyMatrix4(rotationMatrix);
-                    worldVertex = vertexRelativeToCenter.add(center);
-                }
-                
-                // Convert back to local space
-                const localVertex = worldVertex.clone().applyMatrix4(inverseMatrix);
-                positions.setXYZ(index, localVertex.x, localVertex.y, localVertex.z);
-            });
-        } else if (mode === 'scale') {
-            // Create a scaling matrix
-            const scaleMatrix = new THREE.Matrix4().makeScale(
-                selectedElement.scale.x,
-                selectedElement.scale.y,
-                selectedElement.scale.z
-            );
-            
-            // Apply scaling from center point to each vertex
-            indices.forEach((index, i) => {
-                let worldVertex;
-                if (originalVertices[i]) {
-                    // Get vector from center to vertex
-                    const vertexRelativeToCenter = originalVertices[i].clone().sub(center);
-                    // Apply scaling matrix
-                    vertexRelativeToCenter.applyMatrix4(scaleMatrix);
-                    // Move back relative to center
-                    worldVertex = vertexRelativeToCenter.add(center);
-                } else {
-                    // Fallback
-                    const vertex = new THREE.Vector3().fromBufferAttribute(positions, index);
-                    const worldPos = vertex.clone().applyMatrix4(originalMatrix);
-                    const vertexRelativeToCenter = worldPos.clone().sub(center);
-                    vertexRelativeToCenter.applyMatrix4(scaleMatrix);
-                    worldVertex = vertexRelativeToCenter.add(center);
-                }
-                
-                // Convert back to local space
-                const localVertex = worldVertex.clone().applyMatrix4(inverseMatrix);
-                positions.setXYZ(index, localVertex.x, localVertex.y, localVertex.z);
-            });
-        }
-    }
-
-    // Update the buffer attribute
-    positions.needsUpdate = true;
-    
-    // Recalculate normals and bounds
-    geometry.computeVertexNormals();
-    geometry.computeBoundingSphere();
-
-    // Update the mesh structure display
-    showMeshStructure(activeObject);
-}
-
-
-function updateEdgeFaceHelpers() {
-    // Clear existing helpers
-    edgeHelpers.clear();
-    faceHelpers.clear();
-
-    if (!activeObject || !activeObject.geometry) return;
-    
-    const geometry = activeObject.geometry;
-    const positions = geometry.attributes.position;
-    const matrix = activeObject.matrixWorld;
-    const edgeThickness = parseFloat(document.getElementById('edgeThicknessSlider').value);
-    const faceOpacity = parseFloat(document.getElementById('faceOpacitySlider').value);
-
-    // Create edge helpers
-    if (selectionMode === 'edge' || selectionMode === 'all') {
-        if (geometry.index) {
-            const edgeSet = new Set();
-            const indices = geometry.index.array;
-            
-            for (let i = 0; i < indices.length; i += 3) {
-                for (let j = 0; j < 3; j++) {
-                    const start = indices[i + j];
-                    const end = indices[i + (j + 1) % 3];
-                    
-                    // Create unique edge ID to avoid duplicates
-                    const edgeKey = start < end ? `${start}_${end}` : `${end}_${start}`;
-                    
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        
-                        // Get vertices in world space
-                        const startVert = new THREE.Vector3().fromBufferAttribute(positions, start).applyMatrix4(matrix);
-                        const endVert = new THREE.Vector3().fromBufferAttribute(positions, end).applyMatrix4(matrix);
-                        
-                        // Create edge visualization
-                        const edgeGeom = new THREE.BufferGeometry().setFromPoints([startVert, endVert]);
-                        const edgeMat = new THREE.LineBasicMaterial({ 
-                            color: 0xE67E22, 
-                            linewidth: edgeThickness
-                        });
-                        
-                        const edge = new THREE.Line(edgeGeom, edgeMat);
-                        edge.userData = { 
-                            type: 'edge', 
-                            indices: [start, end] 
-                        };
-                        
-                        edgeHelpers.add(edge);
-                    }
-                }
-            }
-        }
-    }
-
-    // Create face helpers
-    if (selectionMode === 'face' || selectionMode === 'all') {
-        if (geometry.index) {
-            const indices = geometry.index.array;
-            
-            for (let i = 0; i < indices.length; i += 3) {
-                const vA = new THREE.Vector3().fromBufferAttribute(positions, indices[i]).applyMatrix4(matrix);
-                const vB = new THREE.Vector3().fromBufferAttribute(positions, indices[i + 1]).applyMatrix4(matrix);
-                const vC = new THREE.Vector3().fromBufferAttribute(positions, indices[i + 2]).applyMatrix4(matrix);
-                
-                // Create face visualization
-                const faceGeom = new THREE.BufferGeometry().setFromPoints([vA, vB, vC]);
-                const faceMat = new THREE.MeshBasicMaterial({ 
-                    color: 0x44DD88, 
-                    transparent: true, 
-                    opacity: faceOpacity, 
-                    side: THREE.DoubleSide 
-                });
-                
-                const faceMesh = new THREE.Mesh(faceGeom, faceMat);
-                faceMesh.userData = { 
-                    type: 'face', 
-                    indices: [indices[i], indices[i + 1], indices[i + 2]],
-                    faceIndex: i / 3 
-                };
-                
-                faceHelpers.add(faceMesh);
-            }
-        }
-    }
-}
-
-function setupModelingEventListeners() {
-    window.addEventListener('mousemove', onModelingMouseMove);
-    window.addEventListener('click', onModelingClick);
-    
-    // Add listeners for UI controls
-    document.getElementById('toggle-modeling').addEventListener('click', toggleModelingMode);
-    document.getElementById('select-vertex').addEventListener('click', () => setSelectionMode('vertex'));
-    document.getElementById('select-edge').addEventListener('click', () => setSelectionMode('edge'));
-    document.getElementById('select-face').addEventListener('click', () => setSelectionMode('face'));
-    document.addEventListener('mousemove', resetHighlights);
-    // Add listeners for sliders
-    document.getElementById('vertexSizeSlider').addEventListener('input', () => {
-        if (activeObject) showMeshStructure(activeObject);
-    });
-    document.getElementById('edgeThicknessSlider').addEventListener('input', () => {
-        if (activeObject) showMeshStructure(activeObject);
-    });
-    document.getElementById('faceOpacitySlider').addEventListener('input', () => {
-        if (activeObject) showMeshStructure(activeObject);
-    });
-    document.getElementById('subdivisionLevelsSlider').addEventListener('input', updateSubdivision);
-}
-
-
-function updateSubdivision() {
-    if (!activeObject) return;
-    
-    const subdivisionLevel = parseInt(document.getElementById('subdivisionLevelsSlider').value);
-    
-    // Only apply subdivision if we have a valid mesh
-    if (activeObject && activeObject.geometry) {
-        // Detach transform controls
-        transformControls.detach();
-        
-        // Create a new subdivided geometry
-        const modifier = new THREE.SubdivisionModifier(subdivisionLevel);
-        const newGeometry = modifier.modify(activeObject.geometry);
-        
-        // Update the mesh with the new geometry
-        activeObject.geometry.dispose();
-        activeObject.geometry = newGeometry;
-        
-        // Update the mesh structure
-        showMeshStructure(activeObject);
-    }
-}
-
-
- // Object creation functions
- function addCube() {
+// Object creation functions
+function addCube() {
     const geometry = new THREE.BoxGeometry();
     const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 , side: THREE.DoubleSide });
     const cube = new THREE.Mesh(geometry, material);
@@ -7439,7 +7447,6 @@ function updateSubdivision() {
     plane.rotation.x = -Math.PI / 2; // Rotate to lay flat on the ground
     addObjectToScene(plane, 'Plane');
 }
-
 
 
 
@@ -7478,9 +7485,9 @@ const TOOLS = {
     PLATEAU: 'plateau',
     SLOPE: 'slope',
     BLUR: 'blur',
-    SHARPEN: 'sharpen'
+    SHARPEN: 'sharpen',
+    MATERIAL_PAINT: 'materialPaint'
 };
-
 
 
 function applySymmetry(originalVertex, index, vertices) {
@@ -7508,34 +7515,30 @@ function applySymmetry(originalVertex, index, vertices) {
     }
 }
 
-
-
 function createTerrain() {
-    // Create geometry
-    const geometry = new THREE.PlaneGeometry(50, 50, 100, 100);
+    const width = 50;
+    const height = 50;
+    const widthSegments = 100;
+    const heightSegments = 100;
+
+    const geometry = new THREE.PlaneGeometry(width, height, widthSegments, heightSegments);
     geometry.rotateX(-Math.PI / 2);
 
-    // Create initial texture
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
     canvas.height = 1024;
     const ctx = canvas.getContext('2d');
-
-    // Fill with green color
-    ctx.fillStyle = '#87CEEB'; 
+    ctx.fillStyle = '#87CEEB';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     const texture = new THREE.CanvasTexture(canvas);
     texture.needsUpdate = true;
 
-    // Create material with proper settings
-    material = new THREE.MeshStandardMaterial({ 
+    const material = new THREE.MeshStandardMaterial({
         color: 0x87CEEB,
         map: texture,
-        side: THREE.DoubleSide 
+        side: THREE.DoubleSide
     });
 
-    // Create mesh
     terrain = new THREE.Mesh(geometry, material);
     terrain.userData.textureCanvas = canvas;
     terrain.userData.textureContext = ctx;
@@ -7543,20 +7546,15 @@ function createTerrain() {
     terrain.receiveShadow = true;
     terrain.castShadow = true;
 
-
     scene.add(terrain);
     addObjectToScene(terrain, 'Terrain');
 
-
     createBrushPreview();
 
-    // Initialize brush system
     if (!window.brushSystem) {
         window.brushSystem = new TerrainBrushSystem(scene, camera, renderer, terrain);
-    }   
+    }
 }
-
-
 
 
 // Create advanced brush preview
@@ -7622,38 +7620,25 @@ function updateBrushPreview(event) {
     if (intersects.length > 0) {
         const intersect = intersects[0];
         brushPreview.position.copy(intersect.point);
-        brushPreview.scale.set(brushSize, brushSize, 1);
-
-        // Update direction indicator based on normal
-        const normal = intersect.face.normal.clone();
-        normal.transformDirection(terrain.matrixWorld);
         
-        // Only show brush preview when a sculpting tool is selected
-        brushPreview.visible = Object.values(TOOLS).includes(selectedTool);
-
-        // Show symmetry preview if enabled
-        if (symmetryEnabled) {
-            // Create or update symmetry preview
-            if (!brushPreview.userData.symmetryPreview) {
-                brushPreview.userData.symmetryPreview = brushPreview.clone();
-                scene.add(brushPreview.userData.symmetryPreview);
+        if (selectedTool === TOOLS.MATERIAL_PAINT) {
+            brushPreview.scale.set(materialBrushSettings.size, materialBrushSettings.size, 1);
+            if (materialPreviewTexture) {
+                brushPreview.children[0].material.map = materialPreviewTexture;
+                brushPreview.children[0].material.opacity = materialBrushSettings.opacity;
+                brushPreview.children[0].material.needsUpdate = true;
             }
-            
-            const symmetryPosition = intersect.point.clone();
-            symmetryPosition[symmetryAxis] *= -1;
-            brushPreview.userData.symmetryPreview.position.copy(symmetryPosition);
-            brushPreview.userData.symmetryPreview.scale.copy(brushPreview.scale);
-            brushPreview.userData.symmetryPreview.visible = true;
-        } else if (brushPreview.userData.symmetryPreview) {
-            brushPreview.userData.symmetryPreview.visible = false;
+        } else {
+            brushPreview.scale.set(brushSize, brushSize, 1);
+            brushPreview.children[0].material.map = null;
+            brushPreview.children[0].material.needsUpdate = true;
         }
+        brushPreview.visible = Object.values(TOOLS).includes(selectedTool);
     } else {
         brushPreview.visible = false;
-        if (brushPreview.userData.symmetryPreview) {
-            brushPreview.userData.symmetryPreview.visible = false;
-        }
     }
 }
+
 
 // Save terrain state for undo/redo
 function saveTerrainState() {
@@ -7693,8 +7678,6 @@ function fillTerrain(vertex, position, influence) {
     }
 }
 
-
-
 function startSculpting(event) {
     isSculpting = true;
     applySculpting(event);
@@ -7704,6 +7687,9 @@ function startSculpting(event) {
 function stopSculpting() {
     isSculpting = false;
 }
+
+
+
 
 // تحسين دالة معالجة النحت
 function applySculpting(event) {
@@ -7733,6 +7719,12 @@ function applySculpting(event) {
         // Transform position to local space
         terrain.worldToLocal(position);
         
+        // Handle material painting separately
+        if (selectedTool === TOOLS.MATERIAL_PAINT) {
+            applyMaterialPaint(event);
+            return; // Exit early since material painting doesn't modify vertices
+        }
+
         for (let i = 0; i < vertices.count; i++) {
             const vertex = new THREE.Vector3(
                 vertices.getX(i),
@@ -7778,8 +7770,7 @@ function applySculpting(event) {
                             vertex.y += brushStrength * influence;
                         }
                         break;
-
-                        case TOOLS.TERRACE:
+                    case TOOLS.TERRACE:
                         applyTerrace(vertex, position, influence);
                         break;
                     case TOOLS.EROSION:
@@ -7794,7 +7785,7 @@ function applySculpting(event) {
                     case TOOLS.PLATEAU:
                         applyPlateau(vertex, position, influence);
                         break;
-                    case ADVANCED_TOOLS.SLOPE:
+                    case TOOLS.SLOPE:
                         applySlope(vertex, position, influence, normal);
                         break;
                     case TOOLS.BLUR:
@@ -7806,158 +7797,8 @@ function applySculpting(event) {
                 }
                 
                 vertices.setXYZ(i, vertex.x, vertex.y, vertex.z);
-                
-                // Apply symmetry
-                if (symmetryEnabled) {
-                    const symmetryPosition = position.clone();
-                    symmetryPosition[symmetryAxis] *= -1;
-                    
-                    for (let i = 0; i < vertices.count; i++) {
-                        const vertex = new THREE.Vector3(
-                            vertices.getX(i),
-                            vertices.getY(i),
-                            vertices.getZ(i)
-                        );
-                        
-                        const distance = vertex.distanceTo(position);
-                        const symmetryDistance = vertex.distanceTo(symmetryPosition);
-                        
-                        if (distance < brushSize) {
-                            const influence = Math.pow(1 - (distance / brushSize), 2);
-                            
-                            // Apply tool effect to original position
-                            switch (selectedTool) {
-                                case TOOLS.PINCH:
-                                    pinchTerrain(vertex, position, influence);
-                                    break;
-                                    case TOOLS.RAISE_LOWER:
-                                    vertex.y += brushStrength * influence;
-                                    break;
-                                case TOOLS.SMOOTH:
-                                    vertex.y += (position.y - vertex.y) * influence * brushStrength;
-                                    break;
-                                case TOOLS.FLATTEN:
-                                    vertex.y += (position.y - vertex.y) * influence;
-                                    break;
-                                case TOOLS.NOISE:
-                                    vertex.y += (Math.random() - 0.5) * brushStrength * influence * 2;
-                                    break;
-                                
-                                case TOOLS.CLAY:
-                                    if (vertex.y < position.y) {
-                                        vertex.add(normal.clone().multiplyScalar(brushStrength * influence));
-                                    }
-                                    break;
-                                case TOOLS.SCRAPE:
-                                    if (vertex.y > position.y) {
-                                        vertex.add(normal.clone().multiplyScalar(-brushStrength * influence));
-                                    }
-                                    break;
-                                case TOOLS.FILL:
-                                    if (vertex.y < position.y) {
-                                        vertex.y += brushStrength * influence;
-                                    }
-                                    break;
-            
-                                    case TOOLS.TERRACE:
-                                    applyTerrace(vertex, position, influence);
-                                    break;
-                                case TOOLS.EROSION:
-                                    applyErosion(vertex, position, influence, vertices, i);
-                                    break;
-                                case TOOLS.RIDGE:
-                                    applyRidge(vertex, position, influence);
-                                    break;
-                                case TOOLS.CANYON:
-                                    applyCanyon(vertex, position, influence);
-                                    break;
-                                case TOOLS.PLATEAU:
-                                    applyPlateau(vertex, position, influence);
-                                    break;
-                                case ADVANCED_TOOLS.SLOPE:
-                                    applySlope(vertex, position, influence, normal);
-                                    break;
-                                case TOOLS.BLUR:
-                                    applyBlur(vertex, position, influence, vertices, i);
-                                    break;
-                                case TOOLS.SHARPEN:
-                                    applySharpen(vertex, position, influence, vertices, i);
-                                    break;
-                               
-                            }
-                            
-                            vertices.setXYZ(i, vertex.x, vertex.y, vertex.z);
-                        }
-                        
-                        // Separately apply to symmetry position
-                        if (symmetryDistance < brushSize) {
-                            const symmetryInfluence = Math.pow(1 - (symmetryDistance / brushSize), 2);
-                            
-                            switch (selectedTool) {
-                                case TOOLS.PINCH:
-                                    pinchTerrain(vertex, symmetryPosition, symmetryInfluence);
-                                    break;
-
-                                    case TOOLS.RAISE_LOWER:
-                                    vertex.y += brushStrength * influence;
-                                    break;
-                                case TOOLS.SMOOTH:
-                                    vertex.y += (position.y - vertex.y) * influence * brushStrength;
-                                    break;
-                                case TOOLS.FLATTEN:
-                                    vertex.y += (position.y - vertex.y) * influence;
-                                    break;
-                                case TOOLS.NOISE:
-                                    vertex.y += (Math.random() - 0.5) * brushStrength * influence * 2;
-                                    break;
-                                
-                                case TOOLS.CLAY:
-                                    if (vertex.y < position.y) {
-                                        vertex.add(normal.clone().multiplyScalar(brushStrength * influence));
-                                    }
-                                    break;
-                                case TOOLS.SCRAPE:
-                                    if (vertex.y > position.y) {
-                                        vertex.add(normal.clone().multiplyScalar(-brushStrength * influence));
-                                    }
-                                    break;
-                                case TOOLS.FILL:
-                                    if (vertex.y < position.y) {
-                                        vertex.y += brushStrength * influence;
-                                    }
-                                    break;
-            
-                                    case TOOLS.TERRACE:
-                                    applyTerrace(vertex, position, influence);
-                                    break;
-                                case TOOLS.EROSION:
-                                    applyErosion(vertex, position, influence, vertices, i);
-                                    break;
-                                case TOOLS.RIDGE:
-                                    applyRidge(vertex, position, influence);
-                                    break;
-                                case TOOLS.CANYON:
-                                    applyCanyon(vertex, position, influence);
-                                    break;
-                                case TOOLS.PLATEAU:
-                                    applyPlateau(vertex, position, influence);
-                                    break;
-                                case ADVANCED_TOOLS.SLOPE:
-                                    applySlope(vertex, position, influence, normal);
-                                    break;
-                                case TOOLS.BLUR:
-                                    applyBlur(vertex, position, influence, vertices, i);
-                                    break;
-                                case TOOLS.SHARPEN:
-                                    applySharpen(vertex, position, influence, vertices, i);
-                                    break;
-                                
-                            }
-                            
-                            vertices.setXYZ(i, vertex.x, vertex.y, vertex.z);
-                        }
-                    }
-                }
+                applySymmetry(originalVertex, i, vertices);
+               
             }
         }
         
@@ -7966,10 +7807,14 @@ function applySculpting(event) {
     }
 }
 
-
+// Advanced Texture Painting Function
+let uploadedTextureImage = null; 
 
 function applyTexturePaint(event) {
-    if (!terrain || !terrain.userData.blendMapCanvas || textureArray.length === 0) return;
+    if (!terrain || !terrain.userData.textureCanvas || !uploadedTextureImage) {
+        console.error('Terrain, texture canvas, or uploaded texture not ready');
+        return;
+    }
 
     const mouse = new THREE.Vector2(
         (event.clientX / window.innerWidth) * 2 - 1,
@@ -7983,52 +7828,61 @@ function applyTexturePaint(event) {
     if (intersects.length > 0) {
         const intersect = intersects[0];
         const uv = intersect.uv;
-        const ctx = terrain.userData.blendMapContext;
-        const canvas = terrain.userData.blendMapCanvas;
-        
+        const ctx = terrain.userData.textureContext;
+        const canvas = terrain.userData.textureCanvas;
+
+        // Calculate brush position on canvas
         const x = uv.x * canvas.width;
         const y = (1 - uv.y) * canvas.height;
-        const radius = brushSize * canvas.width / 2;
+        const brushRadius = brushSize * 50; // Scale to canvas size
 
-        // Create brush gradient
-        const gradient = ctx.createRadialGradient(
-            x, y, 0,
-            x, y, radius
+        // Save current state for undo
+        if (!lastSavedState || Date.now() - lastSavedState > autoSaveInterval) {
+            saveTerrainState();
+            lastSavedState = Date.now();
+        }
+
+        // Create a temporary canvas for the brush
+        const brushCanvas = document.createElement('canvas');
+        brushCanvas.width = brushRadius * 2;
+        brushCanvas.height = brushRadius * 2;
+        const brushCtx = brushCanvas.getContext('2d');
+
+        // Draw the uploaded texture portion
+        const sx = uv.x * uploadedTextureImage.width - brushRadius;
+        const sy = (1 - uv.y) * uploadedTextureImage.height - brushRadius;
+        brushCtx.drawImage(
+            uploadedTextureImage,
+            sx, sy, brushRadius * 2, brushRadius * 2,
+            0, 0, brushCanvas.width, brushCanvas.height
         );
 
+        // Apply brush mask with gradient
+        const gradient = brushCtx.createRadialGradient(
+            brushRadius, brushRadius, 0,
+            brushRadius, brushRadius, brushRadius
+        );
         gradient.addColorStop(0, `rgba(255, 255, 255, ${brushStrength})`);
-        gradient.addColorStop(0.7, `rgba(255, 255, 255, ${brushStrength * 0.5})`);
+        gradient.addColorStop(0.7, `rgba(255, 255, 255, ${brushStrength * 0.3})`);
         gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-        ctx.save();
-
-        // Clear area for new texture
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Apply new texture blend
-        ctx.globalCompositeOperation = 'source-over';
         
-        // Create color for active texture channel
-        const color = new Array(4).fill(0);
-        color[activeTextureIndex] = 255;
-        ctx.fillStyle = `rgba(${color.join(',')})`;
-        
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
+        brushCtx.globalCompositeOperation = 'destination-in';
+        brushCtx.fillStyle = gradient;
+        brushCtx.beginPath();
+        brushCtx.arc(brushRadius, brushRadius, brushRadius, 0, Math.PI * 2);
+        brushCtx.fill();
 
-        ctx.restore();
+        // Draw the brush result onto the terrain texture
+        ctx.drawImage(
+            brushCanvas,
+            x - brushRadius,
+            y - brushRadius
+        );
 
-        // Update terrain texture
-        blendMap.needsUpdate = true;
+        // Update the texture
+        terrain.material.map.needsUpdate = true;
     }
 }
-
-
 
 
 
@@ -8345,21 +8199,10 @@ function notifySelectionHandlers(object) {
 
 // Add this function to properly clean up when clearing selections
 function clearSelection() {
-    // Remove any temporary objects used for transformations
-    selectedElements.forEach(element => {
-        if (element.userData.type === 'edge' || element.userData.type === 'face') {
-            scene.remove(element);
-        }
-    });
-    
-    // Detach transform controls
-    transformControls.detach();
-    
-    // Reset colors
-    resetHighlights();
-    
-    // Clear selection array
+    selectedElements.forEach(elem => scene.remove(elem));
     selectedElements = [];
+    transformControls.detach();
+    resetHighlights();
 }
 
 
@@ -9219,10 +9062,14 @@ const playhead = document.querySelector('.playhead');
 const timelineScale = document.querySelector('.timeline-scale');
 const timelineContent = document.querySelector('.timeline-content');
 
+
 function playAnimation() {
-    isPlaying = true;
-    clock.start();
-    updatePlayhead();
+    if (!isPlaying) {
+        isPlaying = true;
+        clock.start(); // Reset clock to 0
+        currentTime = 0; // Sync timeline
+        requestAnimationFrame(updatePlayhead);
+    }
 }
 
 function pauseAnimation() {
@@ -9233,23 +9080,70 @@ function pauseAnimation() {
 function stopAnimation() {
     isPlaying = false;
     clock.stop();
-    playhead.style.left = '0%';
-    document.getElementById('time-display').textContent = '00:00:00';
+    currentTime = 0;
+    updatePlayhead();
+    updateTimeDisplay();
+    updateSceneFromTimeline();
+}
+
+function zoomIn() {
+    zoomLevel = Math.min(zoomLevel * 1.5, 4);
+    updateTimelineZoom();
+}
+
+function zoomOut() {
+    zoomLevel = Math.max(zoomLevel / 1.5, 0.25);
+    updateTimelineZoom();
+}
+
+function updateTimelineZoom() {
+    const timelineContent = document.getElementById('timeline-content');
+    timelineContent.style.transform = `translateX(${timelineOffset}px) scaleX(${zoomLevel})`;
+    updateKeyframesUI();
+}
+
+function initializeTimelineScale() {
+    const timelineScale = document.querySelector('.timeline-scale');
+    timelineScale.innerHTML = '';
+    const totalFrames = timelineDuration * fps;
+    const majorInterval = fps * 30; // Major tick every 30 seconds
+
+    for (let frame = 0; frame <= totalFrames; frame += fps) {
+        const marker = document.createElement('div');
+        marker.className = `timeline-scale-marker ${frame % majorInterval === 0 ? 'major' : ''}`;
+        marker.style.left = `${(frame / totalFrames) * 100}%`;
+        
+        if (frame % majorInterval === 0) {
+            const label = document.createElement('div');
+            label.className = 'timeline-scale-label';
+            const seconds = frame / fps;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            label.textContent = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            marker.appendChild(label);
+        }
+        
+        timelineScale.appendChild(marker);
+    }
 }
 
 function updatePlayhead() {
-    if (!isPlaying) return;
-    
-    const time = clock.getElapsedTime();
-    const position = (time / 300) * 100; // 5 minutes total
-    
-    if (position <= 100) {
-        playhead.style.left = `${position}%`;
+    const playhead = document.getElementById('playhead');
+    if (isPlaying) {
+        currentTime = clock.getElapsedTime();
+        if (currentTime >= timelineDuration) {
+            stopAnimation();
+            return;
+        }
         requestAnimationFrame(updatePlayhead);
-    } else {
-        stopAnimation();
     }
+    const position = (currentTime / timelineDuration) * 100;
+    playhead.style.left = `${position}%`;
+    updateTimeDisplay();
+    updateSceneFromTimeline();
 }
+
+
  // Zoom controls
  document.getElementById('zoom-in').addEventListener('click', () => {
     zoomLevel = Math.min(zoomLevel * 1.5, 4);
@@ -9322,54 +9216,52 @@ function recordSceneData() {
     }
 }
 
+// Add this to your existing animate function to integrate the node editor
 function animate () {
     requestAnimationFrame(animate);
-
+    
     if (controls && controls.enabled) {
         controls.update();
     }
-
+    
     animateParticles();
     recordSceneData();
+    
     if (isSnowing) {
         updateSnow();
     }
-
+    
     // Update animations
     if (world) world.step(1 / 60); // Physics simulation step
     const delta = clock.getDelta();
-
+    
     scene.traverse((object) => {
         if (object.userData && object.userData.mixer) {
           object.userData.mixer.update(delta);
         }
     });
-
-
+    
     if (physicsEnabled) updateHairPhysics();
-
+    
     scene.traverse((obj) => {
         if (obj.userData.animate) {
             obj.rotation.y += 0.01;
             obj.position.y += Math.sin(Date.now() * 0.001) * 0.01;
         }
     });
-
-
+    
     scene.traverse(object => {
         if (object.userData.physicsBody) {
             object.position.copy(object.userData.physicsBody.position);
             object.quaternion.copy(object.userData.physicsBody.quaternion);
         }
     });
-
-
+    
     if (world && physicsManager) {
         world.step(1/60);
         physicsManager.updatePhysics();
     }
-
-
+    
     // Update scene objects
     scene.traverse(obj => {
         if (obj.userData.needsUpdate) {
@@ -9380,43 +9272,63 @@ function animate () {
             }
         }
     });
-
-
-    nodeEditor.update(1/60);
-
+    
+    // Update node editor and apply VFX
+    if (window.nodeEditor) {
+        window.nodeEditor.update(delta);
+        
+        // Execute active VFX in the node graph
+        if (window.nodeEditor.activeEffects) {
+            window.nodeEditor.activeEffects.forEach(effect => {
+                if (effect.enabled && effect.execute) {
+                    effect.execute(scene, camera, renderer, delta);
+                }
+            });
+        }
+    }
+    
     if (window.materialSettings && window.materialSettings.enableTextureAnimation) {
         window.materialSettings.updateMaterialAnimation();
     }
-
-
+    
     scene.traverse((object) => {
         if (object.animate && typeof object.animate === 'function') {
             object.animate();
         }
     });
-
+    
+    scene.traverse((obj) => {
+        if (obj.userData.mixer) obj.userData.mixer.update(delta);
+    });
+    
     if (isPlaying) {
-        const time = clock.getElapsedTime();
-        const minutes = Math.floor(time / 60);
-        const seconds = Math.floor(time % 60);
-        const milliseconds = Math.floor((time % 1) * 100);
-        document.getElementById('time-display').textContent = 
-            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(2, '0')}`;
+        currentTime = clock.getElapsedTime();
+        updatePlayhead();
     }
 
-
+    scene.traverse(object => {
+        if (object.userData.mixer) {
+            object.userData.mixer.update(delta);
+        }
+    });
+    
     updateStats();
-    updateHelpers(); 
+    updateHelpers();
+    
+    // First render the scene normally
     renderer.render(scene, camera);
-
+    
+    // Then apply post-processing if node editor has active post effects
+    if (window.nodeEditor && window.nodeEditor.hasPostProcessing) {
+        window.nodeEditor.renderPostEffects(renderer, scene, camera);
+    }
+    
     if (activeCamera && previewRenderer) {
         previewRenderer.render(scene, activeCamera);
     }
-
+    
     composer.render();
-};
-
-
+}
 
  // Initialize the editor when the page loads
  init();
@@ -9794,89 +9706,63 @@ function setupClipboardOperations() {
     // Clipboard and object manipulation functions
     const clipboardActions = {
         copy: handleObjectAction('Copy', () => {
-            if (selectedObject) clipboardData = selectedObject.clone();
+            if (selectedObject) {
+                clipboardData = selectedObject.clone();
+                console.log('Copied:', clipboardData); // Debug
+            }
         }),
-
         paste: handleObjectAction('Paste', () => {
             if (clipboardData) {
                 const pastedObject = clipboardData.clone();
                 pastedObject.position.x += 1;
                 pastedObject.name = pastedObject.name.replace(/\d+$/, '') + '_' + objects.length;
                 addObjectToScene(pastedObject);
+                console.log('Pasted:', pastedObject); // Debug
             }
         }),
-
         delete: handleObjectAction('Delete', () => {
             if (selectedObject) {
                 const index = objects.indexOf(selectedObject);
                 if (index > -1) {
-                    // Remove helper if exists
                     if (selectedObject.helper) {
                         scene.remove(selectedObject.helper);
                         selectedObject.helper.dispose();
                     }
-
-                    // Remove all child meshes
                     selectedObject.traverse((child) => {
                         if (child instanceof THREE.Mesh) {
                             child.geometry.dispose();
                             child.material.dispose();
                         }
                     });
-
                     objects.splice(index, 1);
                     scene.remove(selectedObject);
                     transformControls.detach();
-
                     if (selectedObject instanceof THREE.Camera && activeCamera === selectedObject) {
                         activeCamera = null;
                     }
-
                     selectedObject = null;
                     updateHierarchy();
+                    console.log('Deleted object'); // Debug
                 }
             }
         }),
-
         duplicate: handleObjectAction('Duplicate', () => {
             if (selectedObject) {
                 const duplicate = selectedObject.clone();
                 duplicate.position.x += 1;
                 duplicate.name = duplicate.name.replace(/\d+$/, '') + '_' + objects.length;
                 addObjectToScene(duplicate);
+                console.log('Duplicated:', duplicate); // Debug
             }
         })
     };
 
-    // Keyboard shortcuts for clipboard operations
-    document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey || e.metaKey) {
-            switch (e.key.toLowerCase()) {
-                case 'c':
-                    e.preventDefault();
-                    clipboardActions.copy();
-                    break;
-                case 'v':
-                    e.preventDefault();
-                    clipboardActions.paste();
-                    break;
-                case 'd':
-                    e.preventDefault();
-                    clipboardActions.duplicate();
-                    break;
-            }
-        }
-        if (e.key === 'Delete') {
-            clipboardActions.delete();
-        }
-    });
-
     // Context menu configuration
     const contextMenuConfig = [
-        { label: 'Copy (Ctrl+C)', action: clipboardActions.copy },
-        { label: 'Paste (Ctrl+V)', action: clipboardActions.paste },
-        { label: 'Delete (Del)', action: clipboardActions.delete },
-        { label: 'Duplicate (Ctrl+D)', action: clipboardActions.duplicate },
+        { label: 'Copy (Ctrl+C)', action: clipboardActions.copy, id: 'context-copy' },
+        { label: 'Paste (Ctrl+V)', action: clipboardActions.paste, id: 'context-paste' },
+        { label: 'Delete (Del)', action: clipboardActions.delete, id: 'context-delete' },
+        { label: 'Duplicate (Ctrl+D)', action: clipboardActions.duplicate, id: 'context-duplicate' },
         {
             label: 'Transform Controls',
             subMenu: [
@@ -9901,11 +9787,11 @@ function setupClipboardOperations() {
     const contextMenu = document.getElementById('context-menu');
     if (contextMenu) {
         contextMenu.innerHTML = contextMenuConfig.map(item => `
-            <div class="context-menu-item" ${item.subMenu ? 'id="' + (item.label === 'Transform Controls' ? 'transform-controls-item' : 'utility-controls-item') + '"' : ''}>
+            <div class="context-menu-item" ${item.id ? `id="${item.id}"` : ''} ${item.subMenu ? 'data-submenu="true"' : ''}>
                 ${item.label}
                 ${item.subMenu ? '<i class="fa-solid fa-caret-right" style="margin-left: 20px;"></i>' : ''}
                 ${item.subMenu ? `
-                    <div class="sub-menu" id="${item.label === 'Transform Controls' ? 'transform-sub-menu' : 'utility-sub-menu'}">
+                    <div class="sub-menu">
                         ${item.subMenu.map(subItem => `
                             <div class="context-menu-item" id="${subItem.id}">${subItem.label}</div>
                         `).join('')}
@@ -9914,20 +9800,46 @@ function setupClipboardOperations() {
             </div>
         `).join('');
 
-        // Attach event listeners for sub-menu items
+        // Attach event listeners for all items
         contextMenuConfig.forEach(item => {
+            if (item.id) {
+                const element = document.getElementById(item.id);
+                if (element) {
+                    element.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent click from hiding menu immediately
+                        item.action();
+                    });
+                }
+            }
             if (item.subMenu) {
                 item.subMenu.forEach(subItem => {
-                    const element = document.getElementById(subItem.id);
-                    if (element) {
-                        element.addEventListener('click', subItem.action);
+                    const subElement = document.getElementById(subItem.id);
+                    if (subElement) {
+                        subElement.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            subItem.action();
+                        });
                     }
                 });
             }
         });
     }
 
-    // Expose functions globally
+    // Keyboard shortcuts (unchanged)
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            switch (e.key.toLowerCase()) {
+                case 'c': e.preventDefault(); clipboardActions.copy(); break;
+                case 'v': e.preventDefault(); clipboardActions.paste(); break;
+                case 'd': e.preventDefault(); clipboardActions.duplicate(); break;
+            }
+        }
+        if (e.key === 'Delete') {
+            clipboardActions.delete();
+        }
+    });
+
+    // Expose functions globally (unchanged)
     Object.assign(window, {
         copyObject: clipboardActions.copy,
         pasteObject: clipboardActions.paste,
@@ -9942,119 +9854,614 @@ function setupClipboardOperations() {
 }
 
 
-// Performance Optimization
-function optimizeScene() {
-    function mergeGeometries() {
-        const geometries = [];
-        const materials = [];
-        const matrix = [];
 
+// During initialization
+function optimizeScene() {
+    // Track performance stats
+    const stats = {
+        originalVertexCount: 0,
+        optimizedVertexCount: 0,
+        mergedObjects: 0,
+        lodObjects: 0,
+        instancedObjects: 0
+    };
+    
+    // Object pool for efficient object reuse
+    const objectPool = {
+        geometries: {},
+        materials: {},
+        instancedMeshes: {}
+    };
+
+    // Store objects by material for intelligent merging
+    const objectsByMaterial = new Map();
+    const staticObjects = [];
+    const dynamicObjects = [];
+    
+    // Frustum culling optimization
+    function setupFrustumCulling() {
+        const frustum = new THREE.Frustum();
+        const projScreenMatrix = new THREE.Matrix4();
+        
+        return function updateFrustumCulling() {
+            camera.updateMatrixWorld();
+            projScreenMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+            frustum.setFromProjectionMatrix(projScreenMatrix);
+            
+            scene.traverse((object) => {
+                if (object.isMesh && object.userData.enableFrustumCulling !== false) {
+                    if (!object.geometry.boundingSphere) {
+                        object.geometry.computeBoundingSphere();
+                    }
+                    
+                    // Only update visibility if object is potentially visible
+                    const boundingSphere = object.geometry.boundingSphere.clone();
+                    boundingSphere.applyMatrix4(object.matrixWorld);
+                    
+                    object.visible = frustum.intersectsSphere(boundingSphere);
+                }
+            });
+        };
+    }
+    
+    // Setup occlusion culling
+    function setupOcclusionCulling() {
+        const occlusionComposer = new THREE.EffectComposer(renderer);
+        const occlusionPass = new THREE.OcclusionPass(scene, camera);
+        occlusionComposer.addPass(occlusionPass);
+        
+        return function updateOcclusionCulling() {
+            occlusionComposer.render();
+            // Objects are automatically culled by the occlusion pass
+        };
+    }
+    
+    // Intelligent geometry merging function
+    function mergeGeometries() {
+        console.log("Analyzing scene for merge opportunities...");
+        
+        // Identify static meshes that can be merged
         scene.traverse((object) => {
-            if (object.isMesh) {
-                geometries.push(object.geometry);
-                materials.push(object.material);
-                matrix.push(object.matrixWorld.clone());
-                scene.remove(object);
+            if (!object.isMesh || object.userData.preventMerge) return;
+            
+            // Skip objects that need individual manipulation
+            if (object.userData.interactive || object.userData.physicsBody) {
+                dynamicObjects.push(object);
+                return;
+            }
+            
+            // Group by material for efficient merging
+            const materialId = object.material.uuid;
+            if (!objectsByMaterial.has(materialId)) {
+                objectsByMaterial.set(materialId, []);
+            }
+            objectsByMaterial.get(materialId).push(object);
+            staticObjects.push(object);
+            
+            // Track original vertex count
+            if (object.geometry.attributes.position) {
+                stats.originalVertexCount += object.geometry.attributes.position.count;
             }
         });
-
-        if (geometries.length > 1) {
-            const mergedGeometry = THREE.BufferGeometryUtils.mergeBufferGeometries(geometries);
-            const mergedMesh = new THREE.Mesh(mergedGeometry, materials[0]);
-            mergedMesh.applyMatrix4(matrix[0]);
-            scene.add(mergedMesh);
-        }
+        
+        // Only merge objects sharing the same material
+        objectsByMaterial.forEach((objects, materialId) => {
+            // Skip if there's only one object with this material
+            if (objects.length <= 1) return;
+            
+            // Skip small groups where merging won't help much
+            if (objects.length < 3) return;
+            
+            console.log(`Merging ${objects.length} objects with material ${materialId}`);
+            
+            const geometries = [];
+            const matrices = [];
+            
+            objects.forEach(object => {
+                const clonedGeometry = object.geometry.clone();
+                geometries.push(clonedGeometry);
+                matrices.push(object.matrixWorld.clone());
+                
+                // Hide original but don't remove yet (in case merge fails)
+                object.visible = false;
+            });
+            
+            try {
+                // Apply transformations to geometries before merging
+                for (let i = 0; i < geometries.length; i++) {
+                    geometries[i].applyMatrix4(matrices[i]);
+                }
+                
+                // Merge geometries
+                const mergedGeometry = THREE.BufferGeometryUtils.mergeBufferGeometries(geometries);
+                if (!mergedGeometry) {
+                    console.warn("Failed to merge geometries, reverting to originals");
+                    objects.forEach(obj => obj.visible = true);
+                    return;
+                }
+                
+                // Create merged mesh
+                const mergedMesh = new THREE.Mesh(mergedGeometry, objects[0].material.clone());
+                mergedMesh.userData.merged = true;
+                mergedMesh.userData.originalCount = objects.length;
+                mergedMesh.castShadow = objects[0].castShadow;
+                mergedMesh.receiveShadow = objects[0].receiveShadow;
+                
+                // Optimize the merged geometry
+                mergedGeometry.attributes.position.needsUpdate = true;
+                if (mergedGeometry.attributes.normal) {
+                    mergedGeometry.attributes.normal.needsUpdate = true;
+                }
+                mergedGeometry.computeBoundingSphere();
+                mergedGeometry.computeBoundingBox();
+                
+                // Add merged mesh to scene
+                scene.add(mergedMesh);
+                
+                // Now remove original objects
+                objects.forEach(obj => {
+                    if (obj.parent) obj.parent.remove(obj);
+                    if (obj.geometry) obj.geometry.dispose();
+                });
+                
+                stats.mergedObjects += objects.length;
+                stats.optimizedVertexCount += mergedGeometry.attributes.position.count;
+            } catch (error) {
+                console.error("Error during geometry merging:", error);
+                objects.forEach(obj => obj.visible = true);
+            }
+        });
+        
+        console.log(`Merged ${stats.mergedObjects} objects into ${objectsByMaterial.size} groups`);
     }
-
-    function implementLOD(object) {
-        if (!object.isMesh) return;
-
-        const lod = new THREE.LOD();
-        lod.addLevel(object, 0);
-
-        const modifier = new THREE.SimplifyModifier();
-        const mediumGeometry = object.geometry.clone();
-        const mediumMesh = new THREE.Mesh(
-            modifier.modify(mediumGeometry, Math.floor(mediumGeometry.attributes.position.count * 0.5)),
-            object.material
-        );
-        lod.addLevel(mediumMesh, 50);
-
-        const lowGeometry = object.geometry.clone();
-        const lowMesh = new THREE.Mesh(
-            modifier.modify(lowGeometry, Math.floor(lowGeometry.attributes.position.count * 0.1)),
-            object.material
-        );
-        lod.addLevel(lowMesh, 100);
-
-        object.parent.add(lod);
-        object.parent.remove(object);
-    }
-
-    function createInstancedMesh(geometry, material, count) {
-        const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
-        const dummy = new THREE.Object3D();
-
-        for (let i = 0; i < count; i++) {
-            dummy.position.set(
-                (Math.random() - 0.5) * 100,
-                (Math.random() - 0.5) * 100,
-                (Math.random() - 0.5) * 100
-            );
-            dummy.rotation.set(
-                Math.random() * Math.PI,
-                Math.random() * Math.PI,
-                Math.random() * Math.PI
-            );
-            dummy.updateMatrix();
-            instancedMesh.setMatrixAt(i, dummy.matrix);
-        }
-
-        instancedMesh.instanceMatrix.needsUpdate = true;
-        scene.add(instancedMesh);
-    }
-
-    // تطبيق التحسينات
-    mergeGeometries();
-
-    scene.traverse((object) => {
-        if (object.isMesh) implementLOD(object);
-    });
-
-    // إضافة مشهد ضخم باستخدام InstancedMesh
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-    createInstancedMesh(geometry, material, 10000);
-}
-
-
-// Initialize everything
-function initializeAll() {
-    initializeUI();
-    setupClipboardOperations();
-    const objectPool = optimizeScene();
     
-    // Store objectPool for later use
-    window.objectPool = objectPool;
+    // Advanced LOD implementation with geometry simplification
+    function implementLOD(object) {
+        if (!object.isMesh || object.userData.preventLOD) return;
+        
+        // Skip already processed or merged objects
+        if (object.isLOD || object.parent?.isLOD || object.userData.merged) return;
+        
+        try {
+            const geometry = object.geometry;
+            const vertexCount = geometry.attributes.position.count;
+            
+            // Only apply LOD for complex geometries
+            if (vertexCount < 1000) return;
+            
+            console.log(`Creating LOD for object with ${vertexCount} vertices`);
+            
+            const lod = new THREE.LOD();
+            lod.position.copy(object.position);
+            lod.rotation.copy(object.rotation);
+            lod.scale.copy(object.scale);
+            
+            // Original high quality mesh (level 0)
+            object.geometry = geometry.clone(); // Clone to prevent issues
+            lod.addLevel(object, 0);
+            
+            // Create medium quality level (50% reduction)
+            const mediumDetail = Math.max(100, Math.floor(vertexCount * 0.5));
+            const mediumGeometry = geometry.clone();
+            
+            // Use more advanced decimation for high-poly models
+            let modifier;
+            if (window.THREE.SimplifyModifier) {
+                modifier = new THREE.SimplifyModifier();
+                const mediumSimplified = modifier.modify(mediumGeometry, mediumDetail);
+                const mediumMesh = new THREE.Mesh(mediumSimplified, object.material.clone());
+                mediumMesh.castShadow = object.castShadow;
+                mediumMesh.receiveShadow = object.receiveShadow;
+                lod.addLevel(mediumMesh, 50);
+            }
+            
+            // Create low quality level (90% reduction)
+            const lowDetail = Math.max(50, Math.floor(vertexCount * 0.1));
+            const lowGeometry = geometry.clone();
+            
+            if (window.THREE.SimplifyModifier) {
+                const lowSimplified = modifier.modify(lowGeometry, lowDetail);
+                const lowMesh = new THREE.Mesh(lowSimplified, object.material.clone());
+                lowMesh.castShadow = object.castShadow;
+                lowMesh.receiveShadow = object.receiveShadow;
+                lod.addLevel(lowMesh, 150);
+            }
+            
+            // Add lowest level (billboard or very simplified)
+            if (vertexCount > 10000) {
+                const lowestDetail = Math.max(20, Math.floor(vertexCount * 0.01));
+                const lowestGeometry = geometry.clone();
+                
+                if (window.THREE.SimplifyModifier) {
+                    const lowestSimplified = modifier.modify(lowestGeometry, lowestDetail);
+                    const lowestMesh = new THREE.Mesh(lowestSimplified, object.material.clone());
+                    lowestMesh.castShadow = false; // Disable shadows for distant objects
+                    lowestMesh.receiveShadow = false;
+                    lod.addLevel(lowestMesh, 300);
+                }
+            }
+            
+            // Replace original object with LOD in scene
+            if (object.parent) {
+                object.parent.add(lod);
+                object.parent.remove(object);
+                stats.lodObjects++;
+            }
+        } catch (error) {
+            console.error("Error creating LOD:", error);
+        }
+    }
+    
+    // Instanced mesh creation with geometry caching
+    function createInstancedMeshes() {
+        // Find identical geometries that can be instanced
+        const geometryGroups = new Map();
+        
+        scene.traverse((object) => {
+            if (!object.isMesh || object.userData.preventInstance) return;
+            
+            // Skip large unique objects
+            if (object.geometry.attributes.position.count > 10000) return;
+            
+            // Create a geometry signature (simple version - could be more sophisticated)
+            const geo = object.geometry;
+            const signature = `${geo.attributes.position.count}-${geo.attributes.position.itemSize}-${geo.index ? geo.index.count : 0}`;
+            
+            if (!geometryGroups.has(signature)) {
+                geometryGroups.set(signature, []);
+            }
+            geometryGroups.get(signature).push(object);
+        });
+        
+        // Create instanced meshes for groups of similar objects
+        geometryGroups.forEach((objects, signature) => {
+            // Only use instancing for enough similar objects
+            if (objects.length < 10) return;
+            
+            const firstObject = objects[0];
+            const instancedGeometry = firstObject.geometry.clone();
+            const instancedMaterial = firstObject.material.clone();
+            
+            // Enable instancing on material if needed
+            if (instancedMaterial.map) instancedMaterial.map.generateMipmaps = true;
+            
+            // Create instanced mesh
+            const instancedMesh = new THREE.InstancedMesh(
+                instancedGeometry,
+                instancedMaterial,
+                objects.length
+            );
+            instancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+            instancedMesh.castShadow = firstObject.castShadow;
+            instancedMesh.receiveShadow = firstObject.receiveShadow;
+            
+            // Set instance matrices
+            const dummy = new THREE.Object3D();
+            objects.forEach((object, i) => {
+                dummy.position.copy(object.position);
+                dummy.rotation.copy(object.rotation);
+                dummy.scale.copy(object.scale);
+                dummy.updateMatrix();
+                instancedMesh.setMatrixAt(i, dummy.matrix);
+                
+                // Store reference in userData for later updates if needed
+                instancedMesh.userData.instances = instancedMesh.userData.instances || [];
+                instancedMesh.userData.instances.push({
+                    id: object.id,
+                    originalObject: object
+                });
+                
+                // Hide original object
+                object.visible = false;
+            });
+            
+            instancedMesh.instanceMatrix.needsUpdate = true;
+            scene.add(instancedMesh);
+            
+            stats.instancedObjects += objects.length;
+            objectPool.instancedMeshes[signature] = instancedMesh;
+        });
+    }
+    
+    // Implement geometry pooling for reuse
+    function setupGeometryPooling() {
+        const geometryCache = new Map();
+        
+        // Add common geometries to the pool
+        const commonGeometries = [
+            { name: 'box', geometry: new THREE.BoxGeometry(1, 1, 1) },
+            { name: 'sphere', geometry: new THREE.SphereGeometry(1, 32, 16) },
+            { name: 'cylinder', geometry: new THREE.CylinderGeometry(1, 1, 1, 32) },
+            { name: 'plane', geometry: new THREE.PlaneGeometry(1, 1) }
+        ];
+        
+        commonGeometries.forEach(({ name, geometry }) => {
+            geometryCache.set(name, geometry);
+            objectPool.geometries[name] = geometry;
+        });
+        
+        // Method to get or create geometry
+        return function getGeometry(type, params) {
+            const key = `${type}-${JSON.stringify(params)}`;
+            
+            if (geometryCache.has(key)) {
+                return geometryCache.get(key);
+            }
+            
+            let geometry;
+            switch (type) {
+                case 'box':
+                    geometry = new THREE.BoxGeometry(
+                        params.width || 1, 
+                        params.height || 1, 
+                        params.depth || 1
+                    );
+                    break;
+                case 'sphere':
+                    geometry = new THREE.SphereGeometry(
+                        params.radius || 1, 
+                        params.widthSegments || 32, 
+                        params.heightSegments || 16
+                    );
+                    break;
+                default:
+                    geometry = null;
+            }
+            
+            if (geometry) {
+                geometryCache.set(key, geometry);
+                objectPool.geometries[key] = geometry;
+            }
+            
+            return geometry;
+        };
+    }
+    
+    // Material optimization
+    function optimizeMaterials() {
+        const materialCache = new Map();
+        
+        scene.traverse((object) => {
+            if (!object.isMesh || !object.material) return;
+            
+            // Handle material arrays
+            if (Array.isArray(object.material)) {
+                object.material = object.material.map(processMaterial);
+            } else {
+                object.material = processMaterial(object.material);
+            }
+        });
+        
+        // Process and optimize a single material
+        function processMaterial(material) {
+            const materialId = material.uuid;
+            
+            // Return cached instance if available
+            if (materialCache.has(materialId)) {
+                return materialCache.get(materialId);
+            }
+            
+            // Clone to avoid modifying original
+            const optimized = material.clone();
+            
+            // Optimize textures
+            if (optimized.map) {
+                optimized.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                optimized.map.needsUpdate = true;
+            }
+            
+            // Reduce complexity of expensive materials
+            if (optimized.type === 'MeshStandardMaterial' || optimized.type === 'MeshPhysicalMaterial') {
+                // Consider downgrading distant or numerous objects to cheaper materials
+                optimized.roughness = Math.max(0.1, optimized.roughness);
+                optimized.metalness = Math.min(0.9, optimized.metalness);
+            }
+            
+            // Cache and return
+            materialCache.set(materialId, optimized);
+            objectPool.materials[materialId] = optimized;
+            return optimized;
+        }
+    }
+    
+    // Dynamic detail level control based on performance
+    function setupAdaptiveDetail() {
+        let frameTime = 0;
+        let frameCount = 0;
+        const targetFPS = 60;
+        const minAcceptableFPS = 30;
+        
+        // Adjust detail level based on performance
+        return function updateAdaptiveDetail() {
+            const startTime = performance.now();
+            
+            // Measure frame time
+            if (frameCount > 0) {
+                frameTime = performance.now() - startTime;
+                
+                // Only adapt every 60 frames to avoid constant changes
+                if (frameCount % 60 === 0) {
+                    const currentFPS = 1000 / frameTime;
+                    
+                    // If performance is poor, reduce detail
+                    if (currentFPS < minAcceptableFPS) {
+                        scene.traverse((object) => {
+                            if (object.isLOD) {
+                                // Adjust LOD distances to show lower detail sooner
+                                for (let i = 0; i < object.levels.length; i++) {
+                                    object.levels[i].distance *= 0.8;
+                                }
+                            }
+                        });
+                    }
+                    // If performance is good, gradually increase detail
+                    else if (currentFPS > targetFPS * 0.9) {
+                        scene.traverse((object) => {
+                            if (object.isLOD) {
+                                // Carefully increase detail
+                                for (let i = 0; i < object.levels.length; i++) {
+                                    object.levels[i].distance *= 1.05;
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Log current performance status
+                    console.log(`Current FPS: ${currentFPS.toFixed(1)}, Adjusting detail...`);
+                }
+            }
+            
+            frameCount++;
+        };
+    }
+    
+    // Setup worker threads for parallel processing if supported
+    function setupWorkerProcessing() {
+        if (window.Worker) {
+            const physicWorker = new Worker('physics-worker.js');
+            const geometryWorker = new Worker('geometry-worker.js');
+            
+            // Setup message handlers
+            physicWorker.onmessage = function(e) {
+                // Handle physics updates from worker
+            };
+            
+            geometryWorker.onmessage = function(e) {
+                // Handle geometry processing results
+            };
+            
+            return {
+                physicWorker,
+                geometryWorker,
+                
+                // Method to offload physics calculations
+                processPhysics: function(objects) {
+                    physicWorker.postMessage({ type: 'update', objects });
+                },
+                
+                // Method to offload heavy geometry operations
+                processGeometry: function(geometry, operation) {
+                    geometryWorker.postMessage({ type: operation, geometry });
+                }
+            };
+        }
+        
+        return null;
+    }
+    
+    // Apply all optimization techniques
+    function applyOptimizations() {
+        console.log("Starting scene optimization...");
+        
+        // 1. Optimize materials first (affects everything)
+        optimizeMaterials();
+        
+        // 2. Merge static geometries
+        mergeGeometries();
+        
+        // 3. Apply LOD to remaining complex objects
+        scene.traverse(implementLOD);
+        
+        // 4. Create instanced meshes for repeating elements
+        createInstancedMeshes();
+        
+        // 5. Setup pooling systems
+        const getGeometry = setupGeometryPooling();
+        
+        // 6. Setup performance monitoring and adaptive detail
+        const updateAdaptiveDetail = setupAdaptiveDetail();
+        
+        // 7. Setup frustum and occlusion culling
+        const updateFrustumCulling = setupFrustumCulling();
+        
+        // 8. Setup worker processing if available
+        const workers = setupWorkerProcessing();
+        
+        // Print optimization results
+        console.log("Scene optimization complete:");
+        console.log(`- Original vertex count: ${stats.originalVertexCount}`);
+        console.log(`- Optimized vertex count: ${stats.optimizedVertexCount}`);
+        console.log(`- Objects merged: ${stats.mergedObjects}`);
+        console.log(`- Objects with LOD: ${stats.lodObjects}`);
+        console.log(`- Objects instanced: ${stats.instancedObjects}`);
+        
+        // Return update function for render loop
+        return function updateOptimizations() {
+            updateFrustumCulling();
+            updateAdaptiveDetail();
+            
+            // Process physics in worker if available
+            if (workers && physicsEnabled) {
+                const physicsObjects = [];
+                scene.traverse((object) => {
+                    if (object.userData.physicsBody) {
+                        physicsObjects.push({
+                            id: object.id,
+                            position: object.position,
+                            quaternion: object.quaternion,
+                            velocity: object.userData.physicsBody.velocity
+                        });
+                    }
+                });
+                
+                if (physicsObjects.length > 0) {
+                    workers.processPhysics(physicsObjects);
+                }
+            }
+        };
+    }
+        // Execute optimizations and return the update function
+        const updateOptimizations = applyOptimizations();
+    
+    // Add optimization update to animation loop
+    const originalAnimate = animate;
+    animate = function() {
+        updateOptimizations();
+        originalAnimate();
+    };
+    
+    // Return object pool for reuse
+    return objectPool;
 }
+
+        // Initialize everything
+        function initializeAll() {
+            initializeUI();
+            setupClipboardOperations();
+            const objectPool = optimizeScene();
+    
+            // Store objectPool for later use
+            window.objectPool = objectPool;
+        }
 
 // Call initialization when the page loads
 window.addEventListener('load', initializeAll);
 
 // Context Menu
 function setupContextMenu() {
-    document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        const contextMenu = document.getElementById('context-menu');
-        contextMenu.style.display = 'block';
-        contextMenu.style.left = e.pageX + 'px';
-        contextMenu.style.top = e.pageY + 'px';
+    const rendererContainer = document.getElementById('renderer-container');
+
+    // Add contextmenu listener only to renderer-container
+    rendererContainer.addEventListener('contextmenu', (e) => {
+        e.preventDefault(); // Prevent default browser context menu
+
+        // Check if the click is within renderer-container (redundant here since the listener is on the element, but good practice)
+        if (rendererContainer.contains(e.target)) {
+            const contextMenu = document.getElementById('context-menu');
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = e.pageX + 'px';
+            contextMenu.style.top = e.pageY + 'px';
+        }
     });
 
+    // Hide context menu when clicking anywhere on the document
     document.addEventListener('click', () => {
-        document.getElementById('context-menu').style.display = 'none';
+        const contextMenu = document.getElementById('context-menu');
+        contextMenu.style.display = 'none';
     });
 }
+
+
 
 // Initialize new features
 function initializeAdvancedFeatures() {
@@ -10078,7 +10485,7 @@ initializeAdvancedFeatures();
         previewRenderer.setPixelRatio(window.devicePixelRatio); // High DPI support
         previewContainer.appendChild(previewRenderer.domElement);
     
-    
+
         function initializePanelControls() {
             const lightIntensityControl = document.getElementById('lightIntensity');
             const lightColorControl = document.getElementById('lightColor');
@@ -11126,8 +11533,8 @@ animateTransition();
 
     </script>
 
-<script src="js/proccessing.js"></script>
-<script src="js/camera-path.js"></script>
+<script src="processing/processing-panel.js"></script>
+<script src="animations/camera-path.js"></script>
 
 </body>
 </html>
