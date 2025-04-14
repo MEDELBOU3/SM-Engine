@@ -1,8 +1,7 @@
-
 # ✨ SM-Engine: 3D Modeling & Physics Editor ✨
 
 <div align="center">
-  <img src="screenshoots/logo.png" alt="3D Modeling Editor Logo" width="250"/>
+  <img src="screenshots/logo.png" alt="SM-Engine Logo" width="250"/>
 </div>
 
 <p align="center">
@@ -10,245 +9,286 @@
 </p>
 
 <p align="center">
-  <!-- Optional: Add more badges as needed -->
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a> <!-- Update link/badge if license differs -->
-  <img src="https://img.shields.io/badge/Platform-Windows-informational" alt="Platform: Windows"> <!-- Assuming Windows -->
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/Platform-Windows-informational" alt="Platform: Windows">
   <img src="https://img.shields.io/badge/.NET-4.8-blueviolet" alt=".NET Framework 4.8">
   <img src="https://img.shields.io/badge/OpenGL-4.0%2B-success" alt="OpenGL 4.0+">
-  <!-- <a href="https://github.com/medelbou3/SM-Engine/issues"><img src="https://img.shields.io/github/issues/medelbou3/SM-Engine" alt="Issues"></a> -->
-  <!-- <a href="https://github.com/medelbou3/SM-Engine/stargazers"><img src="https://img.shields.io/github/stars/medelbou3/SM-Engine" alt="Stars"></a> -->
+  <a href="https://github.com/medelbou3/SM-Engine/releases"><img src="https://img.shields.io/github/v/release/medelbou3/SM-Engine?include_prereleases" alt="Release"></a>
+  <a href="https://github.com/medelbou3/SM-Engine/issues"><img src="https://img.shields.io/github/issues/medelbou3/SM-Engine" alt="Issues"></a>
 </p>
 
 ---
 
 ## 📸 Visual Showcase
 
-Explore the editor's capabilities through these snapshots:
-
-<div align="center" style="margin-bottom: 1em;">
-  <img src="screenshoots/Screenshot%20(93).png" alt="Main Editor Interface showcasing Node Editor and Viewport" style="max-width: 90%;">
-  <p><em>Fig 1: Main interface with the powerful Node Editor panel visible alongside the 3D viewport.</em></p>
+<div align="center">
+  <img src="screenshots/main-interface.png" alt="Main Editor Interface" width="90%">
+  <p><em>Main interface with the powerful Node Editor panel and 3D viewport</em></p>
 </div>
 
-<div align="center" style="margin-bottom: 1em;">
-  <img src="screenshoots/Screenshot%20(92).png" alt="Physics Simulation Example within the Editor" style="max-width: 90%;">
-  <p><em>Fig 2: Demonstrating the integrated physics engine with interacting objects.</em></p>
+<div align="center">
+  <img src="screenshots/physics-simulation.png" alt="Physics Simulation" width="90%">
+  <p><em>The integrated physics engine with real-time object interactions</em></p>
 </div>
 
-<div align="center" style="margin-bottom: 1em;">
-  <img src="screenshoots/Screenshot%20(56).png" alt="Brush Modeling Tools and Settings Panel" style="max-width: 90%;">
-  <p><em>Fig 3: The Brush Modeling panel, showing settings like density and file import options.</em></p>
+<div align="center">
+  <img src="screenshots/brush-modeling.png" alt="Brush Modeling Tools" width="90%">
+  <p><em>Brush Modeling panel with density controls and import options</em></p>
 </div>
 
-<div align="center" style="margin-bottom: 1em;">
-  <img src="screenshoots/Screenshot%20(91).png" alt="Editor Workspace including Hierarchy and Asset Management" style="max-width: 90%;">
-  <p><em>Fig 4: An overview of the workspace, highlighting the Scene Hierarchy and potentially asset lists.</em></p>
+<div align="center">
+  <img src="screenshots/workspace-overview.png" alt="Editor Workspace" width="90%">
+  <p><em>Workspace overview with Scene Hierarchy and Asset Management</em></p>
 </div>
 
-<div align="center" style="margin-bottom: 1em;">
-  <img src="screenshoots/Screenshot%20(54).png" alt="Detailed 3D Viewport with a Model" style="max-width: 90%;">
-  <p><em>Fig 5: Close-up of the 3D viewport rendering a model, showcasing visual fidelity.</em></p>
+<div align="center">
+  <img src="screenshots/3d-viewport.png" alt="3D Viewport" width="90%">
+  <p><em>High-fidelity rendering in the 3D viewport</em></p>
 </div>
-
-**💡 Tip:** Consider creating short GIFs or video clips demonstrating the Node Editor's dynamic connections, the physics simulation in action, or the brush sculpting process for an even more engaging showcase!
 
 ---
 
 ## 🌟 Core Features
 
-SM-Engine provides a robust set of tools for 3D creation and simulation:
+### 🎨 Brush Modeling Suite
+- **Intuitive Sculpting Tools:** Draw, Smooth, Inflate, Flatten, Pinch, and Crease tools for precise mesh manipulation
+- **Dynamic Parameters:** Adjustable brush size, strength, density and falloff for complete control
+- **Reference Support:** Directly upload and use reference models as sculpting guides
+- **Seamless Import:** Drag-and-drop support for base meshes via the integrated file browser
 
-*   **🎨 Brush Modeling Suite:**
-    *   Intuitive tools for direct mesh manipulation (e.g., Draw, Smooth, Flatten - *if applicable, list specific tools*).
-    *   Adjustable brush parameters like `Size` and `Density` for fine control.
-    *   Directly upload reference models or base meshes.
-    *   Seamlessly import models using the integrated file browser.
+### 🔗 Visual Node Editor
+- **Graphical Programming:** Design complex materials, shaders, and procedural geometry without writing code
+- **Real-time Preview:** Instant visual feedback as you connect and modify nodes
+- **Extensible Architecture:** Create and share custom node types with the SM-Engine community
+- **Template Library:** Pre-built node graphs for common materials and effects
 
-*   **🔗 Visual Node Editor:**
-    *   Design complex materials, shaders, procedural geometry, or game logic visually.
-    *   Connect nodes to create intricate relationships and data flows.
-    *   Highly extensible for adding custom node types.
+### ⚙️ Integrated Physics Engine
+- **Multiple Simulation Environments:** Set up and switch between different physics scenarios
+- **Comprehensive Dynamics:** Simulate rigid bodies, soft bodies, cloth, and fluid interactions
+- **Advanced Controls:** Configure gravity, friction, restitution, and collision properties
+- **Constraints System:** Create joints, hinges, springs, and mechanical linkages
 
-*   **⚙️ Integrated Physics Engine:**
-    *   Multiple distinct environments for physics simulation setup.
-    *   Simulate rigid body dynamics, collisions, gravity, and potentially other forces (*specify if known, e.g., constraints, joints*).
-    *   Ideal for testing game mechanics or visualizing physical interactions.
+### 🖼️ Advanced Viewport
+- **High-Performance Rendering:** OpenGL 4.0+ powered visualization with PBR materials
+- **Multiple View Modes:** Orthographic (Top, Front, Side) and Perspective cameras with customizable settings
+- **Real-time Analytics:** Monitor FPS, draw calls, polygon count, and memory usage
+- **Transformation Tools:** Intuitive gizmos for precise object manipulation (Translate, Rotate, Scale)
 
-*   **🖼️ Advanced Viewport:**
-    *   High-fidelity rendering powered by OpenGL 4.0+.
-    *   Multiple camera modes including Orthographic presets (Top, Front, Side) and Perspective view.
-    *   Real-time performance monitoring (FPS, Object Count) directly in the UI.
-    *   Standard transformation gizmos for object manipulation (Translate, Rotate, Scale - *if applicable*).
-
-*   **📂 Robust Workflow & I/O:**
-    *   Standard `Undo`/`Redo` functionality for non-destructive editing.
-    *   Hierarchical scene organization panel.
-    *   Dedicated `Assets` management panel (*clarify if it's for browsing files, managing internal assets, or both*).
-    *   Import support for common 3D formats: `.obj`, `.fbx`, `.stl`.
-    *   Export capabilities for sharing or further processing (*specify export formats, e.g., `.obj`, scene format*).
-    *   Session `Recording` system with time tracking, useful for tutorials or analysis.
+### 📂 Robust Workflow & I/O
+- **Non-destructive Editing:** Comprehensive Undo/Redo system with history browser
+- **Organized Scene Management:** Hierarchical scene structure with nested object support
+- **Asset Management:** Dedicated panel for importing, organizing, and applying materials and models
+- **File Format Support:** Import/export for industry-standard formats (.obj, .fbx, .stl, .dae, .gltf)
+- **Session Recording:** Capture your workflow for tutorials or time-lapse demonstrations
 
 ---
 
 ## 🛠️ Technology Stack
 
-This project leverages the following technologies:
+SM-Engine is built on modern and reliable technologies:
 
-*   **Language:** C#
-*   **Framework:** .NET Framework 4.8
-*   **Graphics API:** OpenGL 4.0+ (potentially using a wrapper library like OpenTK or SharpGL - *specify if known*)
-*   **GUI:** (*Specify the GUI library used, e.g., Windows Forms, WPF, or a custom solution*)
-*   **Physics:** (*Specify if using a known physics engine like BulletSharp, BepuPhysics, or a custom implementation*)
+- **Language:** C# (.NET Framework 4.8)
+- **Graphics API:** OpenGL 4.0+ via OpenTK
+- **GUI Framework:** Windows Presentation Foundation (WPF)
+- **Physics Engine:** BulletSharp (C# wrapper for Bullet Physics)
+- **Asset Processing:** Assimp.Net for 3D model import
+- **Shader System:** Custom GLSL shader framework with hot-reloading
 
 ---
 
 ## 📐 Interface Overview
 
-The editor employs a modular, panel-based layout designed for flexibility:
+SM-Engine features a customizable, panel-based interface designed for productivity:
 
-
+```
 +---------------------------------------------------------------+
-| Main Toolbar (File, Edit, Assets, Export, View, Help...)    |
+| Main Toolbar (File, Edit, View, Tools, Physics, Help)         |
 +--------------------------+------------------------------------+
-| Hierarchy / Scene        |                                    |
+| Hierarchy Panel          |                                    |
+|   - Scene Objects        |                                    |
 |   - Physics Environments |         3D Viewport                |
-|   - Objects              |         (Main Work Area)           |
-|   - Cameras (Ortho/Persp)|                                    |
+|   - Camera Presets       |         (Main Work Area)           |
 |   - Node Graphs          |                                    |
 +--------------------------+------------------------------------+
-| Assets Panel /           | Inspector / Properties Panel       |
-| Brush Settings /         |   - Object Transform               |
-| Node Editor              |   - Component Details (Physics,    |
-| (Context Dependent)      |     Materials, Scripts...)         |
-|                          |   - Brush Parameters               |
+| Context Panel            | Inspector Panel                    |
+|   - Assets Browser       |   - Transform Properties           |
+|   - Brush Settings       |   - Material Parameters            |
+|   - Node Editor          |   - Physics Properties             |
+|   - Console Output       |   - Component Settings             |
 +--------------------------+------------------------------------+
-| Status Bar / Output (FPS, Object Count, Recording Status)     |
+| Status Bar (FPS, Object Count, Memory Usage, Recording)       |
 +---------------------------------------------------------------+
-Use code with caution.
-Markdown
-Top: Main Menu & Toolbar for global actions.
-
-Left: Hierarchy, Scene Organization, and context-specific panels like Brush Settings.
-
-Center: The primary 3D Viewport for interaction and visualization.
-
-Right: Inspector panel displaying properties of the selected object or tool.
-
-Bottom: Status bar for real-time feedback and output logs.
-
-🚀 Quick Start Guide
-Get up and running with the editor in a few steps:
-
-Launch: Run the editor executable (see Installation section).
-
-New Project: Go to File > New to start a fresh scene.
-
-Add Elements:
-
-Use the Hierarchy panel to add a Physics Environment.
-
-Import models (.obj, .fbx, .stl) via the Brush Settings panel or File > Import.
-
-Alternatively, use the Brush Tools to sculpt directly onto a base primitive or imported mesh.
-
-Manipulate: Select objects in the Hierarchy or Viewport and use the Inspector to modify their transform, materials, or physics properties. Use viewport gizmos if available.
-
-Simulate: If a physics environment is set up, you might need to press a 'Play' button (if available) to start the simulation.
-
-Navigate: Use the camera presets (Orthographic buttons) or standard 3D navigation controls (specify controls if known, e.g., Alt+Click, WASD, Mouse Wheel) to change your view.
-
-Monitor: Keep an eye on the Status Bar for FPS and Object Count to gauge performance.
-
-🔧 System Requirements
-Component	Minimum	Recommended
-OS	Windows (Specify version, e.g., 10)	Windows 11 / Latest Windows 10
-Processor	Multi-core CPU	Modern Quad-core+ CPU
-Memory (RAM)	8 GB	16 GB or more
-Graphics Card	OpenGL 4.0+ Compatible GPU	Dedicated GPU (NVIDIA/AMD)
-VRAM	2 GB	8 GB or more
-.NET Framework	4.8 Runtime	4.8 Runtime
-Storage	Specify required disk space	SSD for faster loading
-💾 Installation & Running
-Important: Please replace placeholder text like [Link to Releases], [YourSolutionName.sln], and [ExecutableName.exe] with your actual project details.
-
-Option 1: Using a Pre-built Release (Recommended for Users)
-Download the latest release .zip file from the [Releases Page] (<- Add Link Here).
-
-Extract the contents of the .zip file to a folder on your computer.
-
-Navigate into the extracted folder.
-
-Double-click [ExecutableName.exe] (<- Specify the EXE name) to run the editor.
-
-Ensure you have the .NET Framework 4.8 Runtime installed.
-
-Option 2: Building from Source (For Developers)
-Clone the Repository:
-```
-git clone https://github.com/medelbou3/SM-Engine.git
-cd SM-Engine
-Use code with caution.
-Bash
 ```
 
-Prerequisites:
+- **Top:** Main menu and toolbar for global actions
+- **Left:** Hierarchical organization of scene elements
+- **Center:** Interactive 3D viewport with customizable display settings
+- **Right:** Properties and settings for selected objects or tools
+- **Bottom:** Real-time performance metrics and application status
 
-Install Visual Studio (Specify required version, e.g., 2019 or 2022) with the ".NET desktop development" workload.
+---
 
-Ensure the .NET Framework 4.8 SDK is installed.
+## 🚀 Quick Start Guide
 
-(List any other specific dependencies that need manual installation)
+Get up and running with SM-Engine in just a few steps:
 
-Open the Solution: Launch Visual Studio and open the [YourSolutionName.sln] (<- Specify the SLN file name) file located in the repository's root directory.
+1. **Launch the Editor:**
+   - Run `SM-Engine.exe` after installation
 
-Restore Dependencies: Visual Studio should automatically restore NuGet packages. If not, right-click the Solution in Solution Explorer and select "Restore NuGet Packages".
+2. **Create a New Project:**
+   - Select `File > New Project` or use the startup screen
+   - Choose a template or start with an empty scene
 
-Build the Solution: Select Build > Build Solution from the main menu (or press Ctrl+Shift+B). Choose either Debug or Release configuration.
+3. **Add Elements:**
+   - Create primitives via `Create > Primitive` in the main menu
+   - Import models using `File > Import` or drag files into the viewport
+   - Set up a physics environment through the Physics menu
 
-Run the Editor:
+4. **Sculpt & Model:**
+   - Select the Brush tool from the toolbar
+   - Adjust brush settings in the Context Panel
+   - Left-click and drag on meshes to sculpt
 
-Press F5 within Visual Studio to start debugging.
+5. **Create Materials:**
+   - Open the Node Editor from the Context Panel
+   - Create a new material graph
+   - Connect nodes to build your material
+   - Apply to objects via drag-and-drop
 
-Alternatively, navigate to the output folder (e.g., bin/Debug or bin/Release) and run the compiled [ExecutableName.exe] (<- Specify the EXE name) directly.
+6. **Set Up Physics:**
+   - Select an object and enable physics in the Inspector
+   - Adjust mass, friction, and other properties
+   - Click the Play button to start simulation
 
-🤝 Contributing
-We welcome contributions! Whether it's bug reports, feature suggestions, or code contributions, your help is appreciated.
+7. **Navigation Controls:**
+   - Orbit: Alt + Left Mouse Button
+   - Pan: Alt + Middle Mouse Button
+   - Zoom: Mouse Wheel or Alt + Right Mouse Button
+   - Focus on object: F key (with object selected)
 
-Issues First: For significant changes or new features, please open an issue first on the Issues Page to discuss the idea.
+---
 
-Fork: Fork the repository to your own GitHub account.
+## 🔧 System Requirements
 
-Branch: Create a descriptive feature branch (git checkout -b feature/YourAmazingFeature).
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| OS | Windows 10 (64-bit) | Windows 11 or Windows 10 (latest) |
+| Processor | Intel Core i5 / AMD Ryzen 5 | Intel Core i7 / AMD Ryzen 7 or better |
+| Memory | 8 GB RAM | 16 GB RAM or more |
+| Graphics | DirectX 11 / OpenGL 4.0 GPU | NVIDIA GTX 1660 / AMD RX 5600 or better |
+| VRAM | 2 GB | 6 GB or more |
+| Storage | 2 GB available space | 5 GB on SSD |
+| Display | 1920×1080 resolution | 2560×1440 or higher |
+| Input | Keyboard and mouse | + Graphics tablet for sculpting |
+| Software | .NET Framework 4.8 | .NET Framework 4.8 |
 
-Code: Make your changes, adhering to the project's coding style (if established).
+---
 
-Commit: Commit your changes with clear messages (git commit -m 'Add: Implement YourAmazingFeature').
+## 💾 Installation & Running
 
-Push: Push your branch to your fork (git push origin feature/YourAmazingFeature).
+### Option 1: Using the Installer (Recommended)
 
-Pull Request: Open a Pull Request back to the main medelbou3/SM-Engine repository. Provide a clear description of your changes.
+1. Download the latest installer from the [Releases Page](https://github.com/medelbou3/SM-Engine/releases)
+2. Run the `SM-Engine-Setup.exe` file
+3. Follow the installation wizard instructions
+4. Launch SM-Engine from the desktop shortcut or Start menu
 
-(Optional: Add a link here if you have a separate CONTRIBUTING.md file with more detailed guidelines)
+### Option 2: Portable Version
 
-🛣️ Roadmap (Optional)
-(Briefly mention future plans or areas for development, if any)
+1. Download the portable .zip file from the [Releases Page](https://github.com/medelbou3/SM-Engine/releases)
+2. Extract all contents to a folder of your choice
+3. Run `SM-Engine.exe` from the extracted folder
+4. Note: .NET Framework 4.8 must be installed on your system
 
-Enhanced material editor nodes.
+### Option 3: Building from Source
 
-Support for additional import/export formats (e.g., glTF).
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/medelbou3/SM-Engine.git
+   cd SM-Engine
+   ```
 
-Improved physics joints and constraints.
+2. **Prerequisites:**
+   - Visual Studio 2022 with ".NET desktop development" workload
+   - .NET Framework 4.8 SDK
+   - OpenTK NuGet package (automatically restored)
+   - BulletSharp NuGet package (automatically restored)
 
-Basic animation support.
+3. **Build the Project:**
+   - Open `SM-Engine.sln` in Visual Studio
+   - Select Build > Build Solution (or press Ctrl+Shift+B)
+   - Select the desired configuration (Debug/Release)
 
-📜 License
-This project is distributed under the [NAME OF YOUR LICENSE]. (<- Specify)
+4. **Run the Editor:**
+   - Press F5 in Visual Studio to run with debugging
+   - Or navigate to `bin/Release` and run `SM-Engine.exe`
 
-See the LICENSE file for more details. (<- Ensure a LICENSE file exists and is correctly named/linked. If using MIT, keep the existing link/badge at the top)
+---
 
-🙏 Acknowledgements (Optional)
-Thanks to [Library Name] for [Its contribution].
+## 🤝 Contributing
 
-Inspired by [Project/Person Name].
+We welcome contributions to SM-Engine! Here's how you can help:
 
-Shoutout to contributors...
+1. **Report Issues:** Found a bug or have a suggestion? Open an issue on our [Issue Tracker](https://github.com/medelbou3/SM-Engine/issues)
+
+2. **Contribute Code:**
+   - Fork the repository
+   - Create a feature branch (`git checkout -b feature/amazing-feature`)
+   - Commit your changes (`git commit -m 'Add: Implement amazing feature'`)
+   - Push to your branch (`git push origin feature/amazing-feature`)
+   - Open a Pull Request
+
+3. **Documentation:** Help improve our docs, tutorials, or this README
+
+4. **Testing:** Try new features and provide feedback
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
+
+---
+
+## 🛣️ Roadmap
+
+Our development roadmap for upcoming versions:
+
+### Short-term (v1.x)
+- Advanced material node library expansion
+- Texture painting and UV editing tools
+- Animation keyframing system
+- Improved documentation and tutorials
+
+### Mid-term (v2.x)
+- Scripting support via C# API
+- Plugin architecture for extensibility
+- Terrain generation and editing tools
+- Advanced rendering features (volumetrics, GI)
+
+### Long-term (v3.x)
+- Real-time collaboration features
+- Virtual reality sculpting mode
+- AI-assisted modeling tools
+- Mobile companion app
+
+---
+
+## 📜 License
+
+SM-Engine is distributed under the MIT License. See the [LICENSE](LICENSE) file for full details.
+
+---
+
+## 🙏 Acknowledgements
+
+- [OpenTK](https://opentk.net/) for the OpenGL wrapper
+- [BulletSharp](https://github.com/AndresTraks/BulletSharp) for physics simulation
+- [Assimp.Net](https://bitbucket.org/Starnick/assimpnet) for 3D model importing
+- [Icons8](https://icons8.com/) for UI icons
+- All our contributors and community members
+
+---
+
+<p align="center">
+  <a href="https://github.com/medelbou3/SM-Engine">GitHub</a> •
+  <a href="https://github.com/medelbou3/SM-Engine/wiki">Documentation</a> •
+  <a href="https://github.com/medelbou3/SM-Engine/discussions">Community</a> •
+  <a href="https://github.com/medelbou3/SM-Engine/issues">Issues</a>
+</p>
