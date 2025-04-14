@@ -1,0 +1,282 @@
+:root {
+    --primary: #00D1FF;
+    --secondary: #FF3366;
+    --accent: #00FFCC;
+    --dark: #1F2525;
+    --darker: #151A1A;
+    --light: #E6F0F0;
+    --gray: #404848;
+    --success: #00CC66;
+    --warning: #FFCC00;
+    --error: #FF3366;
+    --bg-dark: rgba(31, 37, 37, 0.9);
+    --glow: #00FFCC;
+}
+
+.sound-controls-header {
+    width: auto; /* Adjust width to fit the buttons */
+    height: auto;
+    background: var(--dark);
+    display: flex;
+    border-radius: 8px;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    position: fixed;
+    right: 24%;
+    top: 22vh;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.sound-controls-header.expanded{
+   right: 2%;
+   margin-top: 5px;
+}
+
+.header-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.transport-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.sound-controls-meter {
+    display: flex;
+    flex-wrap: nowrap;
+
+    gap: 30px;
+    padding: 5px;
+    background: #222;
+    width: 100%;
+}
+
+
+.time-display {
+    color: white;
+    font-size: 14px;
+    background: #333;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.left-sidebar, .right-sidebar {
+    background: var(--dark);
+    padding: 30px;
+    overflow-y: auto;
+    border: 1px solid var(--gray);
+}
+
+.main-content {
+    padding: 30px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.visualization-container {
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    gap: 30px;
+    flex: 1;
+    height: auto;
+}
+
+.sound-controls-header-vis {
+    display: none; /* This is hiding the entire visualization container */
+}
+
+.viz-panel {
+    background: var(--bg-dark);
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.15);
+    height:  200px; /* Ensure it takes full available height */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.viz-header {
+    position: absolute;
+    top: 20px;
+    left: 25px;
+    font-size: 1.1rem;
+    color: var(--accent);
+    text-shadow: 0 0 6px rgba(0, 255, 204, 0.4);
+    z-index: 1;
+}
+
+#spectrumCanvas, #waveformCanvas,  #eqCanvas, #dynamicsCanvas, #phaseCanvas {
+    width: 100%;
+    height: 100%; /* Fill the viz-panel */
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    border: 1px solid var(--gray);
+    display: block; /* Ensure canvas is a block element */
+}
+
+.meter-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.meter-title {
+    color: var(--accent);
+    margin-bottom: 10px;
+    text-shadow: 0 0 6px rgba(0, 255, 204, 0.3);
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.meter-group {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Adjust space between meter and title */
+    margin-bottom: 20px;
+}
+
+.effect-rack {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+    padding: 10px;
+}
+
+
+.effect-module {
+    background: var(--bg-dark);
+    padding: 25px;
+    border: 1px solid var(--gray);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.effect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--gray);
+}
+
+.effect-title {
+    color: var(--accent);
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-shadow: 0 0 6px rgba(0, 255, 204, 0.3);
+}
+
+.slider-container {
+    margin: 10px 0;
+}
+
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: var(--light);
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 8px;
+    background: var(--gray);
+    border-radius: 4px;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--glow);
+    transition: all 0.2s ease;
+}
+
+
+
+.meter-container {
+    width: 30px;  /* Adjust width as needed */
+    height:  150px;  /* Adjust height as needed */
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.meter-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(to top, var(--success), var(--warning), var(--error));
+    transition: height 0.03s ease;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.btn {
+    width: 30px;
+    height: 30px;
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 14px;
+    position: relative;
+}
+
+.btn:hover {
+    background: #666;
+}
+
+
+
+.btn.active {
+    background: var(--accent);
+    color: var(--dark);
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+}
+
+@media (max-width: 1200px) {
+    .studio-workspace {
+        grid-template-columns: 280px 1fr;
+    }
+    .right-sidebar {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .studio-workspace {
+        grid-template-columns: 1fr;
+    }
+    .left-sidebar {
+        display: none;
+    }
+    .effect-rack {
+        grid-template-columns: 1fr;
+        padding: 15px 0;
+    }
+    .effect-module {
+        padding: 20px;
+    }
+}
