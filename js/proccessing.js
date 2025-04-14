@@ -10,13 +10,16 @@ class AssetVersion {
 
 
 class AssetsPanel {
-    constructor() {
+    constructor(scene, renderer) {
+        this.scene = scene;
+        this.renderer = renderer
+
         this.gltfLoader = new THREE.GLTFLoader();
         this.objLoader = new THREE.OBJLoader();
         this.fbxLoader = new THREE.FBXLoader();
         this.textureLoader = new THREE.TextureLoader();
         this.rgbeLoader = new THREE.RGBELoader();
-
+        
         this.supportedModelFormats = ['.glb', '.gltf', '.fbx', '.obj'];
         this.supportedHDRIFormats = ['.hdr', '.exr'];
         this.supportedTextureFormats = ['.jpg', '.jpeg', '.png', '.tga', '.tif', '.tiff', '.bmp'];
@@ -71,6 +74,7 @@ class AssetsPanel {
         // Create assets panel HTML with improved UI
         const assetsPanel = `
             <div class="assets-panel">
+                <div class="resize-handle"></div>
                 <div class="assets-header">
                     <div class="assets-toolbar">
                         <div class="search-bar">
@@ -224,11 +228,11 @@ class AssetsPanel {
            .assets-panel {
                 position: absolute;
                 left: 47%;
-                bottom: 0;
+                bottom: -10vh;
                 width: 95%;
-                z-index: 3;
+                z-index: 4;
                 min-height: 300px;
-                max-height: 380px;
+                max-height: 74vh;
                 background: #2a2a2a;
                 border-top: 1px solid #3a3a3a;
                 display: flex;
@@ -237,6 +241,16 @@ class AssetsPanel {
                 transition: transform 0.3s ease-in-out;
                 color: #e0e0e0;
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            .resize-handle {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: #777;
+                cursor: ns-resize; /* Vertical resize cursor */
             }
         
             .assets-panel.visible {
@@ -285,6 +299,7 @@ setupEventListeners() {
         });
     });
 
+   
     // File import handling
     const fileInput = document.querySelector('.file-input');
     const folderInput = document.querySelector('.folder-input');
@@ -365,6 +380,40 @@ setupEventListeners() {
             this.handleFiles(Array.from(e.dataTransfer.files));
         }
     });
+
+    //Resize assets panel
+    document.addEventListener("DOMContentLoaded", function () {
+        const panel = document.querySelector(".assets-panel");
+        const resizeHandle = document.createElement("div");
+        resizeHandle.classList.add("resize-handle");
+        panel.appendChild(resizeHandle);
+    
+        let isResizing = false;
+        let startY;
+        let startHeight;
+    
+        resizeHandle.addEventListener("mousedown", function (e) {
+            isResizing = true;
+            startY = e.clientY;
+            startHeight = panel.offsetHeight;
+            document.addEventListener("mousemove", resizePanel);
+            document.addEventListener("mouseup", stopResizing);
+        });
+    
+        function resizePanel(e) {
+            if (!isResizing) return;
+            let newHeight = startHeight - (e.clientY - startY);
+            newHeight = Math.max(300, Math.min(800, newHeight)); // Limit min/max height
+            panel.style.height = `${newHeight}px`;
+        }
+    
+        function stopResizing() {
+            isResizing = false;
+            document.removeEventListener("mousemove", resizePanel);
+            document.removeEventListener("mouseup", stopResizing);
+        }
+    });
+    
 
     // Search functionality
     const searchInput = document.querySelector('.search-input');
@@ -582,7 +631,7 @@ handleFiles(files) {
     const promises = acceptedFiles.map(file => {
         const extension = file.name.split('.').pop().toLowerCase();
         if (this.supportedModelFormats.includes('.' + extension)) return this.loadModel(file);
-        else if (this.supportedHDRIFormats.includes('.' + extension)) return this.loadHDRI(file);
+        else if (this.supportedHDRIFormats.includes('.' + extension)) return this.loadHDRI(file, true); // Auto-add to scene
         else if (this.supportedTextureFormats.includes('.' + extension)) return this.loadTexture(file);
         else if (this.supportedMaterialFormats.includes('.' + extension)) return this.loadMaterial(file);
     });
@@ -741,11 +790,9 @@ loadModel(file) {
                 switch (extension) {
                     case 'fbx':
                         object = await new Promise((resolveLoader) => {
-                            this.fbxLoader.load(url, (obj) => {
-                                obj.scale.set(0.01, 0.01, 0.01);
-                                resolveLoader(obj);
+                            this.fbxLoader.load(url, (obj) => { obj.scale.set(0.01, 0.01, 0.01), resolveLoader(obj);
                             }, progressCallback, errorCallback);
-                        });
+                        });    
                         break;
                     case 'obj':
                         object = await new Promise((resolveLoader) => {
@@ -821,142 +868,144 @@ searchAssets(query) {
 }
 
 addAssetTags(asset, tags) {
-if (!asset.tags) asset.tags = [];
-asset.tags.push(...tags);
-this.updateAssetsView();
-this.saveAssets();
+    if (!asset.tags) asset.tags = [];
+    asset.tags.push(...tags);
+    this.updateAssetsView();
+    this.saveAssets();
 }
 
 filterByTag(tag) {
-return {
-models: this.assets.models.filter(asset => asset.tags?.includes(tag)),
-textures: this.assets.textures.filter(asset => asset.tags?.includes(tag)),
-materials: this.assets.materials.filter(asset => asset.tags?.includes(tag)),
-hdris: this.assets.hdris.filter(asset => asset.tags?.includes(tag))
-};
+    return {
+        models: this.assets.models.filter(asset => asset.tags?.includes(tag)),
+        textures: this.assets.textures.filter(asset => asset.tags?.includes(tag)),
+        materials: this.assets.materials.filter(asset => asset.tags?.includes(tag)),
+        hdris: this.assets.hdris.filter(asset => asset.tags?.includes(tag))
+    };
 }
 
 
 addAssetVersion(asset) {
-if (!this.assetVersions) this.assetVersions = new Map();
-if (!this.assetVersions.has(asset.id)) {
-this.assetVersions.set(asset.id, []);
-}
-this.assetVersions.get(asset.id).push(new AssetVersion(asset));
+    if (!this.assetVersions) this.assetVersions = new Map();
+    if (!this.assetVersions.has(asset.id)) {
+       this.assetVersions.set(asset.id, []);
+    }
+    this.assetVersions.get(asset.id).push(new AssetVersion(asset));
 }
 
 revertToVersion(assetId, version) {
-const versions = this.assetVersions.get(assetId);
-const targetVersion = versions.find(v => v.version === version);
-if (targetVersion) {
-// Revert asset to version
-this.updateAsset(assetId, targetVersion.data);
-}
+    const versions = this.assetVersions.get(assetId);
+    const targetVersion = versions.find(v => v.version === version);
+    if (targetVersion) {
+        // Revert asset to version
+        this.updateAsset(assetId, targetVersion.data);
+    }
 }
 
 disposeAsset(asset) {
-if (asset.object) {
-asset.object.traverse((child) => {
-    if (child.geometry) {
-        child.geometry.dispose();
-    }
-    if (child.material) {
-        if (Array.isArray(child.material)) {
-            child.material.forEach(mat => mat.dispose());
-        } else {
-            child.material.dispose();
+    if (asset.object) {
+    asset.object.traverse((child) => {
+        if (child.geometry) {
+            child.geometry.dispose();
         }
+        if (child.material) {
+            if (Array.isArray(child.material)) {
+                child.material.forEach(mat => mat.dispose());
+            } else {
+                child.material.dispose();
+            }
+        }
+    });
     }
-});
-}
-
-if (asset.texture) {
-asset.texture.dispose();
-}
-
-// Remove from assets array
-const index = this.assets[asset.type + 's'].findIndex(a => a.id === asset.id);
-if (index > -1) {
-this.assets[asset.type + 's'].splice(index, 1);
-}
+    
+    if (asset.texture) {
+        asset.texture.dispose();
+    }
+    
+    // Remove from assets array
+    const index = this.assets[asset.type + 's'].findIndex(a => a.id === asset.id);
+    if (index > -1) {
+       index.assets[asset.type + 's'].splice(index, 1);
+    }
 }
 
 // Add asset caching to avoid reloading
 cacheAsset(asset) {
-if (!this.assetCache) this.assetCache = new Map();
-this.assetCache.set(asset.id, asset);
+    if (!this.assetCache) this.assetCache = new Map();
+    this.assetCache.set(asset.id, asset);
 }
 
 getFromCache(id) {
-return this.assetCache?.get(id);
+   return this.assetCache?.get(id);
 }
 
 showLoading(assetName) {
-const loadingEl = document.createElement('div');
-loadingEl.className = 'loading-overlay';
-loadingEl.innerHTML = `Loading ${assetName}...`;
-document.body.appendChild(loadingEl);
-return loadingEl;
+   const loadingEl = document.createElement('div');
+   loadingEl.className = 'loading-overlay';
+   loadingEl.innerHTML = `Loading ${assetName}...`;
+   document.body.appendChild(loadingEl);
+   return loadingEl;
 }
 
 hideLoading(loadingEl) {
-if (loadingEl && loadingEl.parentNode) {
-loadingEl.parentNode.removeChild(loadingEl); 
-}
+    if (loadingEl && loadingEl.parentNode) {
+      loadingEl.parentNode.removeChild(loadingEl); 
+    }
 }
 
 validateAsset(file) {
-if (!file) return false;
+    if (!file) return false;
 
-const extension = file.name.split('.').pop().toLowerCase();
-const validExtensions = [
-...this.supportedModelFormats,
-...this.supportedHDRIFormats,
-...this.supportedTextureFormats,
-...this.supportedMaterialFormats
-];
+    const extension = file.name.split('.').pop().toLowerCase();
+    const validExtensions = [
+        ...this.supportedModelFormats,
+        ...this.supportedHDRIFormats,
+        ...this.supportedTextureFormats,
+        ...this.supportedMaterialFormats
+    ];
 
-if (!validExtensions.includes('.' + extension)) {
-throw new Error(`Unsupported file format: ${extension}`);
+    if (!validExtensions.includes('.' + extension)) {
+       throw new Error(`Unsupported file format: ${extension}`);
+    }
+
+    if (file.size > 100 * 1024 * 1024) { // 100MB limit
+       throw new Error('File too large');
+    }
+
+    return true;
 }
 
-if (file.size > 100 * 1024 * 1024) { // 100MB limit
-throw new Error('File too large');
-}
-
-return true;
-}
 removeAsset(assetId) {
-Object.keys(this.assets).forEach(type => {
-const index = this.assets[type].findIndex(a => a.id === assetId);
-if (index > -1) {
-    const asset = this.assets[type][index];
-    this.disposeAsset(asset);
-    this.assets[type].splice(index, 1);
-    this.assetCache?.delete(assetId);
+    Object.keys(this.assets).forEach(type => {
+    const index = this.assets[type].findIndex(a => a.id === assetId);
+    if (index > -1) {
+        const asset = this.assets[type][index];
+        this.disposeAsset(asset);
+        this.assets[type].splice(index, 1);
+        this.assetCache?.delete(assetId);
+    }
+    });
+    
+    this.updateAssetsView();
+    this.saveAssets();
 }
-});
 
-this.updateAssetsView();
-this.saveAssets();
-}
 
 cleanupUnusedAssets() {
-// Remove assets not used in scene
-const usedAssets = new Set();
-scene.traverse((object) => {
-if (object.userData.assetId) {
-    usedAssets.add(object.userData.assetId);
-}
-});
-
-this.assets.models = this.assets.models.filter(asset => 
-usedAssets.has(asset.id) || asset.favorite
-);
-// Similar filtering for other asset types
-
-this.updateAssetsView();
-this.saveAssets();
+    // Remove assets not used in scene
+    const usedAssets = new Set();
+    scene.traverse((object) => {
+    if (object.userData.assetId) {
+        usedAssets.add(object.userData.assetId);
+    }
+    });
+    
+    this.assets.models = this.assets.models.filter(asset => 
+    usedAssets.has(asset.id) || asset.favorite
+    );
+    // Similar filtering for other asset types
+    
+    this.updateAssetsView();
+    this.saveAssets();
 }
 
 // createModelPreview function
@@ -998,179 +1047,176 @@ createModelPreview(object, name) {
 
     // Add OrbitControls
     const controls = new THREE.OrbitControls(previewCamera, canvas);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.screenSpacePanning = true;
-controls.minDistance = 1;
-controls.maxDistance = 50;
-controls.enablePan = true;
-controls.enableZoom = true;
-controls.rotateSpeed = 0.8;
-controls.zoomSpeed = 1.2;
-controls.panSpeed = 0.8;
-controls.autoRotate = this.previewSettings.autoRotate;
-controls.autoRotateSpeed = 2.0;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = true;
+    controls.minDistance = 1;
+    controls.maxDistance = 50;
+    controls.enablePan = true;
+    controls.enableZoom = true;
+    controls.rotateSpeed = 0.8;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.autoRotate = this.previewSettings.autoRotate;
+    controls.autoRotateSpeed = 2.0;
 
-// Lighting setup
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-previewScene.add(ambientLight);
+    // Lighting setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    previewScene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(5, 5, 5);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.width = 1024;
-directionalLight.shadow.mapSize.height = 1024;
-previewScene.add(directionalLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 5, 5);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 1024;
+    directionalLight.shadow.mapSize.height = 1024;
+    previewScene.add(directionalLight);
 
-const secondaryLight = new THREE.DirectionalLight(0xffffff, 0.4);
-secondaryLight.position.set(-5, 2, -5);
-previewScene.add(secondaryLight);
+    const secondaryLight = new THREE.DirectionalLight(0xffffff, 0.4);
+    secondaryLight.position.set(-5, 2, -5);
+    previewScene.add(secondaryLight);
 
-// Add grid helper
-const gridHelper = new THREE.GridHelper(20, 20, 0x333333, 0x222222);
-gridHelper.position.y = -0.01;
-gridHelper.visible = this.previewSettings.showGrid;
-previewScene.add(gridHelper);
+    // Add grid helper
+    const gridHelper = new THREE.GridHelper(20, 20, 0x333333, 0x222222);
+    gridHelper.position.y = -0.01;
+    gridHelper.visible = this.previewSettings.showGrid;
+    previewScene.add(gridHelper);
 
-// Center and scale the object
-const box = new THREE.Box3().setFromObject(object);
-const center = box.getCenter(new THREE.Vector3());
-const size = box.getSize(new THREE.Vector3());
-const maxDim = Math.max(size.x, size.y, size.z);
+    // Center and scale the object
+    const box = new THREE.Box3().setFromObject(object);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
 
-object.position.sub(center);
+    object.position.sub(center);
 
+    // Position camera based on object size
+    const fov = previewCamera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs(maxDim / Math.tan(fov / 2)) * 2;
 
-// Position camera based on object size
-const fov = previewCamera.fov * (Math.PI / 180);
-let cameraZ = Math.abs(maxDim / Math.tan(fov / 2)) * 2;
+    previewCamera.position.set(cameraZ * 0.5, cameraZ * 0.5, cameraZ);
+    controls.target.set(0, 0, 0);
 
-previewCamera.position.set(cameraZ * 0.5, cameraZ * 0.5, cameraZ);
-controls.target.set(0, 0, 0);
+    // Add object to preview scene
+    previewScene.add(object);
 
-// Add object to preview scene
-previewScene.add(object);
+    // Update model info
+    this.updateModelInfo(object, name);
 
-// Update model info
-this.updateModelInfo(object, name);
-
-// Setup wireframe if needed
-let wireframeHelper;
-if (this.previewSettings.showWireframe) {
-wireframeHelper = new THREE.Group();
-object.traverse(child => {
-    if (child.isMesh) {
-        const wireframe = new THREE.WireframeGeometry(child.geometry);
-        const line = new THREE.LineSegments(wireframe);
-        line.material.color.set(0x00ff00);
-        line.material.opacity = 0.25;
-        line.material.transparent = true;
-        line.position.copy(child.position);
-        line.rotation.copy(child.rotation);
-        line.scale.copy(child.scale);
-        wireframeHelper.add(line);
+    // Setup wireframe if needed
+    let wireframeHelper;
+    if (this.previewSettings.showWireframe) {
+        wireframeHelper = new THREE.Group();
+        object.traverse(child => {
+            if (child.isMesh) {
+                const wireframe = new THREE.WireframeGeometry(child.geometry);
+                const line = new THREE.LineSegments(wireframe);
+                line.material.color.set(0x00ff00);
+                line.material.opacity = 0.25;
+                line.material.transparent = true;
+                line.position.copy(child.position);
+                line.rotation.copy(child.rotation);
+                line.scale.copy(child.scale);
+                wireframeHelper.add(line);
+            }
+       });
+       previewScene.add(wireframeHelper);
     }
-});
-previewScene.add(wireframeHelper);
-}
 
-// Setup bone visualization if needed
-let skeletonHelper;
-if (this.previewSettings.showBones) {
-object.traverse(child => {
-    if (child.isSkinnedMesh && child.skeleton) {
-        skeletonHelper = new THREE.SkeletonHelper(child.skeleton.bones[0].parent);
-        skeletonHelper.visible = true;
-        previewScene.add(skeletonHelper);
+    // Setup bone visualization if needed
+    let skeletonHelper;
+    if (this.previewSettings.showBones) {
+        object.traverse(child => {
+            if (child.isSkinnedMesh && child.skeleton) {
+                skeletonHelper = new THREE.SkeletonHelper(child.skeleton.bones[0].parent);
+                skeletonHelper.visible = true;
+                previewScene.add(skeletonHelper);
+            }
+        });
     }
-});
-}
 
-// Setup animation if available
-let mixer;
-let actions = [];
-let currentAction;
-let animationList = [];
+    // Setup animation if available
+    let mixer;
+    let actions = [];
+    let currentAction;
+    let animationList = [];
 
-if (object.animations && object.animations.length > 0) {
-mixer = new THREE.AnimationMixer(object);
+    if (object.animations && object.animations.length > 0) {
+        mixer = new THREE.AnimationMixer(object);
 
-// Get all animation clips
-animationList = object.animations.map(clip => ({
-    name: clip.name || `Animation ${animationList.length + 1}`,
-    duration: clip.duration,
-    clip: clip
-}));
+        // Get all animation clips
+        animationList = object.animations.map(clip => ({
+            name: clip.name || `Animation ${animationList.length + 1}`,
+            duration: clip.duration,
+            clip: clip
+        }));
 
-// Update animation select dropdown
-const animSelect = document.querySelector('.animation-select');
-animSelect.innerHTML = '';
-animationList.forEach(anim => {
-    const option = document.createElement('option');
-    option.value = anim.name;
-    option.textContent = `${anim.name} (${anim.duration.toFixed(2)}s)`;
-    animSelect.appendChild(option);
-});
+        // Update animation select dropdown
+        const animSelect = document.querySelector('.animation-select');
+        animSelect.innerHTML = '';
+        animationList.forEach(anim => {
+            const option = document.createElement('option');
+            option.value = anim.name;
+            option.textContent = `${anim.name} (${anim.duration.toFixed(2)}s)`;
+            animSelect.appendChild(option);
+        });
 
+        // Enable animation controls
+        document.querySelector('.animation-controls').style.display = 'block';
 
-
-// Enable animation controls
-document.querySelector('.animation-controls').style.display = 'block';
-
-// Play the first animation by default
-if (animationList.length > 0) {
-    currentAction = mixer.clipAction(animationList[0].clip);
-    currentAction.play();
-    actions.push(currentAction);
-    
-    // Update timeline max value
-    const timelineSlider = document.querySelector('.timeline-slider');
-    timelineSlider.max = 100;
-    timelineSlider.value = 0;
-    
-    document.querySelector('.total-time').textContent = 
-        animationList[0].duration.toFixed(2) + 's';
-}
-} else {
-document.querySelector('.animation-controls').style.display = 'none';
-}
-
-// Animation clock
-const clock = new THREE.Clock();
-
-// Render loop
-let animating = true;
-const animate = () => {
-if (!animating) return;
-
-const delta = clock.getDelta();
-
-// Update controls
-controls.update();
-
-// Update animations
-if (mixer) {
-    mixer.update(delta);
-    
-    // Update timeline display
-    if (currentAction) {
-        const normalizedTime = mixer.time / currentAction.getClip().duration;
-        const sliderValue = normalizedTime * 100;
-        document.querySelector('.timeline-slider').value = sliderValue;
-        document.querySelector('.current-time').textContent = 
-            (mixer.time).toFixed(2) + 's';
+        // Play the first animation by default
+        if (animationList.length > 0) {
+            currentAction = mixer.clipAction(animationList[0].clip);
+            currentAction.play();
+            actions.push(currentAction);
+            
+            // Update timeline max value
+            const timelineSlider = document.querySelector('.timeline-slider');
+            timelineSlider.max = 100;
+            timelineSlider.value = 0;
+            
+            document.querySelector('.total-time').textContent = 
+                animationList[0].duration.toFixed(2) + 's';
+        }
+        } else {
+        document.querySelector('.animation-controls').style.display = 'none';
     }
-}
 
-// Update skeleton helper
-if (skeletonHelper) {
-    skeletonHelper.update();
-}
+    // Animation clock
+    const clock = new THREE.Clock();
 
-// Render scene
-previewRenderer.render(previewScene, previewCamera);
+    // Render loop
+    let animating = true;
+    const animate = () => {
+    if (!animating) return;
 
-requestAnimationFrame(animate);
+    const delta = clock.getDelta();
+
+    // Update controls
+    controls.update();
+
+    // Update animations
+    if (mixer) {
+        mixer.update(delta);
+        
+        // Update timeline display
+        if (currentAction) {
+            const normalizedTime = mixer.time / currentAction.getClip().duration;
+            const sliderValue = normalizedTime * 100;
+            document.querySelector('.timeline-slider').value = sliderValue;
+            document.querySelector('.current-time').textContent = 
+                (mixer.time).toFixed(2) + 's';
+        }
+    }
+
+    // Update skeleton helper
+    if (skeletonHelper) {
+        skeletonHelper.update();
+    }
+
+    // Render scene
+    previewRenderer.render(previewScene, previewCamera);
+
+    requestAnimationFrame(animate);
 };
 
 // Start animation loop
@@ -1271,89 +1317,89 @@ if (selectedAnim && mixer) {
 }
 
 updateModelInfo(object, name) {
-   const modelName = document.querySelector('.model-name');
-   const modelStats = document.querySelector('.model-stats');
-
-   let vertexCount = 0;
-   let triangleCount = 0;
-   let materialCount = new Set();
-   let meshCount = 0;
-   let animationCount = 0;
-   let hasSkinnedMeshes = false;
-
-   // Collect geometry stats
-    object.traverse((child) => {
-    if (child.isMesh) {
-        meshCount++;
-        
-        if (child.isSkinnedMesh) {
-            hasSkinnedMeshes = true;
-        }
-        
-        if (child.geometry) {
-            // Count vertices
-            if (child.geometry.attributes && child.geometry.attributes.position) {
-                vertexCount += child.geometry.attributes.position.count;
-            }
-            
-            // Count triangles/faces
-            if (child.geometry.index) {
-                triangleCount += child.geometry.index.count / 3;
-            } else if (child.geometry.attributes.position) {
-                triangleCount += child.geometry.attributes.position.count / 3;
-            }
-        }
-        
-        // Count materials
-        if (child.material) {
-            if (Array.isArray(child.material)) {
-                child.material.forEach(mat => materialCount.add(mat));
-            } else {
-                materialCount.add(child.material);
-            }
-        }
-    }
-    });
-
-    // Count animations
-    if (object.animations) {
-       animationCount = object.animations.length;
-    }
-
-    // Update display
-    if (modelName) modelName.textContent = name;
-
-    if (modelStats) {
-        modelStats.innerHTML = `
-    <div class="stats-grid">
-        <div class="stat-item">
-            <span class="stat-label">Vertices:</span>
-            <span class="stat-value">${vertexCount.toLocaleString()}</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Triangles:</span>
-            <span class="stat-value">${triangleCount.toLocaleString()}</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Materials:</span>
-            <span class="stat-value">${materialCount.size}</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Meshes:</span>
-            <span class="stat-value">${meshCount}</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Animations:</span>
-            <span class="stat-value">${animationCount}</span>
-        </div>
-        ${hasSkinnedMeshes ? `
-        <div class="stat-item">
-            <span class="stat-label">Rigged:</span>
-            <span class="stat-value">Yes</span>
-        </div>` : ''}
-    </div>
-`;
-}
+    const modelName = document.querySelector('.model-name');
+    const modelStats = document.querySelector('.model-stats');
+ 
+    let vertexCount = 0;
+    let triangleCount = 0;
+    let materialCount = new Set();
+    let meshCount = 0;
+    let animationCount = 0;
+    let hasSkinnedMeshes = false;
+ 
+    // Collect geometry stats
+     object.traverse((child) => {
+     if (child.isMesh) {
+         meshCount++;
+         
+         if (child.isSkinnedMesh) {
+             hasSkinnedMeshes = true;
+         }
+         
+         if (child.geometry) {
+             // Count vertices
+             if (child.geometry.attributes && child.geometry.attributes.position) {
+                 vertexCount += child.geometry.attributes.position.count;
+             }
+             
+             // Count triangles/faces
+             if (child.geometry.index) {
+                 triangleCount += child.geometry.index.count / 3;
+             } else if (child.geometry.attributes.position) {
+                 triangleCount += child.geometry.attributes.position.count / 3;
+             }
+         }
+         
+         // Count materials
+         if (child.material) {
+             if (Array.isArray(child.material)) {
+                 child.material.forEach(mat => materialCount.add(mat));
+             } else {
+                 materialCount.add(child.material);
+             }
+         }
+     }
+     });
+ 
+     // Count animations
+     if (object.animations) {
+        animationCount = object.animations.length;
+     }
+ 
+     // Update display
+     if (modelName) modelName.textContent = name;
+ 
+     if (modelStats) {
+         modelStats.innerHTML = `
+     <div class="stats-grid">
+         <div class="stat-item">
+             <span class="stat-label">Vertices:</span>
+             <span class="stat-value">${vertexCount.toLocaleString()}</span>
+         </div>
+         <div class="stat-item">
+             <span class="stat-label">Triangles:</span>
+             <span class="stat-value">${triangleCount.toLocaleString()}</span>
+         </div>
+         <div class="stat-item">
+             <span class="stat-label">Materials:</span>
+             <span class="stat-value">${materialCount.size}</span>
+         </div>
+         <div class="stat-item">
+             <span class="stat-label">Meshes:</span>
+             <span class="stat-value">${meshCount}</span>
+         </div>
+         <div class="stat-item">
+             <span class="stat-label">Animations:</span>
+             <span class="stat-value">${animationCount}</span>
+         </div>
+         ${hasSkinnedMeshes ? `
+         <div class="stat-item">
+             <span class="stat-label">Rigged:</span>
+             <span class="stat-value">Yes</span>
+         </div>` : ''}
+     </div>
+ `;
+ }
 }
 
 addControlHints(canvas) {
@@ -1381,33 +1427,33 @@ addControlHints(canvas) {
         </div>
     `;
 
-// Add hints to canvas container
-canvas.parentElement.appendChild(hints);
+    // Add hints to canvas container
+    canvas.parentElement.appendChild(hints);
 
-// Auto-hide hints after a few seconds
-setTimeout(() => {
-hints.classList.add('fade-out');
-setTimeout(() => {
-    if (hints.parentElement) {
-        hints.remove();
-    }
-}, 500);
-}, 5000);
+    // Auto-hide hints after a few seconds
+    setTimeout(() => {
+        hints.classList.add('fade-out');
+        setTimeout(() => {
+            if (hints.parentElement) {
+                hints.remove();
+            }
+        }, 500);
+    }, 5000);
 }
 
 
 setupAnimation(model) {
-if (!this.mixers) this.mixers = new Map();
-
-if (model.animations && model.animations.length > 0) {
-const mixer = new THREE.AnimationMixer(model.scene || model);
-this.mixers.set(model.scene || model, mixer);
-
-model.animations.forEach((clip) => {
-    const action = mixer.clipAction(clip);
-    action.play();
-});
-}
+    if (!this.mixers) this.mixers = new Map();
+    
+    if (model.animations && model.animations.length > 0) {
+    const mixer = new THREE.AnimationMixer(model.scene || model);
+    this.mixers.set(model.scene || model, mixer);
+    
+    model.animations.forEach((clip) => {
+        const action = mixer.clipAction(clip);
+        action.play();
+    });
+    }
 }
 
 processModel(object, name, animations) {
@@ -1430,6 +1476,9 @@ processModel(object, name, animations) {
         animations.forEach(clip => mixer.clipAction(clip).play());
     }
 
+    selectedObject = object; // Set as selected for keyframe addition
+    addKeyframe(); 
+
     scene.add(object);
     if (typeof addObjectToScene === 'function') addObjectToScene(object, name);
     if (typeof updateHierarchy === 'function') updateHierarchy();
@@ -1437,33 +1486,44 @@ processModel(object, name, animations) {
 }
 
 
-loadHDRI(file) {
+loadHDRI(file, autoAddToScene = true) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (event) => {
             const buffer = event.target.result;
             const url = URL.createObjectURL(new Blob([buffer]));
-            this.rgbeLoader.load(url, (texture) => {
-                texture.mapping = THREE.EquirectangularReflectionMapping;
-                const asset = {
-                    id: this.generateAssetId(),
-                    name: file.name,
-                    type: 'hdri',
-                    texture: texture,
-                    dateAdded: new Date(),
-                    size: file.size,
-                    favorite: false
-                };
-                this.assets.hdris.push(asset);
-                this.saveAssets();
-                resolve(asset);
-                URL.revokeObjectURL(url);
-            }, undefined, (error) => {
-                console.error('Error loading HDRI:', error);
-                this.showErrorNotification(`Failed to load HDRI: ${file.name}`);
-                reject(error);
-                URL.revokeObjectURL(url);
-            });
+            this.rgbeLoader.load(
+                url,
+                (texture) => {
+                    texture.mapping = THREE.EquirectangularReflectionMapping;
+                    const asset = {
+                        id: this.generateAssetId(),
+                        name: file.name,
+                        type: 'hdri',
+                        texture: texture,
+                        dateAdded: new Date(),
+                        size: file.size,
+                        favorite: false
+                    };
+                    this.assets.hdris.push(asset);
+                    this.saveAssets();
+
+                    // Optionally apply to scene immediately
+                    if (autoAddToScene) {
+                        this.applyHDRItoScene(asset);
+                    }
+
+                    resolve(asset);
+                    URL.revokeObjectURL(url);
+                },
+                undefined,
+                (error) => {
+                    console.error('Error loading HDRI:', error);
+                    this.showErrorNotification(`Failed to load HDRI: ${file.name}`);
+                    reject(error);
+                    URL.revokeObjectURL(url);
+                }
+            );
         };
         reader.onerror = (error) => {
             console.error('Error reading HDRI file:', error);
@@ -1473,12 +1533,32 @@ loadHDRI(file) {
     });
 }
 
+applyHDRItoScene(asset) {
+    if (!asset || asset.type !== 'hdri' || !asset.texture) {
+        console.error('Invalid HDRI asset:', asset);
+        return;
+    }
+
+    const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+    pmremGenerator.compileEquirectangularShader();
+    const envMap = pmremGenerator.fromEquirectangular(asset.texture).texture;
+
+    this.scene.environment = envMap;
+    this.scene.background = asset.texture; // or envMap
+
+    pmremGenerator.dispose();
+    console.log(`Applied HDRI "${asset.name}" to scene`);
+}
+
+
 loadTexture(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (event) => {
             const url = event.target.result;
             this.textureLoader.load(url, (texture) => {
+                texture.needsUpdate = true;
+                console.log('Loaded texture:', texture); // Debug
                 const asset = {
                     id: this.generateAssetId(),
                     name: file.name,
@@ -1493,14 +1573,10 @@ loadTexture(file) {
                 resolve(asset);
             }, undefined, (error) => {
                 console.error('Error loading texture:', error);
-                this.showErrorNotification(`Failed to load texture: ${file.name}`);
                 reject(error);
             });
         };
-        reader.onerror = (error) => {
-            console.error('Error reading texture file:', error);
-            reject(error);
-        };
+        reader.onerror = (error) => reject(error);
         reader.readAsDataURL(file);
     });
 }
@@ -1511,11 +1587,9 @@ loadMaterial(file) {
         reader.onload = (event) => {
             const text = event.target.result;
             const extension = file.name.split('.').pop().toLowerCase();
-
             let material;
             if (extension === 'mtl') {
-                // Parse .mtl file (simplified parsing for demonstration)
-                material = new THREE.MeshStandardMaterial({ color: 0xcccccc }); // Default material
+                material = new THREE.MeshStandardMaterial({ color: 0xcccccc });
                 const lines = text.split('\n');
                 lines.forEach(line => {
                     if (line.startsWith('Kd')) {
@@ -1523,11 +1597,10 @@ loadMaterial(file) {
                         material.color.setRGB(r, g, b);
                     }
                 });
-            } else if (extension === 'mat') {
-                // Placeholder for .mat parsing (specific to your software)
+            } else {
                 material = new THREE.MeshStandardMaterial({ color: 0x888888 });
             }
-
+            console.log('Loaded material:', material); // Debug
             const asset = {
                 id: this.generateAssetId(),
                 name: file.name,
@@ -1542,94 +1615,91 @@ loadMaterial(file) {
             this.saveAssets();
             resolve(asset);
         };
-        reader.onerror = (error) => {
-            console.error('Error reading material file:', error);
-            reject(error);
-        };
+        reader.onerror = (error) => reject(error);
         reader.readAsText(file);
     });
 }
 
 createTexturePreview(texture, name) {
-const previewContainer = document.createElement('div');
-previewContainer.className = 'texture-preview';
-
-const canvas = document.createElement('canvas');
-const ctx = canvas.getContext('2d');
-
-// Set preview size
-canvas.width = 256;
-canvas.height = 256;
-
-// Create preview image
-const image = new Image();
-image.src = texture.image.src;
-image.onload = () => {
-ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-// Add texture info
-const info = document.createElement('div');
-info.className = 'texture-info';
-info.innerHTML = `
-    <h3>${name}</h3>
-    <p>Size: ${texture.image.width} x ${texture.image.height}</p>
-    <p>Format: ${texture.format}</p>
-`;
-
-previewContainer.appendChild(canvas);
-previewContainer.appendChild(info);
-};
-
-return previewContainer;
-}
-
-createMaterialPreview(materials, name) {
-const previewContainer = document.createElement('div');
-previewContainer.className = 'material-preview';
-
-// Create preview sphere for each material
-Object.keys(materials.materials).forEach(key => {
-const material = materials.materials[key];
-
-const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
-const mesh = new THREE.Mesh(sphereGeometry, material);
-
-// Create preview renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(128, 128);
-
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-camera.position.z = 3;
-
-scene.add(mesh);
-
-// Add lighting
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(1, 1, 1);
-scene.add(light);
-
-scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-
-// Render preview
-renderer.render(scene, camera);
-
-const preview = document.createElement('div');
-preview.className = 'material-sphere';
-preview.appendChild(renderer.domElement);
-
-const info = document.createElement('div');
-info.className = 'material-info';
-info.innerHTML = `
-    <h4>${key}</h4>
-    <p>Type: ${material.type}</p>
-`;
-
-preview.appendChild(info);
-previewContainer.appendChild(preview);
-});
-
-return previewContainer;
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'texture-preview';
+    
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set preview size
+    canvas.width = 256;
+    canvas.height = 256;
+    
+    // Create preview image
+    const image = new Image();
+    image.src = texture.image.src;
+    image.onload = () => {
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    
+    // Add texture info
+    const info = document.createElement('div');
+    info.className = 'texture-info';
+    info.innerHTML = `
+        <h3>${name}</h3>
+        <p>Size: ${texture.image.width} x ${texture.image.height}</p>
+        <p>Format: ${texture.format}</p>
+    `;
+    
+    previewContainer.appendChild(canvas);
+    previewContainer.appendChild(info);
+    };
+    
+    return previewContainer;
+    }
+    
+    createMaterialPreview(materials, name) {
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'material-preview';
+    
+    // Create preview sphere for each material
+    Object.keys(materials.materials).forEach(key => {
+    const material = materials.materials[key];
+    
+    const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const mesh = new THREE.Mesh(sphereGeometry, material);
+    
+    // Create preview renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(128, 128);
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    camera.position.z = 3;
+    
+    scene.add(mesh);
+    
+    // Add lighting
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(1, 1, 1);
+    scene.add(light);
+    
+    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+    
+    // Render preview
+    renderer.render(scene, camera);
+    
+    const preview = document.createElement('div');
+    preview.className = 'material-sphere';
+    preview.appendChild(renderer.domElement);
+    
+    const info = document.createElement('div');
+    info.className = 'material-info';
+    info.innerHTML = `
+        <h4>${key}</h4>
+        <p>Type: ${material.type}</p>
+    `;
+    
+    preview.appendChild(info);
+    previewContainer.appendChild(preview);
+    });
+    
+    return previewContainer;
 }
 
 addModelAsset(name, object) {
@@ -1838,25 +1908,43 @@ updateAssetsView() {
     } else {
         gridView.style.display = 'none';
         listView.style.display = 'table';
-        if (!listView.querySelector('table')) {
+
+        if (!listView.querySelector('.assets-table')) {
             const table = document.createElement('table');
             table.className = 'assets-table';
-            table.innerHTML = `<thead><tr><th>Name</th><th>Type</th><th>Size</th><th>Date Added</th></tr></thead><tbody></tbody>`;
+            table.innerHTML = `<thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>Date Added</th>
+                </tr>
+            </thead>
+            <tbody></tbody>`;
             listView.appendChild(table);
         }
+
         const tbody = listView.querySelector('tbody');
         tbody.innerHTML = '';
+
         assetsToShow.forEach(asset => {
             const row = document.createElement('tr');
             row.className = 'asset-item';
             row.draggable = true;
             row.dataset.assetId = asset.id;
+
             row.innerHTML = `
-                <td><div class="asset-row-preview">${asset.thumbnail ? `<img src="${asset.thumbnail}" alt="${asset.name}" class="mini-thumbnail">` : `<i class="${this.getIconForType(asset.type)}"></i>`}<span>${asset.name}</span></div></td>
+                <td>
+                    <div class="asset-row-preview">
+                        ${asset.thumbnail ? `<img src="${asset.thumbnail}" alt="${asset.name}" class="mini-thumbnail">` : `<i class="${this.getIconForType(asset.type)}"></i>`}
+                        <span class="asset-name">${asset.name}</span>
+                    </div>
+                </td>
                 <td>${asset.type}</td>
                 <td>${this.formatFileSize(asset.size)}</td>
                 <td>${new Date(asset.dateAdded).toLocaleDateString()}</td>
             `;
+
             tbody.appendChild(row);
         });
     }
@@ -1939,7 +2027,12 @@ addAssetItemListeners() {
 showAssetPreview(assetId) {
     let asset = [...this.assets.models, ...this.assets.textures, ...this.assets.materials, ...this.assets.hdris]
         .find(a => a.id === assetId);
-    if (!asset) return;
+    if (!asset) {
+        console.error(`Asset with ID ${assetId} not found`);
+        return;
+    }
+
+    console.log(`Previewing asset:`, asset);
 
     this.currentAsset = asset;
 
@@ -1959,7 +2052,13 @@ showAssetPreview(assetId) {
     const previewContainer = document.querySelector('.preview-container');
     previewContainer.style.display = 'block';
 
-    this.cleanupPreview();
+    // Reset canvas
+    canvas.width = previewContainer.clientWidth;
+    canvas.height = previewContainer.clientHeight;
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    this.cleanupPreview(); // Clean up previous preview
 
     switch (asset.type) {
         case 'model':
@@ -1974,6 +2073,8 @@ showAssetPreview(assetId) {
         case 'material':
             this.setupMaterialPreview(asset, canvas);
             break;
+        default:
+            console.warn(`No preview handler for asset type: ${asset.type}`);
     }
 
     const animControls = document.querySelector('.animation-controls');
@@ -1991,17 +2092,14 @@ showAssetPreview(assetId) {
 resizePreviewCanvas() {
     const canvas = document.getElementById('preview-canvas');
     const previewContainer = document.querySelector('.preview-container');
-    const previewPanel = document.querySelector('.asset-preview-panel');
-    const isExpanded = previewPanel.classList.contains('expanded');
-
-    const width = isExpanded ? previewContainer.clientWidth : previewContainer.clientWidth;
-    const height = isExpanded ? previewContainer.clientHeight : previewContainer.clientHeight;
+    const width = previewContainer.clientWidth;
+    const height = previewContainer.clientHeight;
 
     canvas.width = width;
     canvas.height = height;
 
     if (this.previewRenderer) {
-        this.previewRenderer.setSize(width, height);
+        this.previewRenderer.setSize(width, height, false);
     }
     if (this.previewCamera) {
         this.previewCamera.aspect = width / height;
@@ -2011,7 +2109,6 @@ resizePreviewCanvas() {
         this.previewRenderer.render(this.previewScene, this.previewCamera);
     }
 }
-
 
 setupModelPreview(asset, canvas) {
     this.previewScene = new THREE.Scene();
@@ -2074,109 +2171,178 @@ setupModelPreview(asset, canvas) {
 }
 
 setupTexturePreview(asset, canvas) {
+    console.log('Setting up texture preview with asset:', asset);
+
     this.previewScene = new THREE.Scene();
     this.previewScene.background = new THREE.Color(this.previewSettings.backgroundColor);
 
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
+    const width = canvas.width;
+    const height = canvas.height;
     this.previewCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     this.previewCamera.position.set(0, 0, 2);
     this.previewCamera.lookAt(0, 0, 0);
 
-    this.previewRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    this.previewRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     this.previewRenderer.setSize(width, height, false);
     this.previewRenderer.setPixelRatio(window.devicePixelRatio);
     this.previewRenderer.setClearColor(this.previewSettings.backgroundColor, 1);
 
-    const geometry = new THREE.PlaneGeometry(1, 1);
-    const material = new THREE.MeshBasicMaterial({
-        map: asset.texture,
-        side: THREE.DoubleSide,
-        transparent: true
-    });
-    const plane = new THREE.Mesh(geometry, material);
-    this.previewScene.add(plane);
-    this.previewModel = plane;
+    if (!asset.texture || !asset.texture.image) {
+        console.error('Texture missing or invalid:', asset);
+        const geometry = new THREE.PlaneGeometry(1, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red for error
+        const plane = new THREE.Mesh(geometry, material);
+        this.previewScene.add(plane);
+        this.previewModel = plane;
+        document.querySelector('.model-stats').innerHTML += `<div><strong>Error:</strong> Texture image not available</div>`;
+    } else {
+        const geometry = new THREE.PlaneGeometry(1, 1);
+        const material = new THREE.MeshBasicMaterial({
+            map: asset.texture,
+            side: THREE.DoubleSide,
+            transparent: true
+        });
+        const plane = new THREE.Mesh(geometry, material);
+        this.previewScene.add(plane);
+        this.previewModel = plane;
+
+        // Adjust plane size to texture aspect ratio
+        const imgWidth = asset.texture.image.width;
+        const imgHeight = asset.texture.image.height;
+        const aspect = imgWidth / imgHeight;
+        if (aspect > 1) {
+            plane.scale.set(aspect, 1, 1);
+        } else {
+            plane.scale.set(1, 1 / aspect, 1);
+        }
+
+        document.querySelector('.model-stats').innerHTML += `
+            <div><strong>Dimensions:</strong> ${imgWidth} x ${imgHeight}</div>
+        `;
+    }
 
     this.previewControls = new THREE.OrbitControls(this.previewCamera, canvas);
     this.previewControls.enableDamping = true;
     this.previewControls.dampingFactor = 0.1;
     this.previewControls.autoRotate = this.previewSettings.autoRotate;
+    this.previewControls.enableZoom = true;
+    this.previewControls.enablePan = false;
 
     this.startPreviewAnimation();
     window.addEventListener('resize', this.resizePreviewCanvas.bind(this));
 
-    if (asset.texture && asset.texture.image) {
-        document.querySelector('.model-stats').innerHTML += `
-            <div><strong>Dimensions:</strong> ${asset.texture.image.width} x ${asset.texture.image.height}</div>
-        `;
-    }
+    // Initial render
+    this.previewRenderer.render(this.previewScene, this.previewCamera);
 }
 
 setupHDRIPreview(asset, canvas) {
+    console.log('Setting up HDRI preview with asset:', asset);
+
     this.previewScene = new THREE.Scene();
     this.previewScene.background = new THREE.Color(this.previewSettings.backgroundColor);
 
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
+    const width = canvas.width;
+    const height = canvas.height;
     this.previewCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     this.previewCamera.position.set(0, 0, 2);
+    this.previewCamera.lookAt(0, 0, 0);
 
-    this.previewRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    this.previewRenderer.setSize(width, height);
+    this.previewRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+    this.previewRenderer.setSize(width, height, false);
+    this.previewRenderer.setPixelRatio(window.devicePixelRatio);
+    this.previewRenderer.setClearColor(this.previewSettings.backgroundColor, 1);
 
-    const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    const material = new THREE.MeshStandardMaterial({
-        metalness: 1.0,
-        roughness: 0.2,
-        envMap: asset.texture
-    });
-    const sphere = new THREE.Mesh(geometry, material);
-    this.previewScene.add(sphere);
-    this.previewModel = sphere;
+    if (!asset.texture) {
+        console.error('HDRI texture missing:', asset);
+        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red for error
+        const sphere = new THREE.Mesh(geometry, material);
+        this.previewScene.add(sphere);
+        this.previewModel = sphere;
+        document.querySelector('.model-stats').innerHTML += `<div><strong>Error:</strong> HDRI texture not available</div>`;
+    } else {
+        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const material = new THREE.MeshStandardMaterial({
+            metalness: 1.0,
+            roughness: 0.2,
+            envMap: asset.texture
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        this.previewScene.add(sphere);
+        this.previewModel = sphere;
 
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(1, 1, 1);
-    this.previewScene.add(light);
-    this.previewScene.add(new THREE.AmbientLight(0xffffff, 0.3));
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1, 1, 1);
+        this.previewScene.add(light);
+        const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+        this.previewScene.add(ambient);
+    }
 
     this.previewControls = new THREE.OrbitControls(this.previewCamera, canvas);
     this.previewControls.enableDamping = true;
     this.previewControls.dampingFactor = 0.1;
     this.previewControls.autoRotate = this.previewSettings.autoRotate;
+    this.previewControls.enableZoom = true;
+    this.previewControls.enablePan = false;
 
     this.startPreviewAnimation();
+    window.addEventListener('resize', this.resizePreviewCanvas.bind(this));
+
+    // Initial render
+    this.previewRenderer.render(this.previewScene, this.previewCamera);
 }
 
 setupMaterialPreview(asset, canvas) {
+    console.log('Setting up material preview with asset:', asset);
+
     this.previewScene = new THREE.Scene();
     this.previewScene.background = new THREE.Color(this.previewSettings.backgroundColor);
 
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
+    const width = canvas.width;
+    const height = canvas.height;
     this.previewCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     this.previewCamera.position.set(0, 0, 2);
+    this.previewCamera.lookAt(0, 0, 0);
 
-    this.previewRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    this.previewRenderer.setSize(width, height);
+    this.previewRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+    this.previewRenderer.setSize(width, height, false);
+    this.previewRenderer.setPixelRatio(window.devicePixelRatio);
+    this.previewRenderer.setClearColor(this.previewSettings.backgroundColor, 1);
 
-    const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    const material = asset.material || new THREE.MeshStandardMaterial({ color: 0xcccccc });
-    const sphere = new THREE.Mesh(geometry, material);
-    this.previewScene.add(sphere);
-    this.previewModel = sphere;
+    if (!asset.material) {
+        console.error('Material missing:', asset);
+        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red for error
+        const sphere = new THREE.Mesh(geometry, material);
+        this.previewScene.add(sphere);
+        this.previewModel = sphere;
+        document.querySelector('.model-stats').innerHTML += `<div><strong>Error:</strong> Material not available</div>`;
+    } else {
+        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const material = asset.material.clone();
+        const sphere = new THREE.Mesh(geometry, material);
+        this.previewScene.add(sphere);
+        this.previewModel = sphere;
 
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(1, 1, 1);
-    this.previewScene.add(light);
-    this.previewScene.add(new THREE.AmbientLight(0xffffff, 0.3));
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1, 1, 1);
+        this.previewScene.add(light);
+        const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+        this.previewScene.add(ambient);
+    }
 
     this.previewControls = new THREE.OrbitControls(this.previewCamera, canvas);
     this.previewControls.enableDamping = true;
     this.previewControls.dampingFactor = 0.1;
     this.previewControls.autoRotate = this.previewSettings.autoRotate;
+    this.previewControls.enableZoom = true;
+    this.previewControls.enablePan = false;
 
     this.startPreviewAnimation();
+    window.addEventListener('resize', this.resizePreviewCanvas.bind(this));
+
+    // Initial render
+    this.previewRenderer.render(this.previewScene, this.previewCamera);
 }
 
 startPreviewAnimation() {
@@ -2184,12 +2350,26 @@ startPreviewAnimation() {
         cancelAnimationFrame(this.previewAnimationId);
     }
 
+    const clock = new THREE.Clock();
+
     const animate = () => {
         this.previewAnimationId = requestAnimationFrame(animate);
-        if (this.previewControls) this.previewControls.update();
-        if (this.previewMixer) this.previewMixer.update(0.016);
+        const delta = clock.getDelta();
+
+        if (this.previewControls) {
+            this.previewControls.update();
+        }
+        if (this.previewMixer) {
+            this.previewMixer.update(delta);
+        }
         if (this.previewRenderer && this.previewScene && this.previewCamera) {
             this.previewRenderer.render(this.previewScene, this.previewCamera);
+        } else {
+            console.error('Preview components missing:', {
+                renderer: !!this.previewRenderer,
+                scene: !!this.previewScene,
+                camera: !!this.previewCamera
+            });
         }
     };
     animate();
@@ -2328,8 +2508,6 @@ setupAnimationControls(asset) {
         this.updateAnimationTime(e.target.value);
     }
 }
-
-
 
 
 createAssetItem(asset, parent) {
@@ -2579,6 +2757,46 @@ drawCheckerboard(ctx, width, height) {
     }
 }
 
+addAssetToScene(assetId) {
+    const asset = [
+        ...this.assets.models,
+        ...this.assets.textures,
+        ...this.assets.materials,
+        ...this.assets.hdris
+    ].find(a => a.id === assetId);
+
+    if (!asset) {
+        console.error(`Asset with ID ${assetId} not found`);
+        return;
+    }
+
+    switch (asset.type) {
+        case 'model':
+            const clone = asset.object.clone();
+            clone.position.set(0, 0, 0);
+            scene.add(clone);
+            objects.push(clone);
+            updateHierarchy();
+            selectObject(clone);
+            transformControls.attach(clone);
+            updateInspector();
+            break;
+        case 'hdri':
+            this.applyHDRItoScene(asset);
+            break;
+        case 'texture':
+            // Add texture application logic if needed (e.g., apply to selected object)
+            console.log(`Texture ${asset.name} selected for application`);
+            break;
+        case 'material':
+            // Add material application logic if needed
+            console.log(`Material ${asset.name} selected for application`);
+            break;
+        default:
+            console.warn(`Unsupported asset type: ${asset.type}`);
+    }
+}
+
 
 addAssetToScene(object) {
     if (!object) return;
@@ -2670,8 +2888,7 @@ addAssetToScene(object) {
 }
 
 // Initialize the assets panel
-const assetsPanel = new AssetsPanel();
-
+const assetsPanel = new AssetsPanel(scene, renderer);
 // Add toggle function to your existing toolbar button
 function toggleAssetsPanel() {
     document.querySelector('.assets-panel').classList.toggle('visible');
