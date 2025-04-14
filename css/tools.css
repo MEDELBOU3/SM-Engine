@@ -14,9 +14,6 @@
     transition: width 0.3s ease, opacity 0.3s ease, left 0.3s ease;
 }
 
-
-
-
 .tool-btn {
     width: 32px;
     height: 25px;
@@ -120,5 +117,3 @@
     padding: 5px;
     font-size: 14px;
 }
-
-
