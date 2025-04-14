@@ -1,7 +1,7 @@
 # ✨ SM-Engine: 3D Modeling & Physics Editor ✨
 
 <div align="center">
-  <img src="screenshots/logo.png" alt="SM-Engine Logo" width="250"/>
+  <img src="screenshoots/logo.png" alt="SM-Engine Logo" width="250"/>
 </div>
 
 <p align="center">
@@ -22,27 +22,27 @@
 ## 📸 Visual Showcase
 
 <div align="center">
-  <img src="screenshots/main-interface.png" alt="Main Editor Interface" width="90%">
+  <img src="screenshoots/Screenshot%20(93).png" alt="Main Editor Interface" width="90%">
   <p><em>Main interface with the powerful Node Editor panel and 3D viewport</em></p>
 </div>
 
 <div align="center">
-  <img src="screenshots/physics-simulation.png" alt="Physics Simulation" width="90%">
+  <img src="screenshoots/Screenshot%20(92).png" alt="Physics Simulation" width="90%">
   <p><em>The integrated physics engine with real-time object interactions</em></p>
 </div>
 
 <div align="center">
-  <img src="screenshots/brush-modeling.png" alt="Brush Modeling Tools" width="90%">
+  <img src="screenshoots/Screenshot%20(56).png" alt="Brush Modeling Tools" width="90%">
   <p><em>Brush Modeling panel with density controls and import options</em></p>
 </div>
 
 <div align="center">
-  <img src="screenshots/workspace-overview.png" alt="Editor Workspace" width="90%">
+  <img src="screenshoots/Screenshot%20(91).png" alt="Editor Workspace" width="90%">
   <p><em>Workspace overview with Scene Hierarchy and Asset Management</em></p>
 </div>
 
 <div align="center">
-  <img src="screenshots/3d-viewport.png" alt="3D Viewport" width="90%">
+  <img src="screenshoots/Screenshot%20(54).png" alt="3D Viewport" width="90%">
   <p><em>High-fidelity rendering in the 3D viewport</em></p>
 </div>
 
@@ -100,25 +100,25 @@ SM-Engine is built on modern and reliable technologies:
 
 SM-Engine features a customizable, panel-based interface designed for productivity:
 
-
- ---------------------------------------------------------------
-| Main Toolbar (File, Edit, View, Tools, Physics, Help)         |
- --------------------------+------------------------------------
-| Hierarchy Panel          |                                    |
-|   - Scene Objects        |                                    |
+```plaintext
++---------------------------------------------------------------+
+| Main Toolbar (File, Edit, Assets, Export, View, Help...)      |
++--------------------------+------------------------------------+
+| Hierarchy / Scene        |                                    |
 |   - Physics Environments |         3D Viewport                |
-|   - Camera Presets       |         (Main Work Area)           |
+|   - Objects              |         (Main Work Area)           |
+|   - Cameras (Ortho/Persp)|                                    |
 |   - Node Graphs          |                                    |
- --------------------------+------------------------------------
-| Context Panel            | Inspector Panel                    |
-|   - Assets Browser       |   - Transform Properties           |
-|   - Brush Settings       |   - Material Parameters            |
-|   - Node Editor          |   - Physics Properties             |
-|   - Console Output       |   - Component Settings             |
- --------------------------+------------------------------------
-| Status Bar (FPS, Object Count, Memory Usage, Recording)       |
- ---------------------------------------------------------------
-
++--------------------------+------------------------------------+
+| Assets Panel /           | Inspector / Properties Panel       |
+| Brush Settings /         |   - Object Transform               |
+| Node Editor              |   - Component Details (Physics,    |
+| (Context Dependent)      |     Materials, Scripts...)         |
+|                          |   - Brush Parameters               |
++--------------------------+------------------------------------+
+| Status Bar / Output (FPS, Object Count, Recording Status)     |
++---------------------------------------------------------------+
+```
 
 - **Top:** Main menu and toolbar for global actions
 - **Left:** Hierarchical organization of scene elements
