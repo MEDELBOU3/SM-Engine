@@ -56,19 +56,23 @@ body {
 }
 
 .tool-button {
-    background: transparent;
-    border: none;
-    color: var(--text-primary);
-    display: flex;
-    padding: 5px 8px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 4px;
+    color: #eee;
+    padding: 5px 10px;
+    margin: 2px;
     cursor: pointer;
-    align-items: center;
-    gap: 5px;
-    transition: background 0.2s;
+    font-size: 12px;
+    transition: background-color 0.2s;
 }
 
 .tool-button:hover {
-    background: var(--secondary-dark);
+    background-color: #444;
+}
+
+.tool-button.active {
+    background: var(--accent-blue);
 }
 
 .tool-button.active {
@@ -172,12 +176,12 @@ body {
     width: 60%;
     left: 50%;
     transform: translate(-50%);
+    height: 79%;
 }
 
 #renderer-container {
     width: 80%;
-    height: 78%;
-    transition: width 0.2s ease;
+    height: 78%; /* This will be overridden by JS, but serves as initial value */
     transition: height 0.3s ease;
 }
 
@@ -227,26 +231,6 @@ body {
     background: var(--panel-bg);
 }
 
- /* Timeline */
- .timeline {
-    position: absolute;
-    bottom: 0;
-    width: 57%;
-    left: 46.5%;
-    transform: translateX(-46.5%);
-    border-top: 1px solid var(--border-color);
-    height: 29%;
-    background: var(--panel-bg);
-    display: flex;
-    flex-direction: column;
-    transition: height 0.3s ease, width 0.3s ease, left 0.3s ease, transform 0.3s ease;
-}
-
-.timeline.hidden {
-    height: 0;
-    opacity: 0;
-    pointer-events: none;
-}
 
 /* When inspector is hidden */
 .inspector-panel.closed {
@@ -266,13 +250,7 @@ body {
     align-items: center;
 }
 
-.timeline-track {
-    flex: 1;
-    position: relative;
-    margin: 10px;
-    background: var(--secondary-dark);
-    border-radius: 4px;
-}
+
 
 /* Advanced Timeline */
 .timeline-markers {
@@ -280,17 +258,6 @@ body {
     height: 30px;
     background: var(--secondary-dark);
     margin: 5px 0;
-}
-
-.keyframe {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: var(--accent-blue);
-    border-radius: 50%;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
 }
 
 /* Layer System */
@@ -543,6 +510,11 @@ body {
     padding: 0; /* Remove padding for proper centering */
 }
 
+.panel-button-tool.active {
+    background-color: var(--accent-blue);
+    color: white;
+}
+
 .panel-button-tool svg {
     color: white;
     display: block; /* Ensure SVG behaves as a block element */
@@ -629,6 +601,8 @@ body {
     border-radius: 8px;
     color: white;
 }
+
+
 .camera-preview {
     position: fixed;
     z-index: 1001;
@@ -646,31 +620,31 @@ body {
     cursor: grab;
     min-width: 150px;
     min-height: 100px;
-}
-
-.camera-preview.expanded {
+    }
+    
+    .camera-preview.expanded {
     width: 100%;
     height: 100%;
     border-radius: 0;
-}
-
-.camera-preview.minimized {
+    }
+    
+    .camera-preview.minimized {
     width: 50px;
     height: 50px;
     border-radius: 10px;
     overflow: hidden;
-}
-
-.preview-controls {
+    }
+    
+    .preview-controls {
     position: absolute;
     top: 5px;
     right: 5px;
     z-index: 100;
     display: flex;
     gap: 5px;
-}
-
-.preview-controls button {
+    }
+    
+    .preview-controls button {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     padding: 5px 10px;
@@ -678,11 +652,11 @@ body {
     color: white;
     border-radius: 5px;
     transition: 0.2s;
-}
-
-.preview-controls button:hover {
+    }
+    
+    .preview-controls button:hover {
     background: rgba(255, 255, 255, 0.4);
-}
+    }
 
 .light-controls {
     margin: 10px 0;
@@ -951,8 +925,6 @@ margin: 8px 0;
 }
 
 
-
-
 #node-editor-close {
     width: 30px;
     height: 25px;
@@ -975,6 +947,7 @@ margin: 8px 0;
 .node-editor.visible {
     display: block;
 }
+
 
 .node-editor-header {
     background: #1a1a1a;
@@ -1029,20 +1002,17 @@ margin: 8px 0;
 /* Improved node styling */
 .node {
     position: absolute;
-    background: linear-gradient(145deg, #3a3a3a, #2e2e2e);
+    min-width: 120px;
+    background-color: #2d2d2d;
     border: 1px solid #555;
-    border-radius: 6px;
-    min-width: 80px;
-    max-width: 220px;
-    padding: 12px;
-    cursor: move;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    z-index: 1;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    user-select: none;
+    z-index: 10;
 }
 
 svg {
-    z-index: 2; /* Connections above nodes and grid */
+    z-index: 12; /* Connections above nodes and grid */
 }
 
 .node:hover {
@@ -1051,21 +1021,10 @@ svg {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
-.node.selected {
-    border-color: #4caf50;
-    background: linear-gradient(145deg, #4caf4f95, #3a3a3a);
-    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
-}
-
 .node-title {
     background: linear-gradient(90deg, #444, #383838);
-    padding: 6px 8px;
-    margin: -12px -12px 12px -12px;
-    border-radius: 6px 6px 0 0;
+    padding: 4px 6px;
     color: #fff;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .node-content {
@@ -1073,10 +1032,10 @@ svg {
 }
 
 .node-socket {
-     position: absolute;
+    position: absolute;
     width: 12px;
     height: 12px;
-    background-color: #666;
+    background-color: #767676;
     border-radius: 50%;
     border: 2px solid #444;
     z-index: 2;
@@ -1225,7 +1184,7 @@ svg {
 /* تصميم الأزرار */
 .axis-controls {
     position: absolute;
-    top: 28%; /* الموضع العلوي */
+    top:9%; /* الموضع العلوي */
     right: 40px; /* الموضع من اليمين */
     width: 90px;
     height: 90px;
@@ -1240,6 +1199,8 @@ svg {
 .axis-controls.expanded {
     right: -33%;
 }
+
+
 /* الخطوط البيضاء بين المحاور */
 #axis-controls::before {
     content: '';
@@ -1266,8 +1227,8 @@ svg {
 
 /* الأزرار الدائرية */
 .axis-button {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -1413,14 +1374,7 @@ svg {
     border-radius: 3px;
 }
 
-.timeline-track {
-    position: relative;
-    height: 130px;
-    background: #2a2a2a;
-    margin-top: 10px;
-    border-radius: 4px;
-    overflow: hidden;
-}
+
 
 .timeline-scale {
     position: absolute;
@@ -1502,13 +1456,7 @@ svg {
     margin-left: auto;
 }
 
-.timeline-track {
-    cursor: grab;
-}
 
-.timeline-track:active {
-    cursor: grabbing;
-}
 
 .recording-segment.selected {
     outline: 2px solid #fff;
