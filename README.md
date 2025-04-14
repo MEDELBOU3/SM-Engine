@@ -100,25 +100,25 @@ SM-Engine is built on modern and reliable technologies:
 
 SM-Engine features a customizable, panel-based interface designed for productivity:
 
-```
-+---------------------------------------------------------------+
+
+ ---------------------------------------------------------------
 | Main Toolbar (File, Edit, View, Tools, Physics, Help)         |
-+--------------------------+------------------------------------+
+ --------------------------+------------------------------------
 | Hierarchy Panel          |                                    |
 |   - Scene Objects        |                                    |
 |   - Physics Environments |         3D Viewport                |
 |   - Camera Presets       |         (Main Work Area)           |
 |   - Node Graphs          |                                    |
-+--------------------------+------------------------------------+
+ --------------------------+------------------------------------
 | Context Panel            | Inspector Panel                    |
 |   - Assets Browser       |   - Transform Properties           |
 |   - Brush Settings       |   - Material Parameters            |
 |   - Node Editor          |   - Physics Properties             |
 |   - Console Output       |   - Component Settings             |
-+--------------------------+------------------------------------+
+ --------------------------+------------------------------------
 | Status Bar (FPS, Object Count, Memory Usage, Recording)       |
-+---------------------------------------------------------------+
-```
+ ---------------------------------------------------------------
+
 
 - **Top:** Main menu and toolbar for global actions
 - **Left:** Hierarchical organization of scene elements
