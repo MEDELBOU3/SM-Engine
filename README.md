@@ -5,7 +5,7 @@
 </div>
 
 <p align="center">
-  <strong>A comprehensive and modular 3D modeling editor built with C# and OpenGL, featuring node-based workflows, integrated physics simulation, and powerful brush tools.</strong>
+  <strong>A comprehensive and modular 3D modeling editor built with html css js and webGL, featuring node-based workflows, integrated physics simulation, and powerful brush tools.</strong>
 </p>
 
 <p align="center">
