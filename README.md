@@ -69,7 +69,7 @@
 - **Constraints System:** Create joints, hinges, springs, and mechanical linkages
 
 ### 🖼️ Advanced Viewport
-- **High-Performance Rendering:** OpenGL 4.0+ powered visualization with PBR materials
+- **High-Performance Rendering:**webGL powered visualization with PBR materials
 - **Multiple View Modes:** Orthographic (Top, Front, Side) and Perspective cameras with customizable settings
 - **Real-time Analytics:** Monitor FPS, draw calls, polygon count, and memory usage
 - **Transformation Tools:** Intuitive gizmos for precise object manipulation (Translate, Rotate, Scale)
@@ -87,12 +87,56 @@
 
 SM-Engine is built on modern and reliable technologies:
 
-- **Language:** C# (.NET Framework 4.8)
-- **Graphics API:** OpenGL 4.0+ via OpenTK
-- **GUI Framework:** Windows Presentation Foundation (WPF)
-- **Physics Engine:** BulletSharp (C# wrapper for Bullet Physics)
-- **Asset Processing:** Assimp.Net for 3D model import
-- **Shader System:** Custom GLSL shader framework with hot-reloading
+## 🖥 Language
+- **JavaScript (ES6+)**
+  - Runs natively in the browser
+  - Ideal for real-time interactive applications
+
+## 🧱 Graphics API
+- **[Three.js](https://threejs.org/)**  
+  - Built on top of WebGL
+  - Simplifies 3D rendering, lighting, materials, and cameras
+
+## 🖼 GUI Framework
+- **[dat.GUI](https://github.com/dataarts/dat.gui)** or **[Tweakpane](https://cocopon.github.io/tweakpane/)**
+  - Lightweight GUI for real-time controls and debugging
+- **Optional (Advanced UI):**
+  - **[React.js](https://reactjs.org/)** or **[Vue.js](https://vuejs.org/)** for component-based UIs
+
+## 🎮 Physics Engine
+- **[Ammo.js](https://github.com/kripken/ammo.js)**
+  - Port of Bullet Physics to JavaScript/WebAssembly
+- **Alternative: [Cannon-es](https://github.com/pmndrs/cannon-es)**
+  - Easier to use, great for games and simulations
+
+## 🧳 Asset Processing (3D Models)
+- **[Three.js Loaders](https://threejs.org/docs/#examples/en/loaders/GLTFLoader)**
+  - Use `GLTFLoader`, `FBXLoader`, `OBJLoader` for importing models
+- **Recommended format: GLTF/GLB**
+  - Optimized for web performance
+- **Tools:** Blender, glTF-Pipeline for converting and optimizing assets
+
+## ✨ Shader System
+- **Custom GLSL Shaders**
+  - Use `ShaderMaterial` or `RawShaderMaterial` in Three.js
+- **Hot Reloading:**
+  - Implement with `fetch()` + `ShaderMaterial.needsUpdate = true`
+  - Use **Vite** or **Webpack** with file watching for live shader reloading
+---
+
+## 🧩 Optional Tools for Development
+
+### 🔧 Dev Environment
+- **[Vite](https://vitejs.dev/)** or **[Parcel](https://parceljs.org/)** for bundling and fast dev server
+
+### 🎨 Post-Processing
+- Use `EffectComposer` with `ShaderPass`, `BloomPass`, etc. for advanced visual effects
+
+### 🔍 Scene Graph Inspector
+- Built-in **[Three.js Editor](https://threejs.org/editor/)** or custom developer tools
+
+---
+
 
 ---
 
