@@ -37,6 +37,11 @@
 </div>
 
 <div align="center">
+  <img src="screenshoots/sculpting&modeling.png" alt="Brush Modeling Tools" width="90%">
+  <p><em>Modeling and sculpting tools in real time</em></p>
+</div>
+
+<div align="center">
   <img src="screenshoots/Screenshot%20(91).png" alt="Editor Workspace" width="90%">
   <p><em>Workspace overview with Scene Hierarchy and Asset Management</em></p>
 </div>
