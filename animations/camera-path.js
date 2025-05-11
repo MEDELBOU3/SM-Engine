@@ -4,6 +4,9 @@ const LOOK_AT_MODES = {
     ORIGIN: "origin",
 };
 
+let plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+let intersectPoint = new THREE.Vector3();
+
 // State
 let pointsCam = [];
 let curve, line;
@@ -14,11 +17,16 @@ let mediaRecorder, recordedChunks = [];
 let recordingStartTime = 0;
 let recordingTimerInterval;
 let cameraOnPath = null;
+let editModeEnabled = false;
+let selectedPoint = null;
+let pointMarkers = [];
+
 
 // DOM Elements
 const addPointBtn = document.getElementById('addPointBtn');
 const startCameraBtn = document.getElementById('startCameraBtn');
 const toggleLookAtBtn = document.getElementById('toggleLookAtBtn');
+const toggleEditBtn = document.getElementById('toggleEditBtn');
 const startRecordingBtn = document.getElementById('startRecordingBtn');
 const stopRecordingBtn = document.getElementById('stopRecordingBtn');
 const recordingStatus = document.getElementById('recordingStatus') || document.createElement('div');
@@ -28,6 +36,7 @@ const recordingTimer = document.getElementById('recordingTimer') || document.cre
 addPointBtn.addEventListener('click', addPointsCam);
 startCameraBtn.addEventListener('click', startCamera);
 toggleLookAtBtn.addEventListener('click', toggleLookAtMode);
+toggleEditBtn.addEventListener('click', toggleEditMode);
 startRecordingBtn.addEventListener('click', startRecording);
 stopRecordingBtn.addEventListener('click', stopRecording);
 
@@ -35,6 +44,36 @@ stopRecordingBtn.addEventListener('click', stopRecording);
 document.getElementById('cameraTools').addEventListener('click', function() {
     document.getElementById('cameraMenu').classList.toggle('active');
 });
+
+// Initialize Transform Controls
+function initTransformControls() {
+    if (!transformControls) {
+        transformControls = new THREE.TransformControls(camera, renderer.domElement);
+        transformControls.addEventListener('change', render);
+        
+        // Important: prevent orbit controls from moving while using transform controls
+        transformControls.addEventListener('dragging-changed', function(event) {
+            if (typeof controls !== 'undefined' && controls.enabled !== undefined) {
+                controls.enabled = !event.value;
+            }
+        });
+        
+        transformControls.addEventListener('objectChange', function() {
+            if (selectedPoint !== null && transformControls.object) {
+                // Update the point in our array with the new position
+                pointsCam[selectedPoint].copy(transformControls.object.position);
+                // Redraw the path with updated points
+                drawPath();
+            }
+        });
+        
+        scene.add(transformControls);
+    }
+}
+
+// Mouse event listeners for point selection
+renderer.domElement.addEventListener('pointerdown', onPointerDown);
+renderer.domElement.addEventListener('pointermove', onPointerMove);
 
 // Functions
 function addPointsCam() {
@@ -46,8 +85,14 @@ function addPointsCam() {
 }
 
 function drawPath() {
-    // Remove existing line if there is one
+    // Remove existing line and point markers
     if (line) scene.remove(line);
+    
+    // Remove previous point markers
+    pointMarkers.forEach(marker => {
+        scene.remove(marker);
+    });
+    pointMarkers = [];
 
     if (pointsCam.length < 2) return;
 
@@ -64,11 +109,15 @@ function drawPath() {
     // Add spheres at each control point for better visibility
     pointsCam.forEach((point, index) => {
         const sphereGeometry = new THREE.SphereGeometry(0.1);
-        const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        // Use different color for selected point
+        const color = (selectedPoint === index && editModeEnabled) ? 0x00ff00 : 0xffff00;
+        const sphereMaterial = new THREE.MeshBasicMaterial({ color: color });
         const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
         sphere.position.copy(point);
         sphere.name = `PathPoint_${index}`;
+        sphere.userData = { type: 'pathPoint', index: index };
         scene.add(sphere);
+        pointMarkers.push(sphere);
     });
 }
 
@@ -127,7 +176,6 @@ function startCamera() {
     moveCameraShooting();
 }
 
-
 function moveCameraShooting() {
     if (!cameraOnPath || cameraFollowIndex > 1) return;
 
@@ -159,11 +207,79 @@ function moveCameraShooting() {
     }
 }
 
-
-
 function toggleLookAtMode() {
     lookAtTarget = lookAtTarget === LOOK_AT_MODES.PATH ? LOOK_AT_MODES.ORIGIN : LOOK_AT_MODES.PATH;
     alert(`Camera now looks at: ${lookAtTarget === LOOK_AT_MODES.PATH ? "path direction" : "origin (0,0,0)"}`);
+}
+
+function toggleEditMode() {
+    editModeEnabled = !editModeEnabled;
+    
+    // Initialize transform controls if needed
+    if (editModeEnabled) {
+        initTransformControls();
+        toggleEditBtn.textContent = "Disable Edit";
+        renderer.domElement.style.cursor = "pointer";
+    } else {
+        if (transformControls) {
+            transformControls.detach();
+        }
+        toggleEditBtn.textContent = "Enable Edit";
+        renderer.domElement.style.cursor = "default";
+        selectedPoint = null;
+    }
+    
+    // Redraw path to update point colors
+    drawPath();
+}
+
+function onPointerDown(event) {
+    if (!editModeEnabled) return;
+    
+    // Calculate mouse position in normalized device coordinates
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    
+    // Update the raycaster
+    raycaster.setFromCamera(mouse, camera);
+    
+    // Check for intersections with path points
+    const intersects = raycaster.intersectObjects(pointMarkers);
+    
+    if (intersects.length > 0) {
+        const object = intersects[0].object;
+        if (object.userData && object.userData.type === 'pathPoint') {
+            selectedPoint = object.userData.index;
+            transformControls.attach(object);
+            drawPath(); // Redraw to highlight selected point
+        }
+    } else {
+        // If clicking on empty space, deselect
+        selectedPoint = null;
+        transformControls.detach();
+        drawPath();
+    }
+}
+
+function onPointerMove(event) {
+    if (!editModeEnabled) return;
+    
+    // Calculate mouse position in normalized device coordinates
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    
+    // Update the raycaster
+    raycaster.setFromCamera(mouse, camera);
+    
+    // Check for intersections with path points
+    const intersects = raycaster.intersectObjects(pointMarkers);
+    
+    // Change cursor based on whether we're hovering over a point
+    if (intersects.length > 0) {
+        renderer.domElement.style.cursor = "pointer";
+    } else {
+        renderer.domElement.style.cursor = editModeEnabled ? "default" : "auto";
+    }
 }
 
 function startRecording() {
@@ -218,3 +334,61 @@ function startRecording() {
         alert("Error starting recording: " + error.message);
     }
 }
+
+function stopRecording() {
+    if (!recording) {
+        alert("No recording in progress!");
+        return;
+    }
+
+    mediaRecorder.stop();
+    recording = false;
+    clearInterval(recordingTimerInterval);
+
+    if (recordingStatus) {
+        recordingStatus.textContent = "Recording: Stopped";
+    }
+
+    console.log("Recording stopped");
+}
+
+function updateRecordingTimer() {
+    if (!recording) return;
+    
+    const elapsedTime = Math.floor((Date.now() - recordingStartTime) / 1000);
+    const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
+    const seconds = (elapsedTime % 60).toString().padStart(2, '0');
+    
+    if (recordingTimer) {
+        recordingTimer.textContent = `${minutes}:${seconds}`;
+    }
+}
+
+function saveVideo() {
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'camera-path-video.webm';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 100);
+}
+
+
+
+function render() {
+    renderer.render(scene, camera);
+}
+
+// Add this to your window resize handler if you have one
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+window.addEventListener('resize', onWindowResize, false);
