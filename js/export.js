@@ -61,3 +61,27 @@ function closePreview() {
 // Event listeners
 document.getElementById('preview-button').addEventListener('click', showPreview);
 document.getElementById('close-preview').addEventListener('click', closePreview);
+
+
+//button to open and close the preview
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleButton = document.getElementById('togglePreview');
+    const cameraPreview = document.getElementById('cameraPreview');
+    const toggleIcon = toggleButton.querySelector('i');
+
+    toggleButton.addEventListener('click', () => {
+        // Toggle the hidden class
+        cameraPreview.classList.toggle('hidden');
+
+        // Update icon based on visibility
+        if (cameraPreview.classList.contains('hidden')) {
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    });
+});
+
+
