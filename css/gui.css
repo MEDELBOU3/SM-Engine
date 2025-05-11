@@ -35,6 +35,11 @@
     background-color: #444;
     border: 1px solid #555;
 }
+.dat.GUI .controller input[type="color"] {
+    z-index: 10001 !important;
+    position: relative;
+}
+
 
 .dat.GUI .controller input[type="range"]:focus,
 .dat.GUI .controller input[type="color"]:focus {
@@ -45,3 +50,4 @@
     background-color: #444;
     border: 1px solid #555;
 }
+
