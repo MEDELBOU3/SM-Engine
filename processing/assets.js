@@ -35,6 +35,7 @@ class AssetsPanel {
         };
 
         this.favorites = JSON.parse(localStorage.getItem('assetFavorites')) || [];
+    
         this.currentPath = [];
         this.currentView = 'grid';
         this.sortBy = 'name';
@@ -69,6 +70,7 @@ class AssetsPanel {
         this.setupEventListeners();
         this.loadSavedAssets();
     }
+
 
     initializeUI() {
         // Create assets panel HTML with improved UI
@@ -442,34 +444,119 @@ setupEventListeners() {
     });
 
     // Preview control buttons
-   document.querySelector('.wireframe-btn').addEventListener('click', (e) => {
-            this.previewSettings.showWireframe = !this.previewSettings.showWireframe;
-            e.target.closest('.wireframe-btn').classList.toggle('active', this.previewSettings.showWireframe);
-            this.updatePreviewSettings();
-        });
+    document.querySelector('.wireframe-btn').addEventListener('click', (e) => {
+        this.previewSettings.showWireframe = !this.previewSettings.showWireframe;
+        e.target.closest('.preview-btn').classList.toggle('active', this.previewSettings.showWireframe);
+        this.updatePreviewSettings(); // Apply changes immediately
+    });
 
-        document.querySelector('.grid-btn').addEventListener('click', (e) => {
-            this.previewSettings.showGrid = !this.previewSettings.showGrid;
-            e.target.closest('.grid-btn').classList.toggle('active', this.previewSettings.showGrid);
-            this.updatePreviewSettings();
-        });
+    document.querySelector('.grid-btn').addEventListener('click', (e) => {
+        this.previewSettings.showGrid = !this.previewSettings.showGrid;
+        e.target.closest('.preview-btn').classList.toggle('active', this.previewSettings.showGrid);
+        this.updatePreviewSettings(); // Apply changes immediately
+    });
 
-        document.querySelector('.rotate-btn').addEventListener('click', (e) => {
-            this.previewSettings.autoRotate = !this.previewSettings.autoRotate;
-            e.target.closest('.rotate-btn').classList.toggle('active', this.previewSettings.autoRotate);
-            this.updatePreviewSettings();
-        });
+    document.querySelector('.rotate-btn').addEventListener('click', (e) => {
+        this.previewSettings.autoRotate = !this.previewSettings.autoRotate;
+        e.target.closest('.preview-btn').classList.toggle('active', this.previewSettings.autoRotate);
+        this.updatePreviewSettings(); // Apply changes immediately
+    });
 
-        document.querySelector('.bones-btn').addEventListener('click', (e) => {
-            this.previewSettings.showBones = !this.previewSettings.showBones;
-            e.target.closest('.bones-btn').classList.toggle('active', this.previewSettings.showBones);
-            this.updatePreviewSettings();
-        });
+    document.querySelector('.bones-btn').addEventListener('click', (e) => {
+        this.previewSettings.showBones = !this.previewSettings.showBones;
+        e.target.closest('.preview-btn').classList.toggle('active', this.previewSettings.showBones);
+        this.updatePreviewSettings(); // Apply changes immediately
+    });
 
-        document.querySelector('.bg-color-btn').addEventListener('click', () => {
-            this.previewSettings.backgroundColor = this.previewSettings.backgroundColor === '#1a1a1a' ? '#4a4a4a' : '#1a1a1a';
-            this.updatePreviewSettings();
-        });
+    document.querySelector('.bg-color-btn').addEventListener('click', () => {
+        // Simple toggle example, could use a color picker
+        const currentColor = this.previewSettings.backgroundColor;
+        this.previewSettings.backgroundColor = currentColor === '#1a1a1a' ? '#4a4a4a' : (currentColor === '#4a4a4a' ? '#f0f0f0' : '#1a1a1a');
+        this.updatePreviewSettings(); // Apply changes immediately
+    });
+
+    //Context for assets
+     // Context menu for assets
+     const assetsContent = document.querySelector('.assets-content'); // Attach to parent
+     if (assetsContent) {
+          assetsContent.addEventListener('contextmenu', (e) => {
+             const assetItem = e.target.closest('.asset-item'); // Find closest asset item
+             if (assetItem) {
+                 e.preventDefault();
+                 const assetId = assetItem.dataset.assetId;
+                 const rect = assetItem.getBoundingClientRect();
+ 
+                 const contextMenu = document.querySelector('.asset-context-menu');
+                 // Position relative to viewport
+                 contextMenu.style.left = `${e.clientX}px`;
+                 contextMenu.style.top = `${e.clientY}px`;
+                 contextMenu.dataset.assetId = assetId; // Store ID on the menu itself
+ 
+                 // Update context menu text based on asset state (e.g., Favorite/Unfavorite)
+                 const asset = this.findAssetById(assetId);
+                 if (asset) {
+                     const favMenuItem = contextMenu.querySelector('li[data-action="favorite"]');
+                      if (favMenuItem) {
+                          favMenuItem.innerHTML = asset.favorite
+                              ? '<i class="fas fa-star"></i> Unfavorite'
+                              : '<i class="far fa-star"></i> Add to Favorites';
+                      }
+                 }
+ 
+ 
+                 contextMenu.classList.add('visible');
+             } else {
+                 // Clicked outside an asset item, hide menu
+                  document.querySelector('.asset-context-menu').classList.remove('visible');
+             }
+         });
+     } else {
+         console.error("Assets content area not found for context menu listener.");
+     }
+ 
+ 
+     // Handle context menu actions
+     document.querySelectorAll('.asset-context-menu li').forEach(item => {
+         // Remove previous listeners to avoid duplicates if setupEventListeners is called multiple times
+         // item.removeEventListener('click', this.handleContextMenuItemClick); // Needs a bound reference
+         // Or ensure setupEventListeners is only called ONCE.
+ 
+         item.addEventListener('click', (e) => { // Arrow function keeps 'this' context
+             const action = e.currentTarget.dataset.action; // Use currentTarget
+             const contextMenu = document.querySelector('.asset-context-menu');
+             const assetId = contextMenu.dataset.assetId;
+ 
+             if (action && assetId) {
+                  this.handleContextMenuAction(action, assetId);
+             } else {
+                 console.warn("Action or AssetID missing from context menu click.");
+             }
+ 
+             contextMenu.classList.remove('visible'); // Hide menu after click
+         });
+     });
+ 
+     // Close context menu when clicking elsewhere
+     document.addEventListener('click', (e) => {
+          // Hide context menu if click is outside it
+         if (!e.target.closest('.asset-context-menu')) {
+             document.querySelector('.asset-context-menu').classList.remove('visible');
+         }
+          // Hide sort menu if click is outside it AND outside the sort button
+          if (!e.target.closest('.sort-menu') && !e.target.closest('.sort-btn')) {
+              document.querySelector('.sort-menu').classList.remove('visible');
+          }
+          // Hide import dropdown if click is outside it AND outside the import button
+          if (!e.target.closest('.import-dropdown') && !e.target.closest('.import-btn')) {
+              document.querySelector('.import-dropdown').classList.remove('visible');
+          }
+     }, true); // Use capture phase for dropdowns if needed
+ 
+ 
+      // Add favorites saving logic
+      this.saveFavorites = () => {
+          localStorage.setItem('assetFavorites', JSON.stringify(this.favorites));
+      };
 
     // Make assets draggable to scene
     document.addEventListener('dragstart', (e) => {
@@ -548,7 +635,27 @@ setupEventListeners() {
     });
         
     timelineSlider.addEventListener('input', (e) => {
+        // Pause animation while scrubbing for better control
+        if (this.activeAction && !this.activeAction.paused) {
+            this.activeAction.paused = true;
+            timelineSlider.dataset.wasPlaying = 'true'; // Mark that it was playing
+        }
         this.scrubAnimation(parseFloat(e.target.value) / 100);
+    });
+
+      // Use 'change' for when scrubbing finishes (mouse up)
+      timelineSlider.addEventListener('change', (e) => {
+        // Resume playback if it was playing before scrubbing started
+        if (timelineSlider.dataset.wasPlaying === 'true') {
+            if (this.activeAction) {
+                this.activeAction.paused = false;
+                // Ensure it plays from the scrubbed position if needed
+                // this.activeAction.play(); // Might not be needed if mixer time was set
+            }
+            delete timelineSlider.dataset.wasPlaying; // Clear the flag
+        }
+        // Final scrub set - redundant if 'input' worked correctly
+        // this.scrubAnimation(parseFloat(e.target.value) / 100);
     });
 }
 
@@ -655,114 +762,525 @@ handleFiles(files) {
         });
 }
 
+// Implement the context menu handler
+handleContextMenuAction(action, assetId) {
+    console.log(`Context action '${action}' on asset '${assetId}'`); // Debug log
+    const asset = this.findAssetById(assetId); // Helper function to find asset
+    if (!asset) {
+        console.error(`Asset not found for action: ${assetId}`);
+        this.showErrorNotification(`Asset with ID ${assetId} not found.`);
+        return;
+    }
+
+    switch (action) {
+        case 'preview':
+            this.showAssetPreview(assetId);
+            break;
+        case 'add-to-scene':
+            this.addAssetToScene(assetId); // Use the existing method
+            break;
+        case 'favorite':
+            this.toggleFavorite(assetId);
+            break;
+        case 'rename':
+            this.renameAsset(assetId);
+            break;
+        case 'duplicate':
+            this.duplicateAsset(assetId);
+            break;
+        case 'delete':
+            this.confirmRemoveAsset(assetId); // Add confirmation step
+            break;
+        default:
+            console.warn(`Unhandled context menu action: ${action}`);
+    }
+}
+
+// Helper to find an asset by ID across all types
+findAssetById(assetId) {
+    return [
+       ...this.assets.models,
+       ...this.assets.textures,
+       ...this.assets.materials,
+       ...this.assets.hdris,
+       // Search recent/favorites if necessary, though they should point to main assets
+   ].find(a => a && a.id === assetId); // Add check for 'a' being defined
+}
+
+// Implement or refine specific actions
+toggleFavorite(assetId) {
+    const asset = this.findAssetById(assetId);
+    if (asset) {
+        asset.favorite = !asset.favorite;
+        console.log(`Asset ${asset.name} favorite status: ${asset.favorite}`);
+
+        // Update favorite icon in the UI immediately
+        const assetItemElement = document.querySelector(`.asset-item[data-asset-id="${assetId}"]`);
+        if (assetItemElement) {
+            assetItemElement.classList.toggle('favorite', asset.favorite);
+            const favIcon = assetItemElement.querySelector('.favorite-btn i');
+            if (favIcon) {
+                favIcon.classList.toggle('fa-star', asset.favorite); // Solid star
+                favIcon.classList.toggle('fa-star-o', !asset.favorite); // Outline star
+            }
+        }
+         // Update context menu text based on new state (optional)
+
+
+        this.updateAssetsView(); // Redraw view if needed (e.g., if in Favorites tab)
+        this.saveAssets(); // Persist changes
+        this.saveFavorites(); // Save favorites separately if needed
+    }
+}
+
+renameAsset(assetId) {
+    const asset = this.findAssetById(assetId);
+    if (asset) {
+        const newName = prompt(`Enter new name for "${asset.name}":`, asset.name);
+        if (newName && newName.trim() !== '' && newName !== asset.name) {
+            asset.name = newName.trim();
+            console.log(`Asset renamed to: ${asset.name}`);
+            this.updateAssetsView(); // Update UI
+            this.saveAssets(); // Persist changes
+
+            // Update preview title if this asset is being previewed
+            if (this.currentAsset && this.currentAsset.id === assetId) {
+                document.querySelector('.preview-title').textContent = `Asset Preview: ${asset.type}`;
+                document.querySelector('.model-name').textContent = asset.name;
+            }
+        }
+    }
+}
+
+duplicateAsset(assetId) {
+    const originalAsset = this.findAssetById(assetId);
+    if (originalAsset) {
+        // Note: Duplicating assets with complex THREE objects (models, textures)
+        // requires careful cloning to avoid shared references.
+        // structuredClone might work for metadata, but not THREE objects.
+        console.warn(`Duplicating asset '${originalAsset.name}'. Full object duplication might be complex.`);
+
+        // Simple metadata duplication (adjust as needed for actual object cloning)
+        const newAsset = {
+            ...originalAsset, // Spread existing properties
+            id: this.generateAssetId(), // Generate a NEW ID
+            name: `${originalAsset.name} Copy`, // Append "Copy"
+            dateAdded: new Date(), // Set new date
+            favorite: false, // Duplicates aren't favorites by default
+            // *** CRITICAL: Handle actual object/texture/material duplication ***
+            // object: originalAsset.object ? this.cloneThreeObject(originalAsset.object) : null,
+            // texture: originalAsset.texture ? originalAsset.texture.clone() : null, // THREE.Texture has clone()
+            // material: originalAsset.material ? originalAsset.material.clone() : null, // THREE materials often have clone()
+            // thumbnail: this.createThumbnail(...) // Re-generate thumbnail for the clone
+        };
+
+        // Placeholder: For now, just showing the concept
+        if (originalAsset.type === 'model' && originalAsset.object) {
+             // Proper cloning is hard. For now, maybe just reference? (Not ideal)
+             // newAsset.object = originalAsset.object; // Creates shared reference - AVOID for modification
+             console.error("Model duplication requires deep cloning - not fully implemented.");
+             this.showErrorNotification("Model duplication not fully implemented yet.");
+             return; // Abort duplication for models for now
+        }
+         if (originalAsset.type === 'texture' && originalAsset.texture) {
+             newAsset.texture = originalAsset.texture.clone();
+             newAsset.thumbnail = this.createTextureThumbnail(newAsset.texture);
+         }
+         if (originalAsset.type === 'material' && originalAsset.material) {
+             newAsset.material = originalAsset.material.clone();
+              newAsset.thumbnail = this.createMaterialThumbnail(newAsset.material);
+         }
+         if (originalAsset.type === 'hdri' && originalAsset.texture) {
+             newAsset.texture = originalAsset.texture.clone();
+             newAsset.thumbnail = this.createHDRIThumbnail(newAsset.texture);
+         }
+
+
+        // Add the new asset to the correct array
+        const assetArray = this.assets[originalAsset.type + 's'];
+        if (assetArray) {
+            assetArray.push(newAsset);
+            this.cacheAsset(newAsset); // Cache the new asset
+            this.updateAssetsView();
+            this.saveAssets();
+            this.showInfoNotification(`Asset "${originalAsset.name}" duplicated.`); // Use an info notification
+        } else {
+            console.error(`Invalid asset type for duplication: ${originalAsset.type}`);
+        }
+    }
+}
+
+
+confirmRemoveAsset(assetId) {
+    const asset = this.findAssetById(assetId);
+    if (asset) {
+        if (confirm(`Are you sure you want to delete "${asset.name}"? This cannot be undone.`)) {
+            this.removeAsset(assetId);
+        }
+    }
+}
+
+// Refine removeAsset
+removeAsset(assetId) {
+    let assetRemoved = false;
+    let assetName = 'Unknown Asset';
+
+    Object.keys(this.assets).forEach(key => {
+        // Ensure the key corresponds to an array (like 'models', 'textures', etc.)
+        if (Array.isArray(this.assets[key])) {
+            const assetArray = this.assets[key];
+            const index = assetArray.findIndex(a => a && a.id === assetId); // Check 'a' exists
+            if (index > -1) {
+                const asset = assetArray[index];
+                assetName = asset.name; // Store name for notification
+                console.log(`Removing asset ${asset.type}: ${asset.name} (ID: ${assetId})`);
+
+                // Dispose THREE resources associated with the asset
+                this.disposeAsset(asset);
+
+                // Remove from the specific asset array
+                assetArray.splice(index, 1);
+
+                 // Remove from recent list if present
+                 const recentIndex = this.assets.recent.findIndex(r => r && r.id === assetId);
+                 if (recentIndex > -1) {
+                     this.assets.recent.splice(recentIndex, 1);
+                 }
+
+                // Remove from cache
+                this.assetCache?.delete(assetId);
+
+                // Remove from favorites (localStorage)
+                 const favIndex = this.favorites.indexOf(assetId);
+                 if (favIndex > -1) {
+                     this.favorites.splice(favIndex, 1);
+                     this.saveFavorites();
+                 }
+
+
+                assetRemoved = true;
+                // Don't break, asset ID *should* be unique, but check all lists just in case
+            }
+        }
+    });
+
+    if (assetRemoved) {
+        this.updateAssetsView(); // Update the UI
+        this.saveAssets(); // Persist changes to main asset lists
+        this.showInfoNotification(`Asset "${assetName}" deleted.`);
+
+        // If the deleted asset was being previewed, close the preview
+        if (this.currentAsset && this.currentAsset.id === assetId) {
+            document.querySelector('.asset-preview-panel').classList.remove('visible');
+            this.cleanupPreview();
+            this.currentAsset = null;
+        }
+    } else {
+        console.warn(`Asset with ID ${assetId} not found for deletion.`);
+        this.showErrorNotification(`Could not find asset with ID ${assetId} to delete.`);
+    }
+}
+
+// Implement disposeAsset more thoroughly
+disposeAsset(asset) {
+    console.log(`Disposing resources for asset: ${asset.name}`);
+    try {
+        if (asset.object && typeof asset.object.traverse === 'function') { // Models
+            asset.object.traverse((child) => {
+                if (child.geometry) {
+                    child.geometry.dispose();
+                    // console.log(`Disposed geometry for ${child.name || 'child'}`);
+                }
+                if (child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(mat => {
+                            this.disposeMaterialTextures(mat);
+                            mat.dispose();
+                        });
+                    } else {
+                        this.disposeMaterialTextures(child.material);
+                        child.material.dispose();
+                    }
+                   // console.log(`Disposed material for ${child.name || 'child'}`);
+                }
+            });
+             // If using SkeletonHelper, ensure it's removed/disposed if attached
+        } else if (asset.texture && typeof asset.texture.dispose === 'function') { // Textures, HDRIs
+            asset.texture.dispose();
+             console.log(`Disposed texture: ${asset.name}`);
+        } else if (asset.material && typeof asset.material.dispose === 'function') { // Materials
+             this.disposeMaterialTextures(asset.material);
+             asset.material.dispose();
+              console.log(`Disposed material: ${asset.name}`);
+        } else if (asset.materials && typeof asset.materials === 'object') { // MTL file materials?
+             Object.values(asset.materials).forEach(mat => {
+                 if (mat && typeof mat.dispose === 'function') {
+                    this.disposeMaterialTextures(mat);
+                    mat.dispose();
+                }
+             });
+             console.log(`Disposed material group: ${asset.name}`);
+        }
+
+        // Dispose thumbnail canvas/renderer if stored directly (unlikely)
+        // Clear references
+        asset.object = null;
+        asset.texture = null;
+        asset.material = null;
+        asset.materials = null;
+        asset.thumbnail = null; // Remove thumbnail data URL
+
+    } catch (error) {
+        console.error(`Error disposing asset ${asset.name}:`, error);
+    }
+}
+
+// Helper to dispose textures within a material
+disposeMaterialTextures(material) {
+    if (!material) return;
+    for (const key in material) {
+        const value = material[key];
+        if (value instanceof THREE.Texture && typeof value.dispose === 'function') {
+             // console.log(`Disposing texture '${key}' in material`);
+             value.dispose();
+        }
+    }
+}
+
+// Add notification functions (implement with your preferred UI library or simple divs)
+showErrorNotification(message) {
+    console.error("ASSET PANEL ERROR:", message);
+    // Example implementation:
+    const notification = document.createElement('div');
+    notification.className = 'asset-notification error';
+    notification.textContent = `Error: ${message}`;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000); // Auto-remove after 5s
+     // Add CSS for .asset-notification.error
+}
+
+showInfoNotification(message) {
+    console.log("ASSET PANEL INFO:", message);
+    // Example implementation:
+    const notification = document.createElement('div');
+    notification.className = 'asset-notification info';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000); // Auto-remove after 3s
+     // Add CSS for .asset-notification.info
+}
 
 updatePreviewSettings() {
-    if (!this.previewScene || !this.previewRenderer || !this.previewCamera) return;
+    // Check if preview components are actually initialized
+    if (!this.previewScene || !this.previewRenderer || !this.previewCamera) {
+        console.warn("Attempted to update preview settings, but preview is not initialized.");
+        return;
+    }
+    console.log("Applying preview settings:", this.previewSettings); // Debug log
 
     // Update background color
-    this.previewScene.background = new THREE.Color(this.previewSettings.backgroundColor);
-    this.previewRenderer.setClearColor(this.previewSettings.backgroundColor, 1);
+    // For textures/HDRIs, the scene background might be the asset itself. Handle this.
+    if (this.currentAsset?.type === 'hdri' && this.previewScene.background instanceof THREE.Texture) {
+        // Don't override HDRI background with solid color
+    } else if (this.currentAsset?.type === 'texture' && this.previewScene.background instanceof THREE.Texture) {
+        // Don't override checkerboard background with solid color
+        // (Unless you want an option to toggle checkerboard off)
+    }
+     else {
+        const bgColor = new THREE.Color(this.previewSettings.backgroundColor);
+        this.previewScene.background = bgColor;
+        this.previewRenderer.setClearColor(bgColor, 1);
+    }
+
 
     // Update auto-rotate
     if (this.previewControls) {
         this.previewControls.autoRotate = this.previewSettings.autoRotate;
-    }
-
-    // Handle grid visibility
-    if (this.previewGrid) {
-        this.previewGrid.visible = this.previewSettings.showGrid;
-    } else if (this.previewSettings.showGrid && (this.currentAsset?.type === 'model' || this.currentAsset?.type === 'material' || this.currentAsset?.type === 'hdri')) {
-        this.previewGrid = new THREE.GridHelper(3, 10, 0x333333, 0x222222);
-        this.previewGrid.position.y = -1;
-        this.previewScene.add(this.previewGrid);
-    }
-
-    // Handle wireframe for models and materials
-    if (this.currentAsset?.type === 'model' || this.currentAsset?.type === 'material') {
-        if (this.previewSettings.showWireframe) {
-            if (!this.previewWireframe) {
-                this.previewWireframe = new THREE.Group();
-                this.previewModel.traverse(child => {
-                    if (child.isMesh) {
-                        const wireframe = new THREE.WireframeGeometry(child.geometry);
-                        const line = new THREE.LineSegments(wireframe);
-                        line.material.color.set(0x00ff00);
-                        line.material.opacity = 0.25;
-                        line.material.transparent = true;
-                        line.position.copy(child.position);
-                        line.rotation.copy(child.rotation);
-                        line.scale.copy(child.scale);
-                        this.previewWireframe.add(line);
-                    }
-                });
-                this.previewScene.add(this.previewWireframe);
-            }
-        } else {
-            if (this.previewWireframe) {
-                this.previewScene.remove(this.previewWireframe);
-                this.previewWireframe = null;
-            }
+        // If turning auto-rotate on, might need to call controls.update() once if it stopped
+        if (this.previewSettings.autoRotate) {
+             // this.previewControls.update(); // Usually handled by the animation loop
         }
     }
 
-    // Handle bones for models with skeletons
-    if (this.currentAsset?.type === 'model') {
-        if (this.previewSettings.showBones) {
-            if (!this.previewSkeleton) {
-                let skeletonFound = false;
-                this.previewModel.traverse(child => {
-                    if (child.isSkinnedMesh && child.skeleton && !skeletonFound) {
-                        this.previewSkeleton = new THREE.SkeletonHelper(child);
-                        this.previewSkeleton.material.linewidth = 2;
-                        this.previewScene.add(this.previewSkeleton);
-                        skeletonFound = true;
-                    }
-                });
+    // Handle grid visibility - Create if needed, toggle visibility
+    if (this.previewSettings.showGrid) {
+        if (!this.previewGrid) {
+            // Create grid only if it doesn't exist
+            console.log("Creating preview grid");
+            this.previewGrid = new THREE.GridHelper(10, 10, 0x555555, 0x333333); // Adjusted size/colors
+            this.previewGrid.position.y = -0.5; // Adjust based on model pivot
+             // Determine grid position based on model bounding box if available
+            if (this.previewModel) {
+                const box = new THREE.Box3().setFromObject(this.previewModel);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                 this.previewGrid.position.y = box.min.y; // Place grid at bottom
+            } else {
+                 this.previewGrid.position.y = -0.5; // Default position
             }
-        } else {
-            if (this.previewSkeleton) {
-                this.previewScene.remove(this.previewSkeleton);
-                this.previewSkeleton = null;
-            }
+
+            this.previewScene.add(this.previewGrid);
+        }
+        this.previewGrid.visible = true; // Ensure visible
+    } else {
+        if (this.previewGrid) {
+            console.log("Hiding preview grid");
+            this.previewGrid.visible = false; // Just hide if it exists
         }
     }
 
-    // Trigger a render
-    this.previewRenderer.render(this.previewScene, this.previewCamera);
+    // Handle wireframe for models (ensure previewModel exists)
+    // Remove existing wireframe helper unconditionally before potentially creating a new one
+    if (this.previewWireframe) {
+        console.log("Removing existing wireframe helper");
+        this.previewScene.remove(this.previewWireframe);
+         // Properly dispose geometry/material of the wireframe helper if needed
+        this.previewWireframe.traverse(child => {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) child.material.dispose();
+        });
+        this.previewWireframe = null;
+    }
+    if (this.previewSettings.showWireframe && this.previewModel && this.currentAsset?.type === 'model') {
+        console.log("Creating wireframe helper");
+        this.previewWireframe = new THREE.Group();
+        this.previewModel.traverse(child => {
+            if (child.isMesh && child.geometry) { // Check geometry exists
+                try { // Add try-catch for robustness
+                    const wireframeGeo = new THREE.WireframeGeometry(child.geometry);
+                    const wireframeMat = new THREE.LineBasicMaterial({
+                         color: 0x00ff00, // Wireframe color
+                         linewidth: 1, // Note: linewidth > 1 requires WebGL2 or extensions
+                         transparent: true,
+                         opacity: 0.5
+                        });
+                    const line = new THREE.LineSegments(wireframeGeo, wireframeMat);
+                    // Match transform of the original mesh part
+                    line.position.copy(child.position);
+                    line.rotation.copy(child.rotation);
+                    line.scale.copy(child.scale);
+                    this.previewWireframe.add(line);
+                } catch (e) {
+                    console.error("Error creating wireframe for mesh:", child.name, e);
+                }
+            }
+        });
+        this.previewScene.add(this.previewWireframe);
+    }
+
+    // Handle bones for models (ensure previewModel exists and is skinned)
+    // Remove existing skeleton helper unconditionally
+     if (this.previewSkeleton) {
+        console.log("Removing existing skeleton helper");
+        this.previewScene.remove(this.previewSkeleton);
+        // SkeletonHelper doesn't need explicit geometry/material disposal typically
+        this.previewSkeleton = null;
+    }
+    if (this.previewSettings.showBones && this.previewModel && this.currentAsset?.type === 'model') {
+        console.log("Attempting to create skeleton helper");
+        let skeletonFound = false;
+        this.previewModel.traverse(child => {
+            // Find the root object for the skeleton helper (often the scene or skinned mesh parent)
+             if (child.isSkinnedMesh && !skeletonFound) {
+                 console.log("Found skinned mesh, creating SkeletonHelper for:", child.name);
+                 this.previewSkeleton = new THREE.SkeletonHelper(child); // Pass the skinned mesh itself
+                 this.previewSkeleton.material.linewidth = 2; // Adjust line width
+                 this.previewScene.add(this.previewSkeleton);
+                 skeletonFound = true; // Create only one helper for the model
+             }
+             // Alternative: Find the highest parent with a skeleton
+             /* if (child.skeleton && !skeletonFound) {
+                 console.log("Found object with skeleton, creating SkeletonHelper for:", child.name);
+                 this.previewSkeleton = new THREE.SkeletonHelper(child); // Pass the object with the skeleton
+                 this.previewSkeleton.material.linewidth = 2;
+                 this.previewScene.add(this.previewSkeleton);
+                 skeletonFound = true;
+             } */
+        });
+        if (!skeletonFound) {
+            console.log("No suitable skinned mesh or skeleton found for SkeletonHelper.");
+        }
+    }
+
+    // *** Force a render immediately after applying settings ***
+    // This might be redundant if the animation loop is running smoothly,
+    // but can help ensure changes are visible instantly.
+    // if (this.previewRenderer && this.previewScene && this.previewCamera) {
+    //     this.previewRenderer.render(this.previewScene, this.previewCamera);
+    // }
 }
 
 cleanupPreview() {
+    console.log("Cleaning up previous preview..."); // Debug log
     if (this.previewAnimationId) {
         cancelAnimationFrame(this.previewAnimationId);
         this.previewAnimationId = null;
     }
+
+    // Remove resize listener specific to the preview
+    window.removeEventListener('resize', this.resizePreviewCanvas); // Ensure the correct bound function is removed if used previously
+
     if (this.previewMixer) {
+        // Properly stop and uncache actions/objects
         this.previewMixer.stopAllAction();
+        if(this.previewModel && this.previewModel.animations) {
+             this.previewModel.animations.forEach(clip => {
+                this.previewMixer.uncacheClip(clip);
+            });
+        }
+        if(this.previewModel) {
+             this.previewMixer.uncacheRoot(this.previewModel);
+        }
         this.previewMixer = null;
     }
     if (this.previewControls) {
         this.previewControls.dispose();
         this.previewControls = null;
     }
+
+     // Dispose scene contents thoroughly
+    if (this.previewScene) {
+        this.disposeScene(this.previewScene); // Use your existing disposeScene method
+        this.previewScene = null;
+    }
+
+    // Dispose renderer AFTER scene objects
     if (this.previewRenderer) {
         this.previewRenderer.dispose();
         this.previewRenderer = null;
     }
-    if (this.previewScene) {
-        this.disposeScene(this.previewScene);
-        this.previewScene = null;
-    }
-    this.previewCamera = null;
+
+
+    this.previewCamera = null; // Just nullify camera reference
+
+    // Nullify helpers (disposeScene should handle their geometry/material)
     this.previewGrid = null;
     this.previewWireframe = null;
     this.previewSkeleton = null;
-    this.previewModel = null;
-    this.activeAction = null;
-    this.currentAsset = null;
+    this.previewModel = null; // Nullify model reference
 
+    this.activeAction = null;
+    // Keep this.currentAsset until the next one is selected
+
+    // Clear the canvas context if possible (might help prevent lingering visuals)
     const canvas = document.getElementById('preview-canvas');
-    const context = canvas.getContext('2d');
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    if (canvas) {
+        const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
+        if (context) {
+             // Optional: Force context loss if issues persist (drastic)
+             // const ext = context.getExtension('WEBGL_lose_context');
+             // if (ext) ext.loseContext();
+             context.clearColor(0, 0, 0, 0);
+             context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+        } else {
+            const ctx2d = canvas.getContext('2d');
+            if (ctx2d) {
+                ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+    }
+    // Hide the preview container display? Or let the next setup handle it.
+    // document.querySelector('.preview-container').style.display = 'none';
 }
 
 
@@ -901,32 +1419,7 @@ revertToVersion(assetId, version) {
     }
 }
 
-disposeAsset(asset) {
-    if (asset.object) {
-    asset.object.traverse((child) => {
-        if (child.geometry) {
-            child.geometry.dispose();
-        }
-        if (child.material) {
-            if (Array.isArray(child.material)) {
-                child.material.forEach(mat => mat.dispose());
-            } else {
-                child.material.dispose();
-            }
-        }
-    });
-    }
-    
-    if (asset.texture) {
-        asset.texture.dispose();
-    }
-    
-    // Remove from assets array
-    const index = this.assets[asset.type + 's'].findIndex(a => a.id === asset.id);
-    if (index > -1) {
-       index.assets[asset.type + 's'].splice(index, 1);
-    }
-}
+
 
 // Add asset caching to avoid reloading
 cacheAsset(asset) {
@@ -972,21 +1465,6 @@ validateAsset(file) {
     }
 
     return true;
-}
-
-removeAsset(assetId) {
-    Object.keys(this.assets).forEach(type => {
-    const index = this.assets[type].findIndex(a => a.id === assetId);
-    if (index > -1) {
-        const asset = this.assets[type][index];
-        this.disposeAsset(asset);
-        this.assets[type].splice(index, 1);
-        this.assetCache?.delete(assetId);
-    }
-    });
-    
-    this.updateAssetsView();
-    this.saveAssets();
 }
 
 
@@ -1531,6 +2009,7 @@ loadHDRI(file, autoAddToScene = true) {
         };
         reader.readAsArrayBuffer(file);
     });
+
 }
 
 applyHDRItoScene(asset) {
@@ -1538,14 +2017,11 @@ applyHDRItoScene(asset) {
         console.error('Invalid HDRI asset:', asset);
         return;
     }
-
     const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
     pmremGenerator.compileEquirectangularShader();
     const envMap = pmremGenerator.fromEquirectangular(asset.texture).texture;
-
     this.scene.environment = envMap;
     this.scene.background = asset.texture; // or envMap
-
     pmremGenerator.dispose();
     console.log(`Applied HDRI "${asset.name}" to scene`);
 }
@@ -1805,6 +2281,171 @@ addToRecent(asset) {
     if (this.assets.recent.length > 20) this.assets.recent.pop();
 }
 
+loadSavedAssets() {
+    console.log("Attempting to load saved assets...");
+
+    // --- 1. Load Main Asset Metadata ---
+    let savedAssetData = null;
+    try {
+        const savedAssetString = localStorage.getItem('assets');
+        if (savedAssetString) {
+            savedAssetData = JSON.parse(savedAssetString);
+            console.log("Successfully parsed 'assets' from localStorage.");
+        } else {
+            console.log("No 'assets' data found in localStorage.");
+        }
+    } catch (error) {
+        console.error("Error parsing 'assets' from localStorage:", error);
+        // Optional: Clear corrupted data
+        // localStorage.removeItem('assets');
+        savedAssetData = null; // Ensure it's null if parsing failed
+    }
+
+    // --- 2. Load Favorites List ---
+    let savedFavorites = [];
+    try {
+        const savedFavoritesString = localStorage.getItem('assetFavorites');
+        if (savedFavoritesString) {
+            savedFavorites = JSON.parse(savedFavoritesString);
+             // Basic validation: Ensure it's an array
+            if (!Array.isArray(savedFavorites)) {
+                console.warn("'assetFavorites' data is not an array, resetting.");
+                savedFavorites = [];
+            } else {
+                console.log("Successfully parsed 'assetFavorites' from localStorage.");
+            }
+        } else {
+            console.log("No 'assetFavorites' data found in localStorage.");
+        }
+        this.favorites = savedFavorites; // Assign to the class property
+    } catch (error) {
+        console.error("Error parsing 'assetFavorites' from localStorage:", error);
+        // Optional: Clear corrupted data
+        // localStorage.removeItem('assetFavorites');
+        this.favorites = []; // Reset favorites on error
+    }
+
+    // --- 3. Load Recent Assets List ---
+     let savedRecent = [];
+     try {
+         const savedRecentString = localStorage.getItem('recentAssets');
+         if (savedRecentString) {
+             savedRecent = JSON.parse(savedRecentString);
+             // Basic validation: Ensure it's an array
+             if (!Array.isArray(savedRecent)) {
+                 console.warn("'recentAssets' data is not an array, resetting.");
+                 savedRecent = [];
+             } else {
+                 console.log("Successfully parsed 'recentAssets' from localStorage.");
+             }
+         } else {
+             console.log("No 'recentAssets' data found in localStorage.");
+         }
+         this.assets.recent = savedRecent; // Assign to the class property
+     } catch (error) {
+         console.error("Error parsing 'recentAssets' from localStorage:", error);
+         // Optional: Clear corrupted data
+         // localStorage.removeItem('recentAssets');
+         this.assets.recent = []; // Reset recent on error
+     }
+
+
+    // --- 4. Populate Internal Asset Arrays if Data Loaded ---
+    if (savedAssetData) {
+        // Assign loaded data, using empty arrays as fallback if a type is missing
+        this.assets.models = savedAssetData.models || [];
+        this.assets.hdris = savedAssetData.hdris || [];
+        this.assets.textures = savedAssetData.textures || [];
+        this.assets.materials = savedAssetData.materials || [];
+
+        console.log(`Loaded ${this.assets.models.length} models, ${this.assets.hdris.length} HDRIs, ${this.assets.textures.length} textures, ${this.assets.materials.length} materials.`);
+
+        // --- 5. Process Loaded Assets (Apply Favorites, Convert Dates) ---
+        const allLoadedAssets = [
+            ...this.assets.models,
+            ...this.assets.hdris,
+            ...this.assets.textures,
+            ...this.assets.materials
+        ];
+
+        const validAssetIds = new Set(allLoadedAssets.map(a => a.id)); // Keep track of valid IDs
+
+        allLoadedAssets.forEach(asset => {
+            // Ensure required fields exist (basic sanity check)
+            if (!asset.id || !asset.name || !asset.type) {
+                 console.warn("Loaded asset is missing essential properties (id, name, type):", asset);
+                 // Consider removing such invalid assets from the list here if needed
+                 return; // Skip processing this asset
+            }
+
+            // a) Apply favorite status
+            asset.favorite = this.favorites.includes(asset.id);
+
+            // b) Convert date string back to Date object
+            if (asset.dateAdded && typeof asset.dateAdded === 'string') {
+                asset.dateAdded = new Date(asset.dateAdded);
+                // Check if the date conversion was valid
+                if (isNaN(asset.dateAdded.getTime())) {
+                     console.warn(`Invalid date format for asset ${asset.name}, resetting date.`);
+                     asset.dateAdded = new Date(); // Fallback to current date
+                }
+            } else if (!asset.dateAdded) {
+                 // If dateAdded is missing, add it
+                 asset.dateAdded = new Date();
+            }
+
+            // c) Initialize placeholder for actual THREE objects (they are not loaded from storage)
+            asset.object = null;
+            asset.texture = null;
+            asset.material = null;
+            asset.materials = null; // For .mtl type assets
+
+            // d) Add loaded asset to cache (metadata only for now)
+            this.cacheAsset(asset);
+
+        });
+
+         // --- 6. Filter Recent List ---
+         // Ensure recent list only contains assets that actually exist in the main lists
+         this.assets.recent = this.assets.recent.filter(recentItem => recentItem && validAssetIds.has(recentItem.id));
+         console.log(`Filtered recent list contains ${this.assets.recent.length} valid items.`);
+
+
+    } else {
+        // If no data was loaded, ensure asset arrays are empty
+        this.assets.models = [];
+        this.assets.hdris = [];
+        this.assets.textures = [];
+        this.assets.materials = [];
+        this.assets.recent = [];
+        this.favorites = [];
+    }
+
+    // --- 7. Update the UI ---
+    console.log("Updating assets view after loading.");
+    this.updateAssetsView();
+
+    // --- 8. Load Last Active Tab ---
+     const lastTab = localStorage.getItem('lastActiveTab');
+     if (lastTab && document.querySelector(`.tab-btn[data-tab="${lastTab}"]`)) {
+         this.switchTab(lastTab);
+         console.log(`Switched to last active tab: ${lastTab}`);
+     } else {
+         this.switchTab('all'); // Default to 'all' if no last tab or invalid
+     }
+
+     // --- 9. Load Last View Preference (Optional) ---
+     const lastView = localStorage.getItem('lastAssetView');
+     if (lastView === 'list' || lastView === 'grid') {
+        this.switchView(lastView);
+        console.log(`Switched to last view preference: ${lastView}`);
+     } // Defaults to grid otherwise
+}
+
+
+
+
+
 saveAssets() {
     // Save assets to localStorage
     const saveData = {
@@ -1847,6 +2488,13 @@ saveAssets() {
     };
     
     localStorage.setItem('assets', JSON.stringify(saveData));
+
+    // Save recent items separately (only IDs or minimal info needed)
+   const recentSaveData = this.assets.recent.map(a => ({ id: a.id, name: a.name, type: a.type })); // Save minimal info
+   localStorage.setItem('recentAssets', JSON.stringify(recentSaveData));
+
+   // Note: Favorites are saved separately in saveFavorites() called by toggleFavorite()
+   console.log("Assets metadata saved.");
 }
 
 updateAssetsView() {
@@ -2039,6 +2687,7 @@ showAssetPreview(assetId) {
     const previewPanel = document.querySelector('.asset-preview-panel');
     previewPanel.classList.add('visible');
 
+
     document.querySelector('.preview-title').textContent = `Asset Preview: ${asset.type}`;
     document.querySelector('.model-name').textContent = asset.name;
     const statsElement = document.querySelector('.model-stats');
@@ -2055,9 +2704,12 @@ showAssetPreview(assetId) {
     // Reset canvas
     canvas.width = previewContainer.clientWidth;
     canvas.height = previewContainer.clientHeight;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('webgl2', {alpha: true}) || canvas.getContext('webgl', {alpha: true});
     context.clearRect(0, 0, canvas.width, canvas.height);
-
+    if (context) {
+        context.clearColor(0, 0, 0, 0); // Clear to transparent black
+        context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+    }
     this.cleanupPreview(); // Clean up previous preview
 
     switch (asset.type) {
@@ -2075,6 +2727,13 @@ showAssetPreview(assetId) {
             break;
         default:
             console.warn(`No preview handler for asset type: ${asset.type}`);
+            // Display placeholder or error in canvas
+            const ctx2d = canvas.getContext('2d');
+            ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+            ctx2d.fillStyle = '#555';
+            ctx2d.font = '16px Arial';
+            ctx2d.textAlign = 'center';
+            ctx2d.fillText(`Preview not available for type: ${asset.type}`, canvas.width / 2, canvas.height / 2);
     }
 
     const animControls = document.querySelector('.animation-controls');
@@ -2171,126 +2830,181 @@ setupModelPreview(asset, canvas) {
 }
 
 setupTexturePreview(asset, canvas) {
-    console.log('Setting up texture preview with asset:', asset);
+    console.log('Setting up texture preview with asset:', asset); // Keep for debugging
+
+    this.cleanupPreview(); // Ensure clean state BEFORE setting up new preview
 
     this.previewScene = new THREE.Scene();
     this.previewScene.background = new THREE.Color(this.previewSettings.backgroundColor);
 
-    const width = canvas.width;
-    const height = canvas.height;
+    const width = canvas.clientWidth; // Use clientWidth/Height for sizing
+    const height = canvas.clientHeight;
     this.previewCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    this.previewCamera.position.set(0, 0, 2);
+    this.previewCamera.position.set(0, 0, 1.5); // Adjust camera distance slightly if needed
     this.previewCamera.lookAt(0, 0, 0);
 
-    this.previewRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+    this.previewRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); // Ensure alpha for background potentially
     this.previewRenderer.setSize(width, height, false);
     this.previewRenderer.setPixelRatio(window.devicePixelRatio);
-    this.previewRenderer.setClearColor(this.previewSettings.backgroundColor, 1);
+    // Setting clear color might interfere if background is set, but okay for checkerboard fallback
+    // this.previewRenderer.setClearColor(this.previewSettings.backgroundColor, 1); // Keep or remove based on desired effect
 
     if (!asset.texture || !asset.texture.image) {
         console.error('Texture missing or invalid:', asset);
-        const geometry = new THREE.PlaneGeometry(1, 1);
-        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red for error
-        const plane = new THREE.Mesh(geometry, material);
-        this.previewScene.add(plane);
-        this.previewModel = plane;
+        // Display an error message visually if needed
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'red';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Error: Texture not loaded', width / 2, height / 2);
         document.querySelector('.model-stats').innerHTML += `<div><strong>Error:</strong> Texture image not available</div>`;
+        // No need to setup scene/controls if error
+        return;
     } else {
+        // Use the checkerboard background for the scene itself for textures
+        const loader = new THREE.TextureLoader();
+        const bgTexture = loader.load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACFJREFUeNpiPHPmDA+MDIwMIAEa//8z0JoAEDQAbKEBViIjAQEGAKuMAWzdGgD3AAAAAElFTkSuQmCC'); // Simple 16x16 checker png
+        bgTexture.wrapS = THREE.RepeatWrapping;
+        bgTexture.wrapT = THREE.RepeatWrapping;
+        bgTexture.repeat.set(width / 16, height / 16); // Repeat checkerboard
+        this.previewScene.background = bgTexture;
+
         const geometry = new THREE.PlaneGeometry(1, 1);
+        // Ensure texture update flag is sometimes needed
+        asset.texture.needsUpdate = true;
         const material = new THREE.MeshBasicMaterial({
             map: asset.texture,
             side: THREE.DoubleSide,
-            transparent: true
+            transparent: true, // Important for seeing checkerboard if texture has alpha
+            alphaTest: 0.1 // Optional: adjust if needed for transparency edges
         });
         const plane = new THREE.Mesh(geometry, material);
-        this.previewScene.add(plane);
-        this.previewModel = plane;
 
-        // Adjust plane size to texture aspect ratio
-        const imgWidth = asset.texture.image.width;
-        const imgHeight = asset.texture.image.height;
+        // Adjust plane scale based on texture aspect ratio to fit preview
+        const imgWidth = asset.texture.image.naturalWidth || asset.texture.image.width;
+        const imgHeight = asset.texture.image.naturalHeight || asset.texture.image.height;
         const aspect = imgWidth / imgHeight;
-        if (aspect > 1) {
-            plane.scale.set(aspect, 1, 1);
-        } else {
-            plane.scale.set(1, 1 / aspect, 1);
+        const viewAspect = width / height;
+        let scaleX = 1, scaleY = 1;
+
+        if (aspect > viewAspect) { // Texture is wider than view
+             scaleX = 1;
+             scaleY = (1 / aspect) * viewAspect;
+        } else { // Texture is taller than view or same aspect
+             scaleX = aspect / viewAspect;
+             scaleY = 1;
         }
+        // Apply a base scale to make it fill more of the view
+        const baseScale = 1.3;
+        plane.scale.set(scaleX * baseScale, scaleY * baseScale, 1);
+
+
+        this.previewScene.add(plane);
+        this.previewModel = plane; // Keep track of the main object
 
         document.querySelector('.model-stats').innerHTML += `
             <div><strong>Dimensions:</strong> ${imgWidth} x ${imgHeight}</div>
         `;
+
+         // Controls for texture preview (less rotation freedom might be better)
+        this.previewControls = new THREE.OrbitControls(this.previewCamera, canvas);
+        this.previewControls.enableDamping = true;
+        this.previewControls.dampingFactor = 0.1;
+        this.previewControls.autoRotate = this.previewSettings.autoRotate; // Allow auto-rotate
+        this.previewControls.enableZoom = true;
+        this.previewControls.enablePan = true; // Allow panning
+        this.previewControls.enableRotate = false; // Disable rotation for flat texture is often better
+        this.previewControls.minZoom = 0.5;
+        this.previewControls.maxZoom = 4;
+
+
+        this.startPreviewAnimation(); // Start the loop only if successful
+        window.addEventListener('resize', this.resizePreviewCanvas.bind(this));
+
+        // Initial render might be needed if startPreviewAnimation is async
+        // this.previewRenderer.render(this.previewScene, this.previewCamera);
     }
-
-    this.previewControls = new THREE.OrbitControls(this.previewCamera, canvas);
-    this.previewControls.enableDamping = true;
-    this.previewControls.dampingFactor = 0.1;
-    this.previewControls.autoRotate = this.previewSettings.autoRotate;
-    this.previewControls.enableZoom = true;
-    this.previewControls.enablePan = false;
-
-    this.startPreviewAnimation();
-    window.addEventListener('resize', this.resizePreviewCanvas.bind(this));
-
-    // Initial render
-    this.previewRenderer.render(this.previewScene, this.previewCamera);
 }
 
 setupHDRIPreview(asset, canvas) {
     console.log('Setting up HDRI preview with asset:', asset);
 
-    this.previewScene = new THREE.Scene();
-    this.previewScene.background = new THREE.Color(this.previewSettings.backgroundColor);
+    this.cleanupPreview(); // Clean state first
 
-    const width = canvas.width;
-    const height = canvas.height;
-    this.previewCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    this.previewCamera.position.set(0, 0, 2);
-    this.previewCamera.lookAt(0, 0, 0);
+    this.previewScene = new THREE.Scene();
+    // *** FIX: Set the scene background to the HDRI texture ***
+    if (asset.texture) {
+         // Ensure mapping is correct (should be set during load, but double-check)
+         asset.texture.mapping = THREE.EquirectangularReflectionMapping;
+         this.previewScene.background = asset.texture;
+    } else {
+         this.previewScene.background = new THREE.Color(this.previewSettings.backgroundColor); // Fallback color
+    }
+
+
+    const width = canvas.clientWidth; // Use clientWidth/Height
+    const height = canvas.clientHeight;
+    this.previewCamera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100); // Wider FOV often good for HDRIs
+    this.previewCamera.position.set(0, 0, 0.1); // Camera inside the sphere for panorama view
+    // No lookAt needed if using OrbitControls correctly centered
 
     this.previewRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     this.previewRenderer.setSize(width, height, false);
     this.previewRenderer.setPixelRatio(window.devicePixelRatio);
-    this.previewRenderer.setClearColor(this.previewSettings.backgroundColor, 1);
+    // Don't set clear color if background texture is used
+    // this.previewRenderer.setClearColor(this.previewSettings.backgroundColor, 1);
+    this.previewRenderer.toneMapping = THREE.ACESFilmicToneMapping; // Good tonemapping for HDRIs
+    this.previewRenderer.toneMappingExposure = 1.0;
+
 
     if (!asset.texture) {
         console.error('HDRI texture missing:', asset);
-        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red for error
-        const sphere = new THREE.Mesh(geometry, material);
-        this.previewScene.add(sphere);
-        this.previewModel = sphere;
+         // Display an error message visually if needed
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'red';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Error: HDRI not loaded', width / 2, height / 2);
         document.querySelector('.model-stats').innerHTML += `<div><strong>Error:</strong> HDRI texture not available</div>`;
+        return;
     } else {
-        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        // Optional: Add a reflective sphere in the middle to see reflections
+        const geometry = new THREE.SphereGeometry(0.3, 32, 32); // Smaller sphere
+        const pmremGenerator = new THREE.PMREMGenerator(this.previewRenderer);
+        pmremGenerator.compileEquirectangularShader();
+        const envMap = pmremGenerator.fromEquirectangular(asset.texture).texture;
         const material = new THREE.MeshStandardMaterial({
+            color: 0xffffff, // White base color
             metalness: 1.0,
-            roughness: 0.2,
-            envMap: asset.texture
+            roughness: 0.1, // Adjust roughness to see reflections clearly
+            envMap: envMap, // Use the processed envMap
+            envMapIntensity: 1.0
         });
         const sphere = new THREE.Mesh(geometry, material);
         this.previewScene.add(sphere);
-        this.previewModel = sphere;
+        this.previewModel = sphere; // Track the sphere
+        pmremGenerator.dispose(); // Dispose generator after use
 
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(1, 1, 1);
-        this.previewScene.add(light);
-        const ambient = new THREE.AmbientLight(0xffffff, 0.3);
-        this.previewScene.add(ambient);
+        // No extra lights needed if relying on HDRI environment light
     }
 
     this.previewControls = new THREE.OrbitControls(this.previewCamera, canvas);
     this.previewControls.enableDamping = true;
-    this.previewControls.dampingFactor = 0.1;
+    this.previewControls.dampingFactor = 0.05; // Smoother damping
     this.previewControls.autoRotate = this.previewSettings.autoRotate;
-    this.previewControls.enableZoom = true;
-    this.previewControls.enablePan = false;
+    this.previewControls.enableZoom = false; // Zoom usually not needed for HDRI preview
+    this.previewControls.enablePan = false; // Panning not needed
+    this.previewControls.enableRotate = true; // Rotation is key
+    this.previewControls.rotateSpeed = -0.5; // Invert rotation direction if needed
+
 
     this.startPreviewAnimation();
     window.addEventListener('resize', this.resizePreviewCanvas.bind(this));
 
     // Initial render
-    this.previewRenderer.render(this.previewScene, this.previewCamera);
+    // this.previewRenderer.render(this.previewScene, this.previewCamera);
 }
+
 
 setupMaterialPreview(asset, canvas) {
     console.log('Setting up material preview with asset:', asset);
@@ -2347,34 +3061,70 @@ setupMaterialPreview(asset, canvas) {
 
 startPreviewAnimation() {
     if (this.previewAnimationId) {
-        cancelAnimationFrame(this.previewAnimationId);
+        // Avoid starting multiple loops
+        // cancelAnimationFrame(this.previewAnimationId);
+        return;
     }
 
     const clock = new THREE.Clock();
 
     const animate = () => {
+        // Check if loop should stop (e.g., preview cleaned up)
+        if (!this.previewRenderer || !this.previewScene || !this.previewCamera) {
+             this.previewAnimationId = null; // Ensure ID is cleared
+             return; // Stop loop if components are gone
+        }
+
         this.previewAnimationId = requestAnimationFrame(animate);
         const delta = clock.getDelta();
 
         if (this.previewControls) {
-            this.previewControls.update();
+            this.previewControls.update(delta); // Pass delta for damping if enabled
         }
         if (this.previewMixer) {
             this.previewMixer.update(delta);
+            this.updateAnimationTimeline(); // Update timeline visuals
         }
+
+        // Update skeleton helper if it exists
+        if (this.previewSkeleton && this.previewSkeleton.visible) {
+             // SkeletonHelper updates itself based on the model's pose
+             // No explicit update needed here typically
+        }
+
         if (this.previewRenderer && this.previewScene && this.previewCamera) {
             this.previewRenderer.render(this.previewScene, this.previewCamera);
-        } else {
-            console.error('Preview components missing:', {
-                renderer: !!this.previewRenderer,
-                scene: !!this.previewScene,
-                camera: !!this.previewCamera
-            });
         }
     };
-    animate();
+    console.log("Starting preview animation loop");
+    animate(); // Start the loop
 }
 
+updateAnimationTimeline() {
+    if (!this.previewMixer || !this.activeAction) return;
+
+    const currentTime = this.activeAction.time;
+    const duration = this.activeAction.getClip().duration;
+
+    if (duration > 0) {
+        const normalizedTime = currentTime / duration;
+        const sliderValue = Math.min(100, Math.max(0, normalizedTime * 100)); // Clamp value
+
+        const timelineSlider = document.querySelector('.timeline-slider');
+        // Update slider only if the user isn't currently dragging it
+        if (document.activeElement !== timelineSlider) {
+            timelineSlider.value = sliderValue;
+        }
+
+        document.querySelector('.current-time').textContent = currentTime.toFixed(2) + 's';
+        document.querySelector('.total-time').textContent = duration.toFixed(2) + 's';
+    } else {
+        // Handle zero duration clips if necessary
+        document.querySelector('.timeline-slider').value = 0;
+        document.querySelector('.current-time').textContent = '0.00s';
+        document.querySelector('.total-time').textContent = '0.00s';
+    }
+}
 
 disposeScene(scene) {
     scene.traverse(object => {
@@ -2406,27 +3156,55 @@ disposeScene(scene) {
 
 
 selectAnimation(index) {
-    if (!this.previewMixer || !this.previewModel) return;
-    if (this.activeAction) this.activeAction.stop();
-
-    const animationClips = [];
-    this.previewModel.traverse(node => {
-        if (node.animations && node.animations.length > 0) {
-            animationClips.push(...node.animations);
-        }
-    });
-    if (this.previewModel.animations) {
-        animationClips.push(...this.previewModel.animations);
+    if (!this.previewMixer || !this.previewModel || !this.currentAsset || !this.currentAsset.animations) {
+        console.warn("Cannot select animation: Missing components.");
+        return;
     }
-    if (animationClips.length === 0) return;
 
-    const clip = animationClips[index];
-    if (!clip) return;
+    const animations = this.currentAsset.animations;
+    if (index < 0 || index >= animations.length) {
+        console.error("Invalid animation index:", index);
+        return;
+    }
 
-    this.activeAction = this.previewMixer.clipAction(clip);
-    this.activeAction.reset();
-    this.activeAction.play();
-    document.querySelector('.total-time').textContent = clip.duration.toFixed(2) + 's';
+    const clip = animations[index];
+    if (!clip) {
+        console.error("Animation clip not found at index:", index);
+        return;
+    }
+    console.log("Selecting animation:", clip.name || `Animation ${index + 1}`);
+
+
+    const newAction = this.previewMixer.clipAction(clip);
+
+    // Fade out the previous action if it exists and is different
+    if (this.activeAction && this.activeAction !== newAction) {
+        console.log("Fading out previous action");
+        this.activeAction.fadeOut(0.3); // Fade out over 0.3 seconds
+    } else if (this.activeAction === newAction && this.activeAction.isRunning()) {
+        console.log("Restarting the same action");
+        // If selecting the same action again, just reset and play
+        this.activeAction.reset();
+    }
+
+
+    // Reset, fade in, and play the new action
+    newAction.reset();
+    newAction.setEffectiveWeight(1.0); // Ensure weight is 1
+    newAction.setEffectiveTimeScale(1.0); // Ensure speed is normal
+    newAction.paused = false; // Ensure it's not paused
+    newAction.fadeIn(0.3); // Fade in over 0.3 seconds
+    newAction.play();
+
+
+    this.activeAction = newAction; // Update the active action reference
+
+    // Update timeline display
+    const duration = clip.duration;
+    document.querySelector('.timeline-slider').max = 100; // Keep max at 100
+    document.querySelector('.timeline-slider').value = 0; // Reset slider
+    document.querySelector('.current-time').textContent = '0.00s';
+    document.querySelector('.total-time').textContent = duration.toFixed(2) + 's';
 }
 
 playAnimation() {
@@ -2448,13 +3226,28 @@ stopAnimation() {
     }
 }
 
-scrubAnimation(value) {
-    if (this.activeAction) {
+scrubAnimation(normalizedValue) { // Value from 0 to 1
+    if (this.activeAction && this.previewMixer) {
         const duration = this.activeAction.getClip().duration;
-        this.activeAction.time = duration * value;
-        document.querySelector('.current-time').textContent = (this.activeAction.time).toFixed(2) + 's';
+        const time = duration * normalizedValue;
+
+        // Set the mixer's time, which affects all actions
+        this.previewMixer.setTime(time);
+
+        // If paused, ensure the action's time reflects the scrubbed time
+        if (this.activeAction.paused) {
+             this.activeAction.time = time;
+        }
+
+
+        document.querySelector('.current-time').textContent = time.toFixed(2) + 's';
+        // Optional: Render a single frame immediately after scrubbing
+        // if (this.previewRenderer && this.previewScene && this.previewCamera) {
+        //     this.previewRenderer.render(this.previewScene, this.previewCamera);
+        // }
     }
 }
+
 
 updateAnimationTime(value) {
     if (this.activeAction) {
@@ -2550,7 +3343,7 @@ createAssetItem(asset, parent) {
         <span class="asset-name">${asset.name}</span>
         <div class="asset-actions">
             <button class="favorite-btn"><i class="fas ${asset.favorite ? 'fa-star' : 'fa-star-o'}"></i></button>
-            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+            <button class="delete-btn"><i class="fas fa-trash" style="font-size: 14px;"></i></button>
         </div>
     `;
     return item;
@@ -2865,12 +3658,30 @@ addAssetToScene(object) {
     }
 
     switchView(view) {
+        if (view !== 'grid' && view !== 'list') return; // Basic validation
         this.currentView = view;
         document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.view === view);
+            btn.classList.remove('active');
         });
-        this.updateAssetsView();
+        const activeBtn = document.querySelector(`.view-btn[data-view="${view}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        } else {
+             // Fallback if button not found (shouldn't happen)
+             document.querySelector('.view-btn[data-view="grid"]').classList.add('active');
+             this.currentView = 'grid';
+        }
+    
+        // Update which view container is visible
+         document.querySelector('.assets-view.grid-view').classList.toggle('active', view === 'grid');
+         document.querySelector('.assets-view.list-view').classList.toggle('active', view === 'list');
+    
+    
+        this.updateAssetsView(); // Re-render content in the new view format
+        localStorage.setItem('lastAssetView', view); // Save preference
     }
+  
+   
 
     // Add proper event listeners for tab buttons
     initTabListeners() {
@@ -2903,4 +3714,3 @@ function visualizeBones(model) {
        model.add(skeletonHelper);  // Add the skeleton helper to the model
     }
 }
-
