@@ -64,6 +64,20 @@
                 <button class="tool-btn" id="toggle-lock">
                    <i class="fas fa-unlock"></i>
                 </button>
+                <button class="tool-btn" id="toggle-selection" title="Toggle Selection Focus">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M8 12H5"></path>
+                        <path d="M19 12h-3"></path>
+                        <path d="M12 8V5"></path>
+                        <path d="M12 19v-3"></path>
+                        <!-- Small toggle arrows -->
+                        <path d="M7 10l-2 -2l2 -2"></path>
+                        <path d="M17 14l2 2l-2 2"></path>
+                    </svg>
+                </button>
+
+               </button>
                 <button class="tool-btn" id="guiControls">
                     Gui
                 </button>
@@ -96,6 +110,9 @@
                 </button>
                 <button class="tool-btn" id="cameraControls">
                    <i class="fas fa-video"></i> 
+                </button>
+                <button class="tool-btn" id="togglePreview">
+                    <i class="fas fa-eye"></i>
                 </button>
                 <button class="tool-btn" id="physicsControls">
                     <i class="fas fa-atom"></i>
@@ -188,7 +205,9 @@
                 <button class="tool-button" id="toggle-inspector">Inspector</button>
             </div>
             <div class="toolbar-group">
-                <button class="tool-button" id="menuButton" style="background-color: #555;">☰</button>
+                <button class="tool-button" id="menuButton" style="background-color: #555; margin: 8px auto; width: 25px; height: 25px;">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div id="submenuMainBar" class="submenu-main-bar">
                     <div class="menu-item-br" data-submenu="fileMenu">File</div>
                     <div class="menu-item-br" data-submenu="editMenu">Edit</div>
@@ -216,8 +235,8 @@
                     <div>Support</div>
                 </div>
 
-                <button id="toggleContainerButton" class="tool-button" style="background-color: #555; border: none; cursor: pointer;">
-                    <svg id="toggle-status" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                <button id="toggleContainerButton" class="tool-button" style="background-color: #555;  cursor: pointer; margin: 8px auto; width: 25px; height: 25px;">
+                    <svg id="toggle-status" style="justify-content: center; align-items: center; " xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 25 25">
                         <path id="icon-path" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2z" fill="#00bcd4"/>
                     </svg>
                 </button>
@@ -365,6 +384,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     <button class="tool-button" id="toggleLookAtBtn">
                         <i class="fas fa-eye"></i> Toggle Look At
                     </button>
+                    <button  class="tool-button" id="toggleEditBtn">Enable Edit
+                    </button>
                     <button class="tool-button" id="startRecordingBtn">
                         <i class='bx bxs-video-recording'></i> Start Recording
                     </button>
@@ -447,7 +468,12 @@ document.addEventListener("DOMContentLoaded", function() {
         <div id="hierarchy-panel"  class="hierarchy-panel">
             <div class="panel-header" style="cursor: pointer;">
                 <i class="fas fa-sitemap" ></i> Hierarchy 
-                <span class="expand-button"  style="margin-left: 30px;">▼</span>
+                <select id="hierarchyViewMode" style="margin-top: 5px; margin-left: 9px; width: 45%;">
+                    <option value="tree">📁 Tree View</option>
+                    <option value="flat">📋 Flat View</option>
+                    <option value="type">🧠 Type View</option>
+                </select>
+                <span class="expand-button"  style="margin-left: 9px; margin-right: 20px;">▼</span>
             </div>
             <div class="hierarchy-search">
                 <input type="text" id="hierarchy-search-input" placeholder="Search objects...">
@@ -491,10 +517,18 @@ document.addEventListener("DOMContentLoaded", function() {
                         <div class="axis-button" id="top" onclick="setCameraView('top')"><i class="fa-solid fa-arrow-up-long"></i></div>
                         <div class="axis-button" id="bottom" onclick="setCameraView('bottom')"><i class="fa-solid fa-arrow-down"></i></div>
                         <div class="axis-button" id="diagonal" onclick="setCameraView('diagonal')"><i class="fa-solid fa-square-arrow-up-right"></i></div>
-                    </div>
+                    </div> 
+                    
                 </div>
             </div>
         </div>
+        <canvas id="selectionCanvas" style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            pointer-events: none;
+        "></canvas>
 
         <!-- Right Panel - Inspector -->
         <div id="inspector-panel" class="inspector-panel">
@@ -537,6 +571,9 @@ document.addEventListener("DOMContentLoaded", function() {
                         <input type="number" class="property-input" id="scaleY" step="0.1">
                         <input type="number" class="property-input" id="scaleZ" step="0.1">
                     </div>
+                </div>
+                <div class="precision-controls">
+                    <!--The content will be add automaticly -->
                 </div>
             </div>
 
@@ -782,15 +819,14 @@ function applyPhysicsToTerrain() {
                 }
 
             </script>
+            <div class="viewport-container" style="display: none;">                
+                <div class="model-preview-container">
+                <canvas id="preview-canvas"></canvas>
+                <div class="model-info">
+                <span class="model-name"></span>
+                <div class="model-stats"></div>
+            </div>
 
-
-                <div class="viewport-container" style="display: none;">                
-                    <div class="model-preview-container">
-                    <canvas id="preview-canvas"></canvas>
-                    <div class="model-info">
-                    <span class="model-name"></span>
-                    <div class="model-stats"></div>
-                </div>
             </div>
            </div>
 
@@ -866,73 +902,310 @@ function applyPhysicsToTerrain() {
            
 
             
-            <div class="modeling-tools" id="modelingTools" style="display: none;">
-                <div class="panel-header">
-                    <span>Mesh Manipulation Tools</span>
-                    <span class="expand-button">▼</span>
-                </div>
-                <div class="panel-content">
-                   
-                    
-                    <div class="selection-controls">
-                        <button id="toggle-modeling" class="panel-button">Modeling Mode</button>
-                        <div class="button-container">
-                            <button id="select-vertex" class="panel-button-tool" disabled>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <path d="M4 6L12 4L20 6L20 14L12 16L4 14L4 6Z" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <path d="M4 6L12 8L20 6" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <path d="M12 8L12 16" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <circle cx="12" cy="8" r="1" fill="red"/>
-                                </svg>
-                            </button>
-                        
-                            <button id="select-edge" class="panel-button-tool" disabled>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <path d="M4 6L12 4L20 6L20 14L12 16L4 14L4 6Z" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <path d="M4 6L12 8L20 6" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <path d="M12 8L12 16" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="4" y1="6" x2="12" y2="8" stroke="blue" stroke-width="2"/>
-                                    <line x1="12" y1="8" x2="20" y2="6" stroke="blue" stroke-width="2"/>
-                                </svg>
-                            </button>
-                        
-                            <button id="select-face" class="panel-button-tool" disabled>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <path d="M4 6L12 4L20 6L20 14L12 16L4 14L4 6Z" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <path d="M4 6L12 8L20 6" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <path d="M12 8L12 16" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <rect x="8" y="10" width="6" height="6" fill="green"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <div id="controls">
-                            <h3>Building</h3>
-                            <label class="control-label">Width : <input type="number" id="building-width" value="5"></label>
-                            <label class="control-label"> Height : <input type="number" id="building-height" value="10"></label>
-                            <label class="control-label">Depth : <input type="number" id="building-depth" value="5"></label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label>Vertex Size:</label>
-                        <input type="range" id="vertexSizeSlider" min="0.1" max="2" step="0.1" value="0.5">
-                    </div>
-                    <div>
-                        <label>Edge Thickness:</label>
-                        <input type="range" id="edgeThicknessSlider" min="1" max="5" step="1" value="2">
-                    </div>
-                    <div>
-                        <label>Subdivision Levels:</label>
-                        <input type="range" id="subdivisionLevelsSlider" min="0" max="4" step="1" value="1">
-                    </div>
-                    <div>
-                        <label>Face Opacity:</label>
-                        <input type="range" id="faceOpacitySlider" min="0" max="1" step="0.1" value="0.5">
-                    </div>
-                </div>
+        <div class="modeling-tools" id="modelingTools" style="display: none;">
+            <div class="panel-header">
+                <span>Mesh Manipulation Tools</span>
+                <span class="expand-button">▼</span>
             </div>
+            <div class="panel-content">
+               
+                
+                <div class="selection-controls">
+                    <button id="toggle-modeling" class="panel-button">Modeling Mode</button>
+                    <div class="button-container">
+                        <button id="select-vertex" class="panel-button-tool" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path d="M4 6L12 4L20 6L20 14L12 16L4 14L4 6Z" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <path d="M4 6L12 8L20 6" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 8L12 16" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="12" cy="8" r="1" fill="red"/>
+                            </svg>
+                        </button>
+                    
+                        <button id="select-edge" class="panel-button-tool" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path d="M4 6L12 4L20 6L20 14L12 16L4 14L4 6Z" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <path d="M4 6L12 8L20 6" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 8L12 16" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <line x1="4" y1="6" x2="12" y2="8" stroke="blue" stroke-width="2"/>
+                                <line x1="12" y1="8" x2="20" y2="6" stroke="blue" stroke-width="2"/>
+                            </svg>
+                        </button>
+                    
+                        <button id="select-face" class="panel-button-tool" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path d="M4 6L12 4L20 6L20 14L12 16L4 14L4 6Z" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <path d="M4 6L12 8L20 6" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 8L12 16" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <rect x="8" y="10" width="6" height="6" fill="green"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="controls">
+                        <h3>Building</h3>
+                        <label class="control-label">Width : <input type="number" id="building-width" value="5"></label>
+                        <label class="control-label"> Height : <input type="number" id="building-height" value="10"></label>
+                        <label class="control-label">Depth : <input type="number" id="building-depth" value="5"></label>
+                    </div>
+                </div>
 
+                <div>
+                    <label>Vertex Size:</label>
+                    <input type="range" id="vertexSizeSlider" min="0.1" max="2" step="0.1" value="0.5">
+                </div>
+                <div>
+                    <label>Edge Thickness:</label>
+                    <input type="range" id="edgeThicknessSlider" min="1" max="5" step="1" value="2">
+                </div>
+                <div>
+                    <label>Subdivision Levels:</label>
+                    <input type="range" id="subdivisionLevelsSlider" min="0" max="4" step="1" value="1">
+                </div>
+                <div>
+                    <label>Face Opacity:</label>
+                    <input type="range" id="faceOpacitySlider" min="0" max="1" step="0.1" value="0.5">
+                </div>
+
+                <div class="tool-separator"></div>
+
+                <div class="tool-section">
+                    <h4>Operations</h4>
+                    <div class="button-container">
+                         <button id="tool-extrude" class="panel-button-tool" title="Extrude Selection (E)" disabled>
+                              <svg> <!-- Placeholder SVG for Extrude -->
+                                  <rect x="4" y="4" width="16" height="8" stroke="currentColor" fill="none"/>
+                                  <rect x="6" y="14" width="12" height="6" stroke="currentColor" fill="lightblue"/>
+                                   <line x1="4" y1="12" x2="6" y2="14" stroke="currentColor"/>
+                                   <line x1="20" y1="12" x2="18" y2="14" stroke="currentColor"/>
+                              </svg>
+                              
+                          </button>
+                
+                           <button id="tool-bevel" class="panel-button-tool" title="Bevel Edges/Vertices (Ctrl+B)" disabled>
+                               <svg> <!-- Placeholder SVG for Bevel -->
+                                  <polygon points="4,4 20,4 20,20 4,20" stroke="currentColor" fill="none"/>
+                                  <polygon points="6,6 18,6 18,18 6,18" stroke="lightblue" fill="none" stroke-width="2"/>
+                               </svg>
+                           </button>
+                
+                            <button id="tool-loopcut" class="panel-button-tool" title="Insert Edge Loop (Ctrl+R)" disabled>
+                                <svg> <!-- Placeholder SVG for Loop Cut -->
+                                   <rect x="4" y="4" width="16" height="16" stroke="currentColor" fill="none"/>
+                                   <line x1="4" y1="12" x2="20" y2="12" stroke="lightblue" stroke-width="2"/>
+                                   <line x1="12" y1="4" x2="12" y2="20" stroke="lightgray" stroke-dasharray="4"/>
+                                </svg>
+                            </button>
+                            <button id="tool-inset" class="panel-button-tool poly-tool" title="Inset Faces (I)" disabled>
+                                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M4 4h16v16H4z M8 8h8v8H8z"/></svg>
+                            
+                            </button>
+                            <!-- Add Bridge button (placeholder) -->
+                            <button id="tool-bridge" class="panel-button-tool poly-tool" title="Bridge Edge Loops" disabled>
+                                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M5 5h3v14H5z M16 5h3v14h-3z M8 6h8 M8 18h8"/></svg>
             
+                            </button>
+                             <!-- Add more tool buttons here -->
+                    </div>
+                </div>
+
+                <div class="tool-separator"></div>
+
+                <!-- 3. PRECISION / SNAPPING -->
+                <div class="tool-section">
+                    <h4>Snapping</h4>
+                    <div class="snapping-controls button-container">
+                         <button id="toggle-snapping" class="panel-button" title="Toggle Snapping (Shift+Tab)" style="min-width:80px;">Snap OFF</button>
+                         <select id="snap-type-select" class="panel-select" disabled>
+                             <option value="grid">Grid</option>
+                             <option value="vertex">Vertex</option>
+                             <option value="edge">Edge</option>
+                             <option value="face">Face</option>
+                         </select>
+                         <label style="margin-left: 5px;">Grid: <input type="number" id="grid-snap-size" value="0.5" step="0.1" style="width: 45px;" disabled></label>
+                    </div>
+               </div>
+        
+               <div class="tool-separator"></div>
+        
+              <!-- 4. ARCHITECTURE TOOLS (Can keep or merge if desired) -->
+              <div class="tool-section">
+                  <h4>Architecture</h4>
+                   <div class="button-container">
+                       <button id="tool-wall" class="panel-button-tool arch-tool" ...>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                 <rect x="4" y="4" width="16" height="16" stroke="currentColor" fill="none"/>
+                                 <line x1="4" y1="12" x2="20" y2="12" stroke="lightblue"/>
+                                 <line x1="12" y1="4" x2="12" y2="20" stroke="lightgray"/>
+                            </svg>
+                       </button>
+                       <button id="tool-place-door" class="panel-button-tool arch-tool" ...>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                 <rect x="4" y="4" width="16" height="16" stroke="currentColor" fill="none"/>
+                                 <line x1="4" y1="12" x2="20" y2="12" stroke="lightblue"/>
+                                 <line x1="12" y1="4" x2="12" y2="20" stroke="lightgray"/>
+                                 <rect x="10" y="4" width="4" height="8" fill="#ccc"/>
+                            </svg>
+                       </button>
+                       <button id="tool-place-window" class="panel-button-tool arch-tool" ...>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                 <rect x="4" y="4" width="16" height="16" stroke="currentColor" fill="none"/>
+                                 <line x1="4" y1="12" x2="20" y2="12" stroke="lightblue"/>
+                                 <line x1="12" y1="4" x2="12" y2="20" stroke="lightgray"/>
+                                 <rect x="10" y="4" width="4" height="8" fill="#ccc"/>
+                            </svg>
+                       </button>
+                       <button id="tool-stairs" class="panel-button-tool arch-tool" ...>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                 <rect x="4" y="4" width="16" height="16" stroke="currentColor" fill="none"/>
+                                 <line x1="4" y1="12" x2="20" y2="12" stroke="lightblue"/>
+                                 <line x1="12" y1="4" x2="12" y2="20" stroke="lightgray"/>
+                                 <path d="M10 14 L10 20 L14 20 L14 14 Z" fill="#ccc"/>
+                            </svg>
+                       </button>
+                       <button id="tool-measure" class="panel-button-tool arch-tool" ...>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                 <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor"/>
+                                 <line x1="12" y1="4" x2="12" y2="20" stroke="currentColor"/>
+                                 <text x="10" y="10" fill="#000">M</text>
+                            </svg>
+                       </button>
+                  </div>
+                    <div id="arch-selection-tools" class="panel">
+                        <h4>Architecture Selection</h4>
+                        <button class="panel-button" id="select-all-walls">Select All Walls</button>
+                        <button class="panel-button" id="select-all-doors">Select All Doors</button>
+                        <button class="panel-button" id="select-all-windows">Select All Windows</button>
+                        <button class="panel-button" id="select-all-arch">Select All Arch</button>
+                        <button class="panel-button" id="delete-selected-arch" disabled>Delete Selected Arch</button>
+                    </div>
+                    <div class="tool-options" id="wall-options" style="display: none;">
+                        <h4>Wall Options</h4>
+                        <label for="wallHeightInput">Height:</label>
+                        <input type="number" id="wallHeightInput" class="panel-input" value="2.5" step="0.1"><br>
+                        <label for="wallThicknessInput">Thickness:</label>
+                        <input type="number" id="wallThicknessInput" class="panel-input" value="0.2" step="0.05">
+                    </div>
+                 
+                   <div class="tool-options" id="door-options" style="display: none;">
+                        <h4>Door Options</h4>
+                        <label for="doorWidthInput">Width:</label>
+                        <input type="number" id="doorWidthInput" class="panel-input" value="0.9" step="0.1"><br>
+                        <label for="doorHeightInput">Height:</label>
+                        <input type="number" id="doorHeightInput" class="panel-input" value="2.1" step="0.1"><br>
+                        <label for="doorDepthInput">Depth (Thickness):</label>
+                        <input type="number" id="doorDepthInput" class="panel-input" value="0.1" step="0.05">
+                   </div>
+                   <div class="tool-options" id="window-options" style="display: none;">
+                        <h4>Window Options</h4>
+                        <label for="windowWidthInput">Width:</label>
+                        <input type="number" id="windowWidthInput" class="panel-input" value="1.2" step="0.1"><br>
+                        <label for="windowHeightInput">Height:</label>
+                        <input type="number" id="windowHeightInput" class="panel-input" value="1.0" step="0.1"><br>
+                        <label for="windowDepthInput">Depth (Thickness):</label>
+                        <input type="number" id="windowDepthInput" class="panel-input" value="0.1" step="0.05">
+                    </div>
+                    <div class="tool-options" id="stairs-options" style="display: none;">
+                        <h4>Stair Options</h4>
+                        <label for="stairWidthInput">Width:</label>
+                        <input type="number" id="stairWidthInput" class="panel-input" value="1.0" step="0.1"><br>
+                        <label for="stairTotalHeightInput">Total Height:</label>
+                        <input type="number" id="stairTotalHeightInput" class="panel-input" value="2.5" step="0.1"><br>
+                        <label for="stairStepHeightInput">Step Height:</label>
+                        <input type="number" id="stairStepHeightInput" class="panel-input" value="0.18" step="0.01"><br>
+                        <label for="stairStepDepthInput">Step Depth:</label>
+                        <input type="number" id="stairStepDepthInput" class="panel-input" value="0.25" step="0.01">
+                    </div>
+              </div>
+        
+        
+               <div class="tool-separator"></div>
+        
+               <!-- 5. SPLINE TOOLS -->
+               <div class="tool-section">
+                    <h4>Splines</h4>
+                    <div class="spline-controls button-container">
+                        <button id="spline-draw-profile" class="panel-button spline-tool" title="Draw 2D Profile Shape" disabled>Draw Profile</button>
+                        <button id="spline-draw-path" class="panel-button spline-tool" title="Draw 3D Path Curve" disabled>Draw Path</button>
+                        <!-- TODO: Need UI to SELECT active profile/path -->
+                        <select id="active-profile-select" class="panel-select" disabled><option value="">--Select Profile--</option></select>
+                        <select id="active-path-select" class="panel-select" disabled><option value="">--Select Path--</option></select>
+                         <button id="spline-extrude" class="panel-button spline-tool" title="Extrude Profile along Path" disabled>Extrude</button>
+                         <!-- Add Loft, Revolve etc. buttons -->
+                     </div>
+                </div>
+        
+                <div class="tool-separator"></div>
+        
+              <!-- 6. MODIFIER STACK -->
+               <div class="tool-section" id="modifiers-panel" style="display: none;"> <!-- Hide initially, show when an object is selected -->
+                   <h4>Modifiers</h4>
+                   <div id="modifier-list-container">
+                       <!-- Modifiers will be added here dynamically -->
+                       <!-- Example Modifier Entry Structure (generated by JS): -->
+                       
+                       <div class="modifier-entry" data-modifier-index="0">
+                            <input type="checkbox" class="mod-active" checked>
+                            <span class="mod-name">Solidify</span>
+                            <span class="mod-expand">▼</span>
+                            <button class="mod-remove">X</button>
+                            <div class="mod-settings" style="display: none;">
+                                 <label>Thickness: <input type="number" class="mod-param" data-param="thickness" value="0.1"></label>
+                                 ... other params
+                            </div>
+                       </div>
+                       
+                    </div>
+                   <div class="add-modifier-controls">
+                       <select id="add-modifier-select" class="panel-select">
+                           <option value="">-- Add Modifier --</option>
+                           <option value="solidify">Solidify</option>
+                           <option value="array">Array</option>
+                            <option value="bevel">Bevel</option>
+                           <option value="subdivision">Subdivision</option>
+                           <!-- <option value="mirror">Mirror</option> -->
+                            <!-- <option value="boolean">Boolean</option> -->
+                           <!-- Add more when implemented -->
+                       </select>
+                       <button id="add-modifier-button" class="panel-button">+</button>
+                   </div>
+                   <div>
+                        <button id="apply-modifiers-button" class="panel-button" title="Bake modifiers into base mesh">Apply All</button>
+                    </div>
+               </div>
+        
+        
+               <div class="tool-separator"></div>
+        
+                <!-- Your original 'Building' section if needed -->
+                <div id="building-controls-placeholder" style="display: none;"> <!-- Example placeholder -->
+                    <h3>Building</h3>
+                     <label>Width : <input type="number" id="building-width" value="5"></label>
+                    <label>Height : <input type="number" id="building-height" value="10"></label>
+                    <label>Depth : <input type="number" id="building-depth" value="5"></label>
+                </div>
+         
+            </div>
+        </div>
+
+            <style>
+                .modeling-tools .tool-section { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #555;}
+                .modeling-tools .button-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;}
+                .panel-button-tool svg { display: block; margin-bottom: 2px; } /* Adjust icon layout */
+                .tool-separator { height: 1px; background-color: #444; margin: 10px 0; }
+                .active-tool { background-color: #57a !important; color: white; } /* Highlight active tool */
+                .tool-options { background-color: #404040; padding: 8px; margin-top: 8px; border-radius: 4px; }
+                .panel-select { background-color: #555; color: white; border: 1px solid #777; padding: 3px; border-radius: 3px;}
+                /* Modifier List Styling */
+                #modifier-list-container { max-height: 200px; overflow-y: auto; margin-bottom: 10px; background: #3a3a3a; padding: 5px; border-radius: 3px;}
+                .modifier-entry { display: flex; align-items: center; background: #484848; padding: 4px; margin-bottom: 3px; border-radius: 3px; flex-wrap: wrap; }
+                .modifier-entry > span { margin: 0 5px; cursor: default; }
+                .modifier-entry .mod-name { font-weight: bold; flex-grow: 1; }
+                .modifier-entry .mod-expand, .modifier-entry .mod-remove { cursor: pointer; padding: 0 5px; background: #555; border: none; color: white; border-radius: 3px; margin-left: 5px;}
+                .modifier-entry .mod-remove { background: #a55; }
+                .mod-settings { width: 100%; background: #404040; padding: 8px; margin-top: 5px; border-radius: 3px; border-top: 1px solid #555;}
+                .mod-settings label { display: block; margin-bottom: 4px; }
+                .mod-settings input[type=number] { width: 60px; }
+            </style>
 
 
             <div class="panel" id="lights" style="display: none;">
@@ -2331,51 +2604,51 @@ class AnimatorInterface {
     </div>
 
     <script>
-       const resizeHandle = document.querySelector('.resize-handle-timeline');
-const timelineRes = document.querySelector('.timeline');
-const rendererContainer = document.getElementById('renderer-container');
-const viewport = document.querySelector('.viewport');
-// Variables to track the resizing
-let isResizing = false;
-let initialHeight = 0;
-let initialMouseY = 0;
+        const resizeHandle = document.querySelector('.resize-handle-timeline');
+        const timelineRes = document.querySelector('.timeline');
+        const rendererContainer = document.getElementById('renderer-container');
+        const viewport = document.querySelector('.viewport');
+        // Variables to track the resizing
+        let isResizing = false;
+        let initialHeight = 0;
+        let initialMouseY = 0;
 
-// Define min and max heights for timeline (in pixels)
-const MIN_HEIGHT = window.innerHeight * 0.15; // 29% of viewport height
-const MAX_HEIGHT = 400; // Maximum height in pixels
+        // Define min and max heights for timeline (in pixels)
+        const MIN_HEIGHT = window.innerHeight * 0.15; // 29% of viewport height
+        const MAX_HEIGHT = 400; // Maximum height in pixels
 
-resizeHandle.addEventListener('mousedown', (event) => {
-    isResizing = true;
-    initialHeight = timelineRes.offsetHeight;
-    initialMouseY = event.clientY;
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-});
+        resizeHandle.addEventListener('mousedown', (event) => {
+            isResizing = true;
+            initialHeight = timelineRes.offsetHeight;
+            initialMouseY = event.clientY;
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        });
 
-function handleMouseMove(event) {
-    if (isResizing) {
-        // Calculate the height change (inverted since we're resizing from top)
-        const deltaY = initialMouseY - event.clientY;
-        let newTimelineHeight = initialHeight + deltaY;
+        function handleMouseMove(event) {
+            if (isResizing) {
+                // Calculate the height change (inverted since we're resizing from top)
+                const deltaY = initialMouseY - event.clientY;
+                let newTimelineHeight = initialHeight + deltaY;
 
-        // Apply height constraints to timeline
-        newTimelineHeight = Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, newTimelineHeight));
+                // Apply height constraints to timeline
+                newTimelineHeight = Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, newTimelineHeight));
 
-        // Update the timeline height
-        timelineRes.style.height = `${newTimelineHeight}px`;
+               // Update the timeline height
+               timelineRes.style.height = `${newTimelineHeight}px`;
 
-        // Calculate and update renderer container height
-        const viewportHeight = viewport.offsetHeight;
-        const newRendererHeight = viewportHeight - newTimelineHeight;
-        rendererContainer.style.height = `${newRendererHeight}px`;
-    }
-}
+                // Calculate and update renderer container height
+                const viewportHeight = viewport.offsetHeight;
+                const newRendererHeight = viewportHeight - newTimelineHeight;
+                rendererContainer.style.height = `${newRendererHeight}px`;
+            }
+        }
 
-function handleMouseUp() {
-    isResizing = false;
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
-}
+        function handleMouseUp() {
+            isResizing = false;
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        }
     </script>
 
     <div class="node-editor">
@@ -2453,14 +2726,12 @@ function handleMouseUp() {
         <div class="node-canvas" id="node-canvas"></div>
     </div>
 
-    <div class="camera-preview" id="cameraPreview">
+    <div class="camera-preview hidden" id="cameraPreview">
         <div class="preview-controls">
-           <button id="minimizePreview"><i class="fas fa-window-minimize"></i></button>
-           <button id="expandPreview"><i class="fas fa-expand-arrows-alt"></i></button>
+           <button class="minimizePreview" id="minimizePreview"><i class="fas fa-window-minimize"></i></button>
+           <button class="expandPreview" id="expandPreview"><i class="fas fa-expand-arrows-alt"></i></button>
         </div>
     </div>
-    
-    
 
     <!-- Context Menu -->
     <div class="context-menu" id="context-menu"> 
@@ -2508,7 +2779,7 @@ function handleMouseUp() {
         <div class="context-menu-item1" data-action="delete">Delete Node</div>
         <div class="context-menu-item1" data-action="duplicate">Duplicate Node</div>
     </div>
-
+  
     <script>
         const toggleButton = document.getElementById('toggle-inspector');
         const inspectorPanel = document.getElementById('inspector-panel');
@@ -4851,21 +5122,24 @@ document.addEventListener('keydown', (event) => {
                 this.brushPreview.scale.setScalar(this.settings.radius);
             }
         }
-
     </script>
    
     <script src="index.js"></script>
-    <script src="physics/cloth.js"></script>
+    <script src="cloth.js"></script>
     <script src="nodes/node-editor-ex.js"></script>
     <script src="physics/lighting-stystem.js"></script>
+    <script src="processing/transform-controls.js"></script>
     <script src="js/code-editor.js"></script>
     <script src="js/export.js"></script>
+    <script src="hilpers/canvas-selection.js"></script>
     <script src="animations/animation-path.js"></script>
     <script src="js/timeline.js"></script>
     <script src="processing/nanite-ex.js"></script>
     <script src="soundes/sound-editor.js"></script>
     <script src="physics/material-brush-system.js"></script>
     <script src="nodes/vfx.js"></script>
+    <script src="hilpers/grid-hilpers.js"></script>
+    <script src="hilpers/Keyboard-Shortcuts.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://threejs.org/examples/jsm/controls/OrbitControls.js"></script>
@@ -4957,10 +5231,16 @@ document.addEventListener('keydown', (event) => {
   <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/OBJLoader.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/FBXLoader.min.js"></script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/examples/js/loaders/RGBELoader.js"></script>
+
   <!--Proccesing-->
   <script src="https://cdn.jsdelivr.net/npm/three-subdivide"></script>
+
 <script>
+
+
+
+
 // First, add these global variables at the top of your 
 
 const vertexShader = `
@@ -5194,7 +5474,13 @@ function setupWeatherEffects() {
 
 </script>
 
+<script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+    import { RGBELoader} from 'three/examples/jsm/loaders/RGBELoader.js';
+</script>
+
 <script>
+// Global variables
 let scene, camera, renderer, controls, transformControls, raycaster, mouse;
 let selectedObject = null;
 let clock = new THREE.Clock();
@@ -5204,22 +5490,25 @@ let timelineDuration = 300; // 5 minutes in seconds
 let currentTime = 0;
 const keyframes = new Map();
 
-
-let particles, particlesGeometry,  particlesMaterial;
+let  particles;
+let particlesGeometry,  particlesMaterial;
 const particlesCount = 10000;
-let particleColor = 0xffcc88;
-let isParticlesVisible = true; 
+let particleColor = 0xffcc88; 
+let isParticlesVisible = true;
 let isLocked = false;
 
 let textureLoaded = null; 
 
 function toggleParticles() {
-    if (particles) {
+    if (!particles) {
+        // Create particles for the first time
+        createParticles();
+        console.log("Particles initialized and enabled");
+    } else {
+        // Toggle visibility if already created
         isParticlesVisible = !isParticlesVisible;
         particles.visible = isParticlesVisible;
         console.log(`Particles ${isParticlesVisible ? "enabled" : "disabled"}`);
-    } else {
-        console.warn("Particles have not been initialized yet.");
     }
 }
 
@@ -5315,69 +5604,58 @@ let isModelingMode = false;
 let selectionMode = 'vertex';
 let activeObject = null;
 let selectedElements = [];
-let vertexHelpers = new THREE.Group();
-let edgeHelpers = new THREE.Group();
-let faceHelpers = new THREE.Group();
+let isOrthographicViewActive = false;
 
+let vertexHelpers = new THREE.Group(); vertexHelpers.name = "VertexHelpers_Global";
+let edgeHelpers = new THREE.Group(); edgeHelpers.name = "EdgeHelpers_Global";
+let faceHelpers = new THREE.Group(); faceHelpers.name = "FaceHelpers_Global";
 
-function createGradientBackground() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 2;
-    canvas.height = 256;
-    const context = canvas.getContext('2d');
-
-    const gradient = context.createLinearGradient(0, 0, 0, 256);
-    gradient.addColorStop(0, '#1a1a1a');
-    gradient.addColorStop(1, '#3a3a3a');
-
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, 2, 256);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    scene.background = texture;
-    texture.dispose(); // Dispose of the texture when no longer needed to avoid memory leaks
-}
 
 function init() {
     // Scene setup
+    //scene.background = new THREE.Color(0x333333); // Default to a neutral gray color
     scene = new THREE.Scene();
-    createGradientBackground();
-    scene.background = new THREE.Color(0x333333); // Default to a neutral gray color
+    scene.backgroundBlurriness = 0.5;
+    scene.backgroundIntensity = 1.2;
 
+    if (scene.background && scene.background.dispose) {
+        scene.background.dispose();
+    }
+    if (scene.environment && scene.environment.dispose) {
+        scene.environment.dispose();
+    }
+    updateRenderOrder();
     // Camera setup
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 10);
-
     updateCameraPosition();
     // Renderer setup
     renderer = new THREE.WebGLRenderer({
         antialias: true,
-        // Enable tone mapping for better HDR rendering
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.0,  // Adjust for overall brightness
+        toneMappingExposure: 1.0,
         powerPreference: "high-performance",
         stencil: true,
         depth: true,
+        logarithmicDepthBuffer: true,
+        alpha: true
     });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById('renderer-container').appendChild(renderer.domElement);
+    renderer.setPixelRatio(window.devicePixelRatio); // دقة أفضل
+    renderer.sortObjects = true; 
+    renderer.setClearColor(0x000000, 0);
+    renderer.autoClear = true;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.autoClear = false;
     renderer.antialias = true; // تنعيم الحواف
     renderer.physicallyCorrectLights = true;
-    renderer.setPixelRatio(window.devicePixelRatio); // دقة أفضل
 
     // Remove OrbitControls (if you prefer full manual control)
     if (controls) {
         controls.dispose();
         controls = null;
     }
-
-    transformControls = new THREE.TransformControls(camera, renderer.domElement);
-    scene.add(transformControls);
-
 
     // Axes helper
     const axesHelper = new THREE.AxesHelper(5);
@@ -5424,7 +5702,6 @@ function init() {
         }
     });
 
-
     const nodeEditor = new NodeEditor(scene, camera, raycaster);
     // Pass nodeEditor to global scope if needed
     window.nodeEditor = nodeEditor;
@@ -5433,22 +5710,73 @@ function init() {
         if (e.ctrlKey && e.key === 'z') nodeEditor.undo();
         if (e.ctrlKey && e.key === 'y') nodeEditor.redo();
     });
-
     //modeling helpers
     scene.add(vertexHelpers);
     scene.add(edgeHelpers);
     scene.add(faceHelpers);
-
-
+    vertexHelpers.name = "VertexHelpers"; scene.add(vertexHelpers);
+    edgeHelpers.name = "EdgeHelpers"; scene.add(edgeHelpers);
+    faceHelpers.name = "FaceHelpers"; scene.add(faceHelpers);
     // World-Class Lighting Setup
     // 1. Ambient Light (soft global illumination)
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // Soft gray light
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.15); // Just a gentle fill
     scene.add(ambientLight);
 
     // 2. Hemisphere Light (sky + ground simulation)
-    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x8b4513, 0.6); // Sky blue and ground brown
-    hemiLight.position.set(0, 50, 0);
+    const hemiLight = new THREE.HemisphereLight(0xb1e1ff, 0x444444, 0.6);
+    hemiLight.position.set(0, 100, 0);
     scene.add(hemiLight);
+
+    const sunLight = new THREE.DirectionalLight(0xfff2cc, 3.5);
+    sunLight.position.set(40, 60, 20);
+    sunLight.castShadow = true;
+
+    sunLight.shadow.mapSize.width = 4096;
+    sunLight.shadow.mapSize.height = 4096;
+
+    sunLight.shadow.camera.left = -100;
+    sunLight.shadow.camera.right = 100;
+    sunLight.shadow.camera.top = 100;
+    sunLight.shadow.camera.bottom = -100;
+    sunLight.shadow.camera.far = 350;
+    sunLight.shadow.camera.near = 0.5;
+
+    sunLight.shadow.bias = -0.0001;
+    sunLight.shadow.normalBias = 0.05;
+
+    scene.add(sunLight);
+    // Helper (optional for debugging)
+    const sunHelper = new THREE.DirectionalLightHelper(sunLight, 10);
+
+    // 4. RectArea Light (softbox-like fill)
+    const rectLight1 = new THREE.RectAreaLight(0xffddbb, 2.5, 20, 20);
+    rectLight1.position.set(-15, 20, 15);
+    rectLight1.lookAt(0, 0, 0);
+    scene.add(rectLight1);
+
+    // 5. Extra Area Light (cooler bounce)
+    const rectLight2 = new THREE.RectAreaLight(0x99ccff, 2.0, 30, 15);
+    rectLight2.position.set(15, 10, -15);
+    rectLight2.lookAt(0, 0, 0);
+    scene.add(rectLight2);
+
+    // Optional Light Probes (if you use light baking)
+    const lightProbe = new THREE.LightProbe();
+    scene.add(lightProbe);
+
+    // 6. Spotlight with angle and penumbra (editor-style light beam)
+    const spotLight = new THREE.SpotLight(0xffffff, 1.5, 100, Math.PI / 5, 0.3, 2);
+    spotLight.position.set(25, 40, 10);
+    spotLight.target.position.set(0, 0, 0);
+    spotLight.castShadow = true;
+
+    spotLight.shadow.mapSize.width = 2048;
+    spotLight.shadow.mapSize.height = 2048;
+    spotLight.shadow.bias = -0.0001;
+    spotLight.shadow.normalBias = 0.02;
+
+    scene.add(spotLight);
+    scene.add(spotLight.target);
 
     // 3. Directional Light (Sun-like main light)
     const directionalLight = new THREE.DirectionalLight(0xfff8e1, 2.0); // Warm sunlight
@@ -5484,10 +5812,17 @@ function init() {
     rectLight.lookAt(0, 0, 0);
     scene.add(rectLight);
 
+  
+
     // Grid helper
     const advancedGrid = createAdvancedGridHelper(1000, 1000);
+    advancedGrid.name = 'advancedGrid';
+    advancedGrid.renderOrder = -2; 
     scene.add(advancedGrid);
 
+    if (axesHelper) {
+        axesHelper.renderOrder = -1;
+    }
     const lineMaterial = new THREE.LineBasicMaterial({
         color: 0xffff00,
         linewidth: 2
@@ -5504,6 +5839,15 @@ function init() {
     scene.fog = new THREE.FogExp2(0x2a2a2a, 0.01);
     // GUI setup
     const settings = addGUI(scene, renderer, camera);
+    if (settings.useHDR) {
+        scene.background = new THREE.Color(settings.background);
+        scene.environment = null;
+        scene.fog = new THREE.FogExp2(settings.background, settings.density);
+    } else {
+        // Start with color background if HDRI is disabled
+        const hdriPath = `https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/${hdriFiles[settings.selectedHDRI]}`;
+        updateEnvironmentAndBackground(hdriPath);
+    }
 
     // Event listeners and initialization
     window.addEventListener('DOMContentLoaded', () => {
@@ -5524,70 +5868,364 @@ function init() {
         }, 1000);
     });
 
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshStandardMaterial({
-        color: 0x00ff00,
-        roughness: 0.5,
-        metalness: 0.2
-    });
-    const cube = new THREE.Mesh(geometry, material);
-    cube.castShadow = true;
-    cube.receiveShadow = true;
-    scene.add(cube);
-    activeObject = cube;
-
     // Override scene.add to auto-add objects to timeline
     const originalSceneAdd = scene.add;
     scene.add = function(object) {
-    originalSceneAdd.apply(scene, arguments); // Call original add
-        if (object.isObject3D) { // Ensure it’s a 3D object
-           addObjectToTimeline(object);
+        originalSceneAdd.apply(scene, arguments); // Call original add
+            if (object.isObject3D) { // Ensure it’s a 3D object
+                addObjectToTimeline(object);
         }
         return object;
-   };
-
+    };
+ 
     initializeTimeline();
     setupTimelineEventListeners();
+    initCanvasSelection();
+    setupMultiSelectionHandling();
+    initializeShortcutsSystem();
 
+    initShortcutsPanel();
     setupSceneElements();
     initModeling();
     setupSnowControls();
     createSnow();
+    bindInspectorInputs(); 
 
     setupEventListeners();
     activatePanelButtonTool();
     initPhysics();
     addDemonstrationObjects();
-    createParticles();
+    //createParticles();
+    toggleParticles();
     animate();
     optimizeScene();
     initBrush();
     initCharacterSculpting();
+}
 
-     // Add an environment map (optional, but highly recommended)
-     const pmremGenerator = new THREE.PMREMGenerator(renderer);
-     pmremGenerator.compileEquirectangularShader();
+function updateEnvironmentAndBackground(hdriUrl) {
+    const loader = new THREE.RGBELoader();
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    pmremGenerator.compileEquirectangularShader();
 
-     new THREE.TextureLoader().load('path/to/your/environment.hdr', (texture) => {  //Use of hdr format images
-         const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+    loader.load(hdriUrl, function (texture) {
+        const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 
-         scene.environment = envMap;
-         texture.dispose();
-         pmremGenerator.dispose();
-     }, undefined, (error) => {
-         console.error('Error loading environment map:', error);
-     });
+        // Dispose previous environment/background if needed
+        if (scene.environment && scene.environment.dispose) {
+            scene.environment.dispose();
+        }
+        if (scene.background && scene.background.dispose) {
+            scene.background.dispose();
+        }
+
+        scene.environment = envMap;
+        scene.background = envMap; // Set this if you want the HDR to be visible as the background
+
+        texture.dispose();
+        pmremGenerator.dispose();
+
+        console.log("HDR environment and background applied.");
+    }, undefined, function (err) {
+        console.error("Failed to load HDRI:", err);
+    });
+}
+
+function createAdvancedGridHelper(size = 100, divisions = 100) { // Adjusted default size for typical scenes
+    const gridGroup = new THREE.Group();
+    gridGroup.name = 'advancedGrid'; // Set name here for consistency
+
+    gridGroup.renderOrder = -1;
+    // Horizontal XZ grid
+    const horizontalGrid = new THREE.GridHelper(size, divisions);
+    horizontalGrid.material = new THREE.LineBasicMaterial({
+        color: 0x666666,
+        opacity: 0.5,
+        transparent: true,
+        depthWrite: false 
+    });
+    horizontalGrid.renderOrder = -1; 
+    horizontalGrid.name = 'horizontalGrid';
+    gridGroup.add(horizontalGrid);
+
+    // Vertical grid (XY or YZ)
+    const verticalGrid = new THREE.GridHelper(size, divisions * 2); // Can have more divisions if needed
+    verticalGrid.material = new THREE.LineBasicMaterial({
+        color: 0x888888, // Slightly lighter
+        opacity: 0.7,
+        transparent: true,
+        depthWrite: false
+    });
+    verticalGrid.renderOrder = -1; 
+    verticalGrid.name = 'verticalGrid';
+    verticalGrid.visible = false; // Hidden by default
+    gridGroup.add(verticalGrid);
+
+    // Major axes (Placeholder, implement if needed)
+    const axesGroup = createMajorAxes(size); // Assuming this returns a Group
+    gridGroup.add(axesGroup);
+
+    // Measurement labels (Placeholder, implement if needed)
+    const labelsGroup = createMeasurementLabels(size); // Assuming this returns a Group
+    gridGroup.add(labelsGroup);
+
+    // Current active plane tracker
+    gridGroup.currentPlane = 'xz'; // Default to horizontal XZ plane
+
+    // Method to update grid visibility and orientation
+    gridGroup.updateGrid = function(plane) {
+        console.log(`[updateGrid] Called with plane: ${plane}`);
+        
+        // Set current plane
+        this.currentPlane = plane || 'xz';
+        
+        // Update grid visibility based on plane
+        horizontalGrid.visible = (plane === 'xz' || plane === null);
+        verticalGrid.visible = (plane === 'xy' || plane === 'yz');
+        
+        console.log(`  [updateGrid] horizontalGrid.visible: ${horizontalGrid.visible}, verticalGrid.visible: ${verticalGrid.visible}`);
+
+        // Always reset rotation before applying a new one to avoid cumulative rotations
+        verticalGrid.rotation.set(0, 0, 0);
+
+        if (plane === 'xy') {
+            // For XY plane (looking along Z axis), rotate 90 degrees around X
+            verticalGrid.rotation.x = Math.PI / 2;
+        } else if (plane === 'yz') {
+            // For YZ plane (looking along X axis)
+            // For proper orientation facing the camera, we need specific rotations
+            verticalGrid.rotation.x = Math.PI / 2;
+            verticalGrid.rotation.z = Math.PI / 2;
+        }
+    };
+
+    // Store original camera position and orientation for detecting view changes
+    let lastCameraPosition = new THREE.Vector3();
+    let lastCameraDirection = new THREE.Vector3();
+    
+    // Dynamic visibility based on camera distance and view change
+    gridGroup.onBeforeRender = function(renderer, scene, camera) {
+        if (!camera || typeof camera.position.length !== 'function') return;
+
+        const distance = camera.position.length();
+        const maxVisibleDistance = size * 1.5;
+
+        // Fade out based on distance
+        const fade = THREE.MathUtils.smoothstep(distance, maxVisibleDistance * 0.5, maxVisibleDistance);
+
+        const baseHorizontalOpacity = 0.5;
+        const baseVerticalOpacity = 0.7;
+
+        if (horizontalGrid.material && typeof horizontalGrid.material.opacity !== 'undefined') {
+            horizontalGrid.material.opacity = baseHorizontalOpacity * (1 - fade);
+        }
+        if (verticalGrid.material && typeof verticalGrid.material.opacity !== 'undefined') {
+            verticalGrid.material.opacity = baseVerticalOpacity * (1 - fade);
+        }
+
+        // Visibility of labels based on distance
+        if (labelsGroup) {
+            labelsGroup.visible = (distance < size * 0.75);
+        }
+        
+        // Get current camera position and direction
+        const currentCameraPosition = new THREE.Vector3().copy(camera.position);
+        // Get the direction the camera is pointing (normalized)
+        const currentCameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).normalize();
+        
+        // Check if the camera has moved significantly
+        const positionChanged = !lastCameraPosition.equals(currentCameraPosition);
+        const directionChanged = lastCameraDirection.dot(currentCameraDirection) < 0.999; // Slight change in direction
+        
+        // If we moved or rotated and vertical grid is visible, check if we need to revert to horizontal
+        if ((positionChanged || directionChanged) && verticalGrid.visible) {
+            // Calculate normalized direction vector from origin to camera
+            const cameraDir = new THREE.Vector3().copy(camera.position).normalize();
+            
+            // Define axis direction vectors for the three standard views
+            const xAxisDir = new THREE.Vector3(1, 0, 0);   // X axis (YZ plane)
+            const yAxisDir = new THREE.Vector3(0, 1, 0);   // Y axis (XZ plane)
+            const zAxisDir = new THREE.Vector3(0, 0, 1);   // Z axis (XY plane)
+            
+            // Calculate dot products to see alignment with axes
+            const xDot = Math.abs(cameraDir.dot(xAxisDir));
+            const yDot = Math.abs(cameraDir.dot(yAxisDir));
+            const zDot = Math.abs(cameraDir.dot(zAxisDir));
+            
+            // Threshold for deciding when view is "aligned" with an axis
+            const alignmentThreshold = 0.97; // Higher value = stricter alignment required
+            
+            // Check if we're aligned with the current plane's axis
+            let isAligned = false;
+            if (this.currentPlane === 'xy' && zDot > alignmentThreshold) {
+                isAligned = true;
+            } else if (this.currentPlane === 'yz' && xDot > alignmentThreshold) {
+                isAligned = true;
+            } else if (this.currentPlane === 'xz' && yDot > alignmentThreshold) {
+                isAligned = true;
+            }
+            
+            // If we're not aligned with the current plane's axis, revert to horizontal grid
+            if (!isAligned) {
+                horizontalGrid.visible = true;
+                verticalGrid.visible = false;
+                this.currentPlane = 'xz'; // Reset to horizontal XZ plane
+                console.log("[Grid] View changed, reverting to horizontal grid only");
+            }
+            
+            // Update last position and direction for next frame
+            lastCameraPosition.copy(currentCameraPosition);
+            lastCameraDirection.copy(currentCameraDirection);
+        }
+    };
+
+    return gridGroup;
 }
 
 
+let axisToggleState = {
+    x: true,
+    y: true,
+    z: true
+};
+
+function setCameraView(direction) {
+    console.log(`--- setCameraView CALLED with direction: ${direction} ---`);
+
+    let targetPosition = new THREE.Vector3();
+    let lookAtPosition = new THREE.Vector3(0, 0, 0); // Always look at origin
+    let gridPlane = null;
+    let initialIsOrthographicActive = isOrthographicViewActive;
+
+    switch (direction) {
+        case 'x':
+            if (axisToggleState.x) {
+                targetPosition.set(4, 0, 0); // +X
+                document.getElementById("axis-x").innerText = "X";
+            } else {
+                targetPosition.set(-4, 0, 0); // -X
+                document.getElementById("axis-x").innerText = "-X";
+            }
+            axisToggleState.x = !axisToggleState.x;
+            gridPlane = 'yz';
+            isOrthographicViewActive = true;
+            break;
+        case 'y':
+        case 'top':
+            if (axisToggleState.y) {
+                targetPosition.set(0, 4, 0); // +Y
+                document.getElementById("axis-y").innerText = "Y";
+            } else {
+                targetPosition.set(0, -4, 0); // -Y
+                document.getElementById("axis-y").innerText = "-Y";
+            }
+            axisToggleState.y = !axisToggleState.y;
+            gridPlane = 'xz';
+            isOrthographicViewActive = true;
+            break;
+        case 'z':
+            if (axisToggleState.z) {
+                targetPosition.set(0, 0, 4); // +Z
+                document.getElementById("axis-z").innerText = "Z";
+            } else {
+                targetPosition.set(0, 0, -4); // -Z
+                document.getElementById("axis-z").innerText = "-Z";
+            }
+            axisToggleState.z = !axisToggleState.z;
+            gridPlane = 'xy';
+            isOrthographicViewActive = true;
+            break;
+        case 'bottom':
+            targetPosition.set(0, -4, 0);
+            gridPlane = 'xz';
+            isOrthographicViewActive = true;
+            break;
+        case 'diagonal':
+            targetPosition.set(4, 4, 4);
+            gridPlane = 'xz';
+            isOrthographicViewActive = false;
+            break;
+        default:
+            console.warn('[setCameraView] Unknown camera view:', direction);
+            return;
+    }
+    
+    console.log(`[setCameraView] Direction: ${direction}, Initial isOrthographicViewActive: ${initialIsOrthographicActive}, New isOrthographicViewActive: ${isOrthographicViewActive}, Target GridPlane: ${gridPlane}`);
+
+    const advancedGrid = scene.getObjectByName('advancedGrid');
+    if (advancedGrid && advancedGrid.updateGrid) {
+        advancedGrid.updateGrid(gridPlane);
+        
+        // Reset the camera tracking variables to prevent immediate reversion of grid
+        if (advancedGrid.onBeforeRender && advancedGrid.onBeforeRender.lastCameraPosition) {
+            advancedGrid.onBeforeRender.lastCameraPosition = targetPosition.clone();
+            const lookDir = new THREE.Vector3().subVectors(lookAtPosition, targetPosition).normalize();
+            advancedGrid.onBeforeRender.lastCameraDirection = lookDir;
+        }
+    } else {
+        console.error("[setCameraView] Could not find advancedGrid or its updateGrid method!");
+    }
+
+    if (controls) controls.enabled = false; // Disable controls during animation
+
+    gsap.to(camera.position, {
+        duration: 0.5,
+        x: targetPosition.x,
+        y: targetPosition.y,
+        z: targetPosition.z,
+        ease: "power2.inOut",
+        onUpdate: () => {
+            camera.lookAt(lookAtPosition);
+        },
+        onComplete: () => {
+            console.log(`[setCameraView GSAP Complete] Final isOrthographicViewActive after animation for '${direction}' view: ${isOrthographicViewActive}`);
+            if (controls) {
+                controls.target.copy(lookAtPosition);
+                controls.update();
+                controls.enabled = true;
+                
+                // After animation completes, store the final camera position and direction
+                // to establish a new baseline for grid visibility checks
+                if (advancedGrid && advancedGrid.onBeforeRender) {
+                    const currentCameraPosition = new THREE.Vector3().copy(camera.position);
+                    const currentCameraDirection = new THREE.Vector3(0, 0, -1)
+                        .applyQuaternion(camera.quaternion).normalize();
+                        
+                    // Store these as the new baseline
+                    if (!advancedGrid.onBeforeRender.lastCameraPosition) {
+                        advancedGrid.onBeforeRender.lastCameraPosition = new THREE.Vector3();
+                    }
+                    if (!advancedGrid.onBeforeRender.lastCameraDirection) {
+                        advancedGrid.onBeforeRender.lastCameraDirection = new THREE.Vector3();
+                    }
+                    
+                    advancedGrid.onBeforeRender.lastCameraPosition.copy(currentCameraPosition);
+                    advancedGrid.onBeforeRender.lastCameraDirection.copy(currentCameraDirection);
+                }
+            }
+        }
+    });
+} 
 
 
 
 function initModeling() {
-    initTransformControls();
-    setupModelingEventListeners();
+     console.log("Initializing Modeling System...");
+     // Ensure transformControls exists
+     if (!transformControls) {
+         console.error("TransformControls not initialized before initModeling!");
+         return;
+     }
+    // This function now mainly sets up listeners, called from init
+    initTransformControls(); // Setup TransformControls listeners specific to modeling
+    setupTransformControls(); // Setup general interaction with OrbitControls
+    setupModelingEventListeners(); // Setup buttons, mouse interactions for modeling panel/canvas
+    console.log("Modeling System Initialized.");
+    // Optionally toggle modeling mode ON by default for testing:
+    // setTimeout(toggleModelingMode, 500); // Delay slightly to ensure UI is ready
 }
 
+// Camera controls
 const zoomSpeed = 0.05; // Finer control over zoom sensitivity
 const rotationSpeed = 0.005; // Smoother rotation
 const moveSpeed = 0.1; // Consistent movement speed
@@ -5598,32 +6236,83 @@ const cameraTarget = new THREE.Vector3(0, 0, 0);
 let isDraggingCam = false;
 let lastMouseX, lastMouseY;
 let velocity = new THREE.Vector3(); // For smooth movement
-const dampingFactor = 0.1; // For inertia
+let targetTheta = cameraTheta;
+let targetPhi = cameraPhi;
+let targetDistance = cameraDistance;
 
-
+const dampingFactor = 0.05; // Instead of 0.1 for more easing
 
 function updateCameraPosition() {
-    const x = cameraDistance * Math.sin(cameraPhi) * Math.sin(cameraTheta);
-    const y = cameraDistance * Math.cos(cameraPhi);
-    const z = cameraDistance * Math.sin(cameraPhi) * Math.cos(cameraTheta);
-    camera.position.set(x, y, z);
-    camera.lookAt(cameraTarget);
+   const x = cameraDistance * Math.sin(cameraPhi) * Math.sin(cameraTheta);
+   const y = cameraDistance * Math.cos(cameraPhi);
+   const z = cameraDistance * Math.sin(cameraPhi) * Math.cos(cameraTheta);
+   camera.position.set(x, y, z);
+   camera.lookAt(cameraTarget);
 }
 
-// Smooth Zoom with Damping
-function zoomCamera(delta) {
+// Enhanced smooth zoom with better focus
+function smoothZoomToTarget(newTargetDistance, newTargetPoint) {
+   const steps = 20;
+   let stepCount = 0;
+
+   const initialDistance = cameraDistance;
+   const initialTarget = cameraTarget.clone();
+
+   const deltaDistance = newTargetDistance - initialDistance;
+   const deltaTarget = newTargetPoint.clone().sub(initialTarget);
+
+    function step() {
+       stepCount++;
+       const t = stepCount / steps;
+
+       cameraDistance = initialDistance + deltaDistance * t;
+       cameraTarget.copy(initialTarget.clone().add(deltaTarget.clone().multiplyScalar(t)));
+
+       updateCameraPosition();
+
+        if (stepCount < steps) {
+           requestAnimationFrame(step);
+        }
+    }
+
+    requestAnimationFrame(step);
+}
+
+// Improved zoom camera with better intersection detection
+function zoomCamera(delta, mouseX, mouseY) {
     const zoomFactor = 1 - delta * zoomSpeed;
-    cameraDistance *= zoomFactor;
-    cameraDistance = THREE.MathUtils.clamp(cameraDistance, 1, 100); // Limit zoom range
-    updateCameraPosition();
+    const newDistance = THREE.MathUtils.clamp(targetDistance * zoomFactor, 1, 100);
+  
+
+    raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
+    const intersects = raycaster.intersectObjects(scene.children, true);
+
+    if (intersects.length > 0) {
+       const point = intersects[0].point;
+       smoothZoomToTarget(newDistance, point); // Use smooth zoom
+    } else {
+       smoothZoomToTarget(newDistance, cameraTarget); // Zoom to center if no object
+    }
+
+    // Update internal targets
+    targetDistance = newDistance;
+
+
 }
 
-// Smooth Rotation with Inertia
-function rotateCamera(deltaX, deltaY) {
-    cameraTheta -= deltaX * rotationSpeed;
-    cameraPhi -= deltaY * rotationSpeed;
-    cameraPhi = THREE.MathUtils.clamp(cameraPhi, 0.1, Math.PI - 0.1); // Prevent flipping
+
+
+function focusOnObject(object) {
+    const box = new THREE.Box3().setFromObject(object);
+    const center = box.getCenter(new THREE.Vector3());
+
+    cameraTarget.copy(center);
+
+    const size = box.getSize(new THREE.Vector3()).length();
+    targetDistance = size * 1.5;
+
     updateCameraPosition();
+
 }
 
 // Keyboard Movement Controls
@@ -5649,8 +6338,6 @@ function moveCamera(direction) {
             break;
     }
 }
-
-
 
 document.addEventListener("keydown", (event) => {
     switch (event.code) {
@@ -5722,7 +6409,6 @@ function setupSceneElements() {
     mouse = new THREE.Vector2();
 }
 
-
 function animateParticles() {
     const positions = particles.geometry.attributes.position.array;
     const time = Date.now() * 0.001;
@@ -5736,213 +6422,130 @@ function animateParticles() {
     particles.geometry.attributes.position.needsUpdate = true;
 }
 
-
-
 function addGUI(scene, renderer, camera) {
-    const gui = new dat.GUI({
-        autoPlace: false
-    });
+    const gui = new dat.GUI({ autoPlace: false });
 
-    // Settings object with expanded controls
     const settings = {
-        // Scene Settings
-        background: 0x2a2a2a,
+        background: 0x2a2a2a, 
         density: 0.02,
-        
-        // HDRI Settings
-        useHDR: false,
-        selectedHDRI: 'sunset',
-        hdriIntensity: 1.0,
+        useHDR: true, 
+        selectedHDRI: 'sunset', 
+        hdriIntensity: 1.0, 
         hdriRotation: 0,
-        
-        // Camera Settings
-        fov: camera.fov,
-        nearPlane: camera.near,
-        farPlane: camera.far,
-        
-        // Shadow Settings
-        enableShadows: true,
-        shadowMapSize: 2048,
-        shadowBias: -0.0001,
-        
-        // Lighting Settings
+        fov: camera.fov, nearPlane: camera.near, farPlane: camera.far,
+        enableShadows: true, shadowMapSize: 2048, shadowBias: -0.0001,
         lightIntensity: 1,
-        ambientLightColor: 0xffffff,
-        ambientLightIntensity: 0.5,
-        pointLightColor: 0xffffff,
-        pointLightIntensity: 1,
-        pointLightDistance: 100,
-        pointLightDecay: 2,
-        directionalLightColor: 0xffffff,
-        directionalLightIntensity: 1,
+        ambientLightColor: 0xffffff, ambientLightIntensity: 0.5,
+        pointLightColor: 0xffffff, pointLightIntensity: 1, pointLightDistance: 100, pointLightDecay: 2,
+        directionalLightColor: 0xffffff, directionalLightIntensity: 1,
         directionalLightPosition: { x: 5, y: 5, z: 5 },
-        
-        // Material Settings
-        materialReflectivity: 0.5,
-        roughness: 0.5,
-        metalness: 0.5,
-        envMapIntensity: 1.0,
-        
-        // Post-Processing
-        enablePostProcessing: true,
-        bloomEnabled: true,
-        bloomIntensity: 1.0,
-        bloomThreshold: 0.9,
-        bloomRadius: 0.8,
-        
-        // DOF Settings
-        dofEnabled: false,
-        focusDistance: 10,
-        focalLength: 24,
-        bokehScale: 2.0,
-        
-        // Performance
-        enableStats: false,
-        pixelRatio: 1.0
+        materialReflectivity: 0.5, roughness: 0.5, metalness: 0.5, envMapIntensity: 1.0,
+        enablePostProcessing: true, bloomEnabled: true, bloomIntensity: 1.0,
+        bloomThreshold: 0.9, bloomRadius: 0.8,
+        dofEnabled: false, focusDistance: 10, focalLength: 24, bokehScale: 2.0,
+        enableStats: false, pixelRatio: 1.0
     };
 
-    // HDRI Files Map
     const hdriFiles = {
-        'sunset': 'sunset_1k.hdr',
-        'forest': 'forest_1k.hdr',
-        'studio': 'studio_1k.hdr',
-        'night': 'night_1k.hdr',
-        'indoor': 'indoor_1k.hdr'
+        sunset: 'venice_sunset_1k.hdr',
+        forest: 'mossy_forest_1k.hdr',
+        studio: 'studio_small_07_1k.hdr',
+        night: 'dikhololo_night_1k.hdr',
+        indoor: 'IndoorEnvironmentHDRI003_1K.hdr',
+        Kloppenheim06: 'kloppenheim_06_1k.hdr',
+        Syferfontein_1d_Clear : 'syferfontein_1d_clear_1k.hdr',
+        Syferfontein_6d_Clear: 'syferfontein_6d_clear_1k.hdr',
+        Syferfontein_18d_Clear : 'syferfontein_18d_clear_1k.hdr',
     };
 
-    // Scene Settings
+    // Utility: Update material properties
+    const updateMaterials = () => {
+        scene.traverse(obj => {
+            const mat = obj.material;
+            if (mat) {
+                ['reflectivity', 'roughness', 'metalness', 'envMapIntensity'].forEach(prop => {
+                    if (mat[prop] !== undefined) mat[prop] = settings[prop];
+                });
+                mat.needsUpdate = true;
+            }
+        });
+    };
+
+    // === Scene Folder ===
     const sceneFolder = gui.addFolder('Scene Settings');
-    sceneFolder.addColor(settings, 'background').onChange(updateBackground);
+    sceneFolder.addColor(settings, 'background').onChange(() => {
+        if (!settings.useHDR) {
+            scene.background = new THREE.Color(settings.background);
+            updateFog();
+        }
+    });
     sceneFolder.add(settings, 'density', 0.001, 0.1).step(0.001).onChange(updateFog);
     sceneFolder.open();
 
-    // HDRI Settings
+    // === HDRI Folder ===
     const hdriFolder = gui.addFolder('HDRI Settings');
-    hdriFolder.add(settings, 'useHDR').onChange(updateHDRI);
-    hdriFolder.add(settings, 'selectedHDRI', Object.keys(hdriFiles)).onChange(updateHDRI);
-    hdriFolder.add(settings, 'hdriIntensity', 0, 5).step(0.1).onChange(updateHDRIIntensity);
-    hdriFolder.add(settings, 'hdriRotation', 0, Math.PI * 2).step(0.1).onChange(updateHDRIRotation);
+    hdriFolder.add(settings, 'useHDR').name('Enable HDRI').onChange(updateHDRI);
+    hdriFolder.add(settings, 'selectedHDRI', Object.keys(hdriFiles)).name('HDRI Type').onChange(updateHDRI);
+    hdriFolder.add(settings, 'hdriIntensity', 0, 5).step(0.1).name('Intensity').onChange(updateHDRISettings);
+    hdriFolder.add(settings, 'hdriRotation', 0, Math.PI * 2).step(0.1).name('Rotation').onChange(updateHDRISettings);
     hdriFolder.open();
 
-    // Camera Settings
+
+    function updateFog() {
+        scene.fog = new THREE.FogExp2(settings.background, settings.density);
+    }
+
+     function updateHDRI() {
+        if (!settings.useHDR) {
+            // When HDRI is disabled, set background to color and remove environment
+            scene.background = new THREE.Color(settings.background);
+            scene.environment = null;
+            updateFog();
+            console.log("HDRI disabled");
+            return;
+        }
+
+        // When HDRI is enabled, load the selected HDRI
+        const hdriPath = `https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/${hdriFiles[settings.selectedHDRI]}`;
+        
+        const loader = new THREE.RGBELoader();
+        loader.setDataType(THREE.FloatType)
+              .load(hdriPath, texture => {
+            const pmremGen = new THREE.PMREMGenerator(renderer);
+            pmremGen.compileEquirectangularShader();
+            
+            const envMap = pmremGen.fromEquirectangular(texture).texture;
+            
+            // Apply the HDRI to both background and environment
+            scene.background = envMap;
+            scene.environment = envMap;
+            
+            // Apply intensity and rotation
+            scene.backgroundIntensity = settings.hdriIntensity;
+            // Apply rotation if needed (requires a more complex setup with background material)
+            
+            texture.dispose();
+            pmremGen.dispose();
+            
+            console.log("HDRI enabled and updated:", settings.selectedHDRI);
+        });
+    }
+
+    // Function to update HDRI settings without reloading
+    function updateHDRISettings() {
+        if (settings.useHDR && scene.background) {
+            scene.backgroundIntensity = settings.hdriIntensity;
+            // For rotation, you might need a more sophisticated approach
+            // involving a background mesh or transforming the environment map
+            console.log("HDRI settings updated");
+        }
+    }
+    // === Camera Folder ===
     const cameraFolder = gui.addFolder('Camera Settings');
     cameraFolder.add(settings, 'fov', 20, 120).onChange(updateCamera);
     cameraFolder.add(settings, 'nearPlane', 0.1, 10).onChange(updateCamera);
     cameraFolder.add(settings, 'farPlane', 100, 5000).onChange(updateCamera);
     cameraFolder.open();
-
-    // Shadow Settings
-    const shadowFolder = gui.addFolder('Shadow Settings');
-    shadowFolder.add(settings, 'enableShadows').onChange(updateShadows);
-    shadowFolder.add(settings, 'shadowMapSize', [512, 1024, 2048, 4096]).onChange(updateShadowMapSize);
-    shadowFolder.add(settings, 'shadowBias', -0.01, 0.01).step(0.0001).onChange(updateShadowBias);
-    shadowFolder.open();
-
-    // Lighting Settings
-    const lightingFolder = gui.addFolder('Lighting Settings');
-    
-    // Ambient Light
-    const ambientFolder = lightingFolder.addFolder('Ambient Light');
-    ambientFolder.addColor(settings, 'ambientLightColor').onChange(updateAmbientLight);
-    ambientFolder.add(settings, 'ambientLightIntensity', 0, 2).onChange(updateAmbientLight);
-
-    // Point Light
-    const pointFolder = lightingFolder.addFolder('Point Light');
-    pointFolder.addColor(settings, 'pointLightColor').onChange(updatePointLight);
-    pointFolder.add(settings, 'pointLightIntensity', 0, 5).onChange(updatePointLight);
-    pointFolder.add(settings, 'pointLightDistance', 0, 1000).onChange(updatePointLight);
-    pointFolder.add(settings, 'pointLightDecay', 0, 5).onChange(updatePointLight);
-
-    // Directional Light
-    const dirFolder = lightingFolder.addFolder('Directional Light');
-    dirFolder.addColor(settings, 'directionalLightColor').onChange(updateDirectionalLight);
-    dirFolder.add(settings, 'directionalLightIntensity', 0, 5).onChange(updateDirectionalLight);
-    dirFolder.add(settings.directionalLightPosition, 'x', -20, 20).onChange(updateDirectionalLight);
-    dirFolder.add(settings.directionalLightPosition, 'y', -20, 20).onChange(updateDirectionalLight);
-    dirFolder.add(settings.directionalLightPosition, 'z', -20, 20).onChange(updateDirectionalLight);
-
-    lightingFolder.open();
-
-    // Material Settings
-    const materialFolder = gui.addFolder('Material Settings');
-    materialFolder.add(settings, 'materialReflectivity', 0, 1).onChange(updateMaterials);
-    materialFolder.add(settings, 'roughness', 0, 1).onChange(updateMaterials);
-    materialFolder.add(settings, 'metalness', 0, 1).onChange(updateMaterials);
-    materialFolder.add(settings, 'envMapIntensity', 0, 5).onChange(updateMaterials);
-    materialFolder.open();
-
-    // Post-Processing Settings
-    const postFolder = gui.addFolder('Post-Processing');
-    postFolder.add(settings, 'enablePostProcessing').onChange(updatePostProcessing);
-    
-    // Bloom Settings
-    const bloomFolder = postFolder.addFolder('Bloom');
-    bloomFolder.add(settings, 'bloomEnabled').onChange(updateBloom);
-    bloomFolder.add(settings, 'bloomIntensity', 0, 5).onChange(updateBloom);
-    bloomFolder.add(settings, 'bloomThreshold', 0, 1).onChange(updateBloom);
-    bloomFolder.add(settings, 'bloomRadius', 0, 1).onChange(updateBloom);
-
-    // DOF Settings
-    const dofFolder = postFolder.addFolder('Depth of Field');
-    dofFolder.add(settings, 'dofEnabled').onChange(updateDOF);
-    dofFolder.add(settings, 'focusDistance', 0.1, 50).onChange(updateDOF);
-    dofFolder.add(settings, 'focalLength', 12, 100).onChange(updateDOF);
-    dofFolder.add(settings, 'bokehScale', 0, 10).onChange(updateDOF);
-
-    postFolder.open();
-
-    // Performance Settings
-    const performanceFolder = gui.addFolder('Performance');
-    performanceFolder.add(settings, 'enableStats').onChange(updateStats);
-    performanceFolder.add(settings, 'pixelRatio', 0.5, 2).step(0.25).onChange(updatePixelRatio);
-    performanceFolder.open();
-
-    // Update functions
-    function updateBackground(value) {
-        if (!settings.useHDR) {
-            scene.background = new THREE.Color(value);
-            updateFog(settings.density);
-        }
-    }
-
-    function updateFog(value) {
-        scene.fog = new THREE.FogExp2(settings.background, value);
-    }
-
-    function updateHDRI() {
-        if (settings.useHDR) {
-            const hdrLoader = new THREE.RGBELoader();
-            hdrLoader.setDataType(THREE.FloatType)
-                .load(`https://dl.polyhaven.org/file/ph-assets/HDRIs/1k/${settings.selectedHDRI}/${hdriFiles[settings.selectedHDRI]}`, function(texture) {
-                    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-                    pmremGenerator.compileEquirectangularShader();
-                    
-                    const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-                    
-                    scene.background = envMap;
-                    scene.environment = envMap;
-                    
-                    texture.dispose();
-                    pmremGenerator.dispose();
-                });
-        } else {
-            scene.background = new THREE.Color(settings.background);
-            scene.environment = null;
-            updateFog(settings.density);
-        }
-    }
-
-    function updateHDRIIntensity(value) {
-        if (scene.environment) {
-            scene.environment.intensity = value;
-        }
-    }
-
-    function updateHDRIRotation(value) {
-        if (scene.environment) {
-            scene.environment.rotation.y = value;
-        }
-    }
 
     function updateCamera() {
         camera.fov = settings.fov;
@@ -5951,61 +6554,84 @@ function addGUI(scene, renderer, camera) {
         camera.updateProjectionMatrix();
     }
 
-    function updateShadows(value) {
-        renderer.shadowMap.enabled = value;
-        scene.traverse((object) => {
-            if (object.castShadow !== undefined) {
-                object.castShadow = value;
-                object.receiveShadow = value;
+    // === Shadow Folder ===
+    const shadowFolder = gui.addFolder('Shadow Settings');
+    shadowFolder.add(settings, 'enableShadows').onChange(enable => {
+        renderer.shadowMap.enabled = enable;
+        scene.traverse(obj => {
+            if (obj.castShadow !== undefined) {
+                obj.castShadow = enable;
+                obj.receiveShadow = enable;
+            }
+        });
+    });
+    shadowFolder.add(settings, 'shadowMapSize', [512, 1024, 2048, 4096]).onChange(updateShadowMapSize);
+    shadowFolder.add(settings, 'shadowBias', -0.01, 0.01).step(0.0001).onChange(updateShadowBias);
+    shadowFolder.open();
+
+    function updateShadowMapSize(val) {
+        scene.traverse(obj => {
+            if (obj.isLight && obj.shadow) {
+                obj.shadow.mapSize.set(val, val);
+                obj.shadow.map?.dispose();
             }
         });
     }
 
-    function updateShadowMapSize(value) {
-        scene.traverse((object) => {
-            if (object instanceof THREE.Light && object.shadow) {
-                object.shadow.mapSize.width = value;
-                object.shadow.mapSize.height = value;
-                object.shadow.map?.dispose();
-                object.shadow.map = null;
-            }
+    function updateShadowBias(val) {
+        scene.traverse(obj => {
+            if (obj.isLight && obj.shadow) obj.shadow.bias = val;
         });
     }
 
-    function updateShadowBias(value) {
-        scene.traverse((object) => {
-            if (object instanceof THREE.Light && object.shadow) {
-                object.shadow.bias = value;
-            }
-        });
-    }
+    // === Lighting Folder ===
+    const lightFolder = gui.addFolder('Lighting Settings');
+
+    const ambient = lightFolder.addFolder('Ambient Light');
+    ambient.addColor(settings, 'ambientLightColor').onChange(updateAmbientLight);
+    ambient.add(settings, 'ambientLightIntensity', 0, 2).onChange(updateAmbientLight);
+
+    const point = lightFolder.addFolder('Point Light');
+    point.addColor(settings, 'pointLightColor').onChange(updatePointLight);
+    point.add(settings, 'pointLightIntensity', 0, 5).onChange(updatePointLight);
+    point.add(settings, 'pointLightDistance', 0, 1000).onChange(updatePointLight);
+    point.add(settings, 'pointLightDecay', 0, 5).onChange(updatePointLight);
+
+    const directional = lightFolder.addFolder('Directional Light');
+    directional.addColor(settings, 'directionalLightColor').onChange(updateDirectionalLight);
+    directional.add(settings, 'directionalLightIntensity', 0, 5).onChange(updateDirectionalLight);
+    ['x', 'y', 'z'].forEach(axis => {
+        directional.add(settings.directionalLightPosition, axis, -20, 20).onChange(updateDirectionalLight);
+    });
+
+    lightFolder.open();
 
     function updateAmbientLight() {
-        scene.traverse((object) => {
-            if (object instanceof THREE.AmbientLight) {
-                object.color.set(settings.ambientLightColor);
-                object.intensity = settings.ambientLightIntensity;
+        scene.traverse(obj => {
+            if (obj instanceof THREE.AmbientLight) {
+                obj.color.set(settings.ambientLightColor);
+                obj.intensity = settings.ambientLightIntensity;
             }
         });
     }
 
     function updatePointLight() {
-        scene.traverse((object) => {
-            if (object instanceof THREE.PointLight) {
-                object.color.set(settings.pointLightColor);
-                object.intensity = settings.pointLightIntensity;
-                object.distance = settings.pointLightDistance;
-                object.decay = settings.pointLightDecay;
+        scene.traverse(obj => {
+            if (obj instanceof THREE.PointLight) {
+                obj.color.set(settings.pointLightColor);
+                obj.intensity = settings.pointLightIntensity;
+                obj.distance = settings.pointLightDistance;
+                obj.decay = settings.pointLightDecay;
             }
         });
     }
 
     function updateDirectionalLight() {
-        scene.traverse((object) => {
-            if (object instanceof THREE.DirectionalLight) {
-                object.color.set(settings.directionalLightColor);
-                object.intensity = settings.directionalLightIntensity;
-                object.position.set(
+        scene.traverse(obj => {
+            if (obj instanceof THREE.DirectionalLight) {
+                obj.color.set(settings.directionalLightColor);
+                obj.intensity = settings.directionalLightIntensity;
+                obj.position.set(
                     settings.directionalLightPosition.x,
                     settings.directionalLightPosition.y,
                     settings.directionalLightPosition.z
@@ -6014,139 +6640,136 @@ function addGUI(scene, renderer, camera) {
         });
     }
 
-    function updateMaterials() {
-        scene.traverse((object) => {
-            if (object.material) {
-                if (object.material.reflectivity !== undefined) {
-                    object.material.reflectivity = settings.materialReflectivity;
-                }
-                if (object.material.roughness !== undefined) {
-                    object.material.roughness = settings.roughness;
-                }
-                if (object.material.metalness !== undefined) {
-                    object.material.metalness = settings.metalness;
-                }
-                if (object.material.envMapIntensity !== undefined) {
-                    object.material.envMapIntensity = settings.envMapIntensity;
-                }
-                object.material.needsUpdate = true;
-            }
-        });
-    }
+    // === Material Folder ===
+    const matFolder = gui.addFolder('Material Settings');
+    matFolder.add(settings, 'materialReflectivity', 0, 1).onChange(updateMaterials);
+    matFolder.add(settings, 'roughness', 0, 1).onChange(updateMaterials);
+    matFolder.add(settings, 'metalness', 0, 1).onChange(updateMaterials);
+    matFolder.add(settings, 'envMapIntensity', 0, 5).onChange(updateMaterials);
+    matFolder.open();
 
-    function updatePostProcessing() {
-        // Implement post-processing toggle
-    }
+    // === Post-Processing ===
+    const postFolder = gui.addFolder('Post-Processing');
+    postFolder.add(settings, 'enablePostProcessing').onChange(() => {});
 
-    function updateBloom() {
-        // Implement bloom updates
-    }
+    const bloom = postFolder.addFolder('Bloom');
+    bloom.add(settings, 'bloomEnabled').onChange(() => {});
+    bloom.add(settings, 'bloomIntensity', 0, 5).onChange(() => {});
+    bloom.add(settings, 'bloomThreshold', 0, 1).onChange(() => {});
+    bloom.add(settings, 'bloomRadius', 0, 1).onChange(() => {});
 
-    function updateDOF() {
-        // Implement DOF updates
-    }
+    const dof = postFolder.addFolder('Depth of Field');
+    dof.add(settings, 'dofEnabled').onChange(() => {});
+    dof.add(settings, 'focusDistance', 0.1, 50).onChange(() => {});
+    dof.add(settings, 'focalLength', 12, 100).onChange(() => {});
+    dof.add(settings, 'bokehScale', 0, 10).onChange(() => {});
 
-    function updateStats() {
-        // Implement stats toggle
-    }
+    postFolder.open();
 
-    function updatePixelRatio(value) {
-        renderer.setPixelRatio(value);
-    }
-
+    // === Performance ===
+    const perfFolder = gui.addFolder('Performance');
+    perfFolder.add(settings, 'enableStats').onChange(() => {});
+    perfFolder.add(settings, 'pixelRatio', 0.5, 2).step(0.25).onChange(() => {
+        renderer.setPixelRatio(settings.pixelRatio);
+    });
+    perfFolder.open();
     // Append GUI to container
     const guiContainer = document.getElementById('gui-container');
     guiContainer.appendChild(gui.domElement);
 
     // Return settings object for external access
     return settings;
+
+    return gui; // in case user wants to append GUI manually or reuse
 }
+
+
+
 
 
 //Modelign Shapes
 
 let subdivisionLevel = 0;
 
-function createMajorAxes(size) {
+function createMajorAxes(size = 10) {
     const axesGroup = new THREE.Group();
-    
-    // X-axis (red)
-    const xAxis = createAxisLine(size, 0xff0000, new THREE.Vector3(1, 0, 0));
-    // Z-axis (blue)
-    const zAxis = createAxisLine(size, 0x0000ff, new THREE.Vector3(0, 0, 1));
-    // Y-axis (green)
-    const yAxis = createAxisLine(size, 0x00ff00, new THREE.Vector3(0, 1, 0));
+    const fontSize = size * 0.1;
+    const arrowLength = size / 2;
+    const arrowHeadLength = size * 0.05;
+    const arrowHeadWidth = size * 0.03;
 
-    axesGroup.add(xAxis);
-    axesGroup.add(yAxis);
-    axesGroup.add(zAxis);
+    // Create axis lines
+    const xAxis = createAxisLine(size, 0xff0000, new THREE.Vector3(1, 0, 0));
+    const yAxis = createAxisLine(size, 0x00ff00, new THREE.Vector3(0, 1, 0));
+    const zAxis = createAxisLine(size, 0x0000ff, new THREE.Vector3(0, 0, 1));
+    axesGroup.add(xAxis, yAxis, zAxis);
+
+    // Create arrowheads
+    const xArrow = new THREE.ArrowHelper(
+        new THREE.Vector3(1, 0, 0),
+        new THREE.Vector3(arrowLength, 0, 0),
+        arrowHeadLength,
+        0xff0000,
+        arrowHeadLength,
+        arrowHeadWidth
+    );
+
+    const yArrow = new THREE.ArrowHelper(
+        new THREE.Vector3(0, 1, 0),
+        new THREE.Vector3(0, arrowLength, 0),
+        arrowHeadLength,
+        0x00ff00,
+        arrowHeadLength,
+        arrowHeadWidth
+    );
+
+    const zArrow = new THREE.ArrowHelper(
+        new THREE.Vector3(0, 0, 1),
+        new THREE.Vector3(0, 0, arrowLength),
+        arrowHeadLength,
+        0x0000ff,
+        arrowHeadLength,
+        arrowHeadWidth
+    );
+
+    axesGroup.add(xArrow, yArrow, zArrow);
+
+    // Create labels using your text sprite method
+    const xLabel = createTextSprite('X');
+    xLabel.position.set(arrowLength + arrowHeadLength * 1.5, 0, 0);
+    axesGroup.add(xLabel);
+
+    const yLabel = createTextSprite('Y');
+    yLabel.position.set(0, arrowLength + arrowHeadLength * 1.5, 0);
+    axesGroup.add(yLabel);
+
+    const zLabel = createTextSprite('Z');
+    zLabel.position.set(0, 0, arrowLength + arrowHeadLength * 1.5);
+    axesGroup.add(zLabel);
 
     return axesGroup;
 }
 
-function createAdvancedGridHelper(size = 800, divisions = 800) {
-    const gridGroup = new THREE.Group();
 
-    // Main grid
-    const mainGridHelper = new THREE.GridHelper(size, divisions);
-    mainGridHelper.material = new THREE.LineBasicMaterial({
-        color: 0x555555,
-        opacity: 0.6,
-        transparent: true,
-        linewidth: 0.5
-    });
-
-    // Secondary grid (larger squares)
-    const secondaryGridHelper = new THREE.GridHelper(size, divisions / 10);
-    secondaryGridHelper.material = new THREE.LineBasicMaterial({
-        color: 0x444444,
-        opacity: 0.8,
-        transparent: true,
-        linewidth: 1
-    });
-
-    // Major axes
-    const axesGroup = createMajorAxes(size);
+// Create arrow at the positive end
+function createAxisLine(size, color, direction) { 
+    const geometry = new THREE.BufferGeometry();
+    const vertices = new Float32Array([
+        -size/2 * direction.x, -size/2 * direction.y, -size/2 * direction.z,
+        size/2 * direction.x, size/2 * direction.y, size/2 * direction.z
+    ]);
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     
-    // Create measurement labels
-    const labelsGroup = createMeasurementLabels(size);
+    const material = new THREE.LineBasicMaterial({
+        color: color,
+        linewidth: 2,
+        opacity: 0.8,
+        transparent: true
+    });
 
-    // Add everything to the group
-    gridGroup.add(mainGridHelper);
-    gridGroup.add(secondaryGridHelper);
-    gridGroup.add(axesGroup);
-    gridGroup.add(labelsGroup);
-
-    // Dynamic visibility based on camera distance
-    gridGroup.onBeforeRender = function(renderer, scene, camera) {
-        const distance = camera.position.length();
-        const maxDistance = size / 1.5;
-        
-        // Fade out based on distance
-        const mainFade = THREE.MathUtils.smoothstep(distance, maxDistance * 0.5, maxDistance);
-        const secondaryFade = THREE.MathUtils.smoothstep(distance, maxDistance * 0.3, maxDistance * 0.8);
-        
-        mainGridHelper.material.opacity = 0.6 * (1 - mainFade);
-        secondaryGridHelper.material.opacity = 0.8 * (1 - secondaryFade);
-        
-        // Scale visibility of different grid elements based on distance
-        if (distance < size * 0.2) {
-            mainGridHelper.visible = true;
-            secondaryGridHelper.visible = true;
-            labelsGroup.visible = true;
-        } else if (distance < size * 0.5) {
-            mainGridHelper.visible = false;
-            secondaryGridHelper.visible = true;
-            labelsGroup.visible = true;
-        } else {
-            mainGridHelper.visible = false;
-            secondaryGridHelper.visible = true;
-            labelsGroup.visible = false;
-        }
-    };
-
-    return gridGroup;
+    return new THREE.Line(geometry, material);
 }
+
 
 
 function createMeasurementLabels(size) {
@@ -6171,23 +6794,6 @@ function createMeasurementLabels(size) {
     return labelsGroup;
 }
 
-function createAxisLine(size, color, direction) {
-    const geometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array([
-        -size/2 * direction.x, -size/2 * direction.y, -size/2 * direction.z,
-        size/2 * direction.x, size/2 * direction.y, size/2 * direction.z
-    ]);
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    
-    const material = new THREE.LineBasicMaterial({
-        color: color,
-        linewidth: 2,
-        opacity: 0.8,
-        transparent: true
-    });
-
-    return new THREE.Line(geometry, material);
-}
 
 function createTextSprite(message) {
     const canvas = document.createElement('canvas');
@@ -6206,7 +6812,6 @@ function createTextSprite(message) {
     
     return sprite;
 }
-
 
 
 function toggleLock() {
@@ -6236,47 +6841,6 @@ function toggleLock() {
 }
 
 
-
-
-
-
-
-function setCameraView(direction) {
-    let targetPosition = { x: 0, y: 0, z: 0 };
-
-    switch (direction) {
-        case 'x': 
-            targetPosition = { x: 10, y: 0, z: 0 };
-            break;
-        case 'y': 
-            targetPosition = { x: 0, y: 10, z: 0 };
-            break;
-        case 'z': 
-            targetPosition = { x: 0, y: 0, z: 10 };
-            break;
-        case 'top': 
-            targetPosition = { x: 0, y: 10, z: 0 };
-            break;
-        case 'bottom':
-            targetPosition = { x: 0, y: -10, z: 0 };
-            break;
-        case 'diagonal': 
-            targetPosition = { x: 10, y: 10, z: 10 };
-            break;
-        default:
-            console.error('Invalid direction');
-            return;
-    }
-
-    // استخدام GSAP لتحريك الكاميرا بسلاسة
-    gsap.to(camera.position, {
-        x: targetPosition.x,
-        y: targetPosition.y,
-        z: targetPosition.z,
-        duration: 1.5, // مدة الحركة بالثواني
-        onUpdate: () => camera.lookAt(0, 0, 0) // تحديث زاوية الكاميرا أثناء الحركة
-    });
-}
 
 
 
@@ -6402,6 +6966,8 @@ function onMouseDown(event) {
     } else if (!drawMode && !extrudeMode) {
         orbitControls.enabled = true;
     }
+
+    zoomCamera(e.deltaY > 0 ? 1 : -1);
 }
 
 function onMouseMove(event) {
@@ -6420,6 +6986,7 @@ function onMouseMove(event) {
     if (extrudeMode && !mouseDown) {
         highlightFace();
     }
+
 }
 
 function onMouseUp(event) {
@@ -6437,6 +7004,17 @@ function onMouseUp(event) {
     } else if (extrudeMode && selectedFace) {
         extrudeFace();
     }
+}
+
+function onMouseWheel(event) {
+   event.preventDefault();
+            
+    // Adjust camera zoom
+    cameraDistance = THREE.MathUtils.clamp(
+        cameraDistance + event.deltaY * 0.01,
+        5, 30
+    );
+    updateCameraPosition();
 }
 
 
@@ -6460,18 +7038,6 @@ function initQuadBrush() {
     extrudeMode = false;
 }
 
-
-function onMouseWheel(event) {
-   event.preventDefault();
-            
-    // Adjust camera zoom
-    cameraDistance = THREE.MathUtils.clamp(
-        cameraDistance + event.deltaY * 0.01,
-        5, 30
-    );
-            
-    updateCameraPosition();
-}
     
 function addPoint(event) {
     raycaster.setFromCamera(mouse, camera);
@@ -6809,7 +7375,8 @@ function setupEventListeners() {
     if (TRANSFORM_MODES.includes(mode)) {
         setTransformMode(mode);
     }
-    });
+    });  
+    
     
     // Add objects buttons
     document.getElementById('addCube').addEventListener('click', addCube);
@@ -6936,11 +7503,6 @@ function setupEventListeners() {
     document.getElementById('addTorus').addEventListener('click', addTorus)
     document.getElementById('addLight').addEventListener('click', addLight);
     document.getElementById('addCameraInit').addEventListener('click', addCameraInit);
-   
-    //Particls
-    document.addEventListener("DOMContentLoaded", () => {
-       document.getElementById("toggleParticles").addEventListener("click", toggleParticles);
-    });
 
     //cloths
     document.getElementById('addCloth').addEventListener('click', () => {
@@ -7003,10 +7565,29 @@ function setupEventListeners() {
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('mouseup', onMouseUp);
     canvas.addEventListener('wheel', onMouseWheel);
+    canvas.addEventListener('pointerdown', (event) => {
+        if (isModelingMode) return;  // Skip selection in modeling mode
+
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children, true);
+
+        if (intersects.length > 0) {
+            const firstSelectable = intersects.find(i => i.object.userData.selectable);
+            if (firstSelectable) {
+                const clickedObject = firstSelectable.object;
+                setHoverObject(clickedObject);     // visually hover on click
+                selectObject(clickedObject);       // also select
+            }
+        }
+    });
     
-    //Dust
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('toggleParticles').addEventListener('click', toggleParticles);
+    //Particls
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("toggleParticles").addEventListener("click", toggleParticles);
     });
 
     document.getElementById('increaseParticles').addEventListener('click', () => changeParticlesCount(1000));  // Increase by 1000
@@ -7050,11 +7631,6 @@ function setupEventListeners() {
     });
 
 
-    function resetSnow() {
-       snowParticles.forEach(p => scene.remove(p));
-       snowParticles = [];
-       createSnow();
-    }
 
     setupWeatherEffects();
 
@@ -7309,9 +7885,6 @@ function setupEventListeners() {
     });
 
     
-    // Add listeners for advanced sculpting tools
-    
-    
     // Symmetry controls
     document.getElementById('symmetryToggle').addEventListener('change', (e) => {
         symmetryEnabled = e.target.checked;
@@ -7425,7 +7998,7 @@ function setupEventListeners() {
  
      transformControls.addEventListener('change', updateInspector);
 
- }
+}
 
 
 // Object creation functions
@@ -7436,8 +8009,10 @@ function addCube() {
     cube.castShadow = true;
     cube.receiveShadow = true;
     cube.position.set(0, 0.5, 0); // Start above ground
+    cube.renderOrder = 0;  // This will render after (in front of) the grid
     addObjectToScene(cube, 'Cube');
-}
+}  
+
 
 
  function addPlane() {
@@ -7884,9 +8459,6 @@ function applyTexturePaint(event) {
     }
 }
 
-
-
-
 function addSphere() {
     const geometry = new THREE.SphereGeometry(0.5, 32, 32);
     const material = new THREE.MeshStandardMaterial({ color: 0xff0000, side: THREE.DoubleSide });
@@ -8106,11 +8678,40 @@ function applySharpen(vertex, position, influence, vertices, index) {
     }
 }
 
-
-
 function addObjectToScene(object, name) {
     object.userData.selectable = true; // Mark object as selectable
     object.name = name + '_' + objects.length;
+    objects.push(object); 
+    scene.add(object)
+    updateHierarchy();
+    selectObject(object);
+
+    if (isModelingMode) {
+        activeObject = object;
+        showMeshStructure(activeObject);
+    }
+}
+
+/*function addObjectToScene(object, name) {
+    object.userData.selectable = true;
+    object.name = name + '_' + objects.length;
+    
+    // Set render order for the object to be higher than grid
+    object.renderOrder = 1;
+    
+    // If the object is a mesh, adjust its material
+    if (object.isMesh) {
+        if (Array.isArray(object.material)) {
+            object.material.forEach(mat => {
+                mat.depthWrite = true;
+                mat.depthTest = true;
+            });
+        } else if (object.material) {
+            object.material.depthWrite = true;
+            object.material.depthTest = true;
+        }
+    }
+    
     objects.push(object);
     scene.add(object);
     updateHierarchy();
@@ -8121,62 +8722,142 @@ function addObjectToScene(object, name) {
         showMeshStructure(activeObject);
     }
 }
-
-const COLORS = { 
-    HIGHLIGHT: 0x00e5ff,  // Neon Cyan (Beautiful Highlight)
-    SELECTED: 0x00ff80    // Emerald Green (Elegant Selection)
-};
-
-// Material for highlighted objects (e.g., during operations)
-const highlightMaterial = new THREE.MeshStandardMaterial({
-    color: COLORS.HIGHLIGHT,
-    emissive: COLORS.HIGHLIGHT,
-    emissiveIntensity: 0.3,  // Soft glow effect
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.6,  // More visible
-    roughness: 0.2,
-    metalness: 0.2
-});
-
-// 🔹 Selected Material (Emissive glow with subtle pulse)
-const selectedMaterial = new THREE.MeshStandardMaterial({
-    color: COLORS.SELECTED,
-    emissive: COLORS.SELECTED, 
-    emissiveIntensity: 0.7,  // Brighter glow
-    side: THREE.DoubleSide,
-    roughness: 0.1,
-    metalness: 0.3
-});
-
-// 🔹 Smooth Material Transitions with Animated Glow
-function animateMaterialChange(object, targetMaterial) {
-    if (!object) return;
-
-    gsap.to(object.material.color, {
-        r: targetMaterial.color.r,
-        g: targetMaterial.color.g,
-        b: targetMaterial.color.b,
-        duration: 0.4
+*/
+function updateRenderOrder() {
+    scene.traverse((object) => {
+        if (object.isGroup && object.name === 'advancedGrid') {
+            object.renderOrder = -2;
+            object.children.forEach(child => {
+                child.renderOrder = -2;
+                if (child.material) {
+                    child.material.depthWrite = false;
+                    child.material.transparent = true;
+                }
+            });
+        } else if (object.isHelper) {
+            object.renderOrder = -1;
+        } else if (object.isMesh || object.isLine) {
+            object.renderOrder = 1;
+        }
     });
-
-    gsap.to(object.material.emissive, {
-        r: targetMaterial.emissive.r,
-        g: targetMaterial.emissive.g,
-        b: targetMaterial.emissive.b,
-        duration: 0.6
-    });
-
-    gsap.to(object.material, {
-        emissiveIntensity: targetMaterial === selectedMaterial ? 1 : 0.3,  // Pulsating glow on selection
-        duration: 0.8,
-        repeat: targetMaterial === selectedMaterial ? -1 : 0,
-        yoyo: targetMaterial === selectedMaterial
-    });
-
-    object.material.needsUpdate = true;
 }
 
+const COLORS = {
+    HIGHLIGHT: 0x00e5ff,  // Cyan for hover
+    SELECTED: 0xffa500    // Orange for selection
+};
+
+const originalEmissive = new WeakMap();
+
+function applySelectionHighlight(object, colorHex, intensity = 0.5) {
+    if (!object || !object.material) return;
+
+    if (!originalEmissive.has(object)) {
+        originalEmissive.set(object, {
+            color: object.material.emissive.clone(),
+            intensity: object.material.emissiveIntensity
+        });
+    }
+
+    object.material.emissive.setHex(colorHex);
+    object.material.emissiveIntensity = intensity;
+}
+
+function highlightSelectionBlenderStyle(object) {
+    if (!object || !object.material || object.isLight) return;
+
+    const mat = object.material;
+
+    if (!originalMaterials.has(object)) {
+        originalMaterials.set(object, mat.clone());
+    }
+
+    mat.transparent = true;
+    mat.depthWrite = true;
+    mat.emissive = new THREE.Color(COLORS.SELECTED);
+    mat.emissiveIntensity = 0.4;
+    mat.needsUpdate = true;
+}
+
+function highlightHoverBlenderStyle(object) {
+    if (!object || !object.material || object === selectedObject || object.isLight) return;
+
+    const mat = object.material;
+
+    if (!originalMaterials.has(object)) {
+        originalMaterials.set(object, mat.clone());
+    }
+
+    mat.transparent = true;
+    mat.depthWrite = false;
+    mat.emissive = new THREE.Color(COLORS.HIGHLIGHT);
+    mat.emissiveIntensity = 0.3;
+    mat.needsUpdate = true;
+}
+
+
+/*
+// Material for highlighted objects (e.g., during operations)
+const highlightSettings = {
+    color: new THREE.Color(COLORS.HIGHLIGHT),
+    emissive: new THREE.Color(COLORS.HIGHLIGHT),
+    emissiveIntensity: 0.4,
+    opacity: 0.5,
+    roughness: 0.1,
+    metalness: 0.2
+};
+// 🔹 Selected Material (Emissive glow with subtle pulse)
+const selectedSettings = {
+    color: new THREE.Color(COLORS.SELECTED),
+    emissive: new THREE.Color(COLORS.SELECTED),
+    emissiveIntensity: 0.8,
+    opacity: 0.9,
+    roughness: 0.05,
+    metalness: 0.3
+};
+
+// 🔹 Smooth Material Transitions with Animated Glow
+function animateMaterialToSettings(object, settings, pulse = false) {
+    if (!object || !object.material) return;
+
+    const mat = object.material;
+
+    gsap.to(mat.color, {
+        r: settings.color.r,
+        g: settings.color.g,
+        b: settings.color.b,
+        duration: 0.5,
+        ease: "power2.out"
+    });
+
+    gsap.to(mat.emissive, {
+        r: settings.emissive.r,
+        g: settings.emissive.g,
+        b: settings.emissive.b,
+        duration: 0.5,
+        ease: "power2.out"
+    });
+
+    gsap.to(mat, {
+        emissiveIntensity: settings.emissiveIntensity,
+        metalness: settings.metalness,
+        roughness: settings.roughness,
+        opacity: settings.opacity,
+        duration: 0.6,
+        ease: "power1.out"
+    });
+
+    if (pulse) {
+        gsap.to(mat, {
+            emissiveIntensity: settings.emissiveIntensity + 0.3,
+            duration: 0.8,
+            yoyo: true,
+            repeat: -1,
+            ease: "sine.inOut"
+        });
+    }
+}
+*/
 
 // State management
 let hoveredObject = null;
@@ -8197,32 +8878,144 @@ function notifySelectionHandlers(object) {
     selectionHandlers.forEach(handler => handler(object));
 }
 
-// Add this function to properly clean up when clearing selections
-function clearSelection() {
-    selectedElements.forEach(elem => scene.remove(elem));
-    selectedElements = [];
-    transformControls.detach();
-    resetHighlights();
-}
+// Enhanced selectObject function to work with multiple selection
+function selectObject(newObject) {
+    activeObject = newObject;
+    
+    try {
+        if (newObject) {
+            ensureObjectUUID(newObject);
+        }
+        
+        // If selecting the same object, do nothing
+        if (selectedObject === newObject) return selectedObject;
 
+        // Clear hover state if the hovered object is being selected
+        if (hoveredObject === newObject) {
+            hoveredObject = null;
+        }
 
+        // If we have box-selected objects, handle them differently
+        if (selectedObjectsFromBox && selectedObjectsFromBox.length > 1) {
+            // Only restore the previous active object if it's not in the box selection
+            if (selectedObject && !selectedObjectsFromBox.includes(selectedObject)) {
+                restoreOriginalMaterial(selectedObject);
+                
+                if (selectedObject.helper) {
+                    selectedObject.helper.visible = false;
+                }
+            }
+        } else {
+            // Restore previous selection's material (normal case)
+            if (selectedObject) {
+                restoreOriginalMaterial(selectedObject);
+                
+                if (selectedObject.helper) {
+                    selectedObject.helper.visible = false;
+                }
+            }
+        }
 
+        selectedObject = newObject;
 
-function restoreOriginalMaterial(object) {
-    if (object && originalMaterials.has(object)) {
-        const originalMaterial = originalMaterials.get(object);
-        object.material = originalMaterial;
-        originalMaterials.delete(object);
+        // Handle new selection
+        if (selectedObject) {
+            // Store and apply selection material if not already applied
+            // (Don't apply again if it's part of a multiple selection)
+            if (!selectedObjectsFromBox || selectedObjectsFromBox.length <= 1) {
+                applySelectionHighlight(selectedObject, COLORS.SELECTED, 0.6);
+            }
+
+            if (selectedObject.helper) {
+                selectedObject.helper.visible = true;
+            }
+
+            transformControls.attach(selectedObject);
+
+            if (selectedObject.isLight) {
+                updateLightUI(selectedObject);
+            } else if (selectedObject.isCamera) {
+                updateCameraUI(selectedObject);
+            }
+        } else {
+            transformControls.detach();
+            
+            // Clear box selection if we're selecting nothing
+            if (selectedObjectsFromBox && selectedObjectsFromBox.length > 0) {
+                selectedObjectsFromBox.forEach(obj => {
+                    restoreOriginalMaterial(obj);
+                });
+                selectedObjectsFromBox = [];
+            }
+        }
+
+        // Notify handlers of selection change
+        notifySelectionHandlers(selectedObject);
+        
+        // Update UI elements
+        updateInspector();
+        updateHierarchySelection();
+        
+        // If in modeling mode, show mesh structure
+        if (isModelingMode && selectedObject) {
+            showMeshStructure(selectedObject);
+        }
+        
+        return selectedObject;
+
+    } catch (error) {
+        console.error('Error in selectObject:', error);
+        throw error;
     }
 }
 
+// Utility function to restore original material
+function restoreOriginalMaterial(object) {
+    if (!object) return;
+    
+    if (object.userData.originalMaterial) {
+        if (Array.isArray(object.material)) {
+            // Clone the original materials back
+            object.material = object.userData.originalMaterial.map(m => m.clone());
+        } else {
+            // Clone the original material back
+            object.material = object.userData.originalMaterial.clone();
+        }
+        delete object.userData.originalMaterial;
+    } else if (object.material) {
+        // Reset emissive properties if no original material stored
+        if (Array.isArray(object.material)) {
+            object.material.forEach(mat => {
+                if (mat.emissive) {
+                    mat.emissive.set(0x000000);
+                    mat.emissiveIntensity = 0;
+                }
+            });
+        } else if (object.material.emissive) {
+            object.material.emissive.set(0x000000);
+            object.material.emissiveIntensity = 0;
+        }
+    }
+}
 
+/*function restoreOriginalMaterial(object) {
+    if (!object || !object.material || !originalEmissive.has(object)) return;
+
+    const original = originalEmissive.get(object);
+    object.material.emissive.copy(original.color);
+    object.material.emissiveIntensity = original.intensity;
+    originalEmissive.delete(object);
+}
 
 function selectObject(newObject) {
     activeObject = newObject;
-        if (isModelingMode) {
-           showMeshStructure(newobject);
+    if (selectedObject && !selectedObject.isLight && !selectedObject.isCamera) {
+        applySelectionHighlight(selectedObject, COLORS.SELECTED, 0.6);
     }
+    if (isModelingMode) {
+         showMeshStructure(newobject);
+    }
+   
     try {
         if (newObject) {
             ensureObjectUUID(newObject);
@@ -8244,15 +9037,11 @@ function selectObject(newObject) {
             }
         }
 
-       
-
         selectedObject = newObject;
 
         // Handle new selection
         if (selectedObject) {
             // Store and apply selection material
-           
-
 
             if (selectedObject.helper) {
                 selectedObject.helper.visible = true;
@@ -8280,29 +9069,36 @@ function selectObject(newObject) {
         console.error('Error in selectObject:', error);
         throw error;
     }
-}
-
+}*/
 
 function setHoverObject(object) {
-    // If trying to hover the selected object, ignore
-    if (object === selectedObject) return;
-    
-    // If current hover is same as new hover, do nothing
-    if (hoveredObject === object) return;
+    if (object === selectedObject || !object || !object.material || object.isLight) return;
 
-    // Clear previous hover state
-    if (hoveredObject) {
-        restoreOriginalMaterial(hoveredObject);
+    // Restore previous hovered object
+    if (hoveredObject && originalEmissive.has(hoveredObject)) {
+        const original = originalEmissive.get(hoveredObject);
+        hoveredObject.material.emissive.copy(original.color);
+        hoveredObject.material.emissiveIntensity = original.intensity;
     }
 
     hoveredObject = object;
 
-    // Apply hover material only if object exists and isn't selected
-    if (object && object !== selectedObject) {
-        if (object.material && !object.isLight) {
-        }
+    // Store original emissive values
+    if (!originalEmissive.has(object)) {
+        originalEmissive.set(object, {
+            color: object.material.emissive.clone(),
+            intensity: object.material.emissiveIntensity
+        });
     }
+
+    // Apply hover effect
+    object.material.emissive.setHex(COLORS.HIGHLIGHT);
+    object.material.emissiveIntensity = 0.3;
 }
+
+
+
+
 
 
 // Hierarchy view functions
@@ -8311,7 +9107,20 @@ function getObjectIcon(obj) {
     if (obj.isCamera) return '🎥';
     if (obj.isMesh) return '📦';
     if (obj.isGroup) return '📁';
-    return '⚪';
+    if (obj.type === 'Scene') return '🌐';
+    if (obj.type === 'Bone') return '🦴';
+
+    // Fallback based on object type string
+    const type = obj.type?.toLowerCase() || '';
+
+    if (type.includes('mesh')) return '📦';
+    if (type.includes('light')) return '💡';
+    if (type.includes('camera')) return '🎥';
+    if (type.includes('group')) return '📁';
+    if (type.includes('bone')) return '🦴';
+    if (type.includes('object3d')) return '🔹';
+
+    return '⚪'; // default unknown type
 }
 
 function createHierarchyItem(obj, level = 0, isLastChild = false, siblings = []) {
@@ -8324,9 +9133,10 @@ function createHierarchyItem(obj, level = 0, isLastChild = false, siblings = [])
     const line = document.createElement('div');
     line.className = 'hierarchy-line';
     line.style.left = `${level * 20 + 10}px`; // Position line based on level
-    
+
     if (isLastChild) {
-        line.style.display = 'none'; // Hide line for last child
+        line.style.height = '50%'; // Only show top half of the line for last child
+        line.style.bottom = 'auto'; // Don't extend to bottom
     }
     item.appendChild(line);
 
@@ -8334,20 +9144,16 @@ function createHierarchyItem(obj, level = 0, isLastChild = false, siblings = [])
     if (level > 0) {
         const connector = document.createElement('div');
         connector.className = 'hierarchy-connector';
-        connector.style.left = `${level * 20 + 10}px`; // Start from vertical line
-        connector.style.width = `10px`; // Length of horizontal line
+        connector.style.left = `${level * 20 + 10}px`;
+        connector.style.width = `10px`;
         item.appendChild(connector);
     }
 
-    if (isLastChild) {
-       line.style.height = '50%'; // Only show top half of the line for last child
-       line.style.bottom = 'auto'; // Don't extend to bottom
-    }
     const content = document.createElement('div');
     content.className = 'hierarchy-item-content';
-    content.style.paddingLeft = `${level * 20 + 25}px`; // Adjust padding to account for line
+    content.style.paddingLeft = `${level * 20 + 25}px`;
 
-    // Add expand/collapse toggle for objects with children
+    // Add expand/collapse toggle
     if (obj.children && obj.children.length > 0) {
         const toggle = document.createElement('span');
         toggle.className = 'hierarchy-toggle';
@@ -8363,26 +9169,47 @@ function createHierarchyItem(obj, level = 0, isLastChild = false, siblings = [])
     item.oncontextmenu = (e) => {
         e.preventDefault();
         e.stopPropagation();
-    
-        // Create and show context menu
         showContextMenu(e.clientX, e.clientY, obj);
-    
         return false;
     };
 
-    // Add icon and name
+    // Add icon and name with visual prefix
     const icon = document.createElement('span');
     icon.className = 'hierarchy-icon';
     icon.innerHTML = getObjectIcon(obj);
     content.appendChild(icon);
 
+    const prefix = getTreePrefix(level, isLastChild);
     const name = document.createElement('span');
     name.className = 'hierarchy-name';
     name.style.cssText = 'max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;';
-    name.textContent = obj.name || `${obj.type || 'Object'}_${obj.id}`;
+    name.textContent = `${prefix}${obj.name || `${obj.type || 'Object'}_${obj.id}`}`;
     content.appendChild(name);
 
-    // Add visibility toggle
+    // Enable inline renaming on double-click
+    name.ondblclick = () => {
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = obj.name;
+  input.style.width = '100px';
+  input.className = 'hierarchy-rename-input';
+
+  input.onblur = () => {
+    obj.name = input.value || obj.name;
+    updateHierarchy();
+  };
+
+  input.onkeydown = (e) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      input.blur();
+    }
+  };
+
+  name.replaceWith(input);
+  input.focus();
+};
+
+    // Visibility toggle
     const visibilityToggle = document.createElement('button');
     visibilityToggle.className = 'hierarchy-visibility';
     visibilityToggle.innerHTML = obj.visible ? '👁️' : '👁️‍🗨️';
@@ -8393,7 +9220,7 @@ function createHierarchyItem(obj, level = 0, isLastChild = false, siblings = [])
     };
     content.appendChild(visibilityToggle);
 
-    // Add properties if available
+    // Geometry/material info
     if (obj.geometry || obj.material) {
         const properties = document.createElement('div');
         properties.className = 'hierarchy-properties';
@@ -8421,13 +9248,11 @@ function createHierarchyItem(obj, level = 0, isLastChild = false, siblings = [])
         item.classList.add('selected');
     }
 
-    // Selection handling
     item.onclick = (e) => {
         e.stopPropagation();
         selectObject(obj);
     };
 
-    // Hover handling
     item.onmouseenter = () => {
         if (obj !== selectedObject) {
             setHoverObject(obj);
@@ -8440,16 +9265,20 @@ function createHierarchyItem(obj, level = 0, isLastChild = false, siblings = [])
         }
     };
 
-    // Drag and drop handling
     setupDragAndDrop(item, obj);
 
-    // Highlight if selected
     if (selectedObject === obj) {
         item.classList.add('selected');
     }
 
     return item;
 }
+
+function getTreePrefix(level, isLastChild) {
+    return '';
+}
+
+
 
 function showContextMenu(x, y, obj) {
     const menu = document.createElement('div');
@@ -8487,6 +9316,27 @@ function showContextMenu(x, y, obj) {
         });
     }, 0);
 }
+
+function renameObject(obj) {
+    const newName = prompt("Enter new name:", obj.name || obj.type || "Object");
+    if (newName !== null && newName.trim() !== "") {
+        obj.name = newName.trim();
+        updateHierarchy();
+    }
+}
+
+
+function createChildObject(parentObj) {
+    const child = new THREE.Mesh( // or new THREE.Object3D() if you want a generic object
+        new THREE.BoxGeometry(1, 1, 1),
+        new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+    );
+    child.name = "NewChild_" + Date.now();
+    parentObj.add(child);
+    parentObj.expanded = true; // Make sure the parent shows children
+    updateHierarchy();
+}
+
 
 function showDropIndicator(targetItem, position) {
     // Remove any existing indicators
@@ -8606,39 +9456,54 @@ let draggedItem = null;
 let dropTarget = null;
 
 function setupDragAndDrop(item, obj) {
-    item.ondragstart = (e) => {
-        draggedItem = obj;
-        item.classList.add('dragging');
-        e.dataTransfer.setData('text/plain', obj.uuid);
-    };
+    item.draggable = true;
 
-    item.ondragend = () => {
-        item.classList.remove('dragging');
-        draggedItem = null;
-        clearDropTargets();
-    };
+    item.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('application/json', JSON.stringify({ uuid: obj.uuid }));
+        e.stopPropagation();
+    });
 
-    item.ondragover = (e) => {
+    item.addEventListener('dragover', (e) => {
+        e.preventDefault(); // Allow drop
+        item.classList.add('drag-over');
+    });
+
+    item.addEventListener('dragleave', () => {
+        item.classList.remove('drag-over');
+    });
+
+    item.addEventListener('drop', (e) => {
         e.preventDefault();
-        if (draggedItem && canDrop(draggedItem, obj)) {
-            item.classList.add('drop-target');
-            dropTarget = obj;
-        }
-    };
+        e.stopPropagation();
+        item.classList.remove('drag-over');
 
-    item.ondragleave = () => {
-        item.classList.remove('drop-target');
-        dropTarget = null;
-    };
+        const data = JSON.parse(e.dataTransfer.getData('application/json'));
+        const draggedObj = findObjectByUUID(scene, data.uuid); // Replace 'scene' with your actual root scene object
 
-    item.ondrop = (e) => {
-        e.preventDefault();
-        if (draggedItem && dropTarget) {
-            handleDrop(draggedItem, dropTarget);
+        if (draggedObj && draggedObj !== obj && !isDescendant(draggedObj, obj)) {
+            obj.add(draggedObj); // Reparent the object
+            updateHierarchy(); // Refresh the hierarchy
         }
-        clearDropTargets();
-    };
+    });
 }
+
+function findObjectByUUID(root, uuid) {
+    if (root.uuid === uuid) return root;
+    for (let child of root.children) {
+        const found = findObjectByUUID(child, uuid);
+        if (found) return found;
+    }
+    return null;
+}
+
+function isDescendant(parent, child) {
+    while (child.parent) {
+        if (child.parent === parent) return true;
+        child = child.parent;
+    }
+    return false;
+}
+
 
 function canDrop(draggedObj, targetObj) {
     if (draggedObj === targetObj) return false;
@@ -8669,6 +9534,20 @@ function updateHierarchy() {
     const container = document.getElementById('hierarchy-content');
     container.innerHTML = '';
 
+    const viewMode = document.getElementById('hierarchyViewMode')?.value || 'tree';
+
+    if (viewMode === 'flat') {
+        renderFlatView(container);
+    } else if (viewMode === 'type') {
+        renderTypeView(container);
+    } else {
+        renderTreeView(container); // default
+    }
+
+    updateHierarchySelection();
+}
+
+function renderTreeView(container) {
     function addChildrenToHierarchy(parent, level, siblings = []) {
         const children = parent.children || [];
         children.forEach((child, index) => {
@@ -8688,29 +9567,98 @@ function updateHierarchy() {
             addChildrenToHierarchy(obj, 1, objects);
         }
     });
-
-    // After updating the hierarchy, ensure the selection is updated
-    updateHierarchySelection();
 }
+
+function renderFlatView(container) {
+    function addFlatItems(objList) {
+        objList.forEach(obj => {
+            container.appendChild(createHierarchyItem(obj, 0, false, []));
+            if (obj.children) addFlatItems(obj.children);
+        });
+    }
+    addFlatItems(objects);
+}
+
+function renderTypeView(container) {
+    const typeGroups = {};
+
+    function collectByType(objList) {
+        objList.forEach(obj => {
+            const type = obj.type || 'Unknown';
+            if (!typeGroups[type]) typeGroups[type] = [];
+            typeGroups[type].push(obj);
+            if (obj.children) collectByType(obj.children);
+        });
+    }
+
+    collectByType(objects);
+
+    for (const [type, group] of Object.entries(typeGroups)) {
+        const header = document.createElement('div');
+        header.textContent = `📦 ${type}`;
+        header.style.fontWeight = 'bold';
+        header.style.marginTop = '10px';
+        container.appendChild(header);
+
+        group.forEach(obj => {
+            container.appendChild(createHierarchyItem(obj, 1, false, group));
+        });
+    }
+}
+document.getElementById('hierarchyViewMode').addEventListener('change', updateHierarchy);
 
 // Material cache for highlighting
 
- function updateInspector() {
-     if (!selectedObject) return;
+function updateInspector() {
+    if (!selectedObject) return;
  
-     document.getElementById('posX').value = selectedObject.position.x;
-     document.getElementById('posY').value = selectedObject.position.y;
-     document.getElementById('posZ').value = selectedObject.position.z;
+    document.getElementById('posX').value = selectedObject.position.x;
+    document.getElementById('posY').value = selectedObject.position.y;
+    document.getElementById('posZ').value = selectedObject.position.z;
  
-     document.getElementById('rotX').value = selectedObject.rotation.x;
-     document.getElementById('rotY').value = selectedObject.rotation.y;
-     document.getElementById('rotZ').value = selectedObject.rotation.z;
+    document.getElementById('rotX').value = selectedObject.rotation.x;
+    document.getElementById('rotY').value = selectedObject.rotation.y;
+    document.getElementById('rotZ').value = selectedObject.rotation.z;
  
-     document.getElementById('scaleX').value = selectedObject.scale.x;
-     document.getElementById('scaleY').value = selectedObject.scale.y;
-     document.getElementById('scaleZ').value = selectedObject.scale.z;
- }
+    document.getElementById('scaleX').value = selectedObject.scale.x;
+    document.getElementById('scaleY').value = selectedObject.scale.y;
+    document.getElementById('scaleZ').value = selectedObject.scale.z;
+}
  
+function bindInspectorInputs() {
+    const positionInputs = ['posX', 'posY', 'posZ'];
+    const rotationInputs = ['rotX', 'rotY', 'rotZ'];
+    const scaleInputs = ['scaleX', 'scaleY', 'scaleZ'];
+
+    positionInputs.forEach(axis => {
+        document.getElementById(axis).addEventListener('input', () => {
+            if (!selectedObject) return;
+            selectedObject.position.x = parseFloat(document.getElementById('posX').value);
+            selectedObject.position.y = parseFloat(document.getElementById('posY').value);
+            selectedObject.position.z = parseFloat(document.getElementById('posZ').value);
+        });
+    });
+
+    rotationInputs.forEach(axis => {
+        document.getElementById(axis).addEventListener('input', () => {
+            if (!selectedObject) return;
+            selectedObject.rotation.x = parseFloat(document.getElementById('rotX').value);
+            selectedObject.rotation.y = parseFloat(document.getElementById('rotY').value);
+            selectedObject.rotation.z = parseFloat(document.getElementById('rotZ').value);
+        });
+    });
+
+    scaleInputs.forEach(axis => {
+        document.getElementById(axis).addEventListener('input', () => {
+            if (!selectedObject) return;
+            selectedObject.scale.x = parseFloat(document.getElementById('scaleX').value);
+            selectedObject.scale.y = parseFloat(document.getElementById('scaleY').value);
+            selectedObject.scale.z = parseFloat(document.getElementById('scaleZ').value);
+        });
+    });
+}
+
+
  function updateHierarchySelection() {
     const items = document.querySelectorAll('.hierarchy-item');
 
@@ -8795,9 +9743,9 @@ function applySpecialTransform(mode) {
             object.scale.set(1, 1, 1);
             break;
     }
-
     object.matrixWorldNeedsUpdate = true;
 }
+
 
 
  // File operations
@@ -9000,22 +9948,37 @@ setInterval(autoSaveScene, 2 * 60 * 1000);
 // ✅ **Load scene from local storage on startup**
 window.addEventListener("load", loadSavedScene);
 
+/*
+// Utility functions
+function onWindowResize() {
+    const aspect = window.innerWidth / window.innerHeight;
+    
+    // Update perspective camera
+    perspectiveCamera.aspect = aspect;
+    perspectiveCamera.updateProjectionMatrix();
+    
+    // Update orthographic camera
+    const frustumSize = 10;
+    orthographicCamera.left = -frustumSize * aspect / 2;
+    orthographicCamera.right = frustumSize * aspect / 2;
+    orthographicCamera.top = frustumSize / 2;
+    orthographicCamera.bottom = -frustumSize / -2;
+    orthographicCamera.updateProjectionMatrix();
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+}
+*/
 
-
-
-
-
-
- // Utility functions
- function onWindowResize() {
+function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
     if (orientationWidget) {
         orientationWidget.position.set(-window.innerWidth/2 + 70, window.innerHeight/2 - 70, 0);
     }
- }
- 
+}
 // Store references to elements once
 const objectsElem = document.getElementById('objects');
 const fpsElem = document.getElementById('fps');
@@ -9087,44 +10050,63 @@ function stopAnimation() {
 }
 
 function zoomIn() {
-    zoomLevel = Math.min(zoomLevel * 1.5, 4);
+    zoomLevel = Math.min(zoomLevel * 1.2, 10); // Smoother zoom, max 10x
     updateTimelineZoom();
 }
 
 function zoomOut() {
-    zoomLevel = Math.max(zoomLevel / 1.5, 0.25);
+    zoomLevel = Math.max(zoomLevel / 1.2, 0.1); // Min 0.1x
     updateTimelineZoom();
 }
 
 function updateTimelineZoom() {
     const timelineContent = document.getElementById('timeline-content');
+    const timelineScale = document.querySelector('.timeline-scale');
+    
+    // Apply transform to timeline content (keyframes and playhead)
     timelineContent.style.transform = `translateX(${timelineOffset}px) scaleX(${zoomLevel})`;
+    
+    // Update timeline scale to match zoom
+    timelineScale.style.transform = `scaleX(${zoomLevel})`;
+    timelineScale.style.transformOrigin = 'left'; // Ensure scale starts from left
+    
+    // Adjust playhead width to prevent distortion
+    const playhead = document.getElementById('playhead');
+    playhead.style.transform = `scaleX(${1 / zoomLevel})`; // Counter-scale to maintain width
+    playhead.style.transformOrigin = 'left';
+    
+    // Update keyframes UI if needed
     updateKeyframesUI();
 }
 
 function initializeTimelineScale() {
     const timelineScale = document.querySelector('.timeline-scale');
-    timelineScale.innerHTML = '';
-    const totalFrames = timelineDuration * fps;
-    const majorInterval = fps * 30; // Major tick every 30 seconds
+    timelineScale.innerHTML = ''; // Clear existing markers
+    const totalSeconds = timelineDuration; // Use global duration
+    const majorMarkerInterval = 30; // Major tick every 30 seconds
+    const minorMarkerInterval = 5; // Minor tick every 5 seconds
 
-    for (let frame = 0; frame <= totalFrames; frame += fps) {
+    for (let i = 0; i <= totalSeconds; i += minorMarkerInterval) {
         const marker = document.createElement('div');
-        marker.className = `timeline-scale-marker ${frame % majorInterval === 0 ? 'major' : ''}`;
-        marker.style.left = `${(frame / totalFrames) * 100}%`;
-        
-        if (frame % majorInterval === 0) {
+        const isMajor = i % majorMarkerInterval === 0;
+        marker.className = `timeline-scale-marker ${isMajor ? 'major' : ''}`;
+        marker.style.left = `${(i / totalSeconds) * 100}%`;
+
+        if (isMajor) {
             const label = document.createElement('div');
             label.className = 'timeline-scale-label';
-            const seconds = frame / fps;
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            label.textContent = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            label.textContent = `${Math.floor(i / 60)}:${String(i % 60).padStart(2, '0')}`;
             marker.appendChild(label);
         }
-        
+
         timelineScale.appendChild(marker);
     }
+}
+
+// this whenever timeline duration or zoom changes
+function updateTimelineScale() {
+    initializeTimelineScale(); // Rebuild scale
+    updateTimelineZoom(); // Reapply zoom
 }
 
 function updatePlayhead() {
@@ -9144,19 +10126,11 @@ function updatePlayhead() {
 }
 
 
- // Zoom controls
- document.getElementById('zoom-in').addEventListener('click', () => {
-    zoomLevel = Math.min(zoomLevel * 1.5, 4);
-    timelineContent.style.transform = `scaleX(${zoomLevel})`;
-});
 
-document.getElementById('zoom-out').addEventListener('click', () => {
-    zoomLevel = Math.max(zoomLevel / 1.5, 1);
-    timelineContent.style.transform = `scaleX(${zoomLevel})`;
-});
 
 // Timeline dragging
 timeline.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.keyframe') || e.target.closest('.playhead')) return; // Ignore clicks on keyframes/playhead
     isDragging = true;
     dragStart = e.clientX - timelineOffset;
     timeline.style.cursor = 'grabbing';
@@ -9164,9 +10138,12 @@ timeline.addEventListener('mousedown', (e) => {
 
 document.addEventListener('mousemove', (e) => {
     if (isDragging) {
-        const offset = e.clientX - dragStart;
-        timelineOffset = offset;
-        timelineContent.style.transform = `translateX(${offset}px) scaleX(${zoomLevel})`;
+        timelineOffset = e.clientX - dragStart;
+        // Limit offset to prevent panning too far
+        const maxOffset = 0; // Leftmost position
+        const minOffset = -(timelineContent.offsetWidth * zoomLevel - timelineContent.offsetWidth); // Rightmost
+        timelineOffset = Math.min(maxOffset, Math.max(minOffset, timelineOffset));
+        updateTimelineZoom();
     }
 });
 
@@ -9187,26 +10164,7 @@ timelineContent.addEventListener('click', (e) => {
 });
 
 
-// Initialize timeline scale
-function initializeTimelineScale() {
-    const totalSeconds = 300; // 5 minutes
-    const majorMarkerInterval = 30; // Every 30 seconds
-    
-    for (let i = 0; i <= totalSeconds; i += 5) {
-        const marker = document.createElement('div');
-        marker.className = `timeline-scale-marker ${i % majorMarkerInterval === 0 ? 'major' : ''}`;
-        marker.style.left = `${(i / totalSeconds) * 100}%`;
-        
-        if (i % majorMarkerInterval === 0) {
-            const label = document.createElement('div');
-            label.className = 'timeline-scale-label';
-            label.textContent = `${Math.floor(i / 60)}:${String(i % 60).padStart(2, '0')}`;
-            marker.appendChild(label);
-        }
-        
-        timelineScale.appendChild(marker);
-    }
-}
+
 
 function recordSceneData() {
     if (isPlaying && selectedSegment) {
@@ -9219,11 +10177,10 @@ function recordSceneData() {
 // Add this to your existing animate function to integrate the node editor
 function animate () {
     requestAnimationFrame(animate);
-    
     if (controls && controls.enabled) {
         controls.update();
     }
-    
+    transformControls.setTranslationSnap(null);
     animateParticles();
     recordSceneData();
     
@@ -9314,10 +10271,9 @@ function animate () {
     
     updateStats();
     updateHelpers();
-    
     // First render the scene normally
+    renderer.clear();
     renderer.render(scene, camera);
-    
     // Then apply post-processing if node editor has active post effects
     if (window.nodeEditor && window.nodeEditor.hasPostProcessing) {
         window.nodeEditor.renderPostEffects(renderer, scene, camera);
@@ -9326,7 +10282,7 @@ function animate () {
     if (activeCamera && previewRenderer) {
         previewRenderer.render(scene, activeCamera);
     }
-    
+    updateRenderOrder();
     composer.render();
 }
 
@@ -9636,793 +10592,6 @@ function updateHistoryPanel() {
 
 
 
-// Snapping System
-function enableSnapping() {
-    const gridSize = 1;
-    transformControls.addEventListener('change', () => {
-        if (selectedObject) {
-            selectedObject.position.x = Math.round(selectedObject.position.x / gridSize) * gridSize;
-            selectedObject.position.y = Math.round(selectedObject.position.y / gridSize) * gridSize;
-            selectedObject.position.z = Math.round(selectedObject.position.z / gridSize) * gridSize;
-        }
-    });
-}
-
-// Advanced Object Manipulation
-function mirrorObject(axis = 'x') {
-    if (!selectedObject) return;
-    const clone = selectedObject.clone();
-    clone.scale[axis] *= -1;
-    addObjectToScene(clone);
-    recordHistoryAction('Mirror', clone.name);
-}
-
-function createArray() {
-    if (!selectedObject) return;
-    const count = 3; // Can be made configurable
-    const spacing = 2;
-
-    for (let i = 1; i <= count; i++) {
-        const clone = selectedObject.clone();
-        clone.position.x += spacing * i;
-        addObjectToScene(clone);
-        recordHistoryAction('Array', clone.name);
-    }
-}
-
-// Clipboard Operations
-let clipboardData = null;
-
-function setupClipboardOperations() {
-    // Object manipulation handler with history logging
-    function handleObjectAction(type, callback) {
-        return () => {
-            if (!selectedObject && type !== 'Paste') return;
-            const objectName = type === 'Paste' ? clipboardData?.name : selectedObject.name;
-            let undoAction = null;
-            let redoAction = null;
-
-            if (type === 'Delete') {
-                const index = objects.indexOf(selectedObject);
-                undoAction = () => {
-                    if (index > -1) {
-                        objects.splice(index, 0, selectedObject);
-                        scene.add(selectedObject);
-                    }
-                };
-                redoAction = () => {
-                    if (index > -1) {
-                        objects.splice(index, 1);
-                        scene.remove(selectedObject);
-                    }
-                };
-            }
-
-            callback();
-            recordHistoryAction(type, objectName, undoAction, redoAction);
-        };
-    }
-
-    // Clipboard and object manipulation functions
-    const clipboardActions = {
-        copy: handleObjectAction('Copy', () => {
-            if (selectedObject) {
-                clipboardData = selectedObject.clone();
-                console.log('Copied:', clipboardData); // Debug
-            }
-        }),
-        paste: handleObjectAction('Paste', () => {
-            if (clipboardData) {
-                const pastedObject = clipboardData.clone();
-                pastedObject.position.x += 1;
-                pastedObject.name = pastedObject.name.replace(/\d+$/, '') + '_' + objects.length;
-                addObjectToScene(pastedObject);
-                console.log('Pasted:', pastedObject); // Debug
-            }
-        }),
-        delete: handleObjectAction('Delete', () => {
-            if (selectedObject) {
-                const index = objects.indexOf(selectedObject);
-                if (index > -1) {
-                    if (selectedObject.helper) {
-                        scene.remove(selectedObject.helper);
-                        selectedObject.helper.dispose();
-                    }
-                    selectedObject.traverse((child) => {
-                        if (child instanceof THREE.Mesh) {
-                            child.geometry.dispose();
-                            child.material.dispose();
-                        }
-                    });
-                    objects.splice(index, 1);
-                    scene.remove(selectedObject);
-                    transformControls.detach();
-                    if (selectedObject instanceof THREE.Camera && activeCamera === selectedObject) {
-                        activeCamera = null;
-                    }
-                    selectedObject = null;
-                    updateHierarchy();
-                    console.log('Deleted object'); // Debug
-                }
-            }
-        }),
-        duplicate: handleObjectAction('Duplicate', () => {
-            if (selectedObject) {
-                const duplicate = selectedObject.clone();
-                duplicate.position.x += 1;
-                duplicate.name = duplicate.name.replace(/\d+$/, '') + '_' + objects.length;
-                addObjectToScene(duplicate);
-                console.log('Duplicated:', duplicate); // Debug
-            }
-        })
-    };
-
-    // Context menu configuration
-    const contextMenuConfig = [
-        { label: 'Copy (Ctrl+C)', action: clipboardActions.copy, id: 'context-copy' },
-        { label: 'Paste (Ctrl+V)', action: clipboardActions.paste, id: 'context-paste' },
-        { label: 'Delete (Del)', action: clipboardActions.delete, id: 'context-delete' },
-        { label: 'Duplicate (Ctrl+D)', action: clipboardActions.duplicate, id: 'context-duplicate' },
-        {
-            label: 'Transform Controls',
-            subMenu: [
-                { label: 'Translate', action: () => setTransformMode('translate'), id: 'context-translate' },
-                { label: 'Rotation', action: () => setTransformMode('rotate'), id: 'context-rotate' },
-                { label: 'Scale', action: () => setTransformMode('scale'), id: 'context-scale' }
-            ]
-        },
-        {
-            label: 'Utility Tools',
-            subMenu: [
-                { label: 'Enable Snapping', action: enableSnapping, id: 'enable-snapping' },
-                { label: 'Optimize Scene', action: optimizeScene, id: 'optimize-scene' },
-                { label: 'Mirror Object', action: () => mirrorObject(), id: 'mirror-object' },
-                { label: 'Create Array', action: createArray, id: 'create-array' },
-                { label: 'Clear History', action: clearHistory, id: 'clear-history' }
-            ]
-        }
-    ];
-
-    // Generate context menu dynamically
-    const contextMenu = document.getElementById('context-menu');
-    if (contextMenu) {
-        contextMenu.innerHTML = contextMenuConfig.map(item => `
-            <div class="context-menu-item" ${item.id ? `id="${item.id}"` : ''} ${item.subMenu ? 'data-submenu="true"' : ''}>
-                ${item.label}
-                ${item.subMenu ? '<i class="fa-solid fa-caret-right" style="margin-left: 20px;"></i>' : ''}
-                ${item.subMenu ? `
-                    <div class="sub-menu">
-                        ${item.subMenu.map(subItem => `
-                            <div class="context-menu-item" id="${subItem.id}">${subItem.label}</div>
-                        `).join('')}
-                    </div>
-                ` : ''}
-            </div>
-        `).join('');
-
-        // Attach event listeners for all items
-        contextMenuConfig.forEach(item => {
-            if (item.id) {
-                const element = document.getElementById(item.id);
-                if (element) {
-                    element.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent click from hiding menu immediately
-                        item.action();
-                    });
-                }
-            }
-            if (item.subMenu) {
-                item.subMenu.forEach(subItem => {
-                    const subElement = document.getElementById(subItem.id);
-                    if (subElement) {
-                        subElement.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            subItem.action();
-                        });
-                    }
-                });
-            }
-        });
-    }
-
-    // Keyboard shortcuts (unchanged)
-    document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey || e.metaKey) {
-            switch (e.key.toLowerCase()) {
-                case 'c': e.preventDefault(); clipboardActions.copy(); break;
-                case 'v': e.preventDefault(); clipboardActions.paste(); break;
-                case 'd': e.preventDefault(); clipboardActions.duplicate(); break;
-            }
-        }
-        if (e.key === 'Delete') {
-            clipboardActions.delete();
-        }
-    });
-
-    // Expose functions globally (unchanged)
-    Object.assign(window, {
-        copyObject: clipboardActions.copy,
-        pasteObject: clipboardActions.paste,
-        deleteObject: clipboardActions.delete,
-        duplicateObject: clipboardActions.duplicate,
-        enableSnapping,
-        optimizeScene,
-        mirrorObject,
-        createArray,
-        clearHistory
-    });
-}
-
-
-
-// During initialization
-function optimizeScene() {
-    // Track performance stats
-    const stats = {
-        originalVertexCount: 0,
-        optimizedVertexCount: 0,
-        mergedObjects: 0,
-        lodObjects: 0,
-        instancedObjects: 0
-    };
-    
-    // Object pool for efficient object reuse
-    const objectPool = {
-        geometries: {},
-        materials: {},
-        instancedMeshes: {}
-    };
-
-    // Store objects by material for intelligent merging
-    const objectsByMaterial = new Map();
-    const staticObjects = [];
-    const dynamicObjects = [];
-    
-    // Frustum culling optimization
-    function setupFrustumCulling() {
-        const frustum = new THREE.Frustum();
-        const projScreenMatrix = new THREE.Matrix4();
-        
-        return function updateFrustumCulling() {
-            camera.updateMatrixWorld();
-            projScreenMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-            frustum.setFromProjectionMatrix(projScreenMatrix);
-            
-            scene.traverse((object) => {
-                if (object.isMesh && object.userData.enableFrustumCulling !== false) {
-                    if (!object.geometry.boundingSphere) {
-                        object.geometry.computeBoundingSphere();
-                    }
-                    
-                    // Only update visibility if object is potentially visible
-                    const boundingSphere = object.geometry.boundingSphere.clone();
-                    boundingSphere.applyMatrix4(object.matrixWorld);
-                    
-                    object.visible = frustum.intersectsSphere(boundingSphere);
-                }
-            });
-        };
-    }
-    
-    // Setup occlusion culling
-    function setupOcclusionCulling() {
-        const occlusionComposer = new THREE.EffectComposer(renderer);
-        const occlusionPass = new THREE.OcclusionPass(scene, camera);
-        occlusionComposer.addPass(occlusionPass);
-        
-        return function updateOcclusionCulling() {
-            occlusionComposer.render();
-            // Objects are automatically culled by the occlusion pass
-        };
-    }
-    
-    // Intelligent geometry merging function
-    function mergeGeometries() {
-        console.log("Analyzing scene for merge opportunities...");
-        
-        // Identify static meshes that can be merged
-        scene.traverse((object) => {
-            if (!object.isMesh || object.userData.preventMerge) return;
-            
-            // Skip objects that need individual manipulation
-            if (object.userData.interactive || object.userData.physicsBody) {
-                dynamicObjects.push(object);
-                return;
-            }
-            
-            // Group by material for efficient merging
-            const materialId = object.material.uuid;
-            if (!objectsByMaterial.has(materialId)) {
-                objectsByMaterial.set(materialId, []);
-            }
-            objectsByMaterial.get(materialId).push(object);
-            staticObjects.push(object);
-            
-            // Track original vertex count
-            if (object.geometry.attributes.position) {
-                stats.originalVertexCount += object.geometry.attributes.position.count;
-            }
-        });
-        
-        // Only merge objects sharing the same material
-        objectsByMaterial.forEach((objects, materialId) => {
-            // Skip if there's only one object with this material
-            if (objects.length <= 1) return;
-            
-            // Skip small groups where merging won't help much
-            if (objects.length < 3) return;
-            
-            console.log(`Merging ${objects.length} objects with material ${materialId}`);
-            
-            const geometries = [];
-            const matrices = [];
-            
-            objects.forEach(object => {
-                const clonedGeometry = object.geometry.clone();
-                geometries.push(clonedGeometry);
-                matrices.push(object.matrixWorld.clone());
-                
-                // Hide original but don't remove yet (in case merge fails)
-                object.visible = false;
-            });
-            
-            try {
-                // Apply transformations to geometries before merging
-                for (let i = 0; i < geometries.length; i++) {
-                    geometries[i].applyMatrix4(matrices[i]);
-                }
-                
-                // Merge geometries
-                const mergedGeometry = THREE.BufferGeometryUtils.mergeBufferGeometries(geometries);
-                if (!mergedGeometry) {
-                    console.warn("Failed to merge geometries, reverting to originals");
-                    objects.forEach(obj => obj.visible = true);
-                    return;
-                }
-                
-                // Create merged mesh
-                const mergedMesh = new THREE.Mesh(mergedGeometry, objects[0].material.clone());
-                mergedMesh.userData.merged = true;
-                mergedMesh.userData.originalCount = objects.length;
-                mergedMesh.castShadow = objects[0].castShadow;
-                mergedMesh.receiveShadow = objects[0].receiveShadow;
-                
-                // Optimize the merged geometry
-                mergedGeometry.attributes.position.needsUpdate = true;
-                if (mergedGeometry.attributes.normal) {
-                    mergedGeometry.attributes.normal.needsUpdate = true;
-                }
-                mergedGeometry.computeBoundingSphere();
-                mergedGeometry.computeBoundingBox();
-                
-                // Add merged mesh to scene
-                scene.add(mergedMesh);
-                
-                // Now remove original objects
-                objects.forEach(obj => {
-                    if (obj.parent) obj.parent.remove(obj);
-                    if (obj.geometry) obj.geometry.dispose();
-                });
-                
-                stats.mergedObjects += objects.length;
-                stats.optimizedVertexCount += mergedGeometry.attributes.position.count;
-            } catch (error) {
-                console.error("Error during geometry merging:", error);
-                objects.forEach(obj => obj.visible = true);
-            }
-        });
-        
-        console.log(`Merged ${stats.mergedObjects} objects into ${objectsByMaterial.size} groups`);
-    }
-    
-    // Advanced LOD implementation with geometry simplification
-    function implementLOD(object) {
-        if (!object.isMesh || object.userData.preventLOD) return;
-        
-        // Skip already processed or merged objects
-        if (object.isLOD || object.parent?.isLOD || object.userData.merged) return;
-        
-        try {
-            const geometry = object.geometry;
-            const vertexCount = geometry.attributes.position.count;
-            
-            // Only apply LOD for complex geometries
-            if (vertexCount < 1000) return;
-            
-            console.log(`Creating LOD for object with ${vertexCount} vertices`);
-            
-            const lod = new THREE.LOD();
-            lod.position.copy(object.position);
-            lod.rotation.copy(object.rotation);
-            lod.scale.copy(object.scale);
-            
-            // Original high quality mesh (level 0)
-            object.geometry = geometry.clone(); // Clone to prevent issues
-            lod.addLevel(object, 0);
-            
-            // Create medium quality level (50% reduction)
-            const mediumDetail = Math.max(100, Math.floor(vertexCount * 0.5));
-            const mediumGeometry = geometry.clone();
-            
-            // Use more advanced decimation for high-poly models
-            let modifier;
-            if (window.THREE.SimplifyModifier) {
-                modifier = new THREE.SimplifyModifier();
-                const mediumSimplified = modifier.modify(mediumGeometry, mediumDetail);
-                const mediumMesh = new THREE.Mesh(mediumSimplified, object.material.clone());
-                mediumMesh.castShadow = object.castShadow;
-                mediumMesh.receiveShadow = object.receiveShadow;
-                lod.addLevel(mediumMesh, 50);
-            }
-            
-            // Create low quality level (90% reduction)
-            const lowDetail = Math.max(50, Math.floor(vertexCount * 0.1));
-            const lowGeometry = geometry.clone();
-            
-            if (window.THREE.SimplifyModifier) {
-                const lowSimplified = modifier.modify(lowGeometry, lowDetail);
-                const lowMesh = new THREE.Mesh(lowSimplified, object.material.clone());
-                lowMesh.castShadow = object.castShadow;
-                lowMesh.receiveShadow = object.receiveShadow;
-                lod.addLevel(lowMesh, 150);
-            }
-            
-            // Add lowest level (billboard or very simplified)
-            if (vertexCount > 10000) {
-                const lowestDetail = Math.max(20, Math.floor(vertexCount * 0.01));
-                const lowestGeometry = geometry.clone();
-                
-                if (window.THREE.SimplifyModifier) {
-                    const lowestSimplified = modifier.modify(lowestGeometry, lowestDetail);
-                    const lowestMesh = new THREE.Mesh(lowestSimplified, object.material.clone());
-                    lowestMesh.castShadow = false; // Disable shadows for distant objects
-                    lowestMesh.receiveShadow = false;
-                    lod.addLevel(lowestMesh, 300);
-                }
-            }
-            
-            // Replace original object with LOD in scene
-            if (object.parent) {
-                object.parent.add(lod);
-                object.parent.remove(object);
-                stats.lodObjects++;
-            }
-        } catch (error) {
-            console.error("Error creating LOD:", error);
-        }
-    }
-    
-    // Instanced mesh creation with geometry caching
-    function createInstancedMeshes() {
-        // Find identical geometries that can be instanced
-        const geometryGroups = new Map();
-        
-        scene.traverse((object) => {
-            if (!object.isMesh || object.userData.preventInstance) return;
-            
-            // Skip large unique objects
-            if (object.geometry.attributes.position.count > 10000) return;
-            
-            // Create a geometry signature (simple version - could be more sophisticated)
-            const geo = object.geometry;
-            const signature = `${geo.attributes.position.count}-${geo.attributes.position.itemSize}-${geo.index ? geo.index.count : 0}`;
-            
-            if (!geometryGroups.has(signature)) {
-                geometryGroups.set(signature, []);
-            }
-            geometryGroups.get(signature).push(object);
-        });
-        
-        // Create instanced meshes for groups of similar objects
-        geometryGroups.forEach((objects, signature) => {
-            // Only use instancing for enough similar objects
-            if (objects.length < 10) return;
-            
-            const firstObject = objects[0];
-            const instancedGeometry = firstObject.geometry.clone();
-            const instancedMaterial = firstObject.material.clone();
-            
-            // Enable instancing on material if needed
-            if (instancedMaterial.map) instancedMaterial.map.generateMipmaps = true;
-            
-            // Create instanced mesh
-            const instancedMesh = new THREE.InstancedMesh(
-                instancedGeometry,
-                instancedMaterial,
-                objects.length
-            );
-            instancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-            instancedMesh.castShadow = firstObject.castShadow;
-            instancedMesh.receiveShadow = firstObject.receiveShadow;
-            
-            // Set instance matrices
-            const dummy = new THREE.Object3D();
-            objects.forEach((object, i) => {
-                dummy.position.copy(object.position);
-                dummy.rotation.copy(object.rotation);
-                dummy.scale.copy(object.scale);
-                dummy.updateMatrix();
-                instancedMesh.setMatrixAt(i, dummy.matrix);
-                
-                // Store reference in userData for later updates if needed
-                instancedMesh.userData.instances = instancedMesh.userData.instances || [];
-                instancedMesh.userData.instances.push({
-                    id: object.id,
-                    originalObject: object
-                });
-                
-                // Hide original object
-                object.visible = false;
-            });
-            
-            instancedMesh.instanceMatrix.needsUpdate = true;
-            scene.add(instancedMesh);
-            
-            stats.instancedObjects += objects.length;
-            objectPool.instancedMeshes[signature] = instancedMesh;
-        });
-    }
-    
-    // Implement geometry pooling for reuse
-    function setupGeometryPooling() {
-        const geometryCache = new Map();
-        
-        // Add common geometries to the pool
-        const commonGeometries = [
-            { name: 'box', geometry: new THREE.BoxGeometry(1, 1, 1) },
-            { name: 'sphere', geometry: new THREE.SphereGeometry(1, 32, 16) },
-            { name: 'cylinder', geometry: new THREE.CylinderGeometry(1, 1, 1, 32) },
-            { name: 'plane', geometry: new THREE.PlaneGeometry(1, 1) }
-        ];
-        
-        commonGeometries.forEach(({ name, geometry }) => {
-            geometryCache.set(name, geometry);
-            objectPool.geometries[name] = geometry;
-        });
-        
-        // Method to get or create geometry
-        return function getGeometry(type, params) {
-            const key = `${type}-${JSON.stringify(params)}`;
-            
-            if (geometryCache.has(key)) {
-                return geometryCache.get(key);
-            }
-            
-            let geometry;
-            switch (type) {
-                case 'box':
-                    geometry = new THREE.BoxGeometry(
-                        params.width || 1, 
-                        params.height || 1, 
-                        params.depth || 1
-                    );
-                    break;
-                case 'sphere':
-                    geometry = new THREE.SphereGeometry(
-                        params.radius || 1, 
-                        params.widthSegments || 32, 
-                        params.heightSegments || 16
-                    );
-                    break;
-                default:
-                    geometry = null;
-            }
-            
-            if (geometry) {
-                geometryCache.set(key, geometry);
-                objectPool.geometries[key] = geometry;
-            }
-            
-            return geometry;
-        };
-    }
-    
-    // Material optimization
-    function optimizeMaterials() {
-        const materialCache = new Map();
-        
-        scene.traverse((object) => {
-            if (!object.isMesh || !object.material) return;
-            
-            // Handle material arrays
-            if (Array.isArray(object.material)) {
-                object.material = object.material.map(processMaterial);
-            } else {
-                object.material = processMaterial(object.material);
-            }
-        });
-        
-        // Process and optimize a single material
-        function processMaterial(material) {
-            const materialId = material.uuid;
-            
-            // Return cached instance if available
-            if (materialCache.has(materialId)) {
-                return materialCache.get(materialId);
-            }
-            
-            // Clone to avoid modifying original
-            const optimized = material.clone();
-            
-            // Optimize textures
-            if (optimized.map) {
-                optimized.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
-                optimized.map.needsUpdate = true;
-            }
-            
-            // Reduce complexity of expensive materials
-            if (optimized.type === 'MeshStandardMaterial' || optimized.type === 'MeshPhysicalMaterial') {
-                // Consider downgrading distant or numerous objects to cheaper materials
-                optimized.roughness = Math.max(0.1, optimized.roughness);
-                optimized.metalness = Math.min(0.9, optimized.metalness);
-            }
-            
-            // Cache and return
-            materialCache.set(materialId, optimized);
-            objectPool.materials[materialId] = optimized;
-            return optimized;
-        }
-    }
-    
-    // Dynamic detail level control based on performance
-    function setupAdaptiveDetail() {
-        let frameTime = 0;
-        let frameCount = 0;
-        const targetFPS = 60;
-        const minAcceptableFPS = 30;
-        
-        // Adjust detail level based on performance
-        return function updateAdaptiveDetail() {
-            const startTime = performance.now();
-            
-            // Measure frame time
-            if (frameCount > 0) {
-                frameTime = performance.now() - startTime;
-                
-                // Only adapt every 60 frames to avoid constant changes
-                if (frameCount % 60 === 0) {
-                    const currentFPS = 1000 / frameTime;
-                    
-                    // If performance is poor, reduce detail
-                    if (currentFPS < minAcceptableFPS) {
-                        scene.traverse((object) => {
-                            if (object.isLOD) {
-                                // Adjust LOD distances to show lower detail sooner
-                                for (let i = 0; i < object.levels.length; i++) {
-                                    object.levels[i].distance *= 0.8;
-                                }
-                            }
-                        });
-                    }
-                    // If performance is good, gradually increase detail
-                    else if (currentFPS > targetFPS * 0.9) {
-                        scene.traverse((object) => {
-                            if (object.isLOD) {
-                                // Carefully increase detail
-                                for (let i = 0; i < object.levels.length; i++) {
-                                    object.levels[i].distance *= 1.05;
-                                }
-                            }
-                        });
-                    }
-                    
-                    // Log current performance status
-                    console.log(`Current FPS: ${currentFPS.toFixed(1)}, Adjusting detail...`);
-                }
-            }
-            
-            frameCount++;
-        };
-    }
-    
-    // Setup worker threads for parallel processing if supported
-    function setupWorkerProcessing() {
-        if (window.Worker) {
-            const physicWorker = new Worker('physics-worker.js');
-            const geometryWorker = new Worker('geometry-worker.js');
-            
-            // Setup message handlers
-            physicWorker.onmessage = function(e) {
-                // Handle physics updates from worker
-            };
-            
-            geometryWorker.onmessage = function(e) {
-                // Handle geometry processing results
-            };
-            
-            return {
-                physicWorker,
-                geometryWorker,
-                
-                // Method to offload physics calculations
-                processPhysics: function(objects) {
-                    physicWorker.postMessage({ type: 'update', objects });
-                },
-                
-                // Method to offload heavy geometry operations
-                processGeometry: function(geometry, operation) {
-                    geometryWorker.postMessage({ type: operation, geometry });
-                }
-            };
-        }
-        
-        return null;
-    }
-    
-    // Apply all optimization techniques
-    function applyOptimizations() {
-        console.log("Starting scene optimization...");
-        
-        // 1. Optimize materials first (affects everything)
-        optimizeMaterials();
-        
-        // 2. Merge static geometries
-        mergeGeometries();
-        
-        // 3. Apply LOD to remaining complex objects
-        scene.traverse(implementLOD);
-        
-        // 4. Create instanced meshes for repeating elements
-        createInstancedMeshes();
-        
-        // 5. Setup pooling systems
-        const getGeometry = setupGeometryPooling();
-        
-        // 6. Setup performance monitoring and adaptive detail
-        const updateAdaptiveDetail = setupAdaptiveDetail();
-        
-        // 7. Setup frustum and occlusion culling
-        const updateFrustumCulling = setupFrustumCulling();
-        
-        // 8. Setup worker processing if available
-        const workers = setupWorkerProcessing();
-        
-        // Print optimization results
-        console.log("Scene optimization complete:");
-        console.log(`- Original vertex count: ${stats.originalVertexCount}`);
-        console.log(`- Optimized vertex count: ${stats.optimizedVertexCount}`);
-        console.log(`- Objects merged: ${stats.mergedObjects}`);
-        console.log(`- Objects with LOD: ${stats.lodObjects}`);
-        console.log(`- Objects instanced: ${stats.instancedObjects}`);
-        
-        // Return update function for render loop
-        return function updateOptimizations() {
-            updateFrustumCulling();
-            updateAdaptiveDetail();
-            
-            // Process physics in worker if available
-            if (workers && physicsEnabled) {
-                const physicsObjects = [];
-                scene.traverse((object) => {
-                    if (object.userData.physicsBody) {
-                        physicsObjects.push({
-                            id: object.id,
-                            position: object.position,
-                            quaternion: object.quaternion,
-                            velocity: object.userData.physicsBody.velocity
-                        });
-                    }
-                });
-                
-                if (physicsObjects.length > 0) {
-                    workers.processPhysics(physicsObjects);
-                }
-            }
-        };
-    }
-        // Execute optimizations and return the update function
-        const updateOptimizations = applyOptimizations();
-    
-    // Add optimization update to animation loop
-    const originalAnimate = animate;
-    animate = function() {
-        updateOptimizations();
-        originalAnimate();
-    };
-    
-    // Return object pool for reuse
-    return objectPool;
-}
 
         // Initialize everything
         function initializeAll() {
@@ -11384,14 +11553,14 @@ document.getElementById('addCubeCamera').addEventListener('click', () => {
             
             
             function setupCameraControls(camera) {
-            const fovInput = document.querySelector('#cameraFOV input');
-            if (fovInput) {
-            fovInput.value = camera.fov;
-            fovInput.addEventListener('input', () => {
-            camera.fov = parseFloat(fovInput.value);
-            camera.updateProjectionMatrix();
-            if (camera.helper) camera.helper.update();
-            });
+                const fovInput = document.querySelector('#cameraFOV input');
+                if (fovInput) {
+                  fovInput.value = camera.fov;
+                  fovInput.addEventListener('input', () => {
+                  camera.fov = parseFloat(fovInput.value);
+                  camera.updateProjectionMatrix();
+                  if (camera.helper) camera.helper.update();
+                });
             }
             
             
@@ -11533,7 +11702,7 @@ animateTransition();
 
     </script>
 
-<script src="processing/processing-panel.js"></script>
+<script src="processing/assets.js"></script>
 <script src="animations/camera-path.js"></script>
 
 </body>
