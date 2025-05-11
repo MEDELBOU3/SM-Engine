@@ -1,5 +1,7 @@
 .timeline {
     position: absolute;
+    flex: 1; /* Take remaining space */
+    background: #2A2A2A;
     z-index: 6;
     bottom: 0;
     width: 57%;
@@ -43,17 +45,18 @@
     background-color: var(--accent-blue);
 }
 
+.timeline.expanded {
+    width: 80%;
+    left: 20%;
+    transform: translateX(0);
+}
+
 .timeline.hidden {
     height: 0;
     opacity: 0;
     pointer-events: none;
 }
 
-.timeline.expanded {
-    width: 80%;
-    left: 20%;
-    transform: translateX(0);
-}
 
 /* Timeline Header */
 .timeline-header {
@@ -84,6 +87,11 @@
     padding: 4px 0;
 }
 
+
+.timeline-scale, .timeline-content {
+    width: 100%;
+}
+
 .playback-controls,
 .time-controls,
 .zoom-controls,
@@ -91,6 +99,33 @@
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+.zoom-controls{
+    margin-left: auto;
+}
+
+.zoom-controls button {
+    background: var(--accent-blue);
+    color: #e0e0e0;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    font-weight: bold;
+    transition: background 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+    padding: 6px;
+    cursor: pointer;
+}
+.zoom-controls button:hover {
+    background: var(--accent-green);
 }
 
 .time-controls {
@@ -254,14 +289,6 @@
 
 
 /* Timeline Content */
-
-.timeline-content-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
 .timeline-ruler {
     height: 24px;
     position: relative;
@@ -298,7 +325,7 @@
 .timeline-track {
     flex: 1;
     position: relative;
-    overflow-y: auto;
+    overflow-x: hidden;
     background: var(--timeline-bg);
     cursor: grab;
     width: 80%;           
@@ -347,18 +374,19 @@
 .playhead::after {
     content: '';
     position: absolute;
-    top: -5px;
-    left: -4px;
-    width: 10px;
-    height: 10px;
+    top: -13px;
+    left: -8px;
+    width: 20px;
+    height: 14px;
     background: var(--playhead-color);
-    border-radius: 50%;
+    border-radius: 2px;
 }
+
 
 .timeline-tracks-container {
     position: absolute;
     top: 0;
-    left: 0;
+    right:  0;
     width: 100%;
     height: 100%;
 }
