@@ -43,6 +43,18 @@
 </div>
 
 <div align="center">
+  <h2>Architecture Tools</h2>
+  <h3>Wall Tools</h3>
+  <img src="screenshoots/wall-preview.png" alt="line preview" width="90%">
+  <img src="screenshoots/confirm-wall-placement1.png" alt="wall added" width="90%">
+  <img src="screenshoots/confirm-wall-placement2.png" alt="wall added-select" width="90%">
+  <h3>Windows and doors tools</h3>
+  <img src="screenshoots/window-placement-preview.png" alt="box preview" width="90%">
+  <p><em>Architecture Tools Wall to build what you need</em></p>
+  
+</div>
+
+<div align="center">
   <img src="screenshoots/Screenshot%20(91).png" alt="Editor Workspace" width="90%">
   <p><em>Workspace overview with Scene Hierarchy and Asset Management</em></p>
 </div>
