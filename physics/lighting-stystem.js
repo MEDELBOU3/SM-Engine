@@ -53,3 +53,5 @@ function createSimpleSunLight() {
     return { sunSystem, updateDayNightCycle };
 }
 
+
+
