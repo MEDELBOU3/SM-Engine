@@ -56,27 +56,41 @@ body {
 }
 
 .tool-button {
-    background-color: #333;
-    border: 1px solid #555;
-    border-radius: 4px;
-    color: #eee;
-    padding: 5px 10px;
-    margin: 2px;
+    background: var(--button-bg);
+    border: 1px solid #666;
+    color: #F5F5F5;
+    padding: 4px 5px;
     cursor: pointer;
-    font-size: 12px;
-    transition: background-color 0.2s;
+    font-size: 10px;
+    transition: all 0.3s ease;
+    text-align: center;
+    outline: none;
 }
 
+/* Hover state */
 .tool-button:hover {
-    background-color: #444;
+    background: var(--button-hover-bg);
+    border-color: #888;
+   
 }
 
+/* Active/selected state */
 .tool-button.active {
-    background: var(--accent-blue);
+    background: linear-gradient(145deg, var(--accent-blue), #4682B4);
+    border-color: var(--accent-blue);
+    color: #FFFFFF;
+    box-shadow: var(--button-active-shadow);
+    transform: translateY(0);
 }
 
-.tool-button.active {
-    background: var(--accent-blue);
+/* Disabled state for completeness */
+.tool-button:disabled {
+    background: linear-gradient(145deg, #555, #444);
+    border-color: #555;
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
 }
 
 /* Left Panel - Hierarchy */
@@ -104,26 +118,26 @@ body {
     border-bottom: 1px solid var(--border-color);
 }
 
+
 .hierarchy-panel {
     background: var(--panel-bg);
     position: absolute;
-    z-index: 4;
+    z-index: 9;
     left: 0;
     top: 6.4vh;
     height: 93.6vh;
     width: 20%; /* Default width */
+    min-width: 20%;
+    max-width: 50vw;
     font-size: 12px;
     overflow-y: auto;
-    overflow: visible !important;
     border-right: 1px solid var(--border-color);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    min-width: 20%;
-    max-width: 50vw;
-    resize: horizontal;
+    --panel-bg: #1e1e1e;
+    --border-color: #4b4b4b;
 }
-
 
 
 .resize-handle-hierarchy {
@@ -237,20 +251,6 @@ body {
    width: 0; /* Hide the inspector */
 }
 
-.timeline.expanded{
-   width: 80%; 
-   left: 20%;
-   transform: translateX(0);
-}
-
-.timeline-controls {
-    padding: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-
 
 /* Advanced Timeline */
 .timeline-markers {
@@ -260,12 +260,7 @@ body {
     margin: 5px 0;
 }
 
-/* Layer System */
-.layer-container {
-    margin-top: 10px;
-    border-top: 1px solid var(--border-color);
-}
-
+/*
 .layer {
     display: flex;
     align-items: center;
@@ -276,6 +271,7 @@ body {
 .layer:hover {
     background: var(--secondary-dark);
 }
+*/
 
 /* Snapping Guidelines */
 .guideline {
@@ -620,43 +616,47 @@ body {
     cursor: grab;
     min-width: 150px;
     min-height: 100px;
-    }
+}
     
-    .camera-preview.expanded {
+.camera-preview.hidden {
+    display: none;
+}
+.camera-preview.expanded {
     width: 100%;
     height: 100%;
     border-radius: 0;
-    }
+}
     
-    .camera-preview.minimized {
+.camera-preview.minimized {
     width: 50px;
     height: 50px;
     border-radius: 10px;
     overflow: hidden;
-    }
+}
     
-    .preview-controls {
+.preview-controls {
     position: absolute;
     top: 5px;
     right: 5px;
     z-index: 100;
     display: flex;
     gap: 5px;
-    }
-    
-    .preview-controls button {
+}
+
+.minimizePreview, .expandPreview {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     padding: 5px 10px;
+    font-size: 12px;
     cursor: pointer;
     color: white;
     border-radius: 5px;
     transition: 0.2s;
-    }
+}
     
-    .preview-controls button:hover {
+.minimizePreview,:hover .expandPreview:hover {
     background: rgba(255, 255, 255, 0.4);
-    }
+}
 
 .light-controls {
     margin: 10px 0;
@@ -1385,6 +1385,7 @@ svg {
     background: #333;
     display: flex;
     align-items: flex-end;
+    transform-origin: left;
 }
 
 .timeline-scale-marker {
@@ -1413,6 +1414,7 @@ svg {
     position: relative;
     height: calc(100% - 20px);
     margin-top: 24px;
+    transform-origin: left;
 }
 
 .recording-segment {
@@ -1428,35 +1430,6 @@ svg {
 .recording-segment:hover {
     background: linear-gradient(to right, #ff6b6b, #ff8787);
 }
-
-.playhead {
-    position: absolute;
-    top: 0;
-    width: 2px;
-    height: 100%;
-    background: red;
-    pointer-events: none;
-    z-index: 10;
-}
-
-.playhead::after {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -4px;
-    width: 10px;
-    height: 10px;
-    background: #fff;
-    border-radius: 50%;
-}
-
-.zoom-controls {
-    display: flex;
-    gap: 8px;
-    margin-left: auto;
-}
-
-
 
 .recording-segment.selected {
     outline: 2px solid #fff;
@@ -1533,6 +1506,23 @@ svg {
     background: var(--background-hover);
 }
 
+.hierarchy-item.drag-over {
+    background-color: rgba(0, 123, 255, 0.1);
+    border: 1px dashed #007bff;
+}
+.hierarchy-rename-input {
+  font: inherit;
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.hierarchy-type-header {
+  font-weight: bold;
+  padding: 4px 10px;
+  background: #eee;
+  margin-top: 5px;
+}
 
     
 .hierarchy-item.selected {
@@ -1638,6 +1628,8 @@ svg {
 .hierarchy-name {
     flex-grow: 1;
     font-size: 12px;
+    font-family: monospace;
+    white-space: pre;
 }
     
     
