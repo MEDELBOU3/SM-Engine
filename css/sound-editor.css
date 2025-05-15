@@ -1,3 +1,4 @@
+
 :root {
     --primary: #00D1FF;
     --secondary: #FF3366;
@@ -48,6 +49,7 @@
     margin-bottom: 20px;
 }
 
+/*
 .sound-controls-meter {
     display: flex;
     flex-wrap: nowrap;
@@ -56,7 +58,7 @@
     padding: 5px;
     background: #222;
     width: 100%;
-}
+}*/
 
 
 .time-display {
@@ -123,30 +125,108 @@
     display: block; /* Ensure canvas is a block element */
 }
 
+/* ... (your existing CSS) ... */
+
+.sound-controls-meter {
+    /* display: none; */ /* Controlled by JS */
+    display: flex; /* Keep this as flex or block, depending on overall layout */
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 15px;
+    background: var(--dark);
+    width: auto; /* Or 100% */
+    border-radius: 8px;
+    justify-content: center; /* Centers the meter-section if it's narrower than sound-controls-meter */
+}
+
+/* Styles for the PARENT of the .meter-group elements */
 .meter-section {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    /* flex-direction: column; */ /* REMOVE or change this line */
+    flex-direction: row;     /*   Lay out children (meter-group) horizontally */
+    align-items: flex-start; /*   Align groups to the top. Use 'center' or 'flex-end' if preferred */
+    gap: 30px;               /*   Space between the meter groups */
+    /* Optionally, if I want the section to center its content if it's wider: */
+    /* justify-content: center; */
 }
 
 .meter-title {
     color: var(--accent);
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Increased margin for better separation from meters */
     text-shadow: 0 0 6px rgba(0, 255, 204, 0.3);
-    font-size: 18px;
+    font-size: 0.9rem;
     font-weight: bold;
+    text-align: center; /* Center title above its meters */
+    width: 100%;        /* Make title take full width of its group for centering */
 }
 
+/* Styles for EACH individual meter group (Input, Master) */
 .meter-group {
     display: flex;
-    align-items: center;
-    gap: 15px; /* Adjust space between meter and title */
-    margin-bottom: 20px;
+    flex-direction: column; /* Each group's items (title, meters) are stacked vertically */
+    align-items: center;    /* Center the items within this column */
+    gap: 10px;              /* Gap between title and its meter containers, or between meter containers */
 }
+
+/* Styles for a container holding an individual meter bar (e.g., left, right, master) */
+.meter-container {
+    width: 25px;
+    height: 120px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--gray);
+    /* If you have L/R meters, you might want them side-by-side within their group */
+    /* If so, the .meter-group for Input Meters might need different styling */
+}
+
+/* If your Input Meters (L/R) should also be side-by-side WITHIN their .meter-group */
+/* You'd need a wrapper around the L/R meter-containers or adjust the "Input Meters" .meter-group */
+
+/* Example: If Input Meters group should have L/R side-by-side: */
+/*
+.meter-group.input-meters-layout {
+    flex-direction: column; / * Title above meters * /
+}
+.input-meters-wrapper { / * You would add this div in HTML around L/R meter-containers * /
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+*/
+
+
+/* ... (rest of your CSS for .meter-fill, etc.) ... */
+
+/*
+.meter-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}*/
+
+/*
+.meter-title {
+    color: var(--accent);
+    margin-bottom: 5px;
+    text-shadow: 0 0 6px rgba(0, 255, 204, 0.3);
+    font-size: 1rem;
+    font-weight: bold;
+}*/
+
+/*
+.meter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}*/
 
 .effect-rack {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
     gap: 10px;
     padding: 10px;
 }
@@ -211,21 +291,69 @@ input[type="range"]::-webkit-slider-thumb {
 
 
 .meter-container {
-    width: 30px;  /* Adjust width as needed */
-    height:  150px;  /* Adjust height as needed */
+    width: 30px;
+    height: 150px;
     background-color: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
     overflow: hidden;
     position: relative;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--gray);
+}
+
+@keyframes peakFlash {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Scale Markings */
+.meter-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(to bottom, 
+        transparent 0%, 
+        transparent 25%, 
+        rgba(255, 255, 255, 0.1) 25%, 
+        rgba(255, 255, 255, 0.1) 26%,
+        transparent 26%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0.1) 51%,
+        transparent 51%,
+        transparent 75%,
+        rgba(255, 255, 255, 0.1) 75%, 
+        rgba(255, 255, 255, 0.1) 76%,
+        transparent 76%);
+    pointer-events: none;
 }
 
 .meter-fill {
     position: absolute;
     bottom: 0;
     width: 100%;
-    background: linear-gradient(to top, var(--success), var(--warning), var(--error));
+    background: linear-gradient(to top, 
+        var(--error) 0%, 
+        var(--warning) 50%, 
+        var(--success) 100%);
     transition: height 0.03s ease;
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+/* Peak Indicator */
+.meter-fill.peak::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--light);
+    opacity: 1;
+    animation: peakFlash 0.5s ease-out;
 }
 
 .btn {
@@ -280,3 +408,4 @@ input[type="range"]::-webkit-slider-thumb {
         padding: 20px;
     }
 }
+
