@@ -131,61 +131,39 @@
         
         <div class="toolbar">
             <div class="logo">
-                <svg width="30" height="30" viewBox="0 0 150 125" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Enhanced Definitions for Gradient and Glow -->
+              <svg class="logo__svg" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#1A1A1A;stop-opacity:1" /> <!-- Deeper metallic gray -->
-                            <stop offset="40%" style="stop-color:#3B82F6;stop-opacity:1" /> <!-- Stronger blue highlight -->
-                            <stop offset="60%" style="stop-color:#93C5FD;stop-opacity:1" /> <!-- Mid-tone blue -->
-                            <stop offset="100%" style="stop-color:#F0F0F0;stop-opacity:1" /> <!-- Brighter silver -->
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="var(--color-primary-dark)"/>
+                            <stop offset="100%" stop-color="var(--color-accent)"/>
                         </linearGradient>
-                        <filter id="glow">
-                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                        <linearGradient id="logoHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="var(--color-primary)" />
+                            <stop offset="100%" stop-color="var(--color-accent-dark)" />
+                        </linearGradient>
+                         <filter id="logoGlow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>
+                            <feOffset in="blur" dx="1" dy="1" result="offsetBlur"/>
+                            <feSpecularLighting in="blur" surfaceScale="5" specularConstant=".75" specularExponent="20" lighting-color="#bbbbbb" result="specOut">
+                                <fePointLight x="-5000" y="-10000" z="20000"/>
+                            </feSpecularLighting>
+                            <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut"/>
+                            <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
                             <feMerge>
-                                <feMergeNode in="coloredBlur"/>
-                                <feMergeNode in="SourceGraphic"/>
+                                <feMergeNode in="offsetBlur"/>
+                                <feMergeNode in="litPaint"/>
                             </feMerge>
                         </filter>
-                        <filter id="softShadow">
-                            <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.3" />
-                        </filter>
                     </defs>
-                    
-                    <!-- Dark Background Circle for Contrast -->
-                    <circle cx="75" cy="75" r="70" fill="#111827" opacity="0.8"/>
-                    
-                    <!-- Outer Orbital Frame (Enhanced) -->
-                    <circle cx="75" cy="75" r="60" 
-                        stroke="url(#grad1)" stroke-width="3.5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                    
-                    <!-- Secondary Orbital Element -->
-                    <circle cx="75" cy="75" r="53" 
-                        stroke="url(#grad1)" stroke-width="1" fill="none" stroke-dasharray="2,4" opacity="0.7"/>
-                    
-                    <!-- Inner Stylized "S" Shape (Refined) -->
-                    <path d="M 55 45 C 40 60, 60 90, 75 105 C 90 120, 110 105, 95 90 C 80 75, 60 60, 55 45" 
-                        stroke="url(#grad1)" stroke-width="4.5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                    
-                    <!-- Inner "M" Shape (Enhanced) -->
-                    <path d="M 65 50 L 75 70 L 85 50 M 75 70 L 75 100" 
-                        stroke="url(#grad1)" stroke-width="3.5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                    
-                    <!-- Connection Points (Professional Touch) -->
-                    <circle cx="65" cy="50" r="3" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="75" cy="70" r="3" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="85" cy="50" r="3" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="75" cy="100" r="3" fill="url(#grad1)" filter="url(#glow)"/>
-                    
-                    <!-- Precision Dots (Enhanced) -->
-                    <circle cx="75" cy="15" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="75" cy="135" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="15" cy="75" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="135" cy="75" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
-                    
-                    <!-- SM Typography (Enhanced) -->
-                    <text x="52" y="130" font-family="Arial, sans-serif" font-size="28" 
-                        fill="url(#grad1)" font-weight="700" letter-spacing="1" filter="url(#softShadow)">SM</text>
+                    <g filter="url(#logoGlow)">
+                         <!-- Abstract cube-like M -->
+                        <path fill="url(#logoGradient)" 
+                              d="M10 60 L10 15 L20 10 L35 10 L40 15 L40 30 L30 35 L30 55 L35 60 L10 60 Z 
+                                 M40 15 L45 10 L60 10 L60 55 L55 60 L40 55 L40 15 Z" />
+                        <path fill="url(#logoHighlight)" opacity="0.6"
+                              d="M12 58 L12 17 L20 12 L35 12 L38 17 L38 30 L30 33 L30 53 L35 58 L12 58 Z 
+                                 M42 17 L45 12 L58 12 L58 53 L55 58 L42 53 L42 17 Z" />
+                    </g>
                 </svg>
             </div>
             <div class="toolbar-group">
