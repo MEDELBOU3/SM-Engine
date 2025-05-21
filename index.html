@@ -130,8 +130,8 @@
     
         
         <div class="toolbar">
-            <div class="logo">
-              <svg class="logo__svg" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+              <a href="https://medelbou3.github.io/SM-Engine/" class="logo logo--new-design" id="homeLinkLogo">
+                <svg class="logo__svg" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="var(--color-primary-dark)"/>
@@ -165,7 +165,23 @@
                                  M42 17 L45 12 L58 12 L58 53 L55 58 L42 53 L42 17 Z" />
                     </g>
                 </svg>
-            </div>
+            </a>
+            <style>
+                 :root {
+                      --font-display: 'Lexend Deca', var(--font-sans);
+                       --color-text-primary: #E0E7FF; 
+                 }
+                 .logo {
+                     display: flex;
+                     align-items: center;
+                     text-decoration: none;
+                      gap: 0.6rem;
+                     transition: opacity var(--transition-short);
+                 }
+                 .logo:hover { opacity: 0.85; text-decoration: none; }
+                 .logo__svg { width: 40px; height: 40px; } 
+                 .logo__text { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; color: var(--color-text-primary); letter-spacing: -0.5px; line-height: 1; }
+            </style>
             <div class="toolbar-group">
                 <button class="tool-button" id="newScene">
                     <i class="fas fa-file"></i> New
