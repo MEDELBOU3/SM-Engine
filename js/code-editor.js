@@ -93,22 +93,24 @@ tabs.forEach(tab => {
 });
 
 // Initialize with example code
-editors.js.setValue(`function init() {
-// Create a basic cube
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshPhongMaterial({ 
-color: 0x00ff00,
-metalness: 0.5,
-roughness: 0.5
-});
-const cube = new THREE.Mesh(geometry, material);
+editors.js.setValue(`
+    function init() {
+        // Create a basic cube
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshPhongMaterial({ 
+            color: 0x00ff00,
+            metalness: 0.5,
+            roughness: 0.5
+        });
+        const cube = new THREE.Mesh(geometry, material);
 
-// Add custom properties
-cube.userData.selectable = true;
-cube.userData.type = 'Cube';
+        // Add custom properties
+        cube.userData.selectable = true;
+        cube.userData.type = 'Cube';
 
-return cube;
-}`);
+        return cube;
+    }
+`);
 
 // Editor toggle logic
 document.getElementById('toggle-editor').addEventListener('click', () => {
@@ -165,18 +167,17 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+let isResizingEdit = false;
+const resizeHandleEditor = document.querySelector('.resize-handle-Editor');
 
-//const resizeHandle = document.querySelector('.resize-handle');
-let isResizing = false;
-
-resizeHandle.addEventListener('mousedown', (e) => {
-    isResizing = true;
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', stopResize);
+resizeHandleEditor.addEventListener('mousedown', (e) => {
+    isResizingEdit = true;
+    document.addEventListener('mousemove', handleMouseMoveEdit);
+    document.addEventListener('mouseup', stopResizeEdit);
 });
 
-function handleMouseMove(e) {
-    if (!isResizing) return;
+function handleMouseMoveEdit(e) {
+    if (!isResizingEdit) return;
     
     const editorPanel = document.getElementById('code-editor-panel');
     const newWidth = window.innerWidth - e.clientX;
@@ -184,9 +185,9 @@ function handleMouseMove(e) {
     Object.values(editors).forEach(editor => editor.refresh());
 }
 
-function stopResize() {
-    isResizing = false;
-    document.removeEventListener('mousemove', handleMouseMove);
+function stopResizeEdit() {
+    isResizingEdit = false;
+    document.removeEventListener('mousemove', handleMouseMoveEdit);
 }
 
 
