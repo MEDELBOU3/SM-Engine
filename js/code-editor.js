@@ -166,7 +166,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 
-const resizeHandle = document.querySelector('.resize-handle');
+//const resizeHandle = document.querySelector('.resize-handle');
 let isResizing = false;
 
 resizeHandle.addEventListener('mousedown', (e) => {
