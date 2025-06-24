@@ -41,6 +41,7 @@
 <div align="center">
   <img src="screenshoots/sculpting&modeling.png" alt="Brush Modeling Tools" width="90%">
   <img src="screenshoots/modeling.png" alt="Brush Modeling Tools" width="90%">
+  <img src="screenshoots/Screenshot (494).png" alt="Brush Modeling Tools" width="90%">
   <p><em>Modeling and sculpting tools in real time</em></p>
 </div>
 
