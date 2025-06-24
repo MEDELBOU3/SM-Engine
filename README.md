@@ -24,6 +24,7 @@
 
 <div align="center">
   <img src="screenshoots/Screenshot%20(93).png" alt="Main Editor Interface" width="90%">
+    <img src="screenshoots/Screenshot%20(492).png" alt="Main Editor Interface" width="90%">
   <p><em>Main interface with the powerful Node Editor panel and 3D viewport</em></p>
 </div>
 
