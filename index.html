@@ -265,64 +265,82 @@
 </div>
     
         <div class="toolbar">
-            <div class="logo">
-                <svg width="30" height="30" viewBox="0 0 150 125" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Enhanced Definitions for Gradient and Glow -->
-                    <defs>
-                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#1A1A1A;stop-opacity:1" /> <!-- Deeper metallic gray -->
-                            <stop offset="40%" style="stop-color:#3B82F6;stop-opacity:1" /> <!-- Stronger blue highlight -->
-                            <stop offset="60%" style="stop-color:#93C5FD;stop-opacity:1" /> <!-- Mid-tone blue -->
-                            <stop offset="100%" style="stop-color:#F0F0F0;stop-opacity:1" /> <!-- Brighter silver -->
-                        </linearGradient>
-                        <filter id="glow">
-                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                            <feMerge>
-                                <feMergeNode in="coloredBlur"/>
-                                <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                        </filter>
-                        <filter id="softShadow">
-                            <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.3" />
-                        </filter>
-                    </defs>
-                    
-                    <!-- Dark Background Circle for Contrast -->
-                    <circle cx="75" cy="75" r="70" fill="#111827" opacity="0.8"/>
-                    
-                    <!-- Outer Orbital Frame (Enhanced) -->
-                    <circle cx="75" cy="75" r="60" 
-                        stroke="url(#grad1)" stroke-width="3.5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                    
-                    <!-- Secondary Orbital Element -->
-                    <circle cx="75" cy="75" r="53" 
-                        stroke="url(#grad1)" stroke-width="1" fill="none" stroke-dasharray="2,4" opacity="0.7"/>
-                    
-                    <!-- Inner Stylized "S" Shape (Refined) -->
-                    <path d="M 55 45 C 40 60, 60 90, 75 105 C 90 120, 110 105, 95 90 C 80 75, 60 60, 55 45" 
-                        stroke="url(#grad1)" stroke-width="4.5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                    
-                    <!-- Inner "M" Shape (Enhanced) -->
-                    <path d="M 65 50 L 75 70 L 85 50 M 75 70 L 75 100" 
-                        stroke="url(#grad1)" stroke-width="3.5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                    
-                    <!-- Connection Points (Professional Touch) -->
-                    <circle cx="65" cy="50" r="3" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="75" cy="70" r="3" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="85" cy="50" r="3" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="75" cy="100" r="3" fill="url(#grad1)" filter="url(#glow)"/>
-                    
-                    <!-- Precision Dots (Enhanced) -->
-                    <circle cx="75" cy="15" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="75" cy="135" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="15" cy="75" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
-                    <circle cx="135" cy="75" r="2.5" fill="url(#grad1)" filter="url(#glow)"/>
-                    
-                    <!-- SM Typography (Enhanced) -->
-                    <text x="52" y="130" font-family="Arial, sans-serif" font-size="28" 
-                        fill="url(#grad1)" font-weight="700" letter-spacing="1" filter="url(#softShadow)">SM</text>
-                </svg>
-            </div>
+               <style>
+    /* Add this CSS to your stylesheet */
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px; /* Space between icon and text */
+        color: #E0E0E0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .logo__svg {
+        width: 42px; /* A good, balanced size for a header logo */
+        height: 42px;
+        /* A simple, performant drop shadow for depth */
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+    }
+
+    .logo__text {
+        letter-spacing: 0.5px;
+    }
+
+    .logo__text-pro {
+        font-size: 0.5em;
+        vertical-align: super;
+        margin-left: 2px;
+        color: #999; /* A more subtle trademark color */
+        font-weight: 400;
+    }
+</style>
+
+<div class="logo">
+    <svg class="logo__svg" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- Gradient for the main fill of the logo shape -->
+            <linearGradient id="logoMainFill" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#2c3e50" /> <!-- Deep Slate Blue -->
+                <stop offset="100%" stop-color="#1c2833" /> <!-- Darker Slate -->
+            </linearGradient>
+
+            <!-- Gradient for the outer stroke (border) -->
+            <linearGradient id="logoOuterStroke" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#4e5b6b" />
+                <stop offset="100%" stop-color="#7e8c9d" />
+            </linearGradient>
+            
+            <!-- A sharp, bright gradient for the inner highlight to create a 3D bevel effect -->
+            <linearGradient id="logoInnerHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#66b3ff" /> <!-- Light Blue -->
+                <stop offset="100%" stop-color="#89cff0" /> <!-- Lighter Sky Blue -->
+            </linearGradient>
+        </defs>
+
+        <!-- The single, continuous path that defines your logo's unique shape -->
+        <path fill="url(#logoMainFill)" 
+              stroke="url(#logoOuterStroke)" 
+              stroke-width="2" 
+              stroke-linejoin="round"
+              d="M10 60 L10 15 L20 10 L35 10 L45 10 L60 10 L60 55 L55 60 L35 60 L30 55 L30 35 L40 30 L40 15 L35 10 M30 35 L40 30" />
+        
+        <!-- 
+          Inner path for the 3D highlight. This is slightly inset from the main path.
+          It gives a sharp, clean bevel effect without a slow filter.
+        -->
+        <path fill="none"
+              stroke="url(#logoInnerHighlight)"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+              opacity="0.8"
+              d="M12 58 L12 16 L21 12 L35 12 L44 12 L58 12 L58 54 L54 58 L35 58 L32 54 L32 36 L39 32 L39 16" />
+    </svg>
+    
+</div>
             <div class="toolbar-group">
                 <button class="tool-button" id="newScene">
                     <i class="fas fa-file"></i> New
