@@ -58,6 +58,8 @@
   <img src="screenshoots/confirm-wall-placement2.png" alt="wall added-select" width="90%">
   <h3>Windows and doors tools</h3>
   <img src="screenshoots/window-placement-preview.png" alt="box preview" width="90%">
+  <img src="screenshoots/Screenshot (334).png" alt="box preview" width="90%">
+  <img src="screenshoots/Screenshot (335).png" alt="box preview" width="90%">
   <p><em>Architecture Tools Wall to build what you need</em></p>
   
 </div>
