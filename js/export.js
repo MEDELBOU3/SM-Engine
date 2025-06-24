@@ -1,5 +1,6 @@
 let previewGameRenderer, previewGameCamera, previewScene, previewAnimationFrame;
 
+
 function showPreview() {
     const container = document.getElementById('preview-container');
     container.style.display = 'block';
@@ -25,7 +26,7 @@ function showPreview() {
         } else {
             clonedObject = object.clone();
         }
-        previewScene.add(clonedObject);
+        //previewScene.add(clonedObject);
     });
 
     // Ensure proper lighting
@@ -36,13 +37,42 @@ function showPreview() {
     previewGameCamera.position.copy(camera.position);
     previewGameCamera.quaternion.copy(camera.quaternion);
     previewScene.add(previewGameCamera);
+   
 
-    // Render function
-    function renderPreview() {
+    /*function renderPreview() {
         previewAnimationFrame = requestAnimationFrame(renderPreview);
         previewGameRenderer.render(previewScene, previewGameCamera);
     }
-    renderPreview();
+    renderPreview();*/
+
+   function renderPreview() {
+    if (!activeCamera) return;
+
+    
+    if (activeCamera instanceof THREE.CubeCamera) {
+        // Special handling for cube camera
+        const cubeCamera = activeCamera;
+        cubeCamera.update(renderer, scene);
+        
+        // Create temporary scene with cube map
+        const tempScene = new THREE.Scene();
+        const cubeMaterial = new THREE.MeshBasicMaterial({
+            envMap: cubeCamera.renderTarget.texture,
+            side: THREE.BackSide
+        });
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), cubeMaterial);
+        tempScene.add(cube);
+        
+        // Render with preview camera
+        previewRenderer.render(tempScene, cubeCamera.userData.previewCamera);
+    } else {
+        // Regular camera preview
+        previewRenderer.render(scene, activeCamera);
+    }
+    requestAnimationFrame(renderPreview);
+}
+renderPreview();
+
 }
 
 // Close preview function
@@ -84,4 +114,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+//##############################
+//#######  UI  #################
+//##############################
+// Add this new function to update UI
+function updateToolUIBTN(toolId) {
+    document.querySelectorAll('.tool-btn').forEach(button => {
+        button.classList.remove('active');
+    });
+    document.getElementById(toolId).classList.add('active');
+}
 
+document.querySelectorAll('.tool-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        updateToolUIBTN(button.id);
+    });
+});
+
+function updateToolUIBTNBr(toolId) {
+    document.querySelectorAll('.tool-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    document.getElementById(toolId).classList.add('active');
+}
+
+document.querySelectorAll('.tool-button').forEach(button => {
+    button.addEventListener('click', () => {
+        updateToolUIBTNBr(button.id);
+    });
+});
