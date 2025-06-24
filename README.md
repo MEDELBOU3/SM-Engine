@@ -74,6 +74,11 @@
   <p><em>High-fidelity rendering in the 3D viewport</em></p>
 </div>
 
+<div align="center">
+  <h2>Sound Editor</h2>
+  <img src="screenshoots/Screenshot (494).png" alt="box preview" width="90%">
+  <p><em>Sound and music editor</em></p>
+</div>
 ---
 
 ## 🌟 Core Features
