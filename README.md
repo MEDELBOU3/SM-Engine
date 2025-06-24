@@ -76,7 +76,7 @@
 
 <div align="center">
   <h2>Sound Editor</h2>
-  <img src="screenshoots/Screenshot (494).png" alt="box preview" width="90%">
+  <img src="screenshoots/Screenshot (496).png" alt="box preview" width="90%">
   <p><em>Sound and music editor</em></p>
 </div>
 ---
