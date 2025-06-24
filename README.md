@@ -1,7 +1,7 @@
 # ✨ SM-Engine: 3D Modeling & Physics Editor ✨
 
 <div class="logo" style="transform: scale(2); transform-origin: left center;">
-    <img src="logo.svg" alt="SM Engine Logo" width="90" height="90" class="logo__icon">
+    <img src="logo.svg" alt="SM Engine Logo" width="120" height="120" class="logo__icon">
     <span class="logo__text">SM Engine<span class="logo__text-pro">TM</span></span>
 </div>
 
