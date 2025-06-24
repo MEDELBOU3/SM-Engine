@@ -126,6 +126,11 @@ function setupClipboardOperations() {
                     console.log('Deleted object'); // Debug
                 }
             }
+            if (selectedObject && selectedObject.isCamera) {
+                deleteCameraAndAssociatedHelpers(selectedObject);
+            } else if (selectedObject) {
+                // Handle deletion of other object types
+            }
         }),
         duplicate: handleObjectAction('Duplicate', () => {
             if (selectedObject) {
@@ -230,7 +235,7 @@ function setupClipboardOperations() {
         optimizeScene,
         mirrorObject,
         createArray,
-        clearHistory
+        clearHistory,
     });
 }
 
