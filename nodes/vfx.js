@@ -1517,23 +1517,7 @@ function addNodeEditorStyles() {
         .node-item:hover {
             background-color: #555;
         }
-
-        .node {
-            position: absolute;
-            min-width: 120px;
-            background-color: #2d2d2d;
-            border: 1px solid #555;
-            border-radius: 5px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            user-select: none;
-            z-index: 10;
-        }
-        
-        .node.selected {
-            border: 1px solid #0af;
-            box-shadow: 0 0 8px rgba(0, 170, 255, 0.5);
-        }
-        
+            
         .node.dragging {
             opacity: 0.8;
         }
