@@ -50,7 +50,6 @@
   <p><em>Create anything you want using html css and js</em></p>
 </div>
 
-Screenshot (390).png
 <div align="center">
   <h2>Architecture Tools</h2>
   <h3>Wall Tools</h3>
