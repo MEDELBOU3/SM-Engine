@@ -2,62 +2,18 @@
 
 <div align="center">
 
-<div class="logo">
-  <style>
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #E0E0E0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-weight: 600;
-    font-size: 20px;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-
-.logo__svg {
-    width: 42px;
-    height: 42px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
-    overflow: visible; /* Ensures shadows and strokes aren't clipped */
-}
-
-
-.logo__text {
-    letter-spacing: 0.5px;
-}
-
-.logo__text-pro {
-    font-size: 0.5em;
-    vertical-align: super;
-    margin-left: 2px;
-    color: #999;
-    font-weight: 400;
-}
-
-
-.logo__main-path {
-    fill: url(#logoMainFill);        
-    stroke: url(#logoOuterStroke);    
-    stroke-width: 2;
-    stroke-linejoin: round;
-}
-
-
-.logo__highlight-path {
-    fill: none;                         
-    stroke: url(#logoInnerHighlight);
-    stroke-width: 1.5;
-    stroke-linejoin: round;
-    opacity: 0.8;
-}
-</style>
-    <svg class="logo__svg" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+  <!-- 
+    The SVG and text are placed together. The styles for the text are minimal, 
+    using standard Markdown/HTML tags to ensure they are not stripped.
+  -->
+  <a href="#" title="SM Engine">
+    <!-- 
+      The SVG's size is defined directly with width/height.
+      An inline style is used to align it vertically with the text.
+    -->
+    <svg width="60" height="60" style="vertical-align: middle; margin-right: 15px;" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
         <defs>
-            <!-- These gradients MUST remain inside the SVG -->
+            <!-- Gradients MUST be defined here inside <defs> -->
             <linearGradient id="logoMainFill" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#2c3e50" />
                 <stop offset="100%" stop-color="#1c2833" />
@@ -71,15 +27,25 @@
                 <stop offset="100%" stop-color="#89cff0" />
             </linearGradient>
         </defs>
-        <path class="logo__main-path"
+
+        <!-- All styles are now applied directly as attributes, not classes -->
+        <path fill="url(#logoMainFill)" 
+              stroke="url(#logoOuterStroke)" 
+              stroke-width="2" 
+              stroke-linejoin="round"
               d="M10 60 L10 15 L20 10 L35 10 L45 10 L60 10 L60 55 L55 60 L35 60 L30 55 L30 35 L40 30 L40 15 L35 10 M30 35 L40 30" />
-        <path class="logo__highlight-path"
+        
+        <path fill="none"
+              stroke="url(#logoInnerHighlight)"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+              opacity="0.8"
               d="M12 58 L12 16 L21 12 L35 12 L44 12 L58 12 L58 54 L54 58 L35 58 L32 54 L32 36 L39 32 L39 16" />
     </svg>
-    <span class="logo__text">SM Engine<span class="logo__text-pro">TM</span></span>
-</div>
-</div>
- 
+    <!-- Use basic HTML tags like <h1> for styling text in Markdown -->
+    <h1 style="display: inline; color: #E0E0E0; font-family: sans-serif;">SM Engine<sup style="font-size: 0.5em; color: #999;">TM</sup></h1>
+  </a>
+
 </div>
 
 <p align="center">
