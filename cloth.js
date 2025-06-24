@@ -415,4 +415,3 @@ clothSystem.setWindForce(5, 0, 12);
 const clothSystem = new ClothSystem(physicsManager);
 physicsManager.clothSystem = clothSystem;
            
-
