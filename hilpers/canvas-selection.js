@@ -315,6 +315,7 @@ function deleteSelectedObjects() {
             return;
         }
     }
+
     
     // Store objects to delete to avoid modifying while iterating
     const objectsToDelete = [...selectedObjectsFromBox];
