@@ -2,18 +2,9 @@
 
 <div align="center">
 
-  <!-- 
-    The SVG and text are placed together. The styles for the text are minimal, 
-    using standard Markdown/HTML tags to ensure they are not stripped.
-  -->
   <a href="#" title="SM Engine">
-    <!-- 
-      The SVG's size is defined directly with width/height.
-      An inline style is used to align it vertically with the text.
-    -->
     <svg width="60" height="60" style="vertical-align: middle; margin-right: 15px;" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
         <defs>
-            <!-- Gradients MUST be defined here inside <defs> -->
             <linearGradient id="logoMainFill" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#2c3e50" />
                 <stop offset="100%" stop-color="#1c2833" />
@@ -27,14 +18,11 @@
                 <stop offset="100%" stop-color="#89cff0" />
             </linearGradient>
         </defs>
-
-        <!-- All styles are now applied directly as attributes, not classes -->
         <path fill="url(#logoMainFill)" 
               stroke="url(#logoOuterStroke)" 
               stroke-width="2" 
               stroke-linejoin="round"
               d="M10 60 L10 15 L20 10 L35 10 L45 10 L60 10 L60 55 L55 60 L35 60 L30 55 L30 35 L40 30 L40 15 L35 10 M30 35 L40 30" />
-        
         <path fill="none"
               stroke="url(#logoInnerHighlight)"
               stroke-width="1.5"
@@ -42,7 +30,6 @@
               opacity="0.8"
               d="M12 58 L12 16 L21 12 L35 12 L44 12 L58 12 L58 54 L54 58 L35 58 L32 54 L32 36 L39 32 L39 16" />
     </svg>
-    <!-- Use basic HTML tags like <h1> for styling text in Markdown -->
     <h1 style="display: inline; color: #E0E0E0; font-family: sans-serif;">SM Engine<sup style="font-size: 0.5em; color: #999;">TM</sup></h1>
   </a>
 
