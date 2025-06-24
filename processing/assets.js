@@ -53,6 +53,7 @@ class AssetsPanel {
             backgroundColor: '#1a1a1a'
         };
 
+
         this.previewScene = null;
         this.previewCamera = null;
         this.previewRenderer = null;
@@ -73,195 +74,397 @@ class AssetsPanel {
 
 
     initializeUI() {
+        if (document.querySelector('.assets-panel')) {
+           console.log("Assets panel already initialized.");
+            return;
+        }
         // Create assets panel HTML with improved UI
-        const assetsPanel = `
-            <div class="assets-panel">
-                <div class="resize-handle"></div>
-                <div class="assets-header">
-                    <div class="assets-toolbar">
-                        <div class="search-bar">
-                            <input type="text" placeholder="Search assets..." class="search-input">
-                            <button class="search-btn"><i class="fas fa-search"></i></button>
-                        </div>
-                        
-                        <div class="view-options">
-                            <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i></button>
-                            <button class="view-btn" data-view="list"><i class="fas fa-list"></i></button>
-                            <button class="sort-btn"><i class="fas fa-sort"></i></button>
-                        </div>
+        /*const assetsPanel = `
+        <div class="assets-panel">
+            <div class="resize-handle"></div>
+            <div class="assets-header">
+                <div class="assets-toolbar">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search assets..." class="search-input">
+                        <button class="search-btn"><i class="fas fa-search"></i></button>
                     </div>
                     
-                    <div class="tabs">
-                        <button class="tab-btn active" data-tab="all">All Assets</button>
-                        <button class="tab-btn" data-tab="models">3D Models</button>
-                        <button class="tab-btn" data-tab="materials">Materials</button>
-                        <button class="tab-btn" data-tab="textures">Textures</button>
-                        <button class="tab-btn" data-tab="hdris">HDRI</button>
-                        <button class="tab-btn" data-tab="favorites">Favorites</button>
-                        <button class="tab-btn" data-tab="recent">Recent</button>
+                    <div class="view-options">
+                        <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i></button>
+                        <button class="view-btn" data-view="list"><i class="fas fa-list"></i></button>
+                        <button class="sort-btn"><i class="fas fa-sort"></i></button>
                     </div>
-                    
-                    <div class="navigation-bar">
-                        <button class="nav-btn back-btn" disabled><i class="fas fa-arrow-left"></i></button>
-                        <div class="breadcrumb"></div>
-                        <div class="import-container">
-                            <button class="import-btn">
-                                <i class="fas fa-plus"></i> Import
-                            </button>
-                            <div class="import-dropdown">
-                                <button class="import-option" data-type="file">File</button>
-                                <button class="import-option" data-type="folder">Folder</button>
-                                <button class="import-option" data-type="url">From URL</button>
-                            </div>
-                            <input type="file" class="file-input" multiple accept=".glb,.gltf,.fbx,.obj,.hdr,.exr,.jpg,.jpeg,.png,.tga,.tif,.tiff,.bmp,.mtl,.mat" style="display: none;">
-                            <input type="file" class="folder-input" webkitdirectory directory multiple style="display: none;">
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="all">All Assets</button>
+                    <button class="tab-btn" data-tab="models">3D Models</button>
+                    <button class="tab-btn" data-tab="materials">Materials</button>
+                    <button class="tab-btn" data-tab="textures">Textures</button>
+                    <button class="tab-btn" data-tab="hdris">HDRI</button>
+                    <button class="tab-btn" data-tab="favorites">Favorites</button>
+                    <button class="tab-btn" data-tab="recent">Recent</button>
+                </div>
+                
+                <div class="navigation-bar">
+                    <button class="nav-btn back-btn" disabled><i class="fas fa-arrow-left"></i></button>
+                    <div class="breadcrumb"></div>
+                    <div class="import-container">
+                        <button class="import-btn">
+                            <i class="fas fa-plus"></i> Import
+                        </button>
+                        <div class="import-dropdown">
+                            <button class="import-option" data-type="file">File</button>
+                            <button class="import-option" data-type="folder">Folder</button>
+                            <button class="import-option" data-type="url">From URL</button>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="assets-content">
-                    <!-- Main grid view -->
-                    <div class="assets-view grid-view active"></div>
-                    <!-- List view -->
-                    <div class="assets-view list-view"></div>
-                    
-                    <!-- Empty state -->
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>No assets found. Import some files to get started.</p>
-                    </div>
-                </div>
-                
-                <div class="asset-preview-panel">
-                    <div class="preview-header">
-                        <span class="preview-title">Asset Preview</span>
-                        <button class="close-preview-btn"><i class="fas fa-times"></i></button>
-                    </div>
-                    <div class="preview-container" display="none">
-                        <canvas id="preview-canvas"></canvas>
-                    </div>
-                    <div class="preview-info">
-                        <h3 class="model-name">No asset selected</h3>
-                        <div class="model-stats"></div>
-                    </div>
-                    <div class="preview-controls">
-                        <button class="preview-btn wireframe-btn" title="Toggle Wireframe"><i class="fas fa-vector-square"></i></button>
-                        <button class="preview-btn grid-btn active" title="Toggle Grid"><i class="fas fa-border-all"></i></button>
-                        <button class="preview-btn rotate-btn active" title="Auto Rotate"><i class="fas fa-sync"></i></button>
-                        <button class="preview-btn bones-btn" title="Show Bones"><i class="fas fa-bone"></i></button>
-                        <button class="preview-btn bg-color-btn" title="Change Background"><i class="fas fa-fill-drip"></i></button>
-                    </div>
-                    <div class="animation-controls">
-                        <select class="animation-select"></select>
-                        <div class="animation-buttons">
-                            <button class="play-btn"><i class="fas fa-play"></i></button>
-                            <button class="pause-btn"><i class="fas fa-pause"></i></button>
-                            <button class="stop-btn"><i class="fas fa-stop"></i></button>
-                        </div>
-                        <div class="animation-timeline">
-                            <input type="range" min="0" max="100" value="0" class="timeline-slider">
-                            <div class="timeline-info">
-                                <span class="current-time">0.00s</span>
-                                <span class="total-time">0.00s</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="asset-context-menu">
-                    <ul>
-                        <li data-action="preview"><i class="fas fa-eye"></i> Preview</li>
-                        <li data-action="add-to-scene"><i class="fas fa-plus-circle"></i> Add to Scene</li>
-                        <li data-action="favorite"><i class="far fa-star"></i> Add to Favorites</li>
-                        <li data-action="rename"><i class="fas fa-edit"></i> Rename</li>
-                        <li data-action="duplicate"><i class="fas fa-copy"></i> Duplicate</li>
-                        <li data-action="delete"><i class="fas fa-trash"></i> Delete</li>
-                    </ul>
-                </div>
-                
-                <div class="sort-menu">
-                    <ul>
-                        <li data-sort="name"><i class="fas fa-sort-alpha-down"></i> Name</li>
-                        <li data-sort="date"><i class="fas fa-clock"></i> Date</li>
-                        <li data-sort="type"><i class="fas fa-file"></i> Type</li>
-                        <li data-sort="size"><i class="fas fa-weight"></i> Size</li>
-                    </ul>
-                </div>
-                
-                <div class="drop-zone">
-                    <div class="drop-zone-content">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Drag & Drop Files or Folders Here</p>
-                    </div>
-                </div>
-                
-                <div class="import-url-dialog">
-                    <div class="dialog-header">
-                        <h3>Import from URL</h3>
-                        <button class="close-dialog-btn"><i class="fas fa-times"></i></button>
-                    </div>
-                    <div class="dialog-content">
-                        <input type="text" placeholder="Enter URL..." class="url-input">
-                        <div class="url-type-selection">
-                            <label>
-                                <input type="radio" name="url-type" value="model" checked> 3D Model
-                            </label>
-                            <label>
-                                <input type="radio" name="url-type" value="hdri"> HDRI
-                            </label>
-                            <label>
-                                <input type="radio" name="url-type" value="texture"> Texture
-                            </label>
-                        </div>
-                    </div>
-                    <div class="dialog-footer">
-                        <button class="cancel-url-btn">Cancel</button>
-                        <button class="import-url-btn">Import</button>
+                        <input type="file" class="file-input" multiple accept=".glb,.gltf,.fbx,.obj,.hdr,.exr,.jpg,.jpeg,.png,.tga,.tif,.tiff,.bmp,.mtl,.mat" style="display: none;">
+                        <input type="file" class="folder-input" webkitdirectory directory multiple style="display: none;">
                     </div>
                 </div>
             </div>
-        `;
-        
-        // Add to DOM
-        document.querySelector('.viewport').insertAdjacentHTML('beforeend', assetsPanel);
-        
-        // Add styles
-        const styles = `
-           .assets-panel {
-                position: absolute;
-                left: 47%;
-                bottom: -10vh;
-                width: 95%;
-                z-index: 4;
-                min-height: 300px;
-                max-height: 74vh;
-                background: #2a2a2a;
-                border-top: 1px solid #3a3a3a;
-                display: flex;
-                flex-direction: column;
-                transform: translate(-50%, 100%);
-                transition: transform 0.3s ease-in-out;
-                color: #e0e0e0;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            }
-
-            .resize-handle {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 3px;
-                background: #777;
-                cursor: ns-resize; /* Vertical resize cursor */
-            }
-        
-            .assets-panel.visible {
-                transform: translate(-50%, 0);
-            }
             
+            <div class="assets-content">
+                <!-- Main grid view -->
+                <div class="assets-view grid-view active"></div>
+                <!-- List view -->
+                <div class="assets-view list-view"></div>
+                
+                <!-- Empty state -->
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No assets found. Import some files to get started.</p>
+                </div>
+            </div>
+            
+            <div class="asset-preview-panel">
+                <div class="preview-header">
+                    <span class="preview-title">Asset Preview</span>
+                    <button class="close-preview-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="preview-container" display="none">
+                    <canvas id="preview-canvas"></canvas>
+                </div>
+                <div class="preview-info">
+                    <h3 class="model-name">No asset selected</h3>
+                    <div class="model-stats"></div>
+                </div>
+                <div class="preview-controls">
+                    <button class="preview-btn wireframe-btn" title="Toggle Wireframe"><i class="fas fa-vector-square"></i></button>
+                    <button class="preview-btn grid-btn active" title="Toggle Grid"><i class="fas fa-border-all"></i></button>
+                    <button class="preview-btn rotate-btn active" title="Auto Rotate"><i class="fas fa-sync"></i></button>
+                    <button class="preview-btn bones-btn" title="Show Bones"><i class="fas fa-bone"></i></button>
+                    <button class="preview-btn bg-color-btn" title="Change Background"><i class="fas fa-fill-drip"></i></button>
+                </div>
+                <div class="animation-controls">
+                    <select class="animation-select"></select>
+                    <div class="animation-buttons">
+                        <button class="play-btn"><i class="fas fa-play"></i></button>
+                        <button class="pause-btn"><i class="fas fa-pause"></i></button>
+                        <button class="stop-btn"><i class="fas fa-stop"></i></button>
+                    </div>
+                    <div class="animation-timeline">
+                        <input type="range" min="0" max="100" value="0" class="timeline-slider">
+                        <div class="timeline-info">
+                            <span class="current-time">0.00s</span>
+                            <span class="total-time">0.00s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="asset-context-menu">
+                <ul>
+                    <li data-action="preview"><i class="fas fa-eye"></i> Preview</li>
+                    <li data-action="add-to-scene"><i class="fas fa-plus-circle"></i> Add to Scene</li>
+                    <li data-action="favorite"><i class="far fa-star"></i> Add to Favorites</li>
+                    <li data-action="rename"><i class="fas fa-edit"></i> Rename</li>
+                    <li data-action="duplicate"><i class="fas fa-copy"></i> Duplicate</li>
+                    <li data-action="delete"><i class="fas fa-trash"></i> Delete</li>
+                </ul>
+            </div>
+            
+            <div class="sort-menu">
+                <ul>
+                    <li data-sort="name"><i class="fas fa-sort-alpha-down"></i> Name</li>
+                    <li data-sort="date"><i class="fas fa-clock"></i> Date</li>
+                    <li data-sort="type"><i class="fas fa-file"></i> Type</li>
+                    <li data-sort="size"><i class="fas fa-weight"></i> Size</li>
+                </ul>
+            </div>
+            
+            <div class="drop-zone">
+                <div class="drop-zone-content">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & Drop Files or Folders Here</p>
+                </div>
+            </div>
+            
+            <div class="import-url-dialog">
+                <div class="dialog-header">
+                    <h3>Import from URL</h3>
+                    <button class="close-dialog-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="dialog-content">
+                    <input type="text" placeholder="Enter URL..." class="url-input">
+                    <div class="url-type-selection">
+                        <label>
+                            <input type="radio" name="url-type" value="model" checked> 3D Model
+                        </label>
+                        <label>
+                            <input type="radio" name="url-type" value="hdri"> HDRI
+                        </label>
+                        <label>
+                            <input type="radio" name="url-type" value="texture"> Texture
+                        </label>
+                    </div>
+                </div>
+                <div class="dialog-footer">
+                    <button class="cancel-url-btn">Cancel</button>
+                    <button class="import-url-btn">Import</button>
+                </div>
+            </div>
+        </div>
+           
+        `;*/
+        const assetsPanelHTML = `
+        <div class="assets-panel">
+            <div class="resize-handle"></div>
+            <div class="assets-header">
+                <div class="assets-toolbar">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search assets..." class="search-input">
+                        <button class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="view-options">
+                        <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i></button>
+                        <button class="view-btn" data-view="list"><i class="fas fa-list"></i></button>
+                        <button class="sort-btn"><i class="fas fa-sort"></i></button>
+                    </div>
+                </div>
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="all">All Assets</button>
+                    <button class="tab-btn" data-tab="models">3D Models</button>
+                    <button class="tab-btn" data-tab="materials">Materials</button>
+                    <button class="tab-btn" data-tab="textures">Textures</button>
+                    <button class="tab-btn" data-tab="hdris">HDRI</button>
+                    <button class="tab-btn" data-tab="favorites">Favorites</button>
+                    <button class="tab-btn" data-tab="recent">Recent</button>
+                </div>
+                <div class="navigation-bar">
+                    <button class="nav-btn back-btn" disabled><i class="fas fa-arrow-left"></i></button>
+                    <div class="breadcrumb"></div>
+                    <div class="import-container">
+                        <button class="import-btn">
+                            <i class="fas fa-plus"></i> Import
+                        </button>
+                        <div class="import-dropdown">
+                            <button class="import-option" data-type="file">File</button>
+                            <button class="import-option" data-type="folder">Folder</button>
+                            <button class="import-option" data-type="url">From URL</button>
+                        </div>
+                        <input type="file" class="file-input" multiple accept=".glb,.gltf,.fbx,.obj,.hdr,.exr,.jpg,.jpeg,.png,.tga,.tif,.tiff,.bmp,.mtl,.mat" style="display: none;">
+                        <input type="file" class="folder-input" webkitdirectory directory multiple style="display: none;">
+                    </div>
+                </div>
+            </div>
+            <div class="assets-content">
+                <div class="assets-view grid-view active"></div>
+                <div class="assets-view list-view"></div>
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No assets found. Import some files to get started.</p>
+                </div>
+            </div>
+            <div class="asset-preview-panel">
+                <div class="preview-resize-handle-left"></div>
+                <div class="preview-header">
+                    <span class="preview-title">Asset Preview</span>
+                    <button class="close-preview-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="preview-container" style="display: none;">
+                    <canvas id="preview-canvas"></canvas>
+                </div>
+                <div class="preview-info">
+                    <h3 class="model-name">No asset selected</h3>
+                    <div class="model-stats"></div>
+                </div>
+                <div class="preview-controls">
+                    <button class="preview-btn wireframe-btn" title="Toggle Wireframe"><i class="fas fa-vector-square"></i></button>
+                    <button class="preview-btn grid-btn active" title="Toggle Grid"><i class="fas fa-border-all"></i></button>
+                    <button class="preview-btn rotate-btn active" title="Auto Rotate"><i class="fas fa-sync"></i></button>
+                    <button class="preview-btn bones-btn" title="Show Bones"><i class="fas fa-bone"></i></button>
+                    <button class="preview-btn bg-color-btn" title="Change Background"><i class="fas fa-fill-drip"></i></button>
+                </div>
+                <div class="animation-controls">
+                    <select class="animation-select"></select>
+                    <div class="animation-buttons">
+                        <button class="play-btn"><i class="fas fa-play"></i></button>
+                        <button class="pause-btn"><i class="fas fa-pause"></i></button>
+                        <button class="stop-btn"><i class="fas fa-stop"></i></button>
+                    </div>
+                    <div class="animation-timeline">
+                        <input type="range" min="0" max="100" value="0" class="timeline-slider">
+                        <div class="timeline-info">
+                            <span class="current-time">0.00s</span>
+                            <span class="total-time">0.00s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="asset-context-menu">
+                <ul>
+                    <li data-action="preview"><i class="fas fa-eye"></i> Preview</li>
+                    <li data-action="add-to-scene"><i class="fas fa-plus-circle"></i> Add to Scene</li>
+                    <li data-action="favorite"><i class="far fa-star"></i> Add to Favorites</li>
+                    <li data-action="rename"><i class="fas fa-edit"></i> Rename</li>
+                    <li data-action="duplicate"><i class="fas fa-copy"></i> Duplicate</li>
+                    <li data-action="delete"><i class="fas fa-trash"></i> Delete</li>
+                </ul>
+            </div>
+            <div class="sort-menu">
+                <ul>
+                    <li data-sort="name"><i class="fas fa-sort-alpha-down"></i> Name</li>
+                    <li data-sort="date"><i class="fas fa-clock"></i> Date</li>
+                    <li data-sort="type"><i class="fas fa-file"></i> Type</li>
+                    <li data-sort="size"><i class="fas fa-weight"></i> Size</li>
+                </ul>
+            </div>
+            <div class="drop-zone">
+                <div class="drop-zone-content">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & Drop Files or Folders Here</p>
+                </div>
+            </div>
+            <div class="import-url-dialog">
+                <div class="dialog-header">
+                    <h3>Import from URL</h3>
+                    <button class="close-dialog-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="dialog-content">
+                    <input type="text" placeholder="Enter URL..." class="url-input">
+                    <div class="url-type-selection">
+                        <label>
+                            <input type="radio" name="url-type" value="model" checked> 3D Model
+                        </label>
+                        <label>
+                            <input type="radio" name="url-type" value="hdri"> HDRI
+                        </label>
+                        <label>
+                            <input type="radio" name="url-type" value="texture"> Texture
+                        </label>
+                    </div>
+                </div>
+                <div class="dialog-footer">
+                    <button class="cancel-url-btn">Cancel</button>
+                    <button class="import-url-btn">Import</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Add to DOM (directly to body)
+    document.body.insertAdjacentHTML('beforeend', assetsPanelHTML);
+    const assetsPanelElement = document.querySelector('.assets-panel');
+    if (assetsPanelElement) {
+        // Call the resize setup for the preview panel
+        initializePreviewPanelResize(assetsPanelElement);
+
+        // --- IMPORTANT: Ensure your logic for showing/hiding the preview panel ---
+        // --- TOGGLES the 'visible-preview' class on '.asset-preview-panel' ---
+        // --- AND also sets assetsContent.style.marginRight appropriately.   ---
+        // Example:
+        const closePreviewBtn = assetsPanelElement.querySelector('.close-preview-btn');
+        const previewPanel = assetsPanelElement.querySelector('.asset-preview-panel');
+        const assetsContent = assetsPanelElement.querySelector('.assets-content');
+
+        // Dummy function to simulate opening preview (replace with your actual logic)
+        function openPreviewPanel() { // Call this when an asset is clicked for preview
+            previewPanel.classList.add('visible-preview');
+            if (assetsContent) {
+                assetsContent.style.marginRight = `${previewPanel.offsetWidth}px`;
+                assetsContent.classList.add('with-preview-open');
+            }
+        }
+
+        if (closePreviewBtn && previewPanel && assetsContent) {
+            closePreviewBtn.addEventListener('click', () => {
+                previewPanel.classList.remove('visible-preview');
+                // Optionally, reset width to default when closing
+                // previewPanel.style.width = '35%'; // Or whatever your default is
+                if (assetsContent) {
+                    assetsContent.style.marginRight = '0px';
+                    assetsContent.classList.remove('with-preview-open');
+                }
+            });
+        }
+        
+        // Example of how to trigger open (you'll integrate this with your asset click logic)
+        // setTimeout(openPreviewPanel, 2000); // For testing
+    }
+
+    // Add to DOM
+    //document.querySelector('.viewport').insertAdjacentHTML('beforeend', assetsPanel);
+    /*const viewportElement = document.querySelector('.viewport');
+    if (viewportElement) {
+       viewportElement.insertAdjacentHTML('beforeend', assetsPanel);
+    } else {
+       console.error("'.viewport' element not found. Assets panel cannot be added.");
+       return; // Exit if viewport isn't there
+        }*/
+        // Add styles
+       const styles = `
+       
+        :root { /* Define these if not already globally available from assets-panel.css */
+            --primary-bg: #2a2a2a;
+            --border-color: #3a3a3a;
+            --text-primary: #e0e0e0;
+        }
+
+        .assets-panel {
+            position: fixed; /* Fixed position relative to the viewport */
+            left: 20%;       /* 20% space on the left */
+            bottom: 0;       /* Aligned to the bottom */
+            width: 60%;      /* Takes the remaining 80% width */
+            
+            z-index: 1;   /* Ensure it's on top of other content */
+            min-height: 100px; /* Minimum height of the panel */
+            max-height: 70vh;  /* Maximum height (e.g., 60% of viewport height) */
+                               /* Adjust as needed, e.g., 400px, 50%, etc. */
+            background: var(--primary-bg, #2a2a2a);
+            border-top: 1px solid var(--border-color, #3a3a3a);
+            display: flex;
+            flex-direction: column;
+            
+            /* Initial state: hidden by translating it 100% of its own height downwards */
+            transform: translateY(100%); 
+            transition: transform 0.3s ease-in-out; /* Smooth slide animation */
+            
+            color: var(--text-primary, #e0e0e0);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .assets-panel.visible {
+            transform: translateY(0);
+        }
+
+        .resize-handle {
+            position: absolute;
+            top: -2px; /* Position slightly above to grab border easier */
+            left: 0;
+            width: 100%;
+            height: 5px;
+            /* background: #777; /* For debugging handle position */
+            cursor: ns-resize; /* Vertical resize cursor */
+            z-index: 3; /* Above the panel itself */
+        }
+       
+      
         `;
         
         const styleSheet = document.createElement('style');
+        styleSheet.id = 'assets-panel-dynamic-styles';
         styleSheet.textContent = styles;
         document.head.appendChild(styleSheet);
     }
@@ -284,6 +487,7 @@ setupEventListeners() {
             this.switchView(view);
         });
     });
+
 
     // Sort menu
     const sortBtn = document.querySelector('.sort-btn');
@@ -1285,7 +1489,7 @@ cleanupPreview() {
 
 
 // In your AssetsPanel class
-loadModel(file) {
+/*loadModel(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = async (event) => {
@@ -1346,7 +1550,116 @@ loadModel(file) {
         };
         reader.readAsArrayBuffer(file);
     });
-}
+}*/
+
+    loadModel(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const buffer = event.target.result;
+                const url = URL.createObjectURL(new Blob([buffer]));
+                const extension = file.name.split('.').pop().toLowerCase();
+
+                try {
+                    let object;
+                    const progressCallback = (xhr) => {
+                        const percent = Math.round((xhr.loaded / xhr.total) * 100);
+                        console.log(`Loading ${file.name}: ${percent}%`);
+                    };
+                    const errorCallback = (error) => {
+                        console.error(`Error loading model ${file.name}:`, error);
+                        this.showErrorNotification(`Failed to load ${file.name}`);
+                        reject(error);
+                    };
+
+                    switch (extension) {
+                        case 'fbx':
+                            object = await new Promise((resolveLoader) => {
+                                this.fbxLoader.load(url, (obj) => {
+                                    obj.scale.set(0.01, 0.01, 0.01);
+                                    resolveLoader(obj);
+                                }, progressCallback, errorCallback);
+                            });
+                            break;
+                        case 'obj': // OBJ files typically don't contain skeleton/bone information
+                            object = await new Promise((resolveLoader) => {
+                                this.objLoader.load(url, (obj) => resolveLoader(obj), progressCallback, errorCallback);
+                            });
+                            console.warn("OBJ format does not typically support bones. SkeletonHelper might not be applicable.");
+                            break;
+                        case 'glb':
+                        case 'gltf':
+                            object = await new Promise((resolveLoader) => {
+                                this.gltfLoader.load(url, (gltf) => resolveLoader(gltf.scene || gltf), progressCallback, errorCallback);
+                            });
+                            break;
+                        default:
+                            throw new Error(`Unsupported file format: ${extension}`);
+                    }
+
+                    // Create preview before adding skeleton helpers to the main object
+                    const previewObject = object.clone(); // Cloning before modifications for skeleton
+                    this.createModelPreview(previewObject, file.name);
+
+                    // Process the main model (adds it to the scene, etc.)
+                    this.processModel(object, file.name, object.animations || []);
+
+                    // --- BONE DISPLAY LOGIC ---
+                    // Clear previous helpers if any (optional, depends on your app structure)
+                    // this.skeletonHelpers.forEach(helper => this.scene.remove(helper));
+                    // this.skeletonHelpers = [];
+
+                    let hasSkinnedMesh = false;
+                    object.traverse((child) => {
+                        if (child.isSkinnedMesh) {
+                            hasSkinnedMesh = true;
+                            console.log("Found SkinnedMesh:", child.name || "Unnamed SkinnedMesh");
+
+                            // Create SkeletonHelper for this SkinnedMesh
+                            const skeletonHelper = new THREE.SkeletonHelper(child);
+                            // You might want to make the lines more visible
+                            // skeletonHelper.material.linewidth = 2; // Note: linewidth > 1 only works on some platforms with ANGLE / specific WebGL implementations
+
+                            if (this.scene) {
+                                this.scene.add(skeletonHelper);
+                                // If you want to manage helpers (e.g., to toggle visibility later)
+                                if (this.skeletonHelpers) { // Check if the array exists
+                                     this.skeletonHelpers.push(skeletonHelper);
+                                }
+                                console.log("Added SkeletonHelper to the scene.");
+                            } else {
+                                console.warn("SkeletonHelper created, but 'this.scene' is not defined. Helper not added.");
+                            }
+                        }
+                    });
+
+                    if (hasSkinnedMesh) {
+                        console.log(`Model ${file.name} has bones, SkeletonHelper(s) potentially added.`);
+                    } else {
+                        console.log(`Model ${file.name} does not appear to have SkinnedMesh components. No SkeletonHelper added.`);
+                    }
+                    // --- END BONE DISPLAY LOGIC ---
+
+                    resolve(object);
+
+                } catch (error) {
+                    console.error('Error processing model:', error);
+                    this.showErrorNotification(`Failed to load model: ${error.message}`);
+                    reject(error);
+                } finally {
+                    URL.revokeObjectURL(url);
+                }
+            };
+            reader.onerror = (error) => {
+                console.error('Error reading file:', error);
+                this.showErrorNotification('Failed to read file');
+                reject(error);
+            };
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+
 
 compressAsset(asset) {
     if (asset.type === 'model') {
@@ -2034,6 +2347,7 @@ loadTexture(file) {
             const url = event.target.result;
             this.textureLoader.load(url, (texture) => {
                 texture.needsUpdate = true;
+                texture.encoding = THREE.sRGBEncoding;
                 console.log('Loaded texture:', texture); // Debug
                 const asset = {
                     id: this.generateAssetId(),
@@ -3701,9 +4015,92 @@ addAssetToScene(object) {
 // Initialize the assets panel
 const assetsPanel = new AssetsPanel(scene, renderer);
 // Add toggle function to your existing toolbar button
-function toggleAssetsPanel() {
+/*function toggleAssetsPanel() {
     document.querySelector('.assets-panel').classList.toggle('visible');
+}*/
+
+// Make sure this function is in the global scope or accessible
+// where your button's onclick can find it.
+function toggleAssetsPanel() {
+    const panel = document.querySelector('.assets-panel');
+    if (panel) {
+        panel.classList.toggle('visible');
+    } else {
+        console.error("Assets panel element not found. Was initializeUI() called?");
+    }
 }
+
+function initializePreviewPanelResize(assetsPanelElement) {
+    const previewPanel = assetsPanelElement.querySelector('.asset-preview-panel');
+    const resizeHandle = previewPanel.querySelector('.preview-resize-handle-left');
+    const assetsContent = assetsPanelElement.querySelector('.assets-content'); // Area to the left
+
+    if (!previewPanel || !resizeHandle) {
+        console.warn("Preview panel or its resize handle not found.");
+        return;
+    }
+
+    let isResizingPreview = false;
+    let startXPreview;
+    let startWidthPreview;
+
+    resizeHandle.addEventListener('mousedown', (e) => {
+        // Only start resize if the preview panel is currently "visible" (slid in)
+        // We'll check this by seeing if it has the 'visible-preview' class
+        if (!previewPanel.classList.contains('visible-preview')) {
+            return;
+        }
+
+        e.preventDefault(); // Prevent text selection during drag
+        isResizingPreview = true;
+        startXPreview = e.clientX;
+        startWidthPreview = previewPanel.offsetWidth;
+
+        // Temporarily disable transitions on the panel for smoother live resizing
+        previewPanel.style.transition = 'none';
+        if (assetsContent) {
+            assetsContent.style.transition = 'none'; // If also transitioning margin
+        }
+
+        document.addEventListener('mousemove', onMouseMovePreview);
+        document.addEventListener('mouseup', onMouseUpPreview);
+    });
+
+    function onMouseMovePreview(e) {
+        if (!isResizingPreview) return;
+
+        const dx = e.clientX - startXPreview;
+        let newWidth = startWidthPreview - dx; // Dragging left (e.clientX < startXPreview) increases width
+
+        // Define min/max widths for the preview panel (e.g., in pixels or as % of parent)
+        const minPanelWidth = 200; // pixels
+        const maxPanelWidth = assetsPanelElement.offsetWidth * 0.7; // 70% of the main assets panel
+
+        newWidth = Math.max(minPanelWidth, Math.min(newWidth, maxPanelWidth));
+        previewPanel.style.width = `${newWidth}px`;
+
+        // If assets-content should shrink to make space for the preview panel:
+        if (assetsContent && previewPanel.classList.contains('visible-preview')) {
+            assetsContent.style.marginRight = `${newWidth}px`;
+            assetsContent.classList.add('with-preview-open');
+        }
+    }
+
+    function onMouseUpPreview() {
+        if (!isResizingPreview) return;
+        isResizingPreview = false;
+
+        document.removeEventListener('mousemove', onMouseMovePreview);
+        document.removeEventListener('mouseup', onMouseUpPreview);
+
+        // Restore transitions
+        previewPanel.style.transition = 'transform 0.3s ease-in-out, width 0.3s ease-in-out';
+        if (assetsContent) {
+            assetsContent.style.transition = 'margin-right 0.3s ease-in-out'; // Or original transition
+        }
+    }
+}
+
 
 
 function visualizeBones(model) {
