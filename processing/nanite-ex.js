@@ -1,3 +1,4 @@
+
 //Global variables
 let helperUpdateTimeout = null;
 let lastHelperUpdateTime = 0;
@@ -26,11 +27,33 @@ const ARCH_ELEMENT_TAG = 'ArchitecturalElement';
 let wallPoints = [];
 let wallPreviewLine = null;
 
+let fullWallPath = null; // Added for complete path visualization
+let isWallToolActive = false;
+
 let placementTargetObject = null; // The object (e.g., wall segment) the door/window is being placed on
 let currentPlacementPosition = null; // Vector3 for the current valid placement point for helper
 let currentPlacementNormal = null; // Vector3 for the normal of the surface at placement
 
 let activeArchTool = null;
+let booleanTargetMesh = null; // NEW: Stores the first selected mesh for boolean
+let booleanToolMesh = null;   // NEW: Stores the second selected mesh
+
+//
+ let roofPoints = [];
+let roofPreviewMesh = null; // For visualizing the roof shape during creation
+
+let roomStartPoint = null;
+let roomEndPoint = null;
+let roomPreviewMesh = null;
+
+let curvedWallPoints = []; // For 3-point curve (start, control, end)
+let curvedWallPreviewLine = null;
+
+let terrainPreviewMesh = null;
+
+let isLoopCutMode = false;
+let loopCutPreviewLine = null; // A THREE.Line for preview
+const LOOP_CUT_PREVIEW_COLOR = 0x00FFFF;
 // Add others as needed...
 function getEdgeKey(v1, v2) {
     // Ensure consistent order for the key (smaller index first)
@@ -167,122 +190,119 @@ function buildVertexFaceMap(geometry) {
 
 
 // ** Placeholder: findEdgeLoop still needs proper graph traversal implementation **
-
-function findEdgeLoop(geometry, startEdgeIndices, edgeFaceMap, vertexEdgeMap) {
-    console.log("Attempting to find edge loop from start edge:", startEdgeIndices);
-    if (!geometry || !geometry.index || !startEdgeIndices || !edgeFaceMap || !vertexEdgeMap) {
+function findEdgeLoop(geometry, startEdgeIndices, edgeFaceMap, vertexEdgeMap, vertexFaceMap) {
+    if (!geometry || !geometry.index || !startEdgeIndices || !edgeFaceMap || !vertexEdgeMap || !vertexFaceMap) {
         console.warn("findEdgeLoop: Missing required parameters.");
         return startEdgeIndices ? [startEdgeIndices] : [];
     }
 
-    const loop = []; // Stores edge segments as [v1, v2]
+    const positions = geometry.attributes.position;
+    const indices = geometry.index.array;
+    const loop = [];
     const visitedEdges = new Set();
 
-    // --- Function to find the 'next' edge in a potential loop ---
-    const findNextEdge = (currentEdge, currentV, previousV) => {
-        const incidentEdgesToCurrentV = vertexEdgeMap.get(currentV);
-        if (!incidentEdgesToCurrentV || incidentEdgesToCurrentV.size < 2) return null; // Dead end
-
-        const facesOnCurrentEdge = edgeFaceMap.get(getEdgeKey(previousV, currentV)) || [];
-        if (facesOnCurrentEdge.length === 0) return null; // Boundary edge, can't loop easily
-
-        let bestCandidateEdge = null;
-        let maxSharedFaces = -1;
-
-        for (const edgeKey of incidentEdgesToCurrentV) {
-            if (visitedEdges.has(edgeKey)) continue; // Already part of the loop path
-
-            const [vA, vB] = edgeKey.split('_').map(Number);
-            const nextV = (vA === currentV) ? vB : vA;
-            if (nextV === previousV) continue; // Don't go immediately back
-
-            const facesOnCandidateEdge = edgeFaceMap.get(edgeKey) || [];
-            if (facesOnCandidateEdge.length === 0) continue; // Don't follow boundary edges out
-
-            // Heuristic: In a quad loop, the current edge and the next loop edge should
-            // ideally share exactly ONE face between them.
-            let sharedFaceCount = 0;
-            let commonFaceIndex = -1;
-            for(const f1 of facesOnCurrentEdge) {
-                if (facesOnCandidateEdge.includes(f1)) {
-                    sharedFaceCount++;
-                    commonFaceIndex = f1;
-                }
-            }
-            
-            // Prioritize edges that share exactly one face (typical for quad strips)
-            if (sharedFaceCount === 1) {
-                 // This is a likely candidate for continuing the loop
-                 bestCandidateEdge = [currentV, nextV];
-                 break; // Take the first good candidate found this way
-            }
-            // Fallback: Consider edges sharing more faces? Less likely for loops.
-             // if (sharedFaceCount > maxSharedFaces) {
-             //    maxSharedFaces = sharedFaceCount;
-             //    bestCandidateEdge = [currentV, nextV];
-             // }
-        }
-        return bestCandidateEdge;
+    const getOtherVerticesInFace = (faceIndex, edgeV1, edgeV2) => {
+        const faceVerts = [indices[faceIndex * 3], indices[faceIndex * 3 + 1], indices[faceIndex * 3 + 2]];
+        return faceVerts.filter(v => v !== edgeV1 && v !== edgeV2);
     };
 
+    // Function to find the next edge in the loop from a given vertex, exiting an edge
+    const findNextEdgeInLoop = (currentV, prevVOfEdge, currentEdgeKey) => {
+        const facesOnCurrentEdge = edgeFaceMap.get(currentEdgeKey);
+        if (!facesOnCurrentEdge || facesOnCurrentEdge.length === 0) return null; // Boundary or error
+
+        let bestNextEdge = null;
+
+        // Iterate through faces adjacent to the current edge
+        for (const faceIndex of facesOnCurrentEdge) {
+            const otherVertsInFace = getOtherVerticesInFace(faceIndex, currentV, prevVOfEdge);
+            if (otherVertsInFace.length !== 1) continue; // Should be a triangle if edge is (currentV, prevVOfEdge)
+            const oppositeV = otherVertsInFace[0];
+
+            // We are looking for an edge connected to 'currentV' that is NOT currentEdgeKey
+            // and ideally forms a quad-like flow with (prevVOfEdge, oppositeV)
+            // This means the "next" edge should share a face with (currentV, oppositeV)
+
+            const edgesFromCurrentV = vertexEdgeMap.get(currentV);
+            if (!edgesFromCurrentV) continue;
+
+            for (const candidateEdgeKey of edgesFromCurrentV) {
+                if (candidateEdgeKey === currentEdgeKey || visitedEdges.has(candidateEdgeKey)) continue;
+
+                const [vC1, vC2] = candidateEdgeKey.split('_').map(Number);
+                const nextVInLoop = (vC1 === currentV) ? vC2 : vC1;
+
+                // Check if candidateEdgeKey and edge (currentV, oppositeV) share a face
+                // (excluding the current faceIndex we are analyzing)
+                const facesOnCandidateEdge = edgeFaceMap.get(candidateEdgeKey);
+                const facesOnOppositeConnectingEdge = edgeFaceMap.get(getEdgeKey(currentV, oppositeV));
+
+                if (!facesOnCandidateEdge || !facesOnOppositeConnectingEdge) continue;
+
+                for (const f1 of facesOnCandidateEdge) {
+                    if (f1 !== faceIndex && facesOnOppositeConnectingEdge.includes(f1)) {
+                        // This candidate edge shares a face with the "opposite connecting edge"
+                        // This is a good sign of quad flow.
+                        bestNextEdge = [currentV, nextVInLoop]; // Edge is (currentV, nextVInLoop)
+                        return bestNextEdge; // Take the first promising one
+                    }
+                }
+            }
+        }
+        // Fallback: If no clear quad flow, try a simpler "turn" (less robust)
+        // This part needs more advanced heuristics for non-quads.
+        // For now, we'll stick to the quad-flow-like search.
+        return null;
+    };
+
+
     // --- Traversal ---
-    let forwardEdge = startEdgeIndices;
-    let backwardEdge = [startEdgeIndices[1], startEdgeIndices[0]]; // Reverse for backward traversal
+    loop.push(startEdgeIndices);
+    visitedEdges.add(getEdgeKey(startEdgeIndices[0], startEdgeIndices[1]));
 
-    loop.push(forwardEdge);
-    visitedEdges.add(getEdgeKey(forwardEdge[0], forwardEdge[1]));
-
-    // Traverse forward
-    let currentV_fwd = forwardEdge[1];
-    let previousV_fwd = forwardEdge[0];
-    for (let i = 0; i < geometry.attributes.position.count; i++) { // Safety break
-        const nextEdge = findNextEdge(forwardEdge, currentV_fwd, previousV_fwd);
+    // Traverse one direction
+    let currentEdgeArr = startEdgeIndices;
+    for (let i = 0; i < positions.count; i++) { // Safety break
+        const nextEdge = findNextEdgeInLoop(currentEdgeArr[1], currentEdgeArr[0], getEdgeKey(currentEdgeArr[0], currentEdgeArr[1]));
         if (nextEdge && !visitedEdges.has(getEdgeKey(nextEdge[0], nextEdge[1]))) {
+            if (nextEdge[1] === startEdgeIndices[0]) { // Closed loop
+                loop.push(nextEdge);
+                visitedEdges.add(getEdgeKey(nextEdge[0], nextEdge[1]));
+                console.log("Loop closed forward.");
+                return loop;
+            }
             loop.push(nextEdge);
             visitedEdges.add(getEdgeKey(nextEdge[0], nextEdge[1]));
-            previousV_fwd = nextEdge[0];
-            currentV_fwd = nextEdge[1];
-            forwardEdge = nextEdge;
-             if (currentV_fwd === startEdgeIndices[0]) { // Closed loop forward
-                 console.log("Loop closed forward.");
-                 return loop;
-             }
+            currentEdgeArr = nextEdge;
         } else {
-            break; // Stop forward traversal
+            break;
         }
     }
 
-    // Traverse backward from start edge
-    let currentV_bwd = backwardEdge[1]; // == startEdgeIndices[0]
-    let previousV_bwd = backwardEdge[0]; // == startEdgeIndices[1]
-     for (let i = 0; i < geometry.attributes.position.count; i++) { // Safety break
-         const nextEdge = findNextEdge(backwardEdge, currentV_bwd, previousV_bwd);
-         if (nextEdge && !visitedEdges.has(getEdgeKey(nextEdge[0], nextEdge[1]))) {
-             loop.unshift(nextEdge); // Add to the beginning of the loop array
-             visitedEdges.add(getEdgeKey(nextEdge[0], nextEdge[1]));
-             previousV_bwd = nextEdge[0];
-             currentV_bwd = nextEdge[1];
-             backwardEdge = nextEdge;
-             if (currentV_bwd === currentV_fwd) { // Backward met Forward, loop closed
-                 console.log("Loop closed backward meeting forward.");
-                 // Remove the duplicate starting edge if backward meets forward non-start
-                 if (loop.length > 1 && getEdgeKey(loop[0][0], loop[0][1]) === getEdgeKey(loop[loop.length-1][0], loop[loop.length-1][1])) {
-                     // This condition seems wrong. Check if start vertex of first edge == end vertex of last edge.
-                 }
-                 // A better check: Did currentV_bwd reach the end of the forward path (currentV_fwd)?
-                  return loop;
-             }
-         } else {
-             break; // Stop backward traversal
-         }
+    // Traverse other direction from start
+    currentEdgeArr = [startEdgeIndices[1], startEdgeIndices[0]]; // Reversed start edge
+    for (let i = 0; i < positions.count; i++) { // Safety break
+        const nextEdge = findNextEdgeInLoop(currentEdgeArr[1], currentEdgeArr[0], getEdgeKey(currentEdgeArr[0], currentEdgeArr[1]));
+        if (nextEdge && !visitedEdges.has(getEdgeKey(nextEdge[0], nextEdge[1]))) {
+            if (nextEdge[1] === loop[loop.length - 1][1]) { // Met the end of the forward path
+                loop.unshift(nextEdge); // Add to beginning
+                visitedEdges.add(getEdgeKey(nextEdge[0], nextEdge[1]));
+                console.log("Loop closed by meeting forward path.");
+                return loop;
+            }
+            loop.unshift(nextEdge);
+            visitedEdges.add(getEdgeKey(nextEdge[0], nextEdge[1]));
+            currentEdgeArr = nextEdge;
+        } else {
+            break;
+        }
     }
 
-    console.log("Found loop segment count:", loop.length);
+    console.log("Found loop segments:", loop.length, loop);
     if (loop.length <= 1 && startEdgeIndices) {
-        console.warn("findEdgeLoop did not find a loop path, returning start edge.");
-        return [startEdgeIndices]; // Fallback
+         // console.warn("findEdgeLoop did not find a loop path beyond the start edge.");
     }
-    return loop;
+    return loop; // Might be an open loop if it hits a boundary or complex pole
 }
 
 /** Utility to find the intersection point on the ground plane (Y=0). */
@@ -412,7 +432,7 @@ function selectAllArchElementsByType(type) { // type can be 'wall', 'door', 'win
 // === Central Event Handlers & Tool Routing ===
 // ============================================
 
-function handleCanvasClick(event) {
+/*function handleCanvasClick(event) {
     if (isTransforming) return; // Don't select if gizmo is active
 
     const rect = renderer.domElement.getBoundingClientRect();
@@ -467,9 +487,187 @@ function handleCanvasClick(event) {
             onModelingClick(event); // Original modeling selection
         }
     }
+}*/
+
+function handleCanvasClick(event) {
+    if (isTransforming) return;
+
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+    // --- NEW: Delegate to Structure Synth Tool if active ---
+    if (structureSynthToolActive) {
+        const intersection = getGroundPlaneIntersection(); // Or more complex intersection logic
+        let firstIntersectedObject = null;
+        const allIntersects = raycaster.intersectObjects(scene.children, true); // Check all scene objects
+        if (allIntersects.length > 0) {
+             // Find the first visible, non-helper mesh
+            for (let i = 0; i < allIntersects.length; i++) {
+                if (allIntersects[i].object.isMesh && allIntersects[i].object.visible &&
+                    !allIntersects[i].object.name.includes("Helper") && // Exclude your helper objects
+                    allIntersects[i].object !== synthPreviewLine &&
+                    allIntersects[i].object !== synthExtrudePreviewMesh) {
+                    firstIntersectedObject = allIntersects[i]; // Store the full intersection object
+                    break;
+                }
+            }
+        }
+        handleSynthClick(event, intersection, firstIntersectedObject);
+        return; // Synth tool handles the click
+    }
+    // --- END NEW ---
+
+      if (activeArchTool === 'boolean-subtract') { // Handle boolean tool clicks specifically
+        const intersects = raycaster.intersectObjects(architecturalElements, false); // Intersect only arch elements
+        if (intersects.length > 0) {
+            let clickedMesh = null;
+            // Find the root architectural mesh if clicking a child of a Group
+            for (let i = 0; i < intersects.length; i++) {
+                let obj = intersects[i].object;
+                while (obj && !obj.userData.isArchitectural && obj.parent !== scene) {
+                    obj = obj.parent;
+                }
+                if (obj && obj.userData.isArchitectural && obj.isMesh) { // Ensure it's a mesh
+                    clickedMesh = obj;
+                    break;
+                }
+            }
+
+            if (clickedMesh) {
+                if (!booleanTargetMesh) {
+                    booleanTargetMesh = clickedMesh;
+                    deselectAllArchElements(); // Clear previous
+                    selectArchElement(booleanTargetMesh); // Highlight it
+                    alert("Boolean Subtract: Target mesh selected (" + (booleanTargetMesh.name || "Unnamed Mesh") + ").\nNow click the second mesh (the one to subtract).");
+                    console.log("Boolean Subtract: Target selected:", booleanTargetMesh.name || booleanTargetMesh.uuid);
+                } else if (!booleanToolMesh && clickedMesh !== booleanTargetMesh) {
+                    booleanToolMesh = clickedMesh;
+                    // No need to deselect target, keep it highlighted. Highlight tool additively.
+                    selectArchElement(booleanToolMesh, true); // Additive select for visual cue
+                    alert("Boolean Subtract: Tool mesh selected (" + (booleanToolMesh.name || "Unnamed Mesh") + "). Performing operation...");
+                    console.log("Boolean Subtract: Tool selected:", booleanToolMesh.name || booleanToolMesh.uuid);
+                    applyBooleanSubtract(booleanTargetMesh, booleanToolMesh); // Execute the operation
+                    deactivateCurrentArchTool(); // Deactivate after operation
+                } else if (clickedMesh === booleanTargetMesh) {
+                    alert("This mesh is already selected as the target. Click a DIFFERENT mesh as the tool.");
+                }
+            }
+        }
+        return; // Boolean tool click handled
+    }
+
+    if (activeArchTool) {
+        switch (activeArchTool) {
+            case 'wall':    handleWallCreationPoint(event); break;
+            case 'door':
+            case 'window':  handlePlaceObjectConfirm(event); break;
+            case 'measure': handleMeasurePoint(event); break;
+            case 'stairs':  handleStairPlacement(event); break;
+            case 'roof':    handleRoofPlacementPoint(event); break; // NEW
+            case 'room':    handleRoomPlacementPoint(event); break; // NEW
+            case 'curved-wall': handleCurvedWallPlacementPoint(event); break; // NEW
+            case 'terrain': handleTerrainPlacement(event); break; // NEW
+            default: console.warn("Unhandled Arch Tool click:", activeArchTool);
+        }
+        return;
+    }
+    if (!isModelingMode || (isModelingMode && !activeArchTool && !isLoopCutMode && !splineCreationMode)) {
+        const intersects = raycaster.intersectObjects(architecturalElements, false);
+        if (intersects.length > 0) {
+            let clickedElement = null; // Logic to find the root architectural element
+             for (let i = 0; i < intersects.length; i++) {
+                let obj = intersects[i].object;
+                while(obj && !obj.userData.isArchitectural && obj.parent !== scene) {
+                    obj = obj.parent;
+                }
+                if (obj && obj.userData.isArchitectural) {
+                    clickedElement = obj;
+                    break;
+                }
+            }
+
+            if (clickedElement) {
+                const isAdditive = event.shiftKey;
+                if (selectedArchElements.includes(clickedElement) && isAdditive) {
+                    deselectArchElement(clickedElement);
+                } else {
+                    selectArchElement(clickedElement, isAdditive);
+                }
+                return;
+            }
+        } else {
+            if (!event.shiftKey) {
+                 deselectAllArchElements();
+            }
+        }
+    }
+
+
+    // Fallback to modeling mode selection if applicable
+    if (isModelingMode) {
+        if (isLoopCutMode) {
+            // Loop cut click is handled by its own internal listener
+        } else if (splineCreationMode) {
+            handleSplineDrawClick(event);
+        } else if (!isTransforming) { // Ensure not transforming modeling elements
+            onModelingClick(event); // Original modeling selection
+        }
+    }
 }
 
 function handleCanvasMouseMove(event) {
+    if (!isModelingMode && !activeArchTool && !isLoopCutMode && !splineCreationMode) return; // Adjusted condition
+
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+      // --- NEW: Delegate to Structure Synth Tool if active ---
+    if (structureSynthToolActive) {
+        const intersection = getGroundPlaneIntersection(); // Or more complex intersection logic
+        let firstIntersectedObject = null;
+        const allIntersects = raycaster.intersectObjects(scene.children, true);
+        if (allIntersects.length > 0) {
+             for (let i = 0; i < allIntersects.length; i++) {
+                if (allIntersects[i].object.isMesh && allIntersects[i].object.visible &&
+                    !allIntersects[i].object.name.includes("Helper") &&
+                    allIntersects[i].object !== synthPreviewLine &&
+                    allIntersects[i].object !== synthExtrudePreviewMesh) {
+                    firstIntersectedObject = allIntersects[i];
+                    break;
+                }
+            }
+        }
+        handleSynthMouseMove(event, intersection, firstIntersectedObject);
+        return; // Synth tool handles mouse move
+    }
+    // --- END NEW ---
+
+    if (activeArchTool) {
+        switch (activeArchTool) {
+            case 'wall':    handleWallPreview(event); break;
+            case 'door':
+            case 'window':  handlePlaceObjectPreview(event); break;
+            case 'measure': handleMeasurePreview(event); break;
+            case 'stairs':  handleStairsPreview(event); break;
+            case 'roof':    handleRoofPreview(event); break; // NEW
+            case 'room':    handleRoomPreview(event); break; // NEW
+            case 'curved-wall': handleCurvedWallPreview(event); break; // NEW
+            case 'terrain': handleTerrainPreview(event); break; // NEW
+        }
+    } else if (isLoopCutMode) {
+        handleLoopCutPreviewInternal(event);
+    } else if (splineCreationMode) {
+        handleSplineDrawMove(event);
+    } else if (isModelingMode) {
+        onModelingMouseMove(event);
+    }
+}
+
+/*function handleCanvasMouseMove(event) {
     if (!isModelingMode && !activeArchTool && !isLoopCutMode && !splineCreationMode) return; // Only update if a tool or mode is active
 
     const rect = renderer.domElement.getBoundingClientRect();
@@ -492,10 +690,53 @@ function handleCanvasMouseMove(event) {
     } else if (isModelingMode) { // Only call modeling mouse move if no other tool is active
         onModelingMouseMove(event); // This is the debounced one for V/E/F highlights
     }
-}
-
+}*/
 
 function handleCanvasRightClick(event) {
+    event.preventDefault();
+
+     // --- NEW: Delegate to Structure Synth Tool if active ---
+    if (structureSynthToolActive) {
+        handleSynthRightClick(event);
+        return; // Synth tool handles right click
+    }
+
+    if (activeArchTool) {
+        if (activeArchTool === 'wall' && wallPoints.length > 0) {
+            finishWall();
+        } else if (activeArchTool === 'roof' && roofPoints.length > 0) { // NEW
+            createRoof(); // Finish roof creation
+        } else if (activeArchTool === 'curved-wall' && curvedWallPoints.length > 0) { // NEW
+            if (curvedWallPoints.length < 3) { // Not enough points, so cancel
+                deactivateCurrentArchTool();
+            } else {
+                createCurvedWall(); // Finish curved wall if 3 points are set
+            }
+        }
+        // For room and terrain, right-click usually cancels the current operation
+        // If room points are 0 or 1, or terrain not placed, just deactivate.
+        else {
+            deactivateCurrentArchTool();
+        }
+    } else if (isLoopCutMode) {
+        cancelLoopCut();
+    } else if (splineCreationMode) {
+        finishSplineDrawing();
+    } else {
+        if (isModelingMode && selectedElements.length > 0) {
+            clearSelection();
+        }
+        if (selectedArchElements.length > 0) {
+            deselectAllArchElements();
+        }
+        if (!isModelingMode && selectedArchElements.length === 0 && selectedElements.length === 0){
+            // If nothing is selected and not in modeling mode, perhaps a context menu could open here in the future.
+            console.log("Right-click: No active tool, no selections.");
+        }
+    }
+}
+
+/*function handleCanvasRightClick(event) {
     event.preventDefault();
 
     if (activeArchTool) {
@@ -520,7 +761,7 @@ function handleCanvasRightClick(event) {
             console.log("Right-click: No active tool, no selections.");
         }
     }
-}
+}*/
 
 
 // ===========================================
@@ -528,17 +769,62 @@ function handleCanvasRightClick(event) {
 // ===========================================
 
 /** Activates or deactivates an Architecture tool */
+/*
 function toggleArchTool(toolName) {
-    if (!isModelingMode) return;
+    cleanupStructureSynthTool();
+    if (!isModelingMode) return; // Or remove this if arch tools can be used outside modeling mode
+
     const toolOptionsElement = document.getElementById(`${toolName}-options`);
     const toolButton = document.getElementById(`tool-${toolName}`);
 
     if (activeArchTool === toolName) {
         deactivateCurrentArchTool();
     } else {
-        deactivateCurrentArchTool();
+        deactivateCurrentArchTool(); // Deactivate any previous tool
         activeArchTool = toolName;
-        console.log(`Activated tool: ${activeArchTool}`);
+        console.log(`Activated Arch tool: ${activeArchTool}`);
+
+        // Highlight active button
+        document.querySelectorAll('.arch-tool.active-tool').forEach(btn => btn.classList.remove('active-tool'));
+        if (toolButton) toolButton.classList.add('active-tool');
+
+        // Show/hide options panels
+        document.querySelectorAll('.tool-options').forEach(el => el.style.display = 'none');
+        if (toolOptionsElement) toolOptionsElement.style.display = 'block';
+
+        // Initialize the specific tool
+        switch (toolName) {
+            case 'wall':    initWallTool(); break;
+            case 'door':    initPlacementTool('door'); break;
+            case 'window':  initPlacementTool('window'); break; // Window tool will check for currentWindowPreset
+            case 'measure': initMeasureTool(); break;
+            case 'stairs':  initStairsTool(); break;
+            case 'roof':    initRoofTool(); break; // NEW
+            case 'room':    initRoomTool(); break; // NEW
+            case 'curved-wall': initCurvedWallTool(); break; // NEW
+            case 'terrain': initTerrainTool(); break; // NEW
+            // 'window-presets' is handled directly in its event listener, not via toggleArchTool
+        }
+
+        if (controls) controls.enabled = false; // Disable orbit controls when a tool is active
+        transformControls.detach();
+        clearSelection(); // Clear modeling V/E/F selection
+        deselectAllArchElements(); // Clear architectural element selection
+    }
+}*/
+
+function toggleArchTool(toolName) {
+    cleanupStructureSynthTool(); // Deactivate synth tool if an arch tool is chosen
+
+    const toolOptionsElement = document.getElementById(`${toolName}-options`);
+    const toolButton = document.getElementById(`tool-${toolName}`);
+
+    if (activeArchTool === toolName) {
+        deactivateCurrentArchTool(); // This will also call cleanupBooleanToolState()
+    } else {
+        deactivateCurrentArchTool(); // Deactivate any previous tool
+        activeArchTool = toolName;
+        console.log(`Activated Arch tool: ${activeArchTool}`);
 
         document.querySelectorAll('.arch-tool.active-tool').forEach(btn => btn.classList.remove('active-tool'));
         if (toolButton) toolButton.classList.add('active-tool');
@@ -548,21 +834,43 @@ function toggleArchTool(toolName) {
 
         switch (toolName) {
             case 'wall':    initWallTool(); break;
-            case 'door':    initPlacementTool('door'); break;
-            case 'window':  initPlacementTool('window'); break;
+              case 'door':    initPlacementTool('door'); break;
+            case 'window':  initPlacementTool('window'); break; // Window tool will check for currentWindowPreset
             case 'measure': initMeasureTool(); break;
-            case 'stairs':  initStairsTool(); break; // Changed from console.log to init
+            case 'stairs':  initStairsTool(); break;
+            case 'roof':    initRoofTool(); break; // NEW
+            case 'room':    initRoomTool(); break; // NEW
+            case 'curved-wall': initCurvedWallTool(); break; // NEW
+            case 'terrain': initTerrainTool(); break;
+            case 'boolean-subtract': initBooleanSubtractTool(); break; // NEW
         }
 
-        if(controls) controls.enabled = false;
+        if (controls && toolName !== 'boolean-subtract') controls.enabled = false; // Boolean tool needs orbit controls for selection
+        else if (controls && toolName === 'boolean-subtract') controls.enabled = true; // Keep controls for selection
+
         transformControls.detach();
-        clearSelection();
+        // For boolean, we don't want to clear existing architectural selections immediately
+        if (toolName !== 'boolean-subtract') {
+            clearSelection(); // Clear modeling V/E/F selection
+            deselectAllArchElements(); // Clear architectural element selection
+        } else {
+            // For boolean, we might want to keep the current selection as a potential first object
+            if (selectedArchElements.length === 1) {
+                booleanTargetMesh = selectedArchElements[0];
+                alert("Boolean Subtract: Target mesh selected. Now click the tool mesh (the shape to subtract).");
+                // Highlight booleanTargetMesh differently if desired
+            } else {
+                deselectAllArchElements(); // Clear if more or less than 1 is selected
+                booleanTargetMesh = null;
+                alert("Boolean Subtract: Click the target mesh (the object to be hollowed).");
+            }
+        }
     }
 }
 
 
 /** Deactivates the currently active Architecture tool */
-function deactivateCurrentArchTool() {
+/*function deactivateCurrentArchTool() {
     if (!activeArchTool) return;
     console.log(`Deactivating Arch tool: ${activeArchTool}`);
 
@@ -586,9 +894,83 @@ function deactivateCurrentArchTool() {
     if (isModelingMode && !isLocked && !isTransforming && !isLoopCutMode && !splineCreationMode) {
         if (controls) controls.enabled = true;
     }
+}*/
+
+function deactivateCurrentArchTool() {
+    if (!activeArchTool) return;
+    console.log(`Deactivating Arch tool: ${activeArchTool}`);
+
+    const toolButton = document.getElementById(`tool-${activeArchTool}`);
+    if (toolButton) toolButton.classList.remove('active-tool');
+
+    // Cleanup for the specific tool
+    switch (activeArchTool) {
+        case 'wall':    cleanupWallTool(); break;
+        case 'door':    // Fall-through
+        case 'window':  cleanupPlacementTool(); break;
+        case 'measure': cleanupMeasureTool(); break;
+        case 'stairs':  cleanupStairsTool(); break;
+        case 'roof':    cleanupRoofTool(); break; // NEW
+        case 'room':    cleanupRoomTool(); break; // NEW
+        case 'curved-wall': cleanupCurvedWallTool(); break; // NEW
+        case 'terrain': cleanupTerrainTool(); break; // NEW
+        case 'boolean-subtract': cleanupBooleanToolState(); break; 
+    }
+
+     if (activeArchTool) {
+        // ...
+        activeArchTool = null;
+        // ...
+    }
+
+    // Hide all tool options panels and specific UI elements
+    document.querySelectorAll('.tool-options').forEach(el => el.style.display = 'none');
+    if (measureDisplayElement) measureDisplayElement.style.display = 'none'; // Specific to measure tool
+    // Ensure window presets panel is also hidden if user switches tool (optional)
+    // const presetsPanel = document.getElementById('window-presets-panel');
+    // if (presetsPanel) presetsPanel.style.display = 'none';
+
+
+    if (renderer.domElement) renderer.domElement.style.cursor = 'default';
+    activeArchTool = null;
+
+    // Re-enable orbit controls if no other interaction mode is active
+    if (isModelingMode && !isLocked && !isTransforming && !isLoopCutMode && !splineCreationMode) {
+        if (controls) controls.enabled = true;
+    }
 }
 
-function initWallTool() {
+
+// Helper function to calculate points along a quadratic Bézier curve
+function getQuadraticBezierPoints(start, control, end, segments = 20) {
+    const points = [];
+    for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        const x = (1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * control.x + t * t * end.x;
+        const y = (1 - t) * (1 - t) * start.y + 2 * (1 - t) * t * control.y + t * t * end.y;
+        const z = (1 - t) * (1 - t) * start.z + 2 * (1 - t) * t * control.z + t * t * end.z;
+        points.push(new THREE.Vector3(x, y, z));
+    }
+    return points;
+}
+
+// Helper function to calculate points along a cubic Bézier curve
+function getCubicBezierPoints(p0, p1, p2, p3, segments = 30) {
+    const curve = new THREE.CubicBezierCurve3(p0, p1, p2, p3);
+    return curve.getPoints(segments);
+}
+
+let curveControlPoints = [];
+let isCurveMode = false;
+let curveType = 'quadratic'; // 'quadratic' or 'cubic'
+
+function toggleCurveMode() {
+    isCurveMode = !isCurveMode;
+    console.log(`Curve mode ${isCurveMode ? 'enabled' : 'disabled'}`);
+    // You can add visual feedback here (change cursor, UI indicator, etc.)
+}
+
+/*function initWallTool() {
     wallPoints = [];
     if (!wallPreviewLine) {
         wallPreviewLine = new THREE.LineSegments( // Use LineSegments for a dashed look if desired
@@ -605,8 +987,80 @@ function initWallTool() {
     console.log("Wall tool initialized. Click to place first point.");
     if(controls) controls.enabled = false;
     renderer.domElement.style.cursor = 'crosshair';
+}*/
+
+function initWallTool() {
+    wallPoints = [];
+    isWallToolActive = true;
+    
+    // Create preview line (dashed for current segment)
+    if (!wallPreviewLine) {
+        wallPreviewLine = new THREE.Line(
+            new THREE.BufferGeometry(),
+            new THREE.LineDashedMaterial({
+                color: 0x00ff00,
+                dashSize: 0.2,
+                gapSize: 0.1,
+                linewidth: 2
+            })
+        );
+        wallPreviewLine.renderOrder = 990;
+        scene.add(wallPreviewLine);
+    }
+    
+    // Create complete path line (solid)
+    if (!fullWallPath) {
+        fullWallPath = new THREE.Line(
+            new THREE.BufferGeometry(),
+            new THREE.LineBasicMaterial({
+                color: 0x00ff00,
+                linewidth: 2
+            })
+        );
+        fullWallPath.renderOrder = 991;
+        scene.add(fullWallPath);
+    }
+    
+    wallPreviewLine.visible = false;
+    fullWallPath.visible = false;
+    
+    if (controls) controls.enabled = false;
+    renderer.domElement.style.cursor = 'crosshair';
 }
 
+function handleWallPreview(event) {
+    if (!isWallToolActive) return;
+    
+    const intersection = getGroundPlaneIntersection();
+    
+    // Show preview from first point (if exists) to mouse position
+    if (wallPoints.length > 0 && intersection) {
+        const points = [...wallPoints, intersection];
+        
+        wallPreviewLine.geometry.dispose();
+        wallPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints(points);
+        wallPreviewLine.computeLineDistances();
+        wallPreviewLine.visible = true;
+    } 
+    // Special case: show small segment for first point
+    else if (wallPoints.length === 1) {
+        const point = wallPoints[0];
+        wallPreviewLine.geometry.dispose();
+        wallPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints([
+            point,
+            point.clone().add(new THREE.Vector3(0.01, 0, 0.01))
+        ]);
+        wallPreviewLine.computeLineDistances();
+        wallPreviewLine.visible = true;
+    }
+    else {
+        wallPreviewLine.visible = false;
+    }
+}
+
+
+
+/*
 function handleWallPreview(event) { // Called on mouse move when wall tool is active
     if (wallPoints.length === 0) {
         if (wallPreviewLine) wallPreviewLine.visible = false;
@@ -623,9 +1077,44 @@ function handleWallPreview(event) { // Called on mouse move when wall tool is ac
     } else {
         if (wallPreviewLine) wallPreviewLine.visible = false;
     }
+}*/
+
+function handleWallPreview(event) {
+    if (!isWallToolActive || wallPoints.length === 0) return;
+    
+    const intersection = getGroundPlaneIntersection();
+    if (intersection) {
+        // Update current segment preview (from last point to mouse)
+        const segmentPoints = [
+            wallPoints[wallPoints.length - 1].clone(),
+            intersection.clone()
+        ];
+        
+        wallPreviewLine.geometry.dispose();
+        wallPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints(segmentPoints);
+        wallPreviewLine.computeLineDistances();
+        wallPreviewLine.visible = true;
+        
+        // Update complete path (all points + current mouse position)
+        if (wallPoints.length > 1) {
+            const allPoints = [...wallPoints, intersection];
+            fullWallPath.geometry.dispose();
+            fullWallPath.geometry = new THREE.BufferGeometry().setFromPoints(allPoints);
+            fullWallPath.visible = true;
+        }
+    } else {
+        wallPreviewLine.visible = false;
+        // Show only confirmed points when not intersecting ground
+        if (wallPoints.length > 1) {
+            fullWallPath.geometry.dispose();
+            fullWallPath.geometry = new THREE.BufferGeometry().setFromPoints(wallPoints);
+            fullWallPath.visible = true;
+        }
+    }
 }
 
-function handleWallCreationPoint(event) { // Called on click when wall tool is active
+
+/*function handleWallCreationPoint(event) { // Called on click when wall tool is active
     // raycaster updated in handleCanvasClick
     const intersection = getGroundPlaneIntersection();
     if (intersection) {
@@ -634,10 +1123,13 @@ function handleWallCreationPoint(event) { // Called on click when wall tool is a
 
         if (wallPoints.length >= 2) {
             // If you want to show the full path being drawn:
-            // wallPreviewLine.geometry.dispose();
-            // wallPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints(wallPoints);
-            // wallPreviewLine.computeLineDistances();
-            // For now, preview only shows the current segment being drawn (handled by handleWallPreview)
+            
+            wallPreviewLine.geometry.dispose();
+            wallPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints(wallPoints);
+            wallPreviewLine.computeLineDistances();
+            
+
+            //For now, preview only shows the current segment being drawn (handled by handleWallPreview)
         }
         if (wallPoints.length === 1 && wallPreviewLine) { // Show a single dot or hide preview
              wallPreviewLine.geometry.dispose();
@@ -648,20 +1140,64 @@ function handleWallCreationPoint(event) { // Called on click when wall tool is a
     }
 }
 
+function handleWallCreationPoint(event) {
+    if (!isWallToolActive) return;
+    
+    const intersection = getGroundPlaneIntersection();
+    if (intersection) {
+        wallPoints.push(intersection.clone());
+        
+        // Update complete path with confirmed points
+        if (wallPoints.length > 1) {
+            fullWallPath.geometry.dispose();
+            fullWallPath.geometry = new THREE.BufferGeometry().setFromPoints(wallPoints);
+            fullWallPath.visible = true;
+        }
+        
+        // For single point, show small preview
+        if (wallPoints.length === 1) {
+            wallPreviewLine.geometry.dispose();
+            wallPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints([
+                wallPoints[0],
+                wallPoints[0].clone().add(new THREE.Vector3(0.01, 0, 0.01))
+            ]);
+            wallPreviewLine.computeLineDistances();
+            wallPreviewLine.visible = true;
+        }
+    }
+}*/
+
+function handleWallCreationPoint(event) {
+    if (!isWallToolActive) return;
+    
+    const intersection = getGroundPlaneIntersection();
+    if (intersection) {
+        wallPoints.push(intersection.clone());
+        
+        // Immediately update preview to include new point
+        if (wallPoints.length > 1) {
+            wallPreviewLine.geometry.dispose();
+            wallPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints(wallPoints);
+            wallPreviewLine.computeLineDistances();
+            wallPreviewLine.visible = true;
+        }
+    }
+}
+
 
 function updateWallPreview() {
     if (wallPreviewLine && wallPoints.length > 0) {
         // If mouse is also tracked for the next point:
-        // const rect = renderer.domElement.getBoundingClientRect();
-        // mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        // mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-        // raycaster.setFromCamera(mouse, camera);
-        // const nextPotentialPoint = getGroundPlaneIntersection();
-        // if (nextPotentialPoint) {
-        //     wallPreviewLine.geometry.setFromPoints([...wallPoints, nextPotentialPoint]);
-        // } else {
-        //     wallPreviewLine.geometry.setFromPoints(wallPoints);
-        // }
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const nextPotentialPoint = getGroundPlaneIntersection();
+        if (nextPotentialPoint) {
+            wallPreviewLine.geometry.setFromPoints([...wallPoints, nextPotentialPoint]);
+        } else {
+            wallPreviewLine.geometry.setFromPoints(wallPoints);
+        }
         wallPreviewLine.geometry.setFromPoints(wallPoints); // Simpler: just show placed points
     }
 }
@@ -734,6 +1270,7 @@ function finishWall() {
     cleanupWallTool();
 }
 
+/*
 function cleanupWallTool() {
     wallPoints = [];
     if (wallPreviewLine) {
@@ -748,14 +1285,43 @@ function cleanupWallTool() {
     if (renderer.domElement) renderer.domElement.style.cursor = 'default';
 }
 
+function cleanupWallTool() {
+    isWallToolActive = false;
+    wallPoints = [];
+    
+    if (wallPreviewLine) {
+        wallPreviewLine.visible = false;
+        wallPreviewLine.geometry.dispose();
+    }
+    
+    if (fullWallPath) {
+        fullWallPath.visible = false;
+        fullWallPath.geometry.dispose();
+    }
+    
+    if (controls) controls.enabled = true;
+    renderer.domElement.style.cursor = 'default';
+}*/
 
-
+function cleanupWallTool() {
+    isWallToolActive = false;
+    wallPoints = [];
+    
+    if (wallPreviewLine) {
+        wallPreviewLine.visible = false;
+        wallPreviewLine.geometry.dispose();
+    }
+    
+    if (controls) controls.enabled = true;
+    renderer.domElement.style.cursor = 'default';
+}
 
 function activateSplineDrawing(mode) {
     if (!isModelingMode) return;
     deactivateCurrentArchTool(); // Ensure other modes are off
     cancelLoopCut();             // Ensure loop cut is off
     finishSplineDrawing();        // Clear any previous spline points/mode
+    cleanupStructureSynthTool(); 
 
     splineCreationMode = mode;
     currentSplinePoints = [];
@@ -823,7 +1389,7 @@ function getValidDimension(inputId, defaultValue) {
 }
 
 
-function initPlacementTool(type) {
+/*function initPlacementTool(type) {
     currentPlacementType = type;
     activeArchTool = type;
     console.log(`Initializing ${type} placement tool.`);
@@ -873,8 +1439,75 @@ function initPlacementTool(type) {
     if (controls) controls.enabled = false;
     if (renderer && renderer.domElement) renderer.domElement.style.cursor = 'crosshair';
     console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} Tool: Hover over a wall to place.`);
-}
+}*/
 
+function initPlacementTool(type) {
+    currentPlacementType = type;
+    activeArchTool = type; // Keep this to ensure tool deactivation works
+    console.log(`Initializing ${type} placement tool.`);
+
+    if (type === 'door') {
+        placementObjectDimensions = {
+            width: getValidDimension('doorWidthInput', 0.9),
+            height: getValidDimension('doorHeightInput', 2.1),
+            depth: getValidDimension('doorDepthInput', 0.15) // Often wall thickness
+        };
+    } else if (type === 'window') {
+        // Check if a preset is active
+        if (currentWindowPreset) {
+            console.log("Using window preset:", currentWindowPreset);
+            placementObjectDimensions = {
+                width: currentWindowPreset.width,
+                height: currentWindowPreset.height,
+                depth: currentWindowPreset.depth // Often wall thickness
+            };
+            // Optionally update input fields if they exist for window
+            const windowWidthInput = document.getElementById('windowWidthInput');
+            const windowHeightInput = document.getElementById('windowHeightInput');
+            const windowDepthInput = document.getElementById('windowDepthInput');
+            const windowSillHeightInput = document.getElementById('windowSillHeightInput'); // Crucial
+            if(windowWidthInput) windowWidthInput.value = currentWindowPreset.width;
+            if(windowHeightInput) windowHeightInput.value = currentWindowPreset.height;
+            if(windowDepthInput) windowDepthInput.value = currentWindowPreset.depth;
+            if(windowSillHeightInput) windowSillHeightInput.value = currentWindowPreset.sill;
+
+            currentWindowPreset = null; // Consume the preset
+        } else {
+            placementObjectDimensions = {
+                width: getValidDimension('windowWidthInput', 1.2),
+                height: getValidDimension('windowHeightInput', 1.0),
+                depth: getValidDimension('windowDepthInput', 0.15) // Often wall thickness
+            };
+        }
+    }
+    // ... (rest of the initPlacementTool function remains the same)
+    if (!placementHelper) {
+        const helperGeo = new THREE.BoxGeometry(1, 1, 1);
+        const helperMat = new THREE.MeshBasicMaterial({
+            color: 0x00ff00, transparent: true, opacity: 0.5, depthTest: false
+        });
+        placementHelper = new THREE.Mesh(helperGeo, helperMat);
+        placementHelper.renderOrder = 999; // Ensure it's drawn on top
+        scene.add(placementHelper);
+    }
+    // Update helper geometry and material
+    placementHelper.geometry.dispose();
+    placementHelper.geometry = new THREE.BoxGeometry(
+        placementObjectDimensions.width,
+        placementObjectDimensions.height,
+        placementObjectDimensions.depth
+    );
+    placementHelper.material.color.set(type === 'door' ? 0x33aa33 : 0x3333aa); // Green for door, Blue for window
+    placementHelper.visible = false;
+
+    placementTargetObject = null;
+    currentPlacementPosition = null;
+    currentPlacementNormal = null;
+
+    if (controls) controls.enabled = false;
+    if (renderer && renderer.domElement) renderer.domElement.style.cursor = 'crosshair';
+    console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} Tool: Hover over a wall to place.`);
+}
 
 /**
  * Handles the preview of doors or windows on mouse move.
@@ -2325,7 +2958,7 @@ function selectEdge(intersection) {
     transformControls.attach(edgeProxy);
 
      // Highlight selected helper
-     edgeHelper.material.color.set(0xFF0000);
+     edgeHelper.material.color.set(0x00FFFF); // aqua
     console.log("Selected edge between vertices:", indices);
 }
 
@@ -2552,14 +3185,15 @@ function updateEdgeFaceHelpers() {
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
 
-                         vStart.fromBufferAttribute(positions, startIdx).applyMatrix4(matrix);
-                         vEnd.fromBufferAttribute(positions, endIdx).applyMatrix4(matrix);
+                        // Get world positions for the edge endpoints
+                        vStart.fromBufferAttribute(positions, startIdx).applyMatrix4(matrix);
+                        vEnd.fromBufferAttribute(positions, endIdx).applyMatrix4(matrix);
 
-                         const edgeGeom = new THREE.BufferGeometry().setFromPoints([vStart.clone(), vEnd.clone()]);
-                         const edgeMat = new THREE.LineBasicMaterial({
+                        const edgeGeom = new THREE.BufferGeometry().setFromPoints([vStart.clone(), vEnd.clone()]);
+                        const edgeMat = new THREE.LineBasicMaterial({
                             color: 0xE67E22, // Default Orange
                             linewidth: edgeThickness // Note: linewidth might not work on all platforms/drivers
-                         });
+                        });
 
                          const edge = new THREE.Line(edgeGeom, edgeMat);
                          edge.userData = { type: 'edge', indices: [startIdx, endIdx] };
@@ -2769,6 +3403,46 @@ function setupModelingEventListeners() {
     document.getElementById('tool-stairs')?.addEventListener('click', () => toggleArchTool('stairs'));
     document.getElementById('tool-measure')?.addEventListener('click', () => toggleArchTool('measure'));
 
+    document.getElementById('tool-roof')?.addEventListener('click', () => toggleArchTool('roof'));
+    document.getElementById('tool-room')?.addEventListener('click', () => toggleArchTool('room'));
+    document.getElementById('tool-curved-wall')?.addEventListener('click', () => toggleArchTool('curved-wall'));
+    document.getElementById('tool-terrain')?.addEventListener('click', () => toggleArchTool('terrain'));
+    document.getElementById('tool-window-presets')?.addEventListener('click', () => {
+        // This button doesn't activate a "tool" in the same way,
+        // it just shows/hides a UI panel for preset selection.
+        // Deactivate any other active modeling/arch tool first.
+        deactivateCurrentArchTool();
+        clearSelection(); // Clear V/E/F selection
+        if (controls) controls.enabled = true; // Ensure orbit controls are enabled
+
+        const panel = document.getElementById('window-presets-panel');
+        if (panel) {
+            panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+        }
+        console.log("Toggled Window Presets Panel");
+    });
+
+    document.getElementById('tool-structure-synth')?.addEventListener('click', () => {
+        if (structureSynthToolActive) {
+            cleanupStructureSynthTool();
+        } else {
+            initStructureSynthTool();
+        }
+    });
+
+    // Shell Tool
+    document.getElementById('tool-shell')?.addEventListener('click', () => {
+        if (!isModelingMode || !activeObject) return;
+        if (selectionMode !== 'face' || selectedElements.length === 0) {
+            alert("Please select one or more faces to define the opening(s) for the shell operation.");
+            return;
+        }
+        applyShellOperation();
+    });
+
+    //Boolean Operations
+    document.getElementById('tool-boolean-subtract')?.addEventListener('click', () => toggleArchTool('boolean-subtract'));
+
     // Architectural Element Selection Buttons
     document.getElementById('select-all-walls')?.addEventListener('click', () => selectAllArchElementsByType('wall'));
     document.getElementById('select-all-doors')?.addEventListener('click', () => selectAllArchElementsByType('door'));
@@ -2967,11 +3641,6 @@ function handleApplyModifiers() {
      updateModifierPanelUI(activeObject); // Should now show empty list
      alert("Modifiers applied to base mesh.");
 }
-
-
-// --- Add Global State for Loop Cut ---
-let isLoopCutMode = false;
-let loopCutPreviewLine = null; // A THREE.Line for preview
 
 // --- New Function for Keyboard Shortcuts ---
 function handleModelingKeyDown(event) {
@@ -3286,167 +3955,162 @@ const stairDirectionVector = new THREE.Vector3(); // For stair orientation
 
 
 function initiateLoopCut() {
+    cleanupStructureSynthTool(); // If you have the synth tool
+    deactivateCurrentArchTool(); // Deactivate other arch tools
+    // ... (rest of existing checks: activeObject, indexed geometry, not transforming)
+
     console.log("Initiating Loop Cut Mode...");
     if (!activeObject || !activeObject.geometry || !activeObject.geometry.index) {
          console.error("Loop cut requires an indexed geometry on the active object.");
          return;
     }
-     if (isTransforming) {
-         console.warn("Cannot initiate loop cut while transforming.");
-         return;
-     }
-     if (activeArchTool || splineCreationMode) {
-         console.warn("Cannot initiate loop cut while another tool is active.");
-         return;
-     }
+     if (isTransforming) { /* ... */ return; }
+     // if (activeArchTool || splineCreationMode) { /* ... */ return; } // Already handled by deactivate
 
-
-     if (selectionMode !== 'edge') {
-          setSelectionMode('edge'); // Loop cut needs to "see" edges to determine loop.
+    if (selectionMode !== 'edge' && selectionMode !== 'all') { // 'all' for showing all helpers
+          setSelectionMode('edge');
           console.log("Switched to Edge selection mode for Loop Cut.");
-     } else {
-          // If already in edge mode, ensure helpers are up-to-date
-          showMeshStructure(activeObject);
-     }
+          // showMeshStructure might be async or have a delay, ensure helpers are ready
+          // This is a potential race condition. A callback or promise from showMeshStructure would be better.
+          // For now, assume showMeshStructure updates relatively quickly.
+    } else if (activeObject) {
+          showMeshStructure(activeObject); // Refresh edge helpers if already in edge mode
+    }
 
 
     isLoopCutMode = true;
     if (controls) controls.enabled = false;
-     transformControls.detach(); 
-     clearSelection();          
-     updateTransformControlsAttachment();
+    transformControls.detach();
+    clearSelection(); // Clear V/E/F modeling selections
+    // updateTransformControlsAttachment(); // Likely not needed if detaching
 
-
-    if (renderer && renderer.domElement) {
-        renderer.domElement.style.cursor = 'crosshair'; 
-    } else {
-        document.body.style.cursor = 'crosshair'; 
-    }
+    renderer.domElement.style.cursor = 'crosshair';
 
     if (!loopCutPreviewLine) {
         loopCutPreviewLine = new THREE.Line(
             new THREE.BufferGeometry(),
-            new THREE.LineBasicMaterial({ color: 0xff00ff, linewidth: 3, depthTest: false, depthWrite: false }) 
+            new THREE.LineBasicMaterial({
+                color: LOOP_CUT_PREVIEW_COLOR, // Aqua color
+                linewidth: 3, // Note: linewidth > 1 has limitations in WebGL
+                depthTest: false,
+                depthWrite: false,
+                transparent: true, // Optional, if you want it to blend
+                opacity: 0.9       // Optional
+            })
         );
-         loopCutPreviewLine.renderOrder = 999; 
+        loopCutPreviewLine.renderOrder = 999; // Draw on top
         scene.add(loopCutPreviewLine);
     }
-    loopCutPreviewLine.visible = false; 
+    loopCutPreviewLine.visible = false;
     loopCutPreviewLine.userData = {}; // Clear previous data
 
     // Add temporary listeners specific to loop cut
+    // Ensure these are not duplicated if initiateLoopCut is called multiple times
+    renderer.domElement.removeEventListener('mousemove', handleLoopCutPreviewInternal); // Remove first
     renderer.domElement.addEventListener('mousemove', handleLoopCutPreviewInternal, false);
+    renderer.domElement.removeEventListener('click', handleLoopCutConfirmInternal); // Remove first
     renderer.domElement.addEventListener('click', handleLoopCutConfirmInternal, false);
+
+    alert("Loop Cut: Hover over an edge to preview the loop. Click to cut.");
 }
 
 // Internal handler, not to be confused with the global one
 function handleLoopCutPreviewInternal(event) {
-    if (!isLoopCutMode || !activeObject || !edgeHelpers) return; // Ensure edgeHelpers group exists
+    if (!isLoopCutMode || !activeObject || !edgeHelpers || edgeHelpers.children.length === 0) {
+        if (loopCutPreviewLine) loopCutPreviewLine.visible = false;
+        loopCutPreviewLine.userData = {}; 
+        return;
+    }
 
     const rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
-    raycaster.params.Line.threshold = 0.1; 
+    raycaster.params.Line.threshold = 0.05; // Adjust for edge helper sensitivity
 
-    // Intersect with edge helpers. Edge helpers must be visible.
-    if (edgeHelpers.children.length === 0 && (selectionMode === 'edge' || selectionMode === 'all')) {
-        // This can happen if selectionMode was just changed and helpers haven't updated yet.
-        // Or if performance mode reduced helpers too much.
-        // console.warn("Loop Cut Preview: No edge helpers found. Ensure they are visible.");
-        // For robust loop cut, it might be better to raycast against the actual mesh
-        // and then find the closest edge on the intersected face. This is more complex.
-        // For now, rely on visible edgeHelpers.
-    }
+    // Intersect with edge helpers
+    const edgeIntersects = raycaster.intersectObjects(edgeHelpers.children, false);
+    const closestEdgeIntersect = findClosestIntersection(edgeIntersects, 'edge');
 
-     const edgeIntersects = raycaster.intersectObjects(edgeHelpers.children, false); 
-     const closestEdgeIntersect = findClosestIntersection(edgeIntersects, 'edge'); 
-
-    if (closestEdgeIntersect) {
+     if (closestEdgeIntersect) {
         const intersectedEdgeHelper = closestEdgeIntersect.object;
-        const edgeIndices = intersectedEdgeHelper.userData.indices; // [v1, v2]
+        const startEdgeIndices = intersectedEdgeHelper.userData.indices;
 
-        // --- Calculate the preview loop ---
-        const geometry = activeObject.geometry;
+        const geometry = activeObject.geometry; // Geometry in local space
+        const positions = geometry.attributes.position; // Local positions
+
+        // --- CRITICAL: Ensure matrixWorld is up-to-date for THIS FRAME ---
+        activeObject.updateMatrixWorld(true);
+        const currentMatrixWorld = activeObject.matrixWorld.clone(); // Use a clone for this frame's calculations
+
         const edgeFaceMap = buildEdgeFaceMap(geometry);
-        if (!edgeFaceMap) {
+        const vertexEdgeMap = buildVertexEdgeMap(geometry);
+        const vertexFaceMap = buildVertexFaceMap(geometry);
+
+        if (!edgeFaceMap || !vertexEdgeMap || !vertexFaceMap) {
             loopCutPreviewLine.visible = false;
+            loopCutPreviewLine.userData = {};
             return;
         }
 
-        // The findEdgeLoop function is a placeholder. For a real tool, this needs to be robust.
-        // It should ideally find a sequence of edges forming a ring.
-        const loopEdgeSegments = findEdgeLoop(geometry, edgeIndices, edgeFaceMap);
+        const loopEdgeSegments = findEdgeLoop(geometry, startEdgeIndices, edgeFaceMap, vertexEdgeMap, vertexFaceMap);
 
         if (loopEdgeSegments && loopEdgeSegments.length > 0) {
-            const previewPoints = [];
-            const positions = geometry.attributes.position;
-            const matrix = activeObject.matrixWorld;
-            const midPoint = new THREE.Vector3();
-            const vA = new THREE.Vector3();
-            const vB = new THREE.Vector3();
+            const previewWorldPoints = [];
+            const vA_local = new THREE.Vector3();
+            const vB_local = new THREE.Vector3();
+            const midPoint_local = new THREE.Vector3();
 
             loopEdgeSegments.forEach(segment => {
-                vA.fromBufferAttribute(positions, segment[0]);
-                vB.fromBufferAttribute(positions, segment[1]);
-                midPoint.lerpVectors(vA, vB, 0.5).applyMatrix4(matrix);
-                previewPoints.push(midPoint.clone());
+                vA_local.fromBufferAttribute(positions, segment[0]);
+                vB_local.fromBufferAttribute(positions, segment[1]);
+                midPoint_local.lerpVectors(vA_local, vB_local, 0.5); // Midpoint in LOCAL space
+                previewWorldPoints.push(midPoint_local.clone().applyMatrix4(currentMatrixWorld)); // Transform to WORLD for preview line
             });
-            
-            // If the loop closes, add the first point again to complete the line strip
-            if (loopEdgeSegments.length > 1 && loopEdgeSegments[0][0] === loopEdgeSegments[loopEdgeSegments.length -1][1]) {
-                 // This condition for closing isn't quite right for midpoints.
-                 // If findEdgeLoop returns a true closed loop of original edges, the midpoints should form a closed loop.
-            }
-             if (previewPoints.length > 1 && loopEdgeSegments.length === previewPoints.length) { // Ensure we have a pair for each segment
-                // For a closed loop, connect the last midpoint to the first.
-                if (previewPoints.length > 2) { // Check if it could be a closed loop
-                     const firstOriginalEdgeKey = getEdgeKey(loopEdgeSegments[0][0], loopEdgeSegments[0][1]);
-                     const lastOriginalEdgeKey = getEdgeKey(loopEdgeSegments[loopEdgeSegments.length-1][0], loopEdgeSegments[loopEdgeSegments.length-1][1]);
-                     // A more robust check for closed loop needed in findEdgeLoop itself.
-                     // For now, assume if findEdgeLoop gives multiple segments, it's a loop.
-                     previewPoints.push(previewPoints[0].clone());
-                }
+
+            if (loopEdgeSegments.length > 1) {
+                 const firstOriginalVertOfLoop = loopEdgeSegments[0][0];
+                 const lastOriginalVertOfLoop = loopEdgeSegments[loopEdgeSegments.length-1][1];
+                 if (firstOriginalVertOfLoop === lastOriginalVertOfLoop && previewWorldPoints.length > 1) {
+                     previewWorldPoints.push(previewWorldPoints[0].clone());
+                 }
             }
 
-
-            if (previewPoints.length >= 2) {
-                 loopCutPreviewLine.geometry.setFromPoints(previewPoints);
-                 loopCutPreviewLine.geometry.computeBoundingSphere(); 
+            if (previewWorldPoints.length >= 2) {
+                loopCutPreviewLine.geometry.dispose();
+                loopCutPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints(previewWorldPoints);
+                loopCutPreviewLine.material.color.setHex(LOOP_CUT_PREVIEW_COLOR);
                 loopCutPreviewLine.visible = true;
-                loopCutPreviewLine.userData.edgeIndices = edgeIndices; // Store the hovered edge
-                loopCutPreviewLine.userData.loopEdgeSegments = loopEdgeSegments; // Store the calculated loop
+                loopCutPreviewLine.userData.hoveredEdgeOriginalIndices = startEdgeIndices;
+                loopCutPreviewLine.userData.loopEdgeSegmentsToCut = loopEdgeSegments; // These are pairs of LOCAL indices
             } else {
                 loopCutPreviewLine.visible = false;
                 loopCutPreviewLine.userData = {};
             }
         } else {
-             loopCutPreviewLine.visible = false;
-             loopCutPreviewLine.userData = {};
+            loopCutPreviewLine.visible = false;
+            loopCutPreviewLine.userData = {};
         }
     } else {
-        loopCutPreviewLine.visible = false; 
+        loopCutPreviewLine.visible = false;
         loopCutPreviewLine.userData = {};
     }
 }
 
-// Internal handler, not to be confused with the global one
-async function handleLoopCutConfirmInternal(event) {
-    if (!isLoopCutMode || !activeObject || !loopCutPreviewLine.visible || !loopCutPreviewLine.userData.loopEdgeSegments) {
-        console.log("Loop cut confirm: Invalid state or no preview loop data.");
-        // Don't cancel here, allow clicking elsewhere without confirming.
-        return;
+// handleLoopCutConfirmInternal needs to use loopCutPreviewLine.userData.loopEdgeSegmentsToCut
+async function handleLoopCutConfirmInternal(event) { // Keep async if any sub-function is async
+    if (!isLoopCutMode || !activeObject || !loopCutPreviewLine.visible ||
+        !loopCutPreviewLine.userData.loopEdgeSegmentsToCut || loopCutPreviewLine.userData.loopEdgeSegmentsToCut.length === 0) {
+        // console.log("Loop cut confirm: Invalid state or no preview loop data.");
+        return; // Don't cancel mode, just don't cut
     }
 
-    const loopEdgesToCut = loopCutPreviewLine.userData.loopEdgeSegments;
-    if (!loopEdgesToCut || loopEdgesToCut.length === 0) {
-         console.warn("Loop cut confirm: No loop edges found in preview data.");
-         cancelLoopCut();
-         return;
-    }
+    const loopEdgesToCut = loopCutPreviewLine.userData.loopEdgeSegmentsToCut;
+    console.log(`%cConfirming Loop Cut for ${loopEdgesToCut.length} edge segments...`, "color: orange; font-weight:bold;");
 
-    console.log(`%cConfirming Loop Cut for ${loopEdgesToCut.length} segments...`, "color: orange; font-weight:bold;");
-
+    // ... (rest of your existing handleLoopCutConfirmInternal logic)
+    // Ensure it uses `loopEdgesToCut` which contains arrays like [v1, v2] for each edge in the loop.
+    // The rest of the cutting logic (creating new vertices, rebuilding indices) should work with this.
     const currentGeometry = activeObject.geometry;
     if (!currentGeometry || !currentGeometry.index || !currentGeometry.attributes.position || !currentGeometry.attributes.normal || !currentGeometry.attributes.uv) {
         console.error("Loop cut requires indexed geometry with position, normal, and uv attributes.");
@@ -3454,7 +4118,7 @@ async function handleLoopCutConfirmInternal(event) {
         return;
     }
 
-    const edgeFaceMap = buildEdgeFaceMap(currentGeometry);
+    const edgeFaceMap = buildEdgeFaceMap(currentGeometry); // Rebuild or ensure it's fresh
     if (!edgeFaceMap) {
         console.error("Loop Cut: Failed to build edgeFaceMap for confirm.");
         cancelLoopCut();
@@ -3464,169 +4128,205 @@ async function handleLoopCutConfirmInternal(event) {
     const positions = currentGeometry.attributes.position;
     const normals = currentGeometry.attributes.normal;
     const uvs = currentGeometry.attributes.uv;
-    const indices = currentGeometry.index.array.slice(); // Clone for reference
+    const originalIndicesArray = currentGeometry.index.array.slice(); // Clone for reference
     const originalVertexCount = positions.count;
 
-    // 1. Create new midpoint vertices for ALL edges in the loop
-    const newVerticesData = new Map(); // Map<edgeKey, {newIndex, position, normal, uv}>
+    const newMidpointVerticesData = new Map(); // Map<edgeKey, {newIndex, position, normal, uv}>
     let nextNewVertexIndex = originalVertexCount;
     const posA = new THREE.Vector3(), posB = new THREE.Vector3();
     const normA = new THREE.Vector3(), normB = new THREE.Vector3();
     const uvA = new THREE.Vector2(), uvB = new THREE.Vector2();
 
-    for (const edge of loopEdgesToCut) {
-        const u = edge[0];
-        const v = edge[1];
+    for (const edgeSegment of loopEdgesToCut) { // edgeSegment is [v_idx1, v_idx2]
+        const u = edgeSegment[0];
+        const v = edgeSegment[1];
         const edgeKey = getEdgeKey(u, v);
-        if (newVerticesData.has(edgeKey)) continue; // Should not happen if loop is simple
+
+        if (newMidpointVerticesData.has(edgeKey)) continue; // Already processed this edge
 
         posA.fromBufferAttribute(positions, u); posB.fromBufferAttribute(positions, v);
         normA.fromBufferAttribute(normals, u); normB.fromBufferAttribute(normals, v);
         uvA.fromBufferAttribute(uvs, u); uvB.fromBufferAttribute(uvs, v);
 
-        const newPos = new THREE.Vector3().lerpVectors(posA, posB, 0.5);
+        const newPos = new THREE.Vector3().lerpVectors(posA, posB, 0.5); // Midpoint in local space
         const newNorm = new THREE.Vector3().lerpVectors(normA, normB, 0.5).normalize();
         const newUV = new THREE.Vector2().lerpVectors(uvA, uvB, 0.5);
         const newIndex = nextNewVertexIndex++;
 
-        newVerticesData.set(edgeKey, { newIndex, position: newPos, normal: newNorm, uv: newUV });
+        const newPos_local = new THREE.Vector3().lerpVectors(posA, posB, 0.5);
+        const newPos_world_for_debug = newPos_local.clone().applyMatrix4(activeObject.matrixWorld);
+        console.log(`LoopCut Confirm: Edge ${edgeKey}, Local Mid:`, newPos_local.toArray(), `Est. World Mid:`, newPos_world_for_debug.toArray());
+
+
+        newMidpointVerticesData.set(edgeKey, { newIndex, position: newPos, normal: newNorm, uv: newUV });
     }
 
-    const numNewVertices = newVerticesData.size;
+    const numNewVertices = newMidpointVerticesData.size;
     if (numNewVertices === 0) {
-        console.warn("Loop cut confirm: No new vertices were generated (empty loop?).");
+        console.warn("Loop cut confirm: No new vertices were generated (empty or invalid loop?).");
         cancelLoopCut(); return;
     }
     const finalVertexCount = originalVertexCount + numNewVertices;
 
-    // 2. Create new attribute arrays
+    // Create new attribute arrays
     const newPositionsArray = new Float32Array(finalVertexCount * 3);
-    const newNormalsArray = new Float32Array(finalVertexCount * 3);
-    const newUVsArray = new Float32Array(finalVertexCount * 2);
+    const newNormalsArray = normals ? new Float32Array(finalVertexCount * 3) : null; // Check if normals exist
+    const newUVsArray = uvs ? new Float32Array(finalVertexCount * 2) : null;       // Check if uvs exist
 
     newPositionsArray.set(positions.array);
-    newNormalsArray.set(normals.array);
-    newUVsArray.set(uvs.array);
+    if (normals) newNormalsArray.set(normals.array);
+    if (uvs) newUVsArray.set(uvs.array);
 
-    newVerticesData.forEach(data => {
+    newMidpointVerticesData.forEach(data => {
         newPositionsArray.set(data.position.toArray(), data.newIndex * 3);
-        newNormalsArray.set(data.normal.toArray(), data.newIndex * 3);
-        newUVsArray.set(data.uv.toArray(), data.newIndex * 2);
+        if (newNormalsArray) newNormalsArray.set(data.normal.toArray(), data.newIndex * 3);
+        if (newUVsArray) newUVsArray.set(data.uv.toArray(), data.newIndex * 2);
     });
 
-    // 3. Rebuild index buffer (Most complex part)
-    const newIndicesArray = [];
-    const facesProcessed = new Set();
+    // Rebuild index buffer
+    const finalNewIndices = [];
+    const facesAlreadySplit = new Set();
 
-    for (const edge of loopEdgesToCut) {
-        const u_orig = edge[0];
-        const v_orig = edge[1];
+    for (const edgeSegment of loopEdgesToCut) {
+        const u_orig = edgeSegment[0];
+        const v_orig = edgeSegment[1];
         const edgeKey = getEdgeKey(u_orig, v_orig);
-        const midpointData = newVerticesData.get(edgeKey);
+        const midpointData = newMidpointVerticesData.get(edgeKey);
+
         if (!midpointData) {
-            console.error(`Loop Cut Internal Error: Midpoint data missing for edge ${edgeKey}`);
-            continue; // Skip processing faces for this edge if midpoint missing
+            console.error(`Loop Cut Internal Error: Midpoint data missing for edge ${edgeKey} during confirm.`);
+            continue;
         }
-        const m_new = midpointData.newIndex;
+        const m_new_idx = midpointData.newIndex;
 
         const adjacentFaceIndices = edgeFaceMap.get(edgeKey) || [];
 
         for (const faceIndex of adjacentFaceIndices) {
-            if (facesProcessed.has(faceIndex)) continue;
+            if (facesAlreadySplit.has(faceIndex)) continue;
 
-            const faceOriginalIndices = [indices[faceIndex * 3], indices[faceIndex * 3 + 1], indices[faceIndex * 3 + 2]];
+            const faceV = [originalIndicesArray[faceIndex*3], originalIndicesArray[faceIndex*3+1], originalIndicesArray[faceIndex*3+2]];
             let p_orig = -1; // The third vertex of the original triangle
-            for (const vertIndex of faceOriginalIndices) {
-                if (vertIndex !== u_orig && vertIndex !== v_orig) { p_orig = vertIndex; break; }
-            }
-
-            if (p_orig === -1) {
-                console.warn(`Loop Cut: Could not find third vertex for face ${faceIndex}. Assuming non-triangle face or degenerate. Skipping split.`);
-                continue;
-            }
-
-            // --- Logic for TRIANGLES ONLY ---
-            const edge_vp_key = getEdgeKey(v_orig, p_orig);
-            const edge_pu_key = getEdgeKey(p_orig, u_orig);
-            const m_vp_new_data = newVerticesData.get(edge_vp_key); // Midpoint on v-p if that edge is cut
-            const m_pu_new_data = newVerticesData.get(edge_pu_key); // Midpoint on p-u if that edge is cut
-
-            if (m_vp_new_data && m_pu_new_data) { // All 3 edges cut
-                const m_vp_new = m_vp_new_data.newIndex;
-                const m_pu_new = m_pu_new_data.newIndex;
-                // Split into 4 triangles: (u, m, m_pu), (m, v, m_vp), (m_pu, m_vp, p), (m, m_vp, m_pu) center
-                 // Check winding relative to original (u,v,p) or (v,u,p) etc. This is complex.
-                 // Assuming winding u->v->p
-                 newIndicesArray.push(u_orig, m_new, m_pu_new);
-                 newIndicesArray.push(v_orig, m_vp_new, m_new);
-                 newIndicesArray.push(p_orig, m_pu_new, m_vp_new);
-                 newIndicesArray.push(m_new, m_vp_new, m_pu_new); // Center triangle
-
-            } else if (m_vp_new_data) { // Edges u-v and v-p cut
-                const m_vp_new = m_vp_new_data.newIndex;
-                // Split face (u,v,p) into (u, m, p) and (m, m_vp, p) and (m, v, m_vp)
-                // Assuming winding u->v->p
-                newIndicesArray.push(u_orig, m_new, p_orig);
-                newIndicesArray.push(m_new, m_vp_new, p_orig);
-                newIndicesArray.push(m_new, v_orig, m_vp_new);
-
-            } else if (m_pu_new_data) { // Edges u-v and p-u cut
-                const m_pu_new = m_pu_new_data.newIndex;
-                // Split face (u,v,p) into (m, v, p) and (m_pu, m, p) and (u, m_pu, m)
-                 // Assuming winding u->v->p
-                 newIndicesArray.push(m_new, v_orig, p_orig);
-                 newIndicesArray.push(m_pu_new, m_new, p_orig);
-                 newIndicesArray.push(u_orig, m_pu_new, m_new);
-
-            } else { // Only edge u-v is cut
-                // Split face (u,v,p) into (u, m, p) and (m, v, p) respecting winding
-                const idxV1 = faceOriginalIndices.indexOf(u_orig);
-                if ((faceOriginalIndices[(idxV1 + 1) % 3] === v_orig)) { // u->v->p order
-                    newIndicesArray.push(u_orig, m_new, p_orig);
-                    newIndicesArray.push(m_new, v_orig, p_orig);
-                } else { // must be u->p->v or similar, means winding is reversed relative to (u,m,p) (m,v,p)
-                    newIndicesArray.push(p_orig, m_new, u_orig); // Check these carefully
-                    newIndicesArray.push(p_orig, v_orig, m_new);
+            for(const v_idx of faceV) {
+                if (v_idx !== u_orig && v_idx !== v_orig) {
+                    p_orig = v_idx;
+                    break;
                 }
             }
-            facesProcessed.add(faceIndex);
+            if (p_orig === -1) {
+                 console.warn(`Loop Cut: Could not find third vertex for face ${faceIndex} on edge ${edgeKey}. Skipping split for this face.`);
+                 continue;
+            }
+
+            // Check if the other two edges of this face are also being cut
+            const edge_vp_key = getEdgeKey(v_orig, p_orig);
+            const edge_pu_key = getEdgeKey(p_orig, u_orig);
+
+            const m_vp_data = newMidpointVerticesData.get(edge_vp_key);
+            const m_pu_data = newMidpointVerticesData.get(edge_pu_key);
+
+            // Re-triangulate the face (u_orig, v_orig, p_orig)
+            // This logic assumes triangles. For quads, it's more complex.
+            if (m_vp_data && m_pu_data) { // All 3 edges of the triangle are cut
+                const m_vp_idx = m_vp_data.newIndex;
+                const m_pu_idx = m_pu_data.newIndex;
+                // Original triangle split into 4 new triangles
+                finalNewIndices.push(u_orig, m_new_idx, m_pu_idx);
+                finalNewIndices.push(m_new_idx, v_orig, m_vp_idx);
+                finalNewIndices.push(m_pu_idx, m_vp_idx, p_orig);
+                finalNewIndices.push(m_new_idx, m_vp_idx, m_pu_idx); // Center one
+            } else if (m_vp_data) { // Edges (u,v) and (v,p) are cut
+                const m_vp_idx = m_vp_data.newIndex;
+                // Original triangle split into 3
+                finalNewIndices.push(u_orig, m_new_idx, p_orig);
+                finalNewIndices.push(m_new_idx, m_vp_idx, p_orig); // Check winding
+                finalNewIndices.push(m_new_idx, v_orig, m_vp_idx);
+            } else if (m_pu_data) { // Edges (u,v) and (p,u) are cut
+                const m_pu_idx = m_pu_data.newIndex;
+                // Original triangle split into 3
+                finalNewIndices.push(m_new_idx, v_orig, p_orig);
+                finalNewIndices.push(m_pu_idx, m_new_idx, p_orig); // Check winding
+                finalNewIndices.push(u_orig, m_pu_idx, m_new_idx);
+            } else { // Only edge (u,v) is cut
+                // Original triangle split into 2 new triangles
+                // Ensure correct winding based on original face: (u,v,p) -> (u,m,p) and (m,v,p)
+                // Find original order
+                let u_idx_in_face = -1, v_idx_in_face = -1;
+                for(let k=0; k<3; ++k) {
+                    if(faceV[k] === u_orig) u_idx_in_face = k;
+                    if(faceV[k] === v_orig) v_idx_in_face = k;
+                }
+
+                if (u_idx_in_face !== -1 && v_idx_in_face !== -1) {
+                    if ((u_idx_in_face + 1) % 3 === v_idx_in_face) { // u, v, p order
+                        finalNewIndices.push(u_orig, m_new_idx, p_orig);
+                        finalNewIndices.push(m_new_idx, v_orig, p_orig);
+                    } else { // u, p, v order (or v, u, p)
+                        finalNewIndices.push(u_orig, p_orig, m_new_idx); // Winding might need more checks
+                        finalNewIndices.push(m_new_idx, p_orig, v_orig);
+                    }
+                } else {
+                     console.warn("Loop cut: Could not determine winding for face split", faceIndex);
+                     // Fallback, less reliable winding
+                     finalNewIndices.push(u_orig, m_new_idx, p_orig);
+                     finalNewIndices.push(m_new_idx, v_orig, p_orig);
+                }
+            }
+            facesAlreadySplit.add(faceIndex);
         }
     }
 
-    // Copy original faces that were NOT adjacent to any cut edge
-    const originalFaceCount = indices.length / 3;
+    // Copy original faces that were NOT split by any cut edge
+    const originalFaceCount = originalIndicesArray.length / 3;
     for (let i = 0; i < originalFaceCount; i++) {
-        if (!facesProcessed.has(i)) {
-            newIndicesArray.push(indices[i * 3], indices[i * 3 + 1], indices[i * 3 + 2]);
+        if (!facesAlreadySplit.has(i)) {
+            finalNewIndices.push(originalIndicesArray[i * 3], originalIndicesArray[i * 3 + 1], originalIndicesArray[i * 3 + 2]);
         }
     }
 
-    // 4. Apply New Geometry
+
+    // Apply New Geometry
     const newGeometry = new THREE.BufferGeometry();
     newGeometry.setAttribute('position', new THREE.BufferAttribute(newPositionsArray, 3));
     if (newNormalsArray) newGeometry.setAttribute('normal', new THREE.BufferAttribute(newNormalsArray, 3));
     if (newUVsArray) newGeometry.setAttribute('uv', new THREE.BufferAttribute(newUVsArray, 2));
-    if (newIndicesArray.length > 0) newGeometry.setIndex(newIndicesArray);
-    else { console.warn("Loop Cut: Resulted in zero indices. Applying empty index buffer."); }
 
-    try { newGeometry.computeVertexNormals(); } catch (e) { console.error("Loop Cut: Error computing normals", e); }
-    newGeometry.computeBoundingBox(); newGeometry.computeBoundingSphere();
+    if (finalNewIndices.length > 0) {
+        newGeometry.setIndex(finalNewIndices);
+    } else {
+        console.warn("Loop Cut: Resulted in zero indices. This should not happen if cuts were made.");
+        // Potentially revert or show error
+        cancelLoopCut();
+        return;
+    }
+
+    try {
+        newGeometry.computeVertexNormals();
+    } catch (e) {
+        console.error("Loop Cut: Error computing normals for new geometry", e);
+    }
+    newGeometry.computeBoundingBox();
+    newGeometry.computeBoundingSphere();
 
     const oldGeometry = activeObject.geometry;
-    activeObject.geometry = newGeometry; // <<< CRITICAL ASSIGNMENT
-    if (oldGeometry !== newGeometry) oldGeometry.dispose();
-    console.log("Loop Cut: Assigned new geometry.");
+    activeObject.geometry = newGeometry;
+    if (oldGeometry && oldGeometry !== newGeometry) { // Ensure it's a different object before disposing
+         oldGeometry.dispose();
+    }
+    console.log("Loop Cut: New geometry assigned.");
 
     if (baseGeometries.has(activeObject.uuid)) {
         console.log("Loop Cut: Updating base geometry.");
-        const oldBase = baseGeometries.get(activeObject.uuid); if (oldBase) oldBase.dispose();
+        const oldBase = baseGeometries.get(activeObject.uuid);
+        if (oldBase) oldBase.dispose();
         baseGeometries.set(activeObject.uuid, newGeometry.clone());
-        if (document.getElementById('subdivisionLevelsSlider')) document.getElementById('subdivisionLevelsSlider').value = 0;
+        if (document.getElementById('subdivisionLevelsSlider')) {
+            document.getElementById('subdivisionLevelsSlider').value = 0;
+        }
     }
 
     console.log("Loop Cut applied successfully.");
     cleanupLoopCutMode();
-    showMeshStructure(activeObject);
+    showMeshStructure(activeObject); // Update helpers to reflect the new geometry
 }
 
 // --- START OF MODIFIED/ADDED nanite-ex.js SECTIONS ---
@@ -4213,5 +4913,881 @@ function createOptimizedFaceHelpers(visibleVertices, positions, matrix, faceOpac
       console.timeEnd("OptimizedFaceHelpers");
 
 }
+
+//-------------------------------//
+//----ADVACED NEW TOOLS----------//
+//-------------------------------//
+
+function applyWindowPreset(preset) {
+    currentWindowPreset = preset;
+    console.log("Window preset selected:", preset);
+    // You might want to visually indicate the active preset
+    // And potentially update the window tool's input fields if they are visible
+    const doorWidthInput = document.getElementById('windowWidthInput');
+    const doorHeightInput = document.getElementById('windowHeightInput');
+    const doorDepthInput = document.getElementById('windowDepthInput');
+    const sillHeightInput = document.getElementById('windowSillHeightInput');
+
+    if (doorWidthInput) doorWidthInput.value = preset.width;
+    if (doorHeightInput) doorHeightInput.value = preset.height;
+    if (doorDepthInput) doorDepthInput.value = preset.depth;
+    if (sillHeightInput) sillHeightInput.value = preset.sill;
+
+    alert(`Preset selected: ${preset.width}x${preset.height}. Activate Window tool to place.`);
+    document.getElementById('window-presets-panel').style.display='none';
+}
+
+// ============================================
+// === NEW: Roof Tool Implementation ===
+// ============================================
+function initRoofTool() {
+    roofPoints = [];
+    if (!roofPreviewMesh) {
+        // For flat roof preview, a simple line loop
+        const material = new THREE.LineDashedMaterial({ color: 0x00ffff, dashSize: 0.2, gapSize: 0.1 });
+        roofPreviewMesh = new THREE.LineLoop(new THREE.BufferGeometry(), material);
+        roofPreviewMesh.renderOrder = 990; // Below other helpers
+        scene.add(roofPreviewMesh);
+    }
+    roofPreviewMesh.geometry.setFromPoints([]);
+    roofPreviewMesh.visible = true;
+    if (controls) controls.enabled = false;
+    renderer.domElement.style.cursor = 'crosshair';
+    console.log("Roof tool initialized. Click to define footprint points on ground. Right-click to finish.");
+}
+
+function handleRoofPreview(event) {
+    if (roofPoints.length === 0) {
+        roofPreviewMesh.visible = false;
+        return;
+    }
+    const intersection = getGroundPlaneIntersection();
+    if (intersection) {
+        const currentPoints = [...roofPoints, intersection.clone()];
+        roofPreviewMesh.geometry.dispose();
+        roofPreviewMesh.geometry = new THREE.BufferGeometry().setFromPoints(currentPoints);
+        if (roofPreviewMesh.isLine) roofPreviewMesh.computeLineDistances(); // For dashed lines
+        roofPreviewMesh.visible = true;
+    } else {
+        roofPreviewMesh.visible = false;
+    }
+}
+
+function handleRoofPlacementPoint(event) {
+    const intersection = getGroundPlaneIntersection();
+    if (intersection) {
+        roofPoints.push(intersection.clone());
+        console.log(`Roof point ${roofPoints.length} added.`);
+        // Update preview to show confirmed points as a fixed line
+        if (roofPoints.length >= 2) {
+            const tempLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(roofPoints), new THREE.LineBasicMaterial({color: 0x00dddd}));
+            scene.add(tempLine); // You might add these to a temporary group
+        }
+    }
+}
+
+/*function createRoof() {
+    if (roofPoints.length < 3) {
+        alert("Please define at least 3 points for the roof footprint.");
+        cleanupRoofTool();
+        return;
+    }
+
+    const roofType = document.getElementById('roofTypeSelect').value;
+    const roofHeight = parseFloat(document.getElementById('roofHeightInput').value) || 2.5;
+    const roofOverhang = parseFloat(document.getElementById('roofOverhangInput').value) || 0.3;
+    const roofPitch = parseFloat(document.getElementById('roofPitchInput').value) || 30; // Degrees
+
+    // Create footprint shape (ensure Y is 0 for ground plane)
+    const footprintShape = new THREE.Shape(roofPoints.map(p => new THREE.Vector2(p.x, p.z)));
+
+    // Apply overhang (optional, complex for arbitrary polygons, simpler for convex)
+    // For simplicity, we'll skip complex overhang calculation for now.
+    // A true overhang would involve offsetting the polygon edges outwards.
+
+    let roofGeometry;
+    const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513, side: THREE.DoubleSide, roughness: 0.8, metalness: 0.1 });
+
+    if (roofType === 'flat') {
+        const extrudeSettings = { depth: 0.2, bevelEnabled: false }; // Small thickness for flat roof
+        roofGeometry = new THREE.ExtrudeGeometry(footprintShape, extrudeSettings);
+        roofGeometry.rotateX(-Math.PI / 2); // Orient flat on XZ plane
+        roofGeometry.translate(0, roofHeight, 0); // Move to roof height
+    } else if (roofType === 'gable') {
+        // Simple Gable: Extrude footprint to eave height, then add triangular prisms
+        // This is a simplified gable creation. A more robust one would identify longest axis for ridge.
+        const eaveHeight = roofHeight;
+        const ridgeHeight = eaveHeight + (footprintShape.getBoundingBox().getSize(new THREE.Vector2()).x / 2) * Math.tan(THREE.MathUtils.degToRad(roofPitch)); // Approx ridge height
+
+        // For a very basic gable, we'll create a custom geometry.
+        // This will be a very simplified representation.
+        // 1. Extrude base to eave height (like a box) - or just use walls as base.
+        // 2. Create two sloped planes.
+        // For now, let's make a "tent-like" structure over the footprint.
+        const vertices = [];
+        const indices = [];
+        const footprintVerts2D = footprintShape.getPoints(); // Get Vector2 points
+
+        // Base vertices at eave height
+        footprintVerts2D.forEach(p => vertices.push(p.x, eaveHeight, p.y));
+
+        // Ridge points - assuming a simple rectangular footprint for this basic gable.
+        // Find approximate center and extent for ridge line (parallel to Z axis for simplicity)
+        const bb = footprintShape.getBoundingBox();
+        const centerX = bb.min.x + (bb.max.x - bb.min.x) / 2;
+        vertices.push(centerX, ridgeHeight, bb.min.y); // Ridge point 1
+        vertices.push(centerX, ridgeHeight, bb.max.y); // Ridge point 2
+
+        // This is becoming too complex for a quick implementation.
+        // A simpler gable approach: Extrude a triangular profile along the footprint's "length".
+        // Fallback to flat roof if gable is too complex for initial setup:
+        console.warn("Simple Gable roof is complex to generate dynamically for arbitrary footprints. Creating a Flat roof instead for now.");
+        const extrudeSettings = { depth: 0.2, bevelEnabled: false };
+        roofGeometry = new THREE.ExtrudeGeometry(footprintShape, extrudeSettings);
+        roofGeometry.rotateX(-Math.PI / 2);
+        roofGeometry.translate(0, roofHeight, 0);
+    }
+    // else if (roofType === 'hip') { ... more complex ... }
+
+    if (roofGeometry) {
+        const roofMesh = new THREE.Mesh(roofGeometry, roofMaterial);
+        roofMesh.name = "Roof_" + Date.now();
+        addObjectToScene(roofMesh, 'roof'); // Assuming addObjectToScene handles hierarchy
+        registerArchitecturalElement(roofMesh, 'roof');
+        console.log("Roof created:", roofMesh.name);
+    }
+
+    cleanupRoofTool();
+}*/
+
+function createRoof() {
+    if (roofPoints.length < 3) {
+        alert("Please define at least 3 points for the roof footprint.");
+        cleanupRoofTool();
+        return;
+    }
+
+    const roofType = document.getElementById('roofTypeSelect').value;
+    const roofEaveHeight = parseFloat(document.getElementById('roofHeightInput').value) || 2.5;
+    const roofPitch = parseFloat(document.getElementById('roofPitchInput').value) || 30;
+
+    const worldFootprintPoints = roofPoints.map(p => p.clone());
+    const localOrigin = worldFootprintPoints[0].clone();
+
+    let footprintPointsLocal2D = worldFootprintPoints.map(p_world =>
+        new THREE.Vector2(p_world.x - localOrigin.x, p_world.z - localOrigin.z)
+    );
+
+    // Check and fix winding order
+    let area = 0;
+    for (let i = 0; i < footprintPointsLocal2D.length; i++) {
+        const p1 = footprintPointsLocal2D[i];
+        const p2 = footprintPointsLocal2D[(i + 1) % footprintPointsLocal2D.length];
+        area += (p1.x * p2.y - p1.y * p2.x);
+    }
+    area /= 2;
+
+    if (area < 0) {
+        console.log("Roof footprint was clockwise, reversing for CCW.");
+        footprintPointsLocal2D.reverse();
+    }
+
+    const footprintShapeLocal = new THREE.Shape(footprintPointsLocal2D);
+
+    let roofGeometry;
+    const roofMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x8B4513, 
+        side: THREE.DoubleSide, 
+        roughness: 0.8, 
+        metalness: 0.1 
+    });
+
+    if (roofType === 'flat') {
+        const extrudeSettings = { depth: 0.2, bevelEnabled: false };
+        roofGeometry = new THREE.ExtrudeGeometry(footprintShapeLocal, extrudeSettings);
+        roofGeometry.rotateX(-Math.PI / 2);
+        // Translate to correct position and height
+        roofGeometry.translate(localOrigin.x, localOrigin.y + roofEaveHeight, localOrigin.z);
+    } else if (roofType === 'gable') {
+        console.warn("Simple Gable roof is complex. Creating a Flat roof instead for now.");
+        const extrudeSettings = { depth: 0.2, bevelEnabled: false };
+        roofGeometry = new THREE.ExtrudeGeometry(footprintShapeLocal, extrudeSettings);
+        roofGeometry.rotateX(-Math.PI / 2);
+        roofGeometry.translate(localOrigin.x, localOrigin.y + roofEaveHeight, localOrigin.z);
+    }
+
+    if (roofGeometry) {
+        const roofMesh = new THREE.Mesh(roofGeometry, roofMaterial);
+        roofMesh.name = "Roof_" + Date.now();
+        // Position at world origin since geometry is already translated
+        roofMesh.position.set(0, 0, 0);
+        
+        addObjectToScene(roofMesh, 'roof');
+        registerArchitecturalElement(roofMesh, 'roof');
+        console.log("Roof created:", roofMesh.name, "at", localOrigin);
+    }
+    cleanupRoofTool();
+}
+
+function cleanupRoofTool() {
+    roofPoints = [];
+    if (roofPreviewMesh) {
+        roofPreviewMesh.visible = false;
+        roofPreviewMesh.geometry.dispose(); // Clear geometry
+    }
+    // Restore controls if appropriate
+    if (!activeArchTool && !isTransforming && !isLoopCutMode && !splineCreationMode) {
+        if (controls) controls.enabled = true;
+    }
+    if (renderer.domElement) renderer.domElement.style.cursor = 'default';
+}
+
+
+// ============================================
+// === NEW: Room Tool Implementation ===
+// ============================================
+function initRoomTool() {
+    roomStartPoint = null;
+    roomEndPoint = null;
+    if (!roomPreviewMesh) {
+        const geometry = new THREE.BoxGeometry(1, 1, 1); // Dummy
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.4, wireframe: true });
+        roomPreviewMesh = new THREE.Mesh(geometry, material);
+        roomPreviewMesh.renderOrder = 990;
+        scene.add(roomPreviewMesh);
+    }
+    roomPreviewMesh.visible = false;
+    if (controls) controls.enabled = false;
+    renderer.domElement.style.cursor = 'crosshair';
+    console.log("Room tool initialized. Click first corner, then second corner.");
+}
+
+function handleRoomPreview(event) {
+    if (!roomStartPoint) {
+        roomPreviewMesh.visible = false;
+        return;
+    }
+    const intersection = getGroundPlaneIntersection();
+    if (intersection) {
+        roomEndPoint = intersection.clone();
+        const roomHeight = parseFloat(document.getElementById('roomHeightInput')?.value) || 2.5;
+
+        const minX = Math.min(roomStartPoint.x, roomEndPoint.x);
+        const maxX = Math.max(roomStartPoint.x, roomEndPoint.x);
+        const minZ = Math.min(roomStartPoint.z, roomEndPoint.z);
+        const maxZ = Math.max(roomStartPoint.z, roomEndPoint.z);
+
+        const width = maxX - minX;
+        const depth = maxZ - minZ;
+
+        if (width > 0.01 && depth > 0.01) {
+            roomPreviewMesh.geometry.dispose();
+            roomPreviewMesh.geometry = new THREE.BoxGeometry(width, roomHeight, depth);
+            roomPreviewMesh.position.set(minX + width / 2, roomHeight / 2, minZ + depth / 2);
+            roomPreviewMesh.visible = true;
+        } else {
+            roomPreviewMesh.visible = false;
+        }
+    } else {
+        roomPreviewMesh.visible = false;
+    }
+}
+
+function handleRoomPlacementPoint(event) {
+    const intersection = getGroundPlaneIntersection();
+    if (!intersection) return;
+
+    if (!roomStartPoint) {
+        roomStartPoint = intersection.clone();
+        console.log("Room start point set.");
+        roomPreviewMesh.visible = true; // Show preview from now on
+    } else {
+        roomEndPoint = intersection.clone(); // Second click confirms
+        console.log("Room end point set.");
+        createRoom();
+        // Deactivate tool after creation or reset for new room
+        // For now, deactivate:
+        deactivateCurrentArchTool();
+    }
+}
+
+function createRoom() {
+    if (!roomStartPoint || !roomEndPoint) {
+        console.warn("Room points not defined.");
+        cleanupRoomTool();
+        return;
+    }
+
+    const wallHeight = parseFloat(document.getElementById('roomHeightInput')?.value) || 2.5;
+    const wallThickness = parseFloat(document.getElementById('roomWallThicknessInput')?.value) || 0.2;
+    const addFloor = document.getElementById('roomAddFloorCheckbox')?.checked;
+    const addCeiling = document.getElementById('roomAddCeilingCheckbox')?.checked;
+
+    const minX = Math.min(roomStartPoint.x, roomEndPoint.x);
+    const maxX = Math.max(roomStartPoint.x, roomEndPoint.x);
+    const minZ = Math.min(roomStartPoint.z, roomEndPoint.z);
+    const maxZ = Math.max(roomStartPoint.z, roomEndPoint.z);
+
+    const roomWidth = maxX - minX; // Along X
+    const roomDepth = maxZ - minZ; // Along Z
+
+    if (roomWidth < 0.1 || roomDepth < 0.1) {
+        alert("Room dimensions are too small.");
+        cleanupRoomTool();
+        return;
+    }
+
+    const roomGroup = new THREE.Group();
+    roomGroup.name = "Room_" + Date.now();
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.8, metalness: 0.2 });
+
+    // Create 4 walls
+    const wallData = [
+        { x: minX + roomWidth / 2, z: minZ, w: roomWidth, d: wallThickness, rotY: 0 },            // Front wall
+        { x: minX + roomWidth / 2, z: maxZ, w: roomWidth, d: wallThickness, rotY: 0 },            // Back wall
+        { x: minX, z: minZ + roomDepth / 2, w: wallThickness, d: roomDepth, rotY: Math.PI / 2 }, // Left wall (width is thickness, depth is length)
+        { x: maxX, z: minZ + roomDepth / 2, w: wallThickness, d: roomDepth, rotY: Math.PI / 2 }  // Right wall
+    ];
+
+    wallData.forEach(data => {
+        // Adjust for wall thickness: for parallel walls, one needs to be inset/outset
+        // For simplicity, we'll center them, creating slight overlap or gap at corners.
+        // A proper solution involves adjusting positions and lengths based on thickness.
+
+        // For this simple version, assuming BoxGeometry is (width, height, depth)
+        // For walls along X, width is roomWidth, depth is wallThickness
+        // For walls along Z, width is wallThickness, depth is roomDepth
+        let geom;
+        if (data.rotY === 0) { // Front/Back
+             geom = new THREE.BoxGeometry(data.w, wallHeight, data.d);
+        } else { // Left/Right
+             geom = new THREE.BoxGeometry(data.d, wallHeight, data.w); // Swap w and d for geometry if aligning Box's X to world Z
+             // Better: BoxGeometry(wallThickness, wallHeight, roomDepth) and then rotate correctly.
+             // Let's stick to Box(X_len, Y_len, Z_len) and apply rotation.
+             // So for side walls, X_len is roomDepth, Z_len is wallThickness for the geom.
+             geom = new THREE.BoxGeometry(roomDepth + wallThickness, wallHeight, wallThickness); // Extend length to meet corners
+             // This needs careful corner handling.
+             // The current wallData assumes wallThickness is aligned with Z for front/back, and with X for left/right.
+             // Let's use the createWallSegment logic if available for better control.
+             // For now, a simpler Box:
+             if (data.rotY === 0) geom = new THREE.BoxGeometry(roomWidth, wallHeight, wallThickness);
+             else geom = new THREE.BoxGeometry(roomDepth, wallHeight, wallThickness); // If rotating, width is length
+        }
+
+        const wall = new THREE.Mesh(geom, wallMaterial.clone());
+        wall.position.set(data.x, wallHeight / 2, data.z);
+        wall.rotation.y = data.rotY;
+        roomGroup.add(wall);
+    });
+
+
+    // Floor
+    if (addFloor) {
+        const floorGeom = new THREE.BoxGeometry(roomWidth, 0.1, roomDepth);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x999999 });
+        const floorMesh = new THREE.Mesh(floorGeom, floorMat);
+        floorMesh.position.set(minX + roomWidth / 2, -0.05, minZ + roomDepth / 2); // Slightly below origin
+        roomGroup.add(floorMesh);
+    }
+
+    // Ceiling
+    if (addCeiling) {
+        const ceilGeom = new THREE.BoxGeometry(roomWidth, 0.1, roomDepth);
+        const ceilMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee });
+        const ceilMesh = new THREE.Mesh(ceilGeom, ceilMat);
+        ceilMesh.position.set(minX + roomWidth / 2, wallHeight + 0.05, minZ + roomDepth / 2); // Slightly above walls
+        roomGroup.add(ceilMesh);
+    }
+
+    addObjectToScene(roomGroup, 'room');
+    registerArchitecturalElement(roomGroup, 'room');
+    console.log("Room created:", roomGroup.name);
+    cleanupRoomTool();
+}
+
+function cleanupRoomTool() {
+    roomStartPoint = null;
+    roomEndPoint = null;
+    if (roomPreviewMesh) {
+        roomPreviewMesh.visible = false;
+        roomPreviewMesh.geometry.dispose();
+    }
+    if (!activeArchTool && !isTransforming && !isLoopCutMode && !splineCreationMode) {
+        if (controls) controls.enabled = true;
+    }
+    if (renderer.domElement) renderer.domElement.style.cursor = 'default';
+}
+
+// ============================================
+// === NEW: Curved Wall Tool Implementation ===
+// ============================================
+function initCurvedWallTool() {
+    curvedWallPoints = [];
+    if (!curvedWallPreviewLine) {
+        const material = new THREE.LineDashedMaterial({ color: 0xff00ff, dashSize: 0.15, gapSize: 0.08 });
+        curvedWallPreviewLine = new THREE.Line(new THREE.BufferGeometry(), material);
+        curvedWallPreviewLine.renderOrder = 990;
+        scene.add(curvedWallPreviewLine);
+    }
+    curvedWallPreviewLine.geometry.setFromPoints([]);
+    curvedWallPreviewLine.visible = false;
+    if (controls) controls.enabled = false;
+    renderer.domElement.style.cursor = 'crosshair';
+    console.log("Curved Wall tool: Click 3 points for quadratic curve (start, control, end).");
+}
+
+function handleCurvedWallPreview(event) {
+    if (curvedWallPoints.length === 0 || curvedWallPoints.length >= 3) {
+        curvedWallPreviewLine.visible = false;
+        return;
+    }
+    const intersection = getGroundPlaneIntersection();
+    if (intersection) {
+        let previewCurvePoints = [];
+        if (curvedWallPoints.length === 1) { // Drawing line from start to control point
+            previewCurvePoints = [curvedWallPoints[0], intersection];
+        } else if (curvedWallPoints.length === 2) { // Drawing quadratic from start, control, to mouse (end)
+            const segments = parseInt(document.getElementById('curveSegmentsInput')?.value) || 20;
+            previewCurvePoints = getQuadraticBezierPoints(curvedWallPoints[0], curvedWallPoints[1], intersection, segments);
+        }
+
+        if (previewCurvePoints.length > 0) {
+            curvedWallPreviewLine.geometry.dispose();
+            curvedWallPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints(previewCurvePoints);
+            curvedWallPreviewLine.computeLineDistances();
+            curvedWallPreviewLine.visible = true;
+        }
+    } else {
+        curvedWallPreviewLine.visible = false;
+    }
+}
+
+function handleCurvedWallPlacementPoint(event) {
+    if (curvedWallPoints.length >= 3) return; // Max 3 points for quadratic
+
+    const intersection = getGroundPlaneIntersection();
+    if (intersection) {
+        curvedWallPoints.push(intersection.clone());
+        console.log(`Curved wall point ${curvedWallPoints.length} added.`);
+
+        if (curvedWallPoints.length === 1) {
+            curvedWallPreviewLine.visible = true; // Start showing preview
+            // Show a small dot or line for the first point
+            curvedWallPreviewLine.geometry.dispose();
+            curvedWallPreviewLine.geometry = new THREE.BufferGeometry().setFromPoints([curvedWallPoints[0], curvedWallPoints[0].clone().add(new THREE.Vector3(0.01,0,0.01))]);
+            curvedWallPreviewLine.computeLineDistances();
+        } else if (curvedWallPoints.length === 3) {
+            createCurvedWall();
+            // Deactivate after creation for this simple tool
+            // deactivateCurrentArchTool(); // createCurvedWall will call cleanup
+        }
+    }
+}
+
+function createCurvedWall() {
+    if (curvedWallPoints.length !== 3) {
+        alert("Please define 3 points for the curved wall.");
+        cleanupCurvedWallTool();
+        return;
+    }
+
+    const wallHeight = parseFloat(document.getElementById('curvedWallHeightInput')?.value) || 2.5;
+    const wallThickness = parseFloat(document.getElementById('curvedWallThicknessInput')?.value) || 0.2;
+    const segments = parseInt(document.getElementById('curveSegmentsInput')?.value) || 20;
+
+    const [p0, p1, p2] = curvedWallPoints; // These are Vector3, need Vector2 for Shape
+
+    // Create 2D points for the curve path (on XZ plane)
+    const curve = new THREE.QuadraticBezierCurve3(p0, p1, p2);
+    const pathPoints2D = curve.getPoints(segments).map(p => new THREE.Vector2(p.x, p.z));
+
+    // Create a shape from these 2D points for extrusion
+    // For a wall, we need two parallel curves for thickness.
+    // This is non-trivial for arbitrary curves.
+    // Simplification: Extrude the single curve path and give it thickness later, or use a Line geometry.
+    // Better: Use THREE.Shape and extrude it with some depth.
+    // For a simple single-surface curved wall (like a ribbon):
+    const shape = new THREE.Shape(pathPoints2D);
+
+    const extrudeSettings = {
+        steps: 2, // Minimal steps for a "flat" extrusion
+        depth: wallHeight, // Extrude upwards
+        bevelEnabled: false
+    };
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geometry.rotateX(-Math.PI / 2); // Orient extrusion to be vertical from XZ plane
+    // The thickness is not yet handled by this simple extrusion.
+    // To add thickness, you would typically offset the 2D path and create a shape with a hole, or use CSG.
+
+    // For a simpler "thick line" approach:
+    // This will create a flat, vertical curved surface. Thickness is visual, not geometric.
+    // const curvePath = new THREE.Path(pathPoints2D);
+    // const geometry = new THREE.ExtrudeGeometry(curvePath.getShapes()[0], extrudeSettings);
+
+    // A mesh with actual thickness would be more involved.
+    // For now, this creates a single surface.
+    const material = new THREE.MeshStandardMaterial({ color: 0xb0b0b0, side: THREE.DoubleSide, roughness:0.7 });
+    const curvedWallMesh = new THREE.Mesh(geometry, material);
+    curvedWallMesh.name = "CurvedWall_" + Date.now();
+
+    // To give it apparent thickness, one might duplicate and offset, or use a custom shader.
+    // For now, it's a single extruded surface.
+    // The position of the geometry will be based on the points' original Y values (should be 0).
+
+    addObjectToScene(curvedWallMesh, 'curved-wall');
+    registerArchitecturalElement(curvedWallMesh, 'curved-wall');
+    console.log("Curved Wall created:", curvedWallMesh.name);
+    cleanupCurvedWallTool();
+}
+
+/*function createCurvedWall() {
+    if (curvedWallPoints.length !== 3) {
+        alert("Please define 3 points for the curved wall.");
+        cleanupCurvedWallTool();
+        return;
+    }
+
+    const wallHeight = parseFloat(document.getElementById('curvedWallHeightInput')?.value) || 2.5;
+    const segments = parseInt(document.getElementById('curveSegmentsInput')?.value) || 20;
+
+    const [p0_world, p1_world, p2_world] = curvedWallPoints;
+
+    // Calculate the center/origin point for positioning
+    const center = new THREE.Vector3();
+    center.addVectors(p0_world, p2_world).multiplyScalar(0.5); // Midpoint between start and end
+
+    // Create curve points relative to center
+    const p0_local = p0_world.clone().sub(center);
+    const p1_local = p1_world.clone().sub(center);
+    const p2_local = p2_world.clone().sub(center);
+
+    // Create the curve in local space
+    const curve_local = new THREE.QuadraticBezierCurve3(p0_local, p1_local, p2_local);
+    
+    // Get points and convert to 2D for shape creation
+    const pathPoints3D = curve_local.getPoints(segments);
+    const pathPoints2D = pathPoints3D.map(p => new THREE.Vector2(p.x, p.z));
+    
+    const shape = new THREE.Shape(pathPoints2D);
+
+    const extrudeSettings = {
+        steps: 1,
+        depth: wallHeight,
+        bevelEnabled: false
+    };
+    
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    
+    // Rotate to stand vertically
+    geometry.rotateX(-Math.PI / 2);
+
+    const material = new THREE.MeshStandardMaterial({ 
+        color: 0xb0b0b0, 
+        side: THREE.DoubleSide, 
+        roughness: 0.7 
+    });
+    
+    const curvedWallMesh = new THREE.Mesh(geometry, material);
+    curvedWallMesh.name = "CurvedWall_" + Date.now();
+    
+    // Position the mesh at the calculated center point
+    curvedWallMesh.position.copy(center);
+    curvedWallMesh.position.y = 0; // Ensure it's on the ground
+    
+    addObjectToScene(curvedWallMesh, 'curved-wall');
+    registerArchitecturalElement(curvedWallMesh, 'curved-wall');
+    console.log("Curved Wall created:", curvedWallMesh.name, "at", curvedWallMesh.position);
+    cleanupCurvedWallTool();
+}*/
+
+function cleanupCurvedWallTool() {
+    curvedWallPoints = [];
+    if (curvedWallPreviewLine) {
+        curvedWallPreviewLine.visible = false;
+        curvedWallPreviewLine.geometry.dispose();
+    }
+    if (!activeArchTool && !isTransforming && !isLoopCutMode && !splineCreationMode) {
+        if (controls) controls.enabled = true;
+    }
+    if (renderer.domElement) renderer.domElement.style.cursor = 'default';
+}
+
+// ============================================
+// === NEW: Terrain Tool Implementation (Simple Plane) ===
+// ============================================
+function initTerrainTool() {
+    if (!terrainPreviewMesh) {
+        const geometry = new THREE.PlaneGeometry(1, 1, 1, 1); // Dummy
+        const material = new THREE.MeshBasicMaterial({ color: 0x228B22, transparent: true, opacity: 0.5, wireframe: true });
+        terrainPreviewMesh = new THREE.Mesh(geometry, material);
+        terrainPreviewMesh.renderOrder = 990;
+        terrainPreviewMesh.rotation.x = -Math.PI / 2; // Lay flat
+        scene.add(terrainPreviewMesh);
+    }
+    terrainPreviewMesh.visible = false;
+    if (controls) controls.enabled = false;
+    renderer.domElement.style.cursor = 'crosshair';
+    console.log("Terrain tool initialized. Click to place center of terrain plane.");
+}
+
+function handleTerrainPreview(event) {
+    const intersection = getGroundPlaneIntersection();
+    if (intersection) {
+        const width = parseFloat(document.getElementById('terrainWidthInput')?.value) || 20;
+        const depth = parseFloat(document.getElementById('terrainDepthInput')?.value) || 20;
+        const wSeg = parseInt(document.getElementById('terrainWidthSegmentsInput')?.value) || 10;
+        const dSeg = parseInt(document.getElementById('terrainDepthSegmentsInput')?.value) || 10;
+
+        terrainPreviewMesh.geometry.dispose();
+        terrainPreviewMesh.geometry = new THREE.PlaneGeometry(width, depth, wSeg, dSeg);
+        terrainPreviewMesh.position.copy(intersection);
+        terrainPreviewMesh.position.y += 0.01; // Slight offset to avoid z-fighting with grid
+        terrainPreviewMesh.visible = true;
+    } else {
+        terrainPreviewMesh.visible = false;
+    }
+}
+
+function handleTerrainPlacement(event) {
+    const intersection = getGroundPlaneIntersection();
+    if (intersection && terrainPreviewMesh && terrainPreviewMesh.visible) {
+        createTerrainMode(intersection); // Pass center point
+        // Deactivate after placement
+        deactivateCurrentArchTool();
+    }
+}
+
+function createTerrainMode(centerPoint) {
+    const width = parseFloat(document.getElementById('terrainWidthInput')?.value) || 20;
+    const depth = parseFloat(document.getElementById('terrainDepthInput')?.value) || 20;
+    const wSeg = parseInt(document.getElementById('terrainWidthSegmentsInput')?.value) || 10;
+    const dSeg = parseInt(document.getElementById('terrainDepthSegmentsInput')?.value) || 10;
+
+    const terrainGeometry = new THREE.PlaneGeometry(width, depth, wSeg, dSeg);
+    // For actual terrain, you'd now modify the Y values of terrainGeometry.attributes.position
+    // e.g., using a noise function or sculpting tools.
+    // For this basic version, it's a flat plane.
+
+    const terrainMaterial = new THREE.MeshStandardMaterial({ color: 0x556B2F, roughness: 0.9, metalness: 0.05 }); // Dark Olive Green
+    const terrainMesh = new THREE.Mesh(terrainGeometry, terrainMaterial);
+    terrainMesh.name = "Terrain_" + Date.now();
+    terrainMesh.rotation.x = -Math.PI / 2; // Lay flat
+    terrainMesh.position.copy(centerPoint);
+    terrainMesh.position.y += 0.005; // Ensure slightly above grid
+
+    addObjectToScene(terrainMesh, 'terrain');
+    registerArchitecturalElement(terrainMesh, 'terrain');
+    console.log("Terrain plane created:", terrainMesh.name);
+    cleanupTerrainTool();
+}
+
+function cleanupTerrainTool() {
+    if (terrainPreviewMesh) {
+        terrainPreviewMesh.visible = false;
+        terrainPreviewMesh.geometry.dispose();
+    }
+    if (!activeArchTool && !isTransforming && !isLoopCutMode && !splineCreationMode) {
+        if (controls) controls.enabled = true;
+    }
+    if (renderer.domElement) renderer.domElement.style.cursor = 'default';
+}
+
+
+
+
+// Ensure this function is within the scope where THREE, scene, CSG,
+function initBooleanSubtractTool() {
+    booleanTargetMesh = null;
+    booleanToolMesh = null;
+    // If one architectural element is already selected, consider it the target
+    if (selectedArchElements.length === 1 && selectedArchElements[0].isMesh) {
+        booleanTargetMesh = selectedArchElements[0];
+        // Visually indicate it's the target (e.g., different highlight)
+        // For simplicity, we rely on the standard selection highlight for now.
+        alert("Boolean Subtract: Target mesh selected (" + (booleanTargetMesh.name || "Unnamed Mesh") + ").\nNow click the second mesh (the one to subtract).");
+        console.log("Boolean Subtract: Target pre-selected:", booleanTargetMesh.name || booleanTargetMesh.uuid);
+    } else {
+        deselectAllArchElements(); // Clear any other selection
+        alert("Boolean Subtract: Click the first mesh (the object to be hollowed/target).");
+        console.log("Boolean Subtract: Awaiting target mesh selection.");
+    }
+    renderer.domElement.style.cursor = 'pointer'; // Indicate object selection
+    if (controls) controls.enabled = true; // Ensure orbit controls are ON for selection
+}
+
+function cleanupBooleanToolState() {
+    booleanTargetMesh = null;
+    booleanToolMesh = null;
+    // If you had special highlighting for boolean target/tool, reset it here.
+    console.log("Boolean Subtract tool state cleaned up.");
+    // The main 'deselectAllArchElements()' called by deactivateCurrentArchTool or
+    // a new selection will handle visual deselection.
+}
+
+function applyBooleanSubtract(targetMesh, toolMesh) {
+    if (!targetMesh || !toolMesh) {
+        console.error("Boolean subtract: Target or tool mesh is missing.");
+        alert("Boolean subtract: Target or tool mesh is missing. Please select two meshes.");
+        return;
+    }
+
+    if (typeof CSG === 'undefined') {
+        alert("CSG library is not loaded. Boolean operations unavailable. Ensure 'js/libs/three-csg-bundle.js' (or similar) is included correctly.");
+        console.error("Global CSG object is not defined. Boolean operations cannot proceed.");
+        return;
+    }
+
+    if (!targetMesh.isMesh || !toolMesh.isMesh) {
+        alert("Boolean subtract: Both selections must be valid Three.js meshes.");
+        console.error("Boolean subtract: One or both selections are not THREE.Mesh instances.");
+        return;
+    }
+
+    if (!targetMesh.geometry || !toolMesh.geometry) {
+        alert("Boolean subtract: One or both selected meshes lack geometry.");
+        console.error("Boolean subtract: Geometry missing from one or both meshes.");
+        return;
+    }
+
+    console.log(`Applying Boolean Subtract:`);
+    console.log(`  Target: '${targetMesh.name || targetMesh.uuid}' (Geometry: ${targetMesh.geometry.type})`);
+    console.log(`  Tool:   '${toolMesh.name || toolMesh.uuid}' (Geometry: ${toolMesh.geometry.type})`);
+
+    // It's crucial that the geometries are BufferGeometry and ideally triangulated.
+    // three-csg-ts generally handles this, but pre-triangulation can sometimes help with complex inputs.
+
+    // Store original materials and visibility for potential restoration on error
+    const originalTargetMaterial = targetMesh.material;
+    const originalToolMaterial = toolMesh.material; // Though tool mesh is usually consumed
+    const originalTargetVisibility = targetMesh.visible;
+    const originalToolVisibility = toolMesh.visible;
+
+    // Temporarily hide original meshes during operation to avoid visual artifacts
+    targetMesh.visible = false;
+    toolMesh.visible = false;
+
+    // It's good practice to ensure matrices are up-to-date
+    targetMesh.updateMatrixWorld(true); // true to update children if it's a group
+    toolMesh.updateMatrixWorld(true);
+
+    try {
+        // Convert THREE.Mesh to CSG objects.
+        // The library should internally handle the mesh's world matrix.
+        const targetCSG = CSG.fromMesh(targetMesh);
+        const toolCSG = CSG.fromMesh(toolMesh);
+
+        // Perform the subtraction operation (target - tool)
+        console.log("Performing CSG subtraction...");
+        const resultCSG = targetCSG.subtract(toolCSG);
+        console.log("CSG subtraction completed.");
+
+        // Convert the CSG result back to a THREE.Mesh
+        // The resulting mesh's geometry will be in world space if fromMesh handled matrices.
+        // We then apply the targetMesh's original world matrix to place it correctly.
+        // OR, if fromMesh puts geometry in local space, we use targetMesh.matrix.
+        // The documentation/behavior of CSG.fromMesh regarding matrices is key.
+        // Let's assume toMesh should place it in world coordinates relative to the target's original transform.
+        const resultMesh = CSG.toMesh(resultCSG, targetMesh.matrixWorld.clone());
+
+        // Apply material from the original target object.
+        // It's good to clone the material if you might modify it,
+        // or if the original targetMesh might still exist in some undo state.
+        if (originalTargetMaterial) {
+            resultMesh.material = Array.isArray(originalTargetMaterial) ? originalTargetMaterial.map(m => m.clone()) : originalTargetMaterial.clone();
+        } else {
+            resultMesh.material = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.7 }); // Fallback material
+        }
+        resultMesh.castShadow = targetMesh.castShadow;
+        resultMesh.receiveShadow = targetMesh.receiveShadow;
+
+        resultMesh.name = `${targetMesh.name || 'Object'}_HollowedBy_${toolMesh.name || 'Tool'}`;
+        console.log(`Result mesh created: ${resultMesh.name}`);
+
+        // --- Scene Management ---
+
+        // 1. Remove original meshes from the main 'scene'
+        scene.remove(targetMesh);
+        scene.remove(toolMesh); // The tool mesh is consumed in this operation
+
+        // 2. Remove from your architecturalElements array
+        const targetArchIndex = architecturalElements.indexOf(targetMesh);
+        if (targetArchIndex > -1) {
+            architecturalElements.splice(targetArchIndex, 1);
+        }
+        const toolArchIndex = architecturalElements.indexOf(toolMesh);
+        if (toolArchIndex > -1) {
+            architecturalElements.splice(toolArchIndex, 1);
+        }
+
+        // 3. Dispose of old geometries and materials to free up GPU memory
+        if (targetMesh.geometry) targetMesh.geometry.dispose();
+        if (Array.isArray(originalTargetMaterial)) {
+            originalTargetMaterial.forEach(m => m.dispose());
+        } else if (originalTargetMaterial) {
+            originalTargetMaterial.dispose();
+        }
+
+        if (toolMesh.geometry) toolMesh.geometry.dispose();
+        if (Array.isArray(originalToolMaterial)) {
+            originalToolMaterial.forEach(m => m.dispose());
+        } else if (originalToolMaterial) {
+            originalToolMaterial.dispose();
+        }
+        console.log("Original meshes disposed.");
+
+        // 4. Add the new resulting mesh to the scene and your tracking arrays
+        addObjectToScene(resultMesh, 'boolean-result'); // Your helper function
+        registerArchitecturalElement(resultMesh, 'boolean-result'); // Your helper function
+        console.log(`'${resultMesh.name}' added to scene and registered.`);
+
+        // 5. Update selection and active object states
+        const wasActiveObjectTarget = (activeObject === targetMesh);
+        deselectAllArchElements(); // Clear current selections
+
+        if (wasActiveObjectTarget) {
+            activeObject = resultMesh; // Make the new mesh the active object
+            if (typeof selectObject === 'function') { // If you have a global selectObject
+                selectObject(resultMesh);
+            }
+        }
+        selectArchElement(resultMesh); // Select the new mesh in your architectural selection
+
+        // 6. Update modeling helpers if applicable
+        if (isModelingMode && activeObject === resultMesh) {
+            console.log("Updating mesh structure for new boolean result...");
+            showMeshStructure(activeObject);
+        }
+
+        alert("Boolean subtraction successful!");
+
+    } catch (error) {
+        console.error("Error during Boolean subtraction operation:", error);
+        alert("Boolean operation failed. Check the browser console for detailed errors. \n\nCommon issues include non-manifold (not watertight) input meshes or very high complexity.");
+
+        // Restore visibility of original meshes on error if they weren't removed yet.
+        // This is a simple error recovery. A proper undo system would be better.
+        targetMesh.visible = originalTargetVisibility;
+        toolMesh.visible = originalToolVisibility;
+        // Re-add to scene if they were removed by a partial success before error
+        if (!scene.children.includes(targetMesh)) scene.add(targetMesh);
+        if (!scene.children.includes(toolMesh)) scene.add(toolMesh);
+
+        console.log("Attempted to restore original meshes visibility due to error.");
+    } finally {
+        // Ensure orbit controls are re-enabled if they were disabled by a tool
+        // (This might be handled by your general tool deactivation logic)
+        if (controls && !isTransforming && !activeArchTool && !isLoopCutMode && !splineCreationMode && !structureSynthToolActive) {
+             // controls.enabled = true; // Be careful not to enable if another tool *should* be active
+        }
+    }
+}
+
 // Ensure init is called on load
 window.addEventListener('load', init);
+
+
+
+
+
+
+
