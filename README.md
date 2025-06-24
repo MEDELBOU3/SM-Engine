@@ -1,17 +1,14 @@
 # ✨ SM-Engine: 3D Modeling & Physics Editor ✨
-<style>
-  /*
- * =========================================
- *  Styles for the SM-Engine Logo
- * =========================================
- */
 
-/* 1. Main Logo Container */
-/* This uses Flexbox to perfectly align the icon and text. */
+<div align="center">
+
+<div class="logo">
+  <style>
+
 .logo {
     display: flex;
     align-items: center;
-    gap: 12px; /* Controls the space between the icon and text */
+    gap: 12px;
     color: #E0E0E0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-weight: 600;
@@ -20,8 +17,7 @@
     cursor: pointer;
 }
 
-/* 2. SVG Icon Styling */
-/* Sets the size and adds a subtle, high-performance drop shadow for depth. */
+
 .logo__svg {
     width: 42px;
     height: 42px;
@@ -29,13 +25,11 @@
     overflow: visible; /* Ensures shadows and strokes aren't clipped */
 }
 
-/* 3. Logo Text Styling */
-/* Styles for the "SM Engine" text. */
+
 .logo__text {
     letter-spacing: 0.5px;
 }
 
-/* Styles for the "TM" trademark symbol to make it look professional. */
 .logo__text-pro {
     font-size: 0.5em;
     vertical-align: super;
@@ -44,32 +38,23 @@
     font-weight: 400;
 }
 
-/*
- * 4. SVG Path Specific Styles
- * These classes are applied directly to the <path> elements inside the SVG.
- * They apply the gradients defined in the SVG's <defs>.
- */
 
-/* Styles the main, outer shape of the logo */
 .logo__main-path {
-    fill: url(#logoMainFill);           /* Applies the dark blue gradient fill */
-    stroke: url(#logoOuterStroke);      /* Applies the metallic gray border */
+    fill: url(#logoMainFill);        
+    stroke: url(#logoOuterStroke);    
     stroke-width: 2;
     stroke-linejoin: round;
 }
 
-/* Styles the inner highlight path to create a 3D bevel effect */
+
 .logo__highlight-path {
-    fill: none;                         /* This path has no fill, only a stroke */
-    stroke: url(#logoInnerHighlight);   /* Applies the bright blue highlight stroke */
+    fill: none;                         
+    stroke: url(#logoInnerHighlight);
     stroke-width: 1.5;
     stroke-linejoin: round;
     opacity: 0.8;
 }
 </style>
-<div align="center">
-<!-- The Logo's HTML Structure -->
-<div class="logo">
     <svg class="logo__svg" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <!-- These gradients MUST remain inside the SVG -->
@@ -86,12 +71,8 @@
                 <stop offset="100%" stop-color="#89cff0" />
             </linearGradient>
         </defs>
-
-        <!-- Apply the .logo__main-path class here -->
         <path class="logo__main-path"
               d="M10 60 L10 15 L20 10 L35 10 L45 10 L60 10 L60 55 L55 60 L35 60 L30 55 L30 35 L40 30 L40 15 L35 10 M30 35 L40 30" />
-        
-        <!-- Apply the .logo__highlight-path class here -->
         <path class="logo__highlight-path"
               d="M12 58 L12 16 L21 12 L35 12 L44 12 L58 12 L58 54 L54 58 L35 58 L32 54 L32 36 L39 32 L39 16" />
     </svg>
