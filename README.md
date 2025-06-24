@@ -1,7 +1,35 @@
 # ✨ SM-Engine: 3D Modeling & Physics Editor ✨
 
 <div align="center">
-  <img src="screenshoots/logo.png" alt="SM-Engine Logo" width="250"/>
+  <svg width="250" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="logoMainFill" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#2c3e50" />
+        <stop offset="100%" stop-color="#1c2833" />
+      </linearGradient>
+      <linearGradient id="logoOuterStroke" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#4e5b6b" />
+        <stop offset="100%" stop-color="#7e8c9d" />
+      </linearGradient>
+      <linearGradient id="logoInnerHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#66b3ff" />
+        <stop offset="100%" stop-color="#89cff0" />
+      </linearGradient>
+    </defs>
+    <path fill="url(#logoMainFill)" 
+          stroke="url(#logoOuterStroke)" 
+          stroke-width="2" 
+          stroke-linejoin="round"
+          d="M10 60 L10 15 L20 10 L35 10 L45 10 L60 10 L60 55 L55 60 L35 60 L30 55 L30 35 L40 30 L40 15 L35 10 M30 35 L40 30" />
+    <path fill="none"
+          stroke="url(#logoInnerHighlight)"
+          stroke-width="1.5"
+          stroke-linejoin="round"
+          opacity="0.8"
+          d="M12 58 L12 16 L21 12 L35 12 L44 12 L58 12 L58 54 L54 58 L35 58 L32 54 L32 36 L39 32 L39 16" />
+  </svg>
+  <h1>SM-Engine</h1>
+ 
 </div>
 
 <p align="center">
