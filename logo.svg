@@ -1,40 +1,39 @@
-<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<svg width="564" height="284" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <!-- 
-    This is a self-contained SVG file. All styles and definitions are included.
-    It can be used anywhere, like in an <img> tag or as a background image.
+    This is a self-contained SVG file with updated dimensions.
+    Width and height set to 564 x 284 while keeping the same viewBox (0 0 200 200)
   -->
   <defs>
     <!-- Gradient for the main fill of the logo shape -->
     <linearGradient id="logoMainFill" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#2c3e50" /> <!-- Deep Slate Blue -->
-        <stop offset="100%" stop-color="#1c2833" /> <!-- Darker Slate -->
+        <stop offset="0%" stop-color="#2c3e50" />
+        <stop offset="100%" stop-color="#1c2833" />
     </linearGradient>
+    
     <!-- Gradient for the outer stroke (border) -->
     <linearGradient id="logoOuterStroke" x1="0%" y1="100%" x2="100%" y2="0%">
         <stop offset="0%" stop-color="#4e5b6b" />
         <stop offset="100%" stop-color="#7e8c9d" />
     </linearGradient>
     
-    <!-- A sharp, bright gradient for the inner highlight to create a 3D bevel effect -->
+    <!-- Gradient for inner highlight -->
     <linearGradient id="logoInnerHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#66b3ff" /> <!-- Light Blue -->
-        <stop offset="100%" stop-color="#89cff0" /> <!-- Lighter Sky Blue -->
+        <stop offset="0%" stop-color="#66b3ff" />
+        <stop offset="100%" stop-color="#89cff0" />
     </linearGradient>
   </defs>
-  <!-- A filter to apply a subtle drop shadow for depth -->
+
   <filter id="logoDropShadow" x="-20%" y="-20%" width="140%" height="140%">
     <feDropShadow dx="3" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.25" />
   </filter>
-  <!-- The group applies the filter to all paths inside it -->
+
   <g filter="url(#logoDropShadow)">
-    <!-- The single, continuous path that defines your logo's unique shape -->
     <path fill="url(#logoMainFill)" 
           stroke="url(#logoOuterStroke)" 
           stroke-width="6" 
           stroke-linejoin="round"
           d="M30 170 L30 45 L60 30 L100 30 L130 30 L170 30 L170 155 L155 170 L100 170 L85 155 L85 100 L115 85 L115 45 L100 30 M85 100 L115 85" />
     
-    <!-- Inner path for the 3D highlight -->
     <path fill="none"
           stroke="url(#logoInnerHighlight)"
           stroke-width="4"
