@@ -19,6 +19,18 @@
 </p>
 
 ---
+## Vidoe tutorial
+
+ <div align="center" class="video-container">
+    <iframe 
+      src="https://www.youtube.com/embed/EY7ggEMSEGI" 
+      title="YouTube video player" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      allowfullscreen>
+    </iframe>
+  </div>
+
+---
 
 ## 📸 Visual Showcase
 
