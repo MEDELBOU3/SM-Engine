@@ -19,10 +19,11 @@
 </p>
 
 ---
-## 📺 Video Tutorial
+## 📺 Watch the Tutorial
 
-Watch the tutorial on YouTube: [https://youtu.be/EY7ggEMSEGI](https://youtu.be/EY7ggEMSEGI)
+[![Watch the video](https://img.youtube.com/vi/EY7ggEMSEGI/hqdefault.jpg)](https://youtu.be/EY7ggEMSEGI)
 
+This tutorial covers setup, usage, and customization.
 ---
 
 ## 📸 Visual Showcase
