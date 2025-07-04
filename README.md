@@ -19,11 +19,15 @@
 </p>
 
 ---
-## 📺 Watch the Tutorial
 
-[![Watch the video](https://img.youtube.com/vi/EY7ggEMSEGI/hqdefault.jpg)](https://youtu.be/EY7ggEMSEGI)
+<h2 align="center">📺 Video Tutorial</h2>
 
-This tutorial covers setup, usage, and customization.
+<p align="center">
+  <a href="https://youtu.be/EY7ggEMSEGI" target="_blank">
+    <img src="https://img.youtube.com/vi/EY7ggEMSEGI/hqdefault.jpg" alt="Watch the video" />
+  </a>
+</p>
+
 ---
 
 ## 📸 Visual Showcase
