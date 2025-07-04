@@ -19,16 +19,9 @@
 </p>
 
 ---
-## Vidoe tutorial
+## 📺 Video Tutorial
 
- <div align="center" class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/EY7ggEMSEGI" 
-      title="YouTube video player" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-      allowfullscreen>
-    </iframe>
-  </div>
+Watch the tutorial on YouTube: [https://youtu.be/EY7ggEMSEGI](https://youtu.be/EY7ggEMSEGI)
 
 ---
 
