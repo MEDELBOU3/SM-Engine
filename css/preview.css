@@ -1,0 +1,718 @@
+.viewport-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--panel-bg);
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.model-preview-container {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+#preview-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.model-info {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 10px 14px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease;
+}
+
+.model-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    color: #888;
+    font-size: 12px;
+}
+
+.stat-value {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Control Hints */
+.control-hints {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 5px;
+    border-radius: 5px;
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.control-hints:hover {
+    opacity: 1;
+}
+
+.hint {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.hint-key {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    color: #fff;
+    min-width: 70px;
+    text-align: center;
+}
+
+.hint-action {
+    color: #888;
+    font-size: 12px;
+}
+
+/* Animation Panel Enhancements */
+.animation-panel {
+    background: rgba(26, 26, 26, 0.95);
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.animation-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 12px 0;
+}
+
+.control-btn {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.control-btn:hover {
+    background: #555;
+    transform: translateY(-1px);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+/*
+================================================================
+|                                                              |
+|        ADVANCED ANIMATOR - PROFESSIONAL UI STYLESHEET        |
+|                                                              |
+================================================================
+*/
+
+:root {
+    --bg-deep-dark: #151515;
+    --bg-dark: #1e1e1e;
+    --bg-medium: #252525;
+    --bg-light: #2d2d2d;
+    --bg-light-hover: #3a3a3a;
+    --border-color: #404040;
+    --text-primary: #e0e0e0;
+    --text-secondary: #cccccc;
+    --accent-blue: #0091ea;
+    --accent-blue-hover: #00b0ff;
+    --accent-green: #00c853;
+    --accent-red: #d50000;
+    --accent-amber: #ffab00;
+    --left-panel-width: 65%; /* Default resizable width */
+    --bottom-panel-height: 300px; /* Default resizable height */
+}
+
+/* --- Global & Font Settings --- */
+.animator-panel, .animator-panel * {
+    box-sizing: border-box;
+}
+
+.animator-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    
+    /* MODIFICATION: Hide by default */
+    display: none; 
+    
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+    background: var(--bg-dark);
+    user-select: none;
+}
+
+.animator-panel.animator-open {
+    display: flex;
+}
+
+/* --- Main Layout Structure --- */
+.animator-header {
+    height: 50px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, var(--bg-light), var(--bg-deep-dark));
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.animator-main-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    min-height: 0; /* Critical for flexbox shrinking */
+    height: 100%;
+}
+
+.animator-left-column {
+    flex-basis: var(--left-panel-width);
+    display: flex;
+    flex-direction: column;
+    min-width: 200px; /* Prevent shrinking too much */
+}
+
+.animator-right-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 250px; /* Prevent shrinking too much */
+}
+
+.animator-bottom-container {
+    height: var(--bottom-panel-height);
+    background: var(--bg-deep-dark);
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Resizer Handles --- */
+.resizer {
+    background: var(--border-color);
+    transition: background 0.2s ease;
+    z-index: 10;
+}
+.resizer:hover {
+    background: var(--accent-blue);
+}
+.resizer-v {
+    width: 5px;
+    cursor: col-resize;
+}
+.resizer-h {
+    height: 5px;
+    cursor: row-resize;
+}
+
+/* --- Header Elements --- */
+.animator-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+.close-animator {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.close-animator:hover {
+    color: var(--accent-red);
+    transform: scale(1.2);
+}
+
+/* --- Viewport & Toolbar --- 
+.animator-viewport {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(circle at center, var(--bg-medium) 0%, var(--bg-dark) 100%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.animator-viewport canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute; 
+    top: 0;
+    left: 0;
+}*/
+
+.animator-viewport {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(circle at center, var(--bg-medium) 0%, var(--bg-dark) 100%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.animator-viewport canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.animator-toolbar {
+    height: 40px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1; /* Above canvas */
+}
+.animator-toolbar button {
+    background: var(--bg-light-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+.animator-toolbar button:hover {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue-hover);
+}
+.animator-toolbar button.playing {
+    background: var(--accent-green);
+    color: black;
+}
+.animator-toolbar button.loop-active {
+    background: var(--accent-blue);
+}
+.time-display {
+    color: var(--accent-green);
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    padding: 4px 10px;
+    background: var(--bg-dark);
+    border-radius: 3px;
+    border: 1px solid var(--border-color);
+    margin: 0 10px;
+}
+
+/* --- Properties Panel --- */
+.animator-properties {
+    background: var(--bg-dark);
+    overflow-y: auto;
+    padding: 5px;
+}
+.properties-section {
+    margin-bottom: 10px;
+}
+.properties-section h3 {
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    padding: 5px;
+    background: var(--bg-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 3px;
+}
+.bone-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--bg-deep-dark);
+    background: var(--bg-medium);
+    border-radius: 3px;
+}
+.bone-item {
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+.bone-item:hover {
+    background: var(--bg-light-hover);
+    border-left-color: var(--accent-blue);
+}
+.bone-item.selected {
+    background: var(--accent-blue);
+    border-left-color: #fff;
+    color: #fff;
+    font-weight: bold;
+}
+
+
+.keyframe-btn {
+    background: transparent;
+    border: 1px solid var(--bg-light-hover);
+    color: var(--text-secondary);
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.keyframe-btn:hover {
+    color: var(--accent-amber);
+    border-color: var(--accent-amber);
+}
+.keyframe-btn.has-keyframe {
+    background: var(--accent-amber);
+    color: var(--bg-dark);
+    border-color: var(--accent-amber);
+}
+
+/* --- Bottom Panel (Timeline & Graph Editor) --- */
+.bottom-panel-tabs {
+    display: flex;
+    background: var(--bg-light);
+    flex-shrink: 0;
+}
+.panel-tab {
+    padding: 8px 15px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+.panel-tab:hover {
+    background: var(--bg-light-hover);
+    color: var(--text-primary);
+}
+.panel-tab.active {
+    color: var(--text-primary);
+    font-weight: bold;
+    border-bottom-color: var(--accent-blue);
+}
+
+.bottom-panel-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+.bottom-panel-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+.bottom-panel-wrapper.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.bottom-panel-wrapper canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* --- Scrollbar Styles --- */
+.animator-panel *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.animator-panel *::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+.animator-panel *::-webkit-scrollbar-thumb {
+    background: var(--bg-light-hover);
+    border-radius: 4px;
+}
+.animator-panel *::-webkit-scrollbar-thumb:hover {
+    background: var(--border-color);
+}
+
+
+/* History panel - Dropdown menu style, with scrollable content and modern aesthetics */
+#historyPanel {
+    position: absolute;
+    top: 100%; /* Position below the button */
+    left: 0;
+    width: 300px; /* Fixed width for consistency */
+    max-height: 400px; /* Limit height for scrolling */
+    overflow-y: auto; /* Enable scrolling if content exceeds max-height */
+    background-color: #2a2a2a; /* Dark theme background */
+    border: 1px solid #444; /* Subtle border */
+    border-radius: 8px; /* Rounded corners for modern look */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow for elevation */
+    padding: 12px;
+    z-index: 1000; /* Ensure it's above other elements */
+    font-family: 'Segoe UI', Arial, sans-serif; /* Clean, professional font */
+    color: #ddd; /* Light text color */
+    display: none; /* Hidden by default */
+}
+
+/* Smooth scrollbar for webkit browsers */
+#historyPanel::-webkit-scrollbar {
+    width: 6px;
+}
+
+#historyPanel::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 10px;
+}
+
+#historyPanel::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
+}
+
+#historyPanel::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Header styling - Clean and prominent */
+#historyPanel h3 {
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #555; /* Subtle separator */
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff; /* Bright white for contrast */
+    text-align: center; /* Centered for symmetry */
+}
+
+/* List styling - Clean, no bullets, with hover interactions */
+#historyList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Individual list items - Interactive with icons and ellipsis for long text */
+#historyList li {
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 4px; /* Slight rounding for items */
+}
+
+#historyList li:hover {
+    background-color: #3a3a3a; /* Hover highlight */
+    color: #fff; /* Brighter text on hover */
+}
+
+#historyList li:active {
+    background-color: #4a4a4a; /* Active state */
+}
+
+/* Current item highlight - Indicates the active state */
+#historyList li.current {
+    background-color: #1e1e1e;
+    font-weight: bold;
+    color: #00aaff; /* Accent color for current */
+}
+
+/* Action-specific icons using pseudo-elements (extend JS to add data-action attributes) */
+#historyList li[data-action="addObject"]::before {
+    content: '+';
+    margin-right: 8px;
+    color: #4caf50; /* Green for add */
+    font-weight: bold;
+}
+
+#historyList li[data-action="removeObject"]::before {
+    content: '-';
+    margin-right: 8px;
+    color: #f44336; /* Red for remove */
+    font-weight: bold;
+}
+
+#historyList li[data-action="transformObject"]::before {
+    content: '↔';
+    margin-right: 8px;
+    color: #2196f3; /* Blue for transform */
+}
+
+#historyList li[data-action="changeMaterial"]::before {
+    content: '🎨';
+    margin-right: 8px;
+    color: #ffeb3b; /* Yellow for material change */
+}
+
+/* Actions section - Buttons for undo/redo */
+.history-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px; /* Space between buttons */
+}
+
+.history-actions button {
+    flex: 1; /* Equal width */
+    padding: 8px 12px;
+    background-color: #444;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.history-actions button:hover {
+    background-color: #555;
+    transform: translateY(-1px); /* Slight lift on hover */
+}
+
+.history-actions button:active {
+    background-color: #333;
+    transform: translateY(0);
+}
+
+.history-actions button:disabled {
+    background-color: #333;
+    color: #777;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Light theme variant (toggle via body class 'light-theme') */
+body.light-theme #historyPanel {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #333;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme #historyPanel h3 {
+    color: #000;
+    border-bottom: 1px solid #eee;
+}
+
+body.light-theme #historyList li:hover {
+    background-color: #e0e0e0;
+}
+
+body.light-theme #historyList li.current {
+    background-color: #f0f0f0;
+    color: #007acc; /* Blue accent for light theme */
+}
+
+body.light-theme .history-actions button {
+    background-color: #ddd;
+    color: #333;
+}
+
+body.light-theme .history-actions button:hover {
+    background-color: #ccc;
+}
+
+body.light-theme .history-actions button:disabled {
+    background-color: #eee;
+    color: #aaa;
+}
+
+/* Scrollbar for light theme */
+body.light-theme #historyPanel::-webkit-scrollbar-track {
+    background: #eee;
+}
+
+body.light-theme #historyPanel::-webkit-scrollbar-thumb {
+    background: #ccc;
+}
+
+body.light-theme #historyPanel::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+    #historyPanel {
+        width: 100vw;
+        max-width: none;
+        left: 0;
+        border-radius: 0;
+    }
+
+    .history-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .history-actions button {
+        width: 100%;
+    }
+}

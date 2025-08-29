@@ -1,0 +1,137 @@
+.search-group {
+    margin: 10px;
+    padding: 5px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+
+.vector-inputs {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    width: 180px;
+}
+
+/* Container for inputs */
+#controls label {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #fff;
+}
+
+/* Style for input elements */
+#controls input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 12px;
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+/* Style for input focus state */
+#controls input[type="number"]:focus {
+    border-color: #007BFF;
+    background-color: #444;
+    outline: none;
+}
+
+/* Optional: Hover effect on input fields */
+#controls input[type="number"]:hover {
+    border-color: #555;
+}
+
+.camera-special-controls {
+
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1002;
+}
+
+.stereo-control {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.stereo-control label {
+    color: white;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.stereo-control input[type="range"] {
+    width: 100%;
+    margin: 0;
+}
+
+/* Make sure controls are hidden when preview is minimized */
+.camera-preview.minimized .camera-special-controls {
+    display: none;
+}
+
+#node-graph-container {
+    min-height: 100px;
+    max-height: 250px; /* Prevent it from getting too tall */
+    overflow-y: auto;  /* Add a scrollbar if nodes overflow */
+    border: 1px dashed #555;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: #202020;
+    transition: background-color 0.3s;
+}
+
+#node-graph-container:empty:before {
+    content: "Add nodes to begin building your terrain.";
+    color: #777;
+    font-style: italic;
+    font-size: 14px;
+    text-align: center;
+    display: block;
+    padding-top: 30px;
+}
+
+/* Individual node item in the graph stack */
+.node-item {
+    background: #333;
+    border: 1px solid #555;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease-in-out;
+}
+
+.node-item:hover {
+    border-color: #666;
+    background: #3a3a3a;
+}
+
+.node-item.selected { /* A class you can add in JS to highlight */
+    background: #3a4a5a;
+    border-color: #4fc3f7;
+}
+
+.node-item span {
+    font-weight: 500;
+}
