@@ -1,678 +1,761 @@
 /**
- * =============================================================================
- * assets.js - V3.0 - Complete Hierarchical Asset Management System
- * =============================================================================
+ * AssetsPanel v3.1-full
+ * Full drop-in replacement for your latest class (keeps API & HTML hooks).
+ * - Adds `material` asset type (JSON definitions with texture slots & params)
+ * - Applies materials via drag/drop onto meshes (PBR: map, normalMap, roughnessMap, metalnessMap, emissiveMap, displacementMap)
+ * - Uses inline SVG icons for thumbnails/fallbacks
+ * - Preserves folders, multi-select, event hooks, storage, context menus, etc.
  *
- * This file is a complete, self-contained asset browser for a THREE.js
- * application. It is designed to work with browser <script> tags, assuming
- * that THREE.js and its loaders are available on the global `THREE` object.
- *
- * --- FEATURES ---
- * - True Folder Hierarchy: Create, navigate, rename, move, and delete folders.
- * - Live 3D Thumbnails: Models get a dynamically rendered 3D preview.
- * - Persistent Storage: Uses IndexedDB (via idb-keyval) for files and
- *   localStorage for the folder structure.
- * - Drag-and-Drop Workflow: Drag assets into the 3D viewport to add them,
- *   or drag materials onto existing objects to apply them.
- * - Automatic Normalization: Fixes scaling and positioning issues for all
- *   imported models, including FBX files.
- * - Full Context Menu: Right-click for a full suite of actions like Rename,
- *   Delete, Move (Cut/Paste), and Add to Scene.
- * - Search, Sort, and Multiple Views (Grid/List).
- *
- * --- SCRIPT DEPENDENCIES (load in this order in HTML) ---
- * 1. three.min.js
- * 2. OrbitControls.js
- * 3. GLTFLoader.js, FBXLoader.js, OBJLoader.js, RGBELoader.js, TGALoader.js
- * 4. idb-keyval-iife.min.js (for IndexedDB)
- * 5. this file (assets.js)
- *
+ * Usage: Replace previous AssetsPanel class with this code. Call:
+ *    AssetsPanel.init(scene, renderer, camera, raycaster);
  */
-
-// Dependency check to ensure required libraries are loaded.
-if (typeof THREE === 'undefined') {
-    throw new Error('AssetsPanel requires THREE.js to be loaded first.');
-}
-if (typeof idbKeyval === 'undefined') {
-    console.warn('AssetsPanel: idb-keyval library not found. Asset persistence will not work.');
-}
-
-/**
- * Represents a snapshot of an asset's state at a particular time.
- * Useful for implementing version control or undo/redo systems.
- */
-class AssetVersion {
-    constructor(asset) {
-       this.assetId = asset.id;
-       this.version = Date.now();
-       // Note: This is a shallow clone of metadata. For deep state,
-       // the raw file blob from IndexedDB would be needed.
-       this.data = { ...asset };
-    }
-}
-
 
 class AssetsPanel {
-    /**
-     * @param {THREE.Scene} scene The main application's scene object.
-     * @param {THREE.WebGLRenderer} renderer The main application's renderer.
-     * @param {THREE.PerspectiveCamera} camera The main application's camera for raycasting.
-     * @param {THREE.Raycaster} raycaster A shared raycaster instance.
-     */
-    constructor(scene, renderer, camera, raycaster) {
-        this.mainScene = scene;
-        this.mainRenderer = renderer;
-        this.mainCamera = camera;
-        this.mainRaycaster = raycaster;
+  // --- Core Properties ---
+  static scene = null;
+  static renderer = null;
+  static camera = null;
+  static raycaster = null;
+  static assets = []; // flat list of assets (includes folder references)
+  static folders = {}; // folderId -> folder object (supports nested)
+  static dom = {}; // Cache for DOM elements
+  static loaders = {};
 
-        const manager = new THREE.LoadingManager();
-        this.gltfLoader = new THREE.GLTFLoader(manager);
-        this.objLoader = new THREE.OBJLoader(manager);
-        this.fbxLoader = new THREE.FBXLoader(manager);
-        this.textureLoader = new THREE.TextureLoader(manager);
-        this.rgbeLoader = new THREE.RGBELoader(manager);
-        this.tgaLoader = new THREE.TGALoader(manager);
+  // --- State ---
+  static currentFilter = 'all';
+  static currentCategory = 'project';
+  static selectedAssetId = null; // single select
+  static selectedIds = new Set(); // multi-select set
+  static contextAssetId = null;
+  static openFolderId = null; // currently viewed folder in Project category (null = root)
+  static lastStorageVersion = 3; // for schema migrations
 
-        this.supportedModelFormats = ['.glb', '.gltf', '.fbx', '.obj'];
-        this.supportedHDRIFormats = ['.hdr'];
-        this.supportedTextureFormats = ['.jpg', '.jpeg', '.png', '.webp', '.tga'];
+  // --- Event hooks (you can override/add handlers externally) ---
+  static onAssetsChanged = null; // function(assets, folders) {}
+  static onAssetAdded = null; // function(asset) {}
+  static onAssetRemoved = null; // function(assetId) {}
+  static onFolderChanged = null; // function(folders) {}
 
-        this.assets = this.getInitialAssetStructure();
-        this.assetCache = new Map();
-        this.clipboard = null; // { type: 'cut'/'copy', id: 'assetId' }
+  // --- Init ---
+  static init(scene, renderer, camera, raycaster) {
+    this.scene = scene;
+    this.renderer = renderer;
+    this.camera = camera;
+    this.raycaster = raycaster || new THREE.Raycaster();
 
-        this.currentPath = ['root'];
-        this.currentView = 'grid';
-        this.sortBy = 'name';
-        this.searchFilter = '';
-
-        this.thumbnailRenderer = null;
-        this.thumbnailScene = null;
-        this.thumbnailCamera = null;
-
-        this.initializeUI();
-        this.initializeThumbnailGenerator();
-        this.setupEventListeners();
-        this.loadAssetsFromStorage();
+    if (typeof THREE === 'undefined' || !THREE.GLTFLoader || !THREE.RGBELoader) {
+      console.error("AssetsPanel Error: THREE.js or required loaders not found.");
+      return;
     }
 
-    // =================================================================================
-    // SECTION: INITIALIZATION & SETUP
-    // =================================================================================
+    // DOM cache (expects same IDs/classes as your HTML)
+    this.dom.panel = document.getElementById('assetsPanel');
+    this.dom.grid = document.getElementById('assetsGrid');
+    this.dom.properties = document.getElementById('propertiesContent');
+    this.dom.uploadZone = document.getElementById('uploadDropzone');
+    this.dom.uploadInput = document.getElementById('uploadInput');
+    this.dom.contextMenu = document.getElementById('contextMenu');
+    this.dom.header = document.getElementById('assetsPanelHeader');
+    this.dom.searchBox = document.querySelector('.search-box');
+    this.dom.filterButtons = document.querySelectorAll('.filter-btn');
+    this.dom.categoriesContainer = document.querySelector('.assets-categories');
 
-    initializeUI() {
-        if (document.querySelector('.assets-panel')) return;
-        const panelHTML = `
-            <div class="assets-panel">
-                <div class="resize-handle"></div>
-                <div class="assets-header">
-                    <div class="navigation-bar">
-                        <button class="nav-btn back-btn" title="Back" disabled><i class="fas fa-arrow-left"></i></button>
-                        <div class="breadcrumb"></div>
-                    </div>
-                    <div class="assets-toolbar">
-                        <div class="toolbar-left">
-                            <button class="create-folder-btn"><i class="fas fa-folder-plus"></i> New Folder</button>
-                            <div class="import-container">
-                                <button class="import-btn"><i class="fas fa-upload"></i> Import</button>
-                                <input type="file" class="file-input" multiple hidden>
-                            </div>
-                        </div>
-                        <div class="toolbar-right">
-                            <div class="search-bar">
-                                <i class="fas fa-search"></i>
-                                <input type="text" placeholder="Search..." class="search-input">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="assets-content">
-                    <div class="assets-view-container"></div>
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i><p>This folder is empty.</p>
-                    </div>
-                </div>
-                <div class="drop-zone-overlay">
-                    <div class="drop-zone-content">
-                        <i class="fas fa-cloud-upload-alt"></i><p>Drop to Import</p>
-                    </div>
-                </div>
-                <div class="asset-context-menu"></div>
-            </div>`;
-        document.body.insertAdjacentHTML('beforeend', panelHTML);
+    // Loaders
+    this.loaders.gltf = new THREE.GLTFLoader();
+    this.loaders.texture = new THREE.TextureLoader();
+    this.loaders.hdri = new THREE.RGBELoader();
+
+    // Ensure upload input exists
+    if (this.dom.uploadInput) this.dom.uploadInput.multiple = true;
+
+    this._loadFromStorage();
+    this._ensureBuiltins();
+    this._setupEventListeners();
+    this.render();
+
+    console.log("AssetsPanel v3.1 initialized.");
+  }
+
+  // ---------------- Public API (HTML hooks preserved) -----------------
+  static toggle() { if (!this.dom.panel) return; this.dom.panel.classList.toggle('visible'); }
+  static showUploadZone() { if (this.dom.uploadZone) this.dom.uploadZone.classList.add('visible'); }
+  static hideUploadZone() { if (this.dom.uploadZone) this.dom.uploadZone.classList.remove('visible'); }
+  static refreshAssets() { this.render(); }
+  static searchAssets(query) { this.render(query ? query.toLowerCase() : ''); }
+  static filterByType(type, element) { this.currentFilter = type; document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active')); if (element) element.classList.add('active'); this.render(); }
+  static selectCategory(category, element) { this.currentCategory = category; document.querySelectorAll('.category-item.active').forEach(c => c.classList.remove('active')); if (element) element.classList.add('active'); this.render(); }
+
+  // File actions (rename/delete/favorite preserved)
+  static renameAsset() {
+    const asset = this._findById(this.contextAssetId);
+    if (!asset) return;
+    const newName = prompt("Enter new name:", asset.name);
+    if (newName && newName !== asset.name) {
+      asset.name = newName;
+      this._saveToStorage();
+      this.render();
+      this.selectAsset(asset.id);
     }
+  }
 
-    initializeThumbnailGenerator() {
-        const offscreenCanvas = document.createElement('canvas');
-        this.thumbnailScene = new THREE.Scene();
-        this.thumbnailCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
-        this.thumbnailRenderer = new THREE.WebGLRenderer({ canvas: offscreenCanvas, antialias: true, alpha: true });
-        this.thumbnailRenderer.setClearColor(0x000000, 0);
-        this.thumbnailRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.thumbnailRenderer.outputColorSpace = THREE.SRGBColorSpace;
+  static deleteAsset() {
+    if (!confirm("Are you sure you want to delete this asset(s)?")) return;
+    const idsToDelete = this.selectedIds.size ? Array.from(this.selectedIds) : [this.contextAssetId];
+    for (const id of idsToDelete) this._removeAsset(id);
+    this.selectedIds.clear();
+    this._saveToStorage();
+    this.render();
+  }
 
-        this.thumbnailScene.add(new THREE.AmbientLight(0xffffff, 0.7));
-        const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
-        keyLight.position.set(1, 2, 1);
-        this.thumbnailScene.add(keyLight);
+  static toggleFavorite() {
+    const asset = this._findById(this.contextAssetId);
+    if (asset) { asset.isFavorite = !asset.isFavorite; this._saveToStorage(); this.render(); }
+  }
+
+  // Folder operations
+  static createFolder(name = 'New Folder', parentId = null) {
+    const id = `folder_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    this.folders[id] = { id, name, parentId, children: [] };
+    if (parentId && this.folders[parentId]) this.folders[parentId].children.push(id);
+    this._saveToStorage();
+    if (typeof this.onFolderChanged === 'function') this.onFolderChanged(this.folders);
+    this.render();
+    return id;
+  }
+
+  static renameFolder(folderId) {
+    const folder = this.folders[folderId];
+    if (!folder) return;
+    const n = prompt('Rename folder', folder.name);
+    if (n && n !== folder.name) {
+      folder.name = n;
+      this._saveToStorage();
+      if (typeof this.onFolderChanged === 'function') this.onFolderChanged(this.folders);
+      this.render();
     }
+  }
 
-    setupEventListeners() {
-        const panel = document.querySelector('.assets-panel');
-        panel.querySelector('.back-btn').addEventListener('click', () => this.navigateBack());
-        panel.querySelector('.create-folder-btn').addEventListener('click', () => this.createFolder());
-        panel.querySelector('.import-btn').addEventListener('click', () => panel.querySelector('.file-input').click());
-        panel.querySelector('.file-input').addEventListener('change', (e) => this.handleFiles(e.target.files));
-        panel.querySelector('.search-input').addEventListener('input', (e) => {
-            this.searchFilter = e.target.value.toLowerCase();
-            this.updateAssetsView();
-        });
-
-        const dropOverlay = panel.querySelector('.drop-zone-overlay');
-        panel.addEventListener('dragenter', (e) => { e.preventDefault(); dropOverlay.classList.add('active'); });
-        dropOverlay.addEventListener('dragleave', (e) => dropOverlay.classList.remove('active'));
-        dropOverlay.addEventListener('dragover', (e) => e.preventDefault());
-        dropOverlay.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropOverlay.classList.remove('active');
-            if (e.dataTransfer.files.length > 0) this.handleFiles(e.dataTransfer.files);
-        });
-
-        panel.querySelector('.assets-content').addEventListener('contextmenu', (e) => {
-            const item = e.target.closest('.asset-item, .folder-item');
-            if (item) {
-                e.preventDefault();
-                this.showContextMenu(item.dataset.id, e.clientX, e.clientY);
-            } else {
-                // Show context menu for the folder itself (e.g., "Paste")
-                e.preventDefault();
-                this.showContextMenu(this.getCurrentFolder().id, e.clientX, e.clientY);
-            }
-        });
-        document.addEventListener('click', () => this.hideContextMenu());
-
-        const resizeHandle = panel.querySelector('.resize-handle');
-        resizeHandle.addEventListener('mousedown', (e) => {
-            const startY = e.clientY;
-            const startHeight = panel.offsetHeight;
-            const onMouseMove = (moveEvent) => {
-                const newHeight = startHeight - (moveEvent.clientY - startY);
-                panel.style.height = `${Math.max(200, Math.min(newHeight, window.innerHeight * 0.9))}px`;
-            };
-            const onMouseUp = () => document.removeEventListener('mousemove', onMouseMove);
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp, { once: true });
-        });
+  static deleteFolder(folderId, options = { deleteContents: false }) {
+    const folder = this.folders[folderId]; if (!folder) return;
+    const all = this._collectFolderTree(folderId);
+    if (!options.deleteContents) {
+      const targetParent = folder.parentId || null;
+      for (const asset of this.assets) if (asset.folderId && all.includes(asset.folderId)) asset.folderId = targetParent;
+    } else {
+      this.assets = this.assets.filter(a => !(a.folderId && all.includes(a.folderId)));
     }
+    for (const fid of all) delete this.folders[fid];
+    for (const f of Object.values(this.folders)) f.children = f.children.filter(c => !all.includes(c));
+    this._saveToStorage(); if (typeof this.onFolderChanged === 'function') this.onFolderChanged(this.folders); this.render();
+  }
 
-    // =================================================================================
-    // SECTION: HIERARCHY & ASSET ACTIONS (Create, Rename, Delete, Move)
-    // =================================================================================
+  static moveAssetToFolder(assetId, folderId) { const asset = this._findById(assetId); if (!asset) return; asset.folderId = folderId || null; this._saveToStorage(); this.render(); }
 
-    findParentFolder(assetId) {
-        function search(folder) {
-            if (folder.children[assetId]) {
-                return folder;
-            }
-            for (const child of Object.values(folder.children)) {
-                if (child.type === 'folder') {
-                    const found = search(child);
-                    if (found) return found;
-                }
-            }
-            return null;
+  // Export / Import
+  static exportJSON() {
+    const payload = { version: this.lastStorageVersion, assets: this.assets.filter(a => !a.isBuiltIn), folders: this.folders };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'assets_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+
+  static importJSON(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (data.assets) {
+          for (const a of data.assets) { a.id = `asset_${Date.now()}_${Math.floor(Math.random()*1000)}`; this.assets.push(a); }
         }
-        return search(this.assets);
-    }
-
-    createFolder() {
-        const folderName = prompt("Enter new folder name:", "New Folder");
-        if (!folderName || !folderName.trim()) return;
-
-        const newFolder = {
-            id: this.generateAssetId('folder'),
-            type: 'folder',
-            name: folderName.trim(),
-            dateAdded: new Date().toISOString(),
-            children: {}
-        };
-        this.getCurrentFolder().children[newFolder.id] = newFolder;
-        this.assetCache.set(newFolder.id, newFolder);
-        this.saveAssetsToStorage();
-        this.updateAssetsView();
-    }
-
-    renameAssetOrFolder(assetId) {
-        const asset = this.assetCache.get(assetId);
-        if (!asset) return;
-        const newName = prompt(`Enter new name for "${asset.name}":`, asset.name);
-        if (newName && newName.trim() && newName.trim() !== asset.name) {
-            asset.name = newName.trim();
-            this.saveAssetsToStorage();
-            this.updateAssetsView();
+        if (data.folders) {
+          const map = {};
+          for (const fid in data.folders) {
+            const f = data.folders[fid]; const nid = `folder_${Date.now()}_${Math.floor(Math.random()*1000)}`; map[fid] = nid; this.folders[nid] = { ...f, id: nid, children: [] };
+          }
+          for (const fid in data.folders) {
+            const f = data.folders[fid]; const nid = map[fid];
+            this.folders[nid].children = (f.children||[]).map(c => map[c]).filter(Boolean);
+            this.folders[nid].parentId = f.parentId ? map[f.parentId] : null;
+          }
         }
+        this._saveToStorage(); this.render();
+      } catch (err) { console.error('Import failed', err); alert('Invalid JSON file'); }
+    };
+    reader.readAsText(file);
+  }
+
+  // Selection
+  static selectAsset(assetId, element = null, append = false) {
+    if (!append) { this.selectedIds.clear(); }
+    if (assetId) { this.selectedIds.add(assetId); this.selectedAssetId = assetId; } else { this.selectedAssetId = null; }
+    document.querySelectorAll('.asset-item.selected').forEach(el => el.classList.remove('selected'));
+    for (const id of this.selectedIds) {
+      const el = this.dom.grid.querySelector(`.asset-item[data-id='${id}']`);
+      if (el) el.classList.add('selected');
     }
 
-    async deleteAssetOrFolder(assetId) {
-        const asset = this.assetCache.get(assetId);
-        if (!asset || asset.id === 'root') return;
-        if (!confirm(`Are you sure you want to permanently delete "${asset.name}"? This cannot be undone.`)) return;
+    // show last selected in properties (single object)
+    const asset = this._findById(assetId);
+    if (asset) {
+      // show extra fields for material
+      let propsHtml = `<div class="properties-title">${asset.name}</div>
+        <div class="property-row"><div class="property-label">Type</div><div class="property-value">${asset.type.toUpperCase()}</div></div>
+        <div class="property-row"><div class="property-label">ID</div><div class="property-value">${asset.id.slice(0,8)}...</div></div>`;
+      if (asset.type === 'material' && asset.definition) {
+        const d = asset.definition;
+        propsHtml += `<div class="property-row"><div class="property-label">Color</div><div class="property-value">${d.color || '—'}</div></div>
+          <div class="property-row"><div class="property-label">Roughness</div><div class="property-value">${d.roughness ?? '—'}</div></div>
+          <div class="property-row"><div class="property-label">Metalness</div><div class="property-value">${d.metalness ?? '—'}</div></div>`;
+        if (d.map) propsHtml += `<div class="property-row"><div class="property-label">Albedo</div><div class="property-value">${this._shortName(d.map)}</div></div>`;
+        if (d.normalMap) propsHtml += `<div class="property-row"><div class="property-label">Normal</div><div class="property-value">${this._shortName(d.normalMap)}</div></div>`;
+      }
+      propsHtml += asset.thumbnail && asset.thumbnail.startsWith('data:image') ? `<img src="${asset.thumbnail}" />` : '';
+      this.dom.properties.innerHTML = propsHtml;
+    } else {
+      this.dom.properties.innerHTML = `<div class="property-row"><div class="property-label">Select an asset</div><div class="property-value">No asset selected</div></div>`;
+    }
+  }
 
-        // Recursively find all asset IDs to delete from IndexedDB
-        const idsToDelete = [];
-        function collectIds(folder) {
-            idsToDelete.push(folder.id);
-            Object.values(folder.children).forEach(child => {
-                if (child.type === 'folder') {
-                    collectIds(child);
-                } else {
-                    idsToDelete.push(child.id);
-                }
-            });
-        }
-        if (asset.type === 'folder') {
-            collectIds(asset);
+  // Adds an asset to scene or multiple drop handling
+  static async _addToScene(assetId, event = null) {
+    const asset = this._findById(assetId) || this._getPrimitiveAssets().find(a => a.id === assetId) || this._getLightAssets().find(a => a.id === assetId);
+    if (!asset) { console.error(`AssetsPanel: Could not find asset with ID ${assetId}`); return; }
+    if (typeof window.addObjectToScene !== 'function') { console.error("AssetsPanel Error: window.addObjectToScene() is not defined."); return; }
+
+    let position = new THREE.Vector3(0, 0, 0);
+    if (event) {
+      const rect = this.renderer.domElement.getBoundingClientRect();
+      const mouse = new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
+      this.raycaster.setFromCamera(mouse, this.camera);
+      const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+      if (intersects.length > 0) { position.copy(intersects[0].point); }
+    }
+
+    switch(asset.type) {
+      case 'model':
+        this.loaders.gltf.load(asset.data, gltf => { const model = gltf.scene; model.position.copy(position); window.addObjectToScene(model, asset.name.split('.').slice(0, -1).join('.')); if (typeof this.onAssetAdded === 'function') this.onAssetAdded(asset); });
+        break;
+      case 'texture':
+        this.loaders.texture.load(asset.data, texture => {
+          const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+          const target = intersects.length > 0 ? intersects[0].object : null;
+          if (target && target.isMesh && target.material) {
+            // if material is an array or multi-material, apply to first for simplicity
+            target.material.map = texture;
+            target.material.needsUpdate = true;
+            console.log(`Applied texture '${asset.name}' to object '${target.name}'.`);
+          } else { console.warn("AssetsPanel: Could not apply texture. Drop it onto a mesh object."); }
+        });
+        break;
+      case 'hdri':
+        this.loaders.hdri.load(asset.data, texture => {
+          texture.mapping = THREE.EquirectangularReflectionMapping;
+          this.scene.background = texture;
+          this.scene.environment = texture;
+          console.log(`Applied HDRI '${asset.name}' to the scene.`);
+        });
+        break;
+      case 'material':
+        // try to apply material to intersected object (or show message)
+        const intersects = event ? (()=>{
+          const rect = this.renderer.domElement.getBoundingClientRect();
+          const mouse = new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
+          this.raycaster.setFromCamera(mouse, this.camera);
+          return this.raycaster.intersectObjects(this.scene.children, true);
+        })() : [];
+        if (intersects && intersects.length > 0) {
+          this._applyMaterialToMesh(asset, intersects[0].object);
         } else {
-            idsToDelete.push(asset.id);
+          console.warn("AssetsPanel: Drop a material onto a mesh to apply it.");
         }
-        
-        // Delete from IndexedDB and cache
-        for (const id of idsToDelete) {
-            await idbKeyval.del(id);
-            this.assetCache.delete(id);
-        }
+        break;
+      case 'primitive':
+        const mesh = asset.factory(); mesh.position.copy(position); window.addObjectToScene(mesh, asset.name); break;
+      case 'light':
+        const light = asset.factory(); light.position.copy(position); if (light.target) { light.target.position.set(position.x, position.y -1, position.z); } window.addObjectToScene(light, asset.name); if(light.target) window.addObjectToScene(light.target, `${asset.name} Target`); break;
+    }
+  }
 
-        // Delete from parent's children object
-        const parentFolder = this.findParentFolder(assetId);
-        if (parentFolder) {
-            delete parentFolder.children[assetId];
-        }
+  // ------------------------------------------------------------------
+  // Storage, Loading & Migration
+  // ------------------------------------------------------------------
+  static _saveToStorage() {
+    try {
+      const userAssets = this.assets.filter(a => !a.isBuiltIn);
+      const payload = { version: this.lastStorageVersion, assets: userAssets, folders: this.folders };
+      localStorage.setItem('assetsPanel_data_v3', JSON.stringify(payload));
+      if (typeof this.onAssetsChanged === 'function') this.onAssetsChanged(this.assets, this.folders);
+    } catch (e) { console.error('Failed to save assets', e); }
+  }
 
-        this.saveAssetsToStorage();
-        this.updateAssetsView();
-        this.showNotification(`Deleted "${asset.name}".`, 'info');
+  static _loadFromStorage() {
+    try {
+      const raw = localStorage.getItem('assetsPanel_data_v3');
+      if (!raw) return this._migrateLegacy();
+      const data = JSON.parse(raw);
+      if (data.assets) this.assets = data.assets.concat(this.assets.filter(a=>a.isBuiltIn));
+      if (data.folders) this.folders = data.folders;
+    } catch (e) { console.error('Failed to load assets', e); this._migrateLegacy(); }
+  }
+
+  static _migrateLegacy() {
+    const old = localStorage.getItem('assetsPanel_assets');
+    if (!old) return;
+    try {
+      const arr = JSON.parse(old);
+      this.assets = (arr||[]).map(a => ({ ...a, id: a.id || `asset_${Date.now()}_${Math.floor(Math.random()*1000)}` }));
+      this.folders = {};
+      this._saveToStorage();
+      localStorage.removeItem('assetsPanel_assets');
+      console.log('AssetsPanel: Migrated legacy assets to v3 storage.');
+    } catch (e) { console.warn('AssetsPanel: Legacy migration failed', e); }
+  }
+
+  // ------------------------------------------------------------------
+  // Event listeners and DOM behavior
+  // ------------------------------------------------------------------
+  static _setupEventListeners() {
+    // Upload zone drag
+    if (this.dom.uploadZone) {
+      this.dom.uploadZone.ondragover = (e) => { e.preventDefault(); this.dom.uploadZone.classList.add('dragover'); };
+      this.dom.uploadZone.ondragleave = () => this.dom.uploadZone.classList.remove('dragover');
+      this.dom.uploadZone.ondrop = (e) => { e.preventDefault(); this.dom.uploadZone.classList.remove('dragover'); for (const file of e.dataTransfer.files) this._addAssetFromFile(file, this.openFolderId); this.hideUploadZone(); };
+    }
+    if (this.dom.uploadInput) {
+      this.dom.uploadInput.onchange = (e) => { for (const file of e.target.files) this._addAssetFromFile(file, this.openFolderId); this.hideUploadZone(); };
     }
 
-    cutAsset(assetId) {
-        this.clipboard = { type: 'cut', id: assetId };
-        this.showNotification('Item cut to clipboard.', 'info');
-        // Optionally, add a visual indicator to the cut item
-        this.updateAssetsView();
-    }
-
-    pasteAsset(destinationFolderId) {
-        if (!this.clipboard) return;
-
-        const assetIdToMove = this.clipboard.id;
-        const assetToMove = this.assetCache.get(assetIdToMove);
-        const destinationFolder = this.assetCache.get(destinationFolderId);
-
-        if (!assetToMove || !destinationFolder || destinationFolder.type !== 'folder' || assetIdToMove === destinationFolderId) {
-            this.showNotification('Paste failed: Invalid destination.', 'error');
-            return;
-        }
-
-        const originalParent = this.findParentFolder(assetIdToMove);
-        if (originalParent.id === destinationFolderId) {
-             this.showNotification('Item is already in this folder.', 'info');
-             this.clipboard = null;
-             return;
-        }
-        
-        // Move the asset
-        destinationFolder.children[assetIdToMove] = assetToMove;
-        delete originalParent.children[assetIdToMove];
-
-        this.saveAssetsToStorage();
-        this.updateAssetsView();
-        this.showNotification(`Moved "${assetToMove.name}".`, 'info');
-        this.clipboard = null;
-    }
-    
-    // =================================================================================
-    // SECTION: ASSET IMPORTING, LOADING & PROCESSING
-    // =================================================================================
-
-    async handleFiles(files) {
-        this.showNotification(`Importing ${files.length} file(s)...`, 'info');
-        const currentFolder = this.getCurrentFolder();
-        for (const file of files) {
-            try {
-                const extension = '.' + file.name.split('.').pop().toLowerCase();
-                let asset;
-                if (this.supportedModelFormats.includes(extension)) asset = await this.processModelFile(file, extension);
-                else if (this.supportedTextureFormats.includes(extension)) asset = await this.processTextureFile(file);
-                else continue;
-
-                currentFolder.children[asset.id] = asset;
-                this.assetCache.set(asset.id, asset);
-                await idbKeyval.set(asset.id, file);
-            } catch (error) {
-                console.error(`Error processing file ${file.name}:`, error);
-                this.showNotification(`Failed to process ${file.name}.`, 'error');
-            }
-        }
-        this.saveAssetsToStorage();
-        this.updateAssetsView();
-    }
-
-    async processModelFile(file, extension) {
-        const { object, animations } = await this.loadModel(file);
-        if (extension === '.fbx') object.scale.setScalar(0.01);
-        if (animations && animations.length) object.userData.animations = animations;
-
-        const thumbnail = await this.renderThumbnail(object);
-        return {
-            id: this.generateAssetId('model'), type: 'model', name: file.name,
-            dateAdded: new Date().toISOString(), size: file.size, thumbnail,
-            animations: animations.map(c => c.name), polyCount: this.getPolyCount(object),
-        };
-    }
-
-    async processTextureFile(file) {
-        const texture = await this.loadTexture(file);
-        return {
-            id: this.generateAssetId('texture'), type: 'texture', name: file.name,
-            dateAdded: new Date().toISOString(), size: file.size,
-            thumbnail: texture.image.src,
-            dimensions: { w: texture.image.width, h: texture.image.height },
-        };
-    }
-    
-    loadModel(file) {
-        return new Promise((resolve, reject) => {
-            const url = URL.createObjectURL(file);
-            const ext = '.' + file.name.split('.').pop().toLowerCase();
-            const loader = { '.glb': this.gltfLoader, '.gltf': this.gltfLoader, '.fbx': this.fbxLoader, '.obj': this.objLoader }[ext];
-            if (!loader) return reject(new Error(`Unsupported model: ${ext}`));
-            loader.load(url, (loaded) => {
-                const model = loaded.scene || loaded;
-                this.normalizeModel(model, 1.0);
-                resolve({ object: model, animations: loaded.animations || [] });
-                URL.revokeObjectURL(url);
-            }, undefined, (err) => { reject(err); URL.revokeObjectURL(url); });
-        });
-    }
-
-    loadTexture(file) {
-        return new Promise((resolve, reject) => {
-            const url = URL.createObjectURL(file);
-            const loader = file.name.toLowerCase().endsWith('.tga') ? this.tgaLoader : this.textureLoader;
-            loader.load(url, (texture) => {
-                texture.colorSpace = THREE.SRGBColorSpace;
-                URL.revokeObjectURL(url);
-                resolve(texture);
-            }, undefined, (err) => { reject(err); URL.revokeObjectURL(url); });
-        });
-    }
-    
-    // =================================================================================
-    // SECTION: UI & VIEW RENDERING
-    // =================================================================================
-
-    updateAssetsView() {
-        const container = document.querySelector('.assets-view-container');
-        const emptyState = document.querySelector('.empty-state');
-        if (!container || !emptyState) return;
-
-        const currentFolder = this.getCurrentFolder();
-        let items = Object.values(currentFolder.children);
-        if (this.searchFilter) items = items.filter(item => item.name.toLowerCase().includes(this.searchFilter));
-
-        const folders = items.filter(item => item.type === 'folder').sort((a,b) => a.name.localeCompare(b.name));
-        const assets = items.filter(item => item.type !== 'folder').sort((a,b) => a.name.localeCompare(b.name));
-
-        container.innerHTML = '';
-        emptyState.style.display = (items.length === 0) ? 'flex' : 'none';
-        
-        [...folders, ...assets].forEach(item => {
-            const element = item.type === 'folder' ? this.createFolderItem(item) : this.createAssetItem(item);
-            if (this.clipboard && this.clipboard.id === item.id && this.clipboard.type === 'cut') {
-                element.classList.add('cut');
-            }
-            container.appendChild(element);
-        });
-        
-        this.updateBreadcrumb();
-    }
-    
-    // ... (createFolderItem, createAssetItem, updateBreadcrumb - same as previous good version) ...
-    // Note: I will include the full, correct versions of these functions below.
-
-    createFolderItem(folder) {
-        const item = document.createElement('div');
-        item.className = 'folder-item';
-        item.dataset.id = folder.id;
-        item.innerHTML = `<div class="folder-icon"><i class="fas fa-folder"></i></div><span class="folder-name">${folder.name}</span>`;
-        item.addEventListener('dblclick', () => this.navigateTo(folder.id));
-        return item;
-    }
-
-    createAssetItem(asset) {
-        const item = document.createElement('div');
-        item.className = 'asset-item';
-        item.dataset.id = asset.id;
-        item.draggable = true;
-
-        const polyStat = asset.polyCount ? `<span class="asset-stat">${(asset.polyCount/1000).toFixed(1)}k Tris</span>` : '';
-        const dimStat = asset.dimensions ? `<span class="asset-stat">${asset.dimensions.w}x${asset.dimensions.h}</span>` : '';
-
-        item.innerHTML = `
-            <div class="asset-thumbnail">
-                <img src="${asset.thumbnail}" alt="${asset.name}" loading="lazy">
-                <div class="asset-overlay">${polyStat || dimStat}<span class="asset-stat">${this.formatFileSize(asset.size)}</span></div>
-            </div>
-            <div class="asset-info"><span class="asset-name" title="${asset.name}">${asset.name}</span><div class="asset-badge" data-type="${asset.type}">${asset.type}</div></div>`;
-        
-        item.addEventListener('dragstart', e => e.dataTransfer.setData('application/json', JSON.stringify({ assetId: asset.id, type: asset.type })));
-        return item;
-    }
-    
-    updateBreadcrumb() {
-        const container = document.querySelector('.breadcrumb');
-        container.innerHTML = '';
-        let currentLevel = this.assets;
-        
-        this.currentPath.forEach((folderId, index) => {
-            if (index > 0) currentLevel = currentLevel.children[folderId];
-            if (!currentLevel) return;
-
-            const el = document.createElement('span');
-            el.className = 'breadcrumb-item';
-            el.textContent = currentLevel.name;
-
-            if (index < this.currentPath.length - 1) {
-                el.addEventListener('click', () => { this.currentPath.splice(index + 1); this.updateAssetsView(); });
-            } else {
-                el.classList.add('active');
-            }
-            container.appendChild(el);
-            if (index < this.currentPath.length - 1) container.insertAdjacentHTML('beforeend', '<span class="breadcrumb-separator">/</span>');
-        });
-        document.querySelector('.back-btn').disabled = this.currentPath.length <= 1;
-    }
-
-    // =================================================================================
-    // SECTION: CONTEXT MENU
-    // =================================================================================
-
-    showContextMenu(assetId, x, y) {
-        this.hideContextMenu(); // Hide any existing menu
-        const menu = document.querySelector('.asset-context-menu');
-        const asset = this.assetCache.get(assetId);
-        if (!menu || !asset) return;
-
-        let menuItems = '';
-        if (asset.type === 'folder') {
-            menuItems += `<li data-action="rename"><i class="fas fa-edit"></i> Rename</li>`;
-            if (this.clipboard) {
-                menuItems += `<li data-action="paste"><i class="fas fa-paste"></i> Paste</li>`;
-            }
-            menuItems += `<li data-action="delete" class="danger"><i class="fas fa-trash"></i> Delete</li>`;
-        } else { // It's an asset
-            menuItems += `<li data-action="add-to-scene"><i class="fas fa-plus-circle"></i> Add to Scene</li>`;
-            menuItems += `<li data-action="cut"><i class="fas fa-cut"></i> Cut</li>`;
-            menuItems += `<li data-action="rename"><i class="fas fa-edit"></i> Rename</li>`;
-            menuItems += `<li data-action="delete" class="danger"><i class="fas fa-trash"></i> Delete</li>`;
-        }
-        
-        menu.innerHTML = `<ul>${menuItems}</ul>`;
-        menu.style.left = `${x}px`;
-        menu.style.top = `${y}px`;
-        menu.classList.add('visible');
-        
-        menu.querySelectorAll('li').forEach(item => {
-            item.addEventListener('click', () => {
-                this.handleContextMenuAction(item.dataset.action, assetId);
-                this.hideContextMenu();
-            });
-        });
-    }
-
-    handleContextMenuAction(action, assetId) {
-        switch(action) {
-            case 'add-to-scene': this.addAssetToScene(assetId); break;
-            case 'rename': this.renameAssetOrFolder(assetId); break;
-            case 'delete': this.deleteAssetOrFolder(assetId); break;
-            case 'cut': this.cutAsset(assetId); break;
-            case 'paste': this.pasteAsset(assetId); break;
-        }
-    }
-
-    hideContextMenu() {
-        const menu = document.querySelector('.asset-context-menu');
-        if (menu) menu.classList.remove('visible');
-    }
-
-    async addAssetToScene(assetId) {
-        const asset = this.assetCache.get(assetId);
-        if (!asset || asset.type !== 'model') return;
-
-        this.showNotification(`Adding ${asset.name} to scene...`, 'info');
-        const file = await idbKeyval.get(asset.id);
-        const { object: modelInstance } = await this.loadModel(file);
-        if (file.name.toLowerCase().endsWith('.fbx')) modelInstance.scale.setScalar(0.01);
-        if (modelInstance.userData.animations) {
-            modelInstance.userData.mixer = new THREE.AnimationMixer(modelInstance);
-            modelInstance.userData.mixer.clipAction(modelInstance.userData.animations[0]).play();
-        }
-        this.mainScene.add(modelInstance);
-    }
-    
-    // ... (Thumbnail Rendering and Utility functions from previous answer) ...
-    // Including them here for true completeness.
-
-    async renderThumbnail(object, width = 128, height = 128) {
-        this.thumbnailRenderer.setSize(width, height, false);
-        this.thumbnailScene.add(object);
-        const box = new THREE.Box3().setFromObject(object);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const fov = this.thumbnailCamera.fov * (Math.PI / 180);
-        let cameraZ = maxDim === 0 ? 1 : Math.abs(maxDim / 2 / Math.tan(fov / 2));
-        cameraZ *= 1.5;
-        this.thumbnailCamera.position.set(center.x + size.x * 0.5, center.y + size.y * 0.5, center.z + cameraZ);
-        this.thumbnailCamera.lookAt(center);
-        this.thumbnailCamera.updateProjectionMatrix();
-        this.thumbnailRenderer.render(this.thumbnailScene, this.thumbnailCamera);
-        const dataUrl = this.thumbnailRenderer.domElement.toDataURL('image/png');
-        this.thumbnailScene.remove(object);
-        return dataUrl;
-    }
-    
-    normalizeModel(object, targetSize = 1.0) {
-        const box = new THREE.Box3().setFromObject(object);
-        const center = box.getCenter(new THREE.Vector3());
-        object.position.sub(center);
-        const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        if (maxDim > 0) object.scale.setScalar(targetSize / maxDim);
-        return object;
-    }
-    
-    getPolyCount(object) {
-        let count = 0;
-        object.traverse(child => { if (child.isMesh) count += child.geometry.index ? child.geometry.index.count / 3 : child.geometry.attributes.position.count / 3; });
-        return Math.round(count);
-    }
-
-    generateAssetId(prefix = 'asset') { return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; }
-
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 B';
-        const i = Math.floor(Math.log(bytes) / Math.log(1024));
-        return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(1))} ${['B', 'KB', 'MB', 'GB'][i]}`;
-    }
-
-    getInitialAssetStructure() { return { id: 'root', type: 'folder', name: 'Content', dateAdded: new Date().toISOString(), children: {} }; }
-
-    showNotification(message, type = 'info') {
-        const el = document.createElement('div');
-        el.className = `editor-notification ${type}`;
-        el.textContent = message;
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 4000);
-    }
-    
-    saveAssetsToStorage() {
-        localStorage.setItem('assetsPanel.structure', JSON.stringify(this.assets));
-    }
-
-    loadAssetsFromStorage() {
+    // Renderer drag/drop -> add to scene or apply material/texture
+    if (this.renderer && this.renderer.domElement) {
+      this.renderer.domElement.ondragover = (e) => e.preventDefault();
+      this.renderer.domElement.ondrop = (e) => {
+        e.preventDefault();
         try {
-            const savedStructure = JSON.parse(localStorage.getItem('assetsPanel.structure'));
-            if (savedStructure) this.assets = savedStructure;
-            this.rebuildAssetCache(this.assets);
-        } catch (e) {
-            console.error("Failed to load saved assets, starting fresh.", e);
-            this.assets = this.getInitialAssetStructure();
+          const data = JSON.parse(e.dataTransfer.getData('application/json'));
+          if (data && data.assetId) this._addToScene(data.assetId, e);
+        } catch (err) { /* ignore invalid drops */ }
+      };
+    }
+
+    // header resize
+    if (this.dom.header && this.dom.panel) {
+      this.dom.header.onmousedown = (e) => {
+        if (e.target !== this.dom.header) return;
+        const startY = e.clientY, startHeight = this.dom.panel.offsetHeight;
+        const mouseMove = (ev) => { this.dom.panel.style.height = `${startHeight - (ev.clientY - startY)}px`; };
+        document.addEventListener('mousemove', mouseMove);
+        document.addEventListener('mouseup', () => document.removeEventListener('mousemove', mouseMove), { once: true });
+      };
+    }
+
+    // global click hides context
+    document.addEventListener('click', () => { if (this.dom.contextMenu) this.dom.contextMenu.style.display = 'none'; });
+
+    // keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Delete') { if (this.selectedIds.size) this.deleteAsset(); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') { e.preventDefault(); this._selectAllInView(); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+        if (this.selectedIds.size) {
+          const names = Array.from(this.selectedIds).map(id => (this._findById(id)||{}).name).filter(Boolean).join('\n');
+          navigator.clipboard.writeText(names).catch(()=>{});
         }
-        this.updateAssetsView();
+      }
+    });
+
+    // folder sidebar dblclick -> open
+    if (this.dom.categoriesContainer) {
+      this.dom.categoriesContainer.addEventListener('dblclick', (e) => {
+        const node = e.target.closest('.category-item'); if (!node) return;
+        const id = node.dataset.folderId; if (id) { this.openFolderId = id; this.render(); }
+      });
     }
 
-    rebuildAssetCache(folder) {
-        this.assetCache.set(folder.id, folder);
-        Object.values(folder.children).forEach(child => {
-            if (child.type === 'folder') this.rebuildAssetCache(child);
-            else this.assetCache.set(child.id, child);
+    // filters
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.onclick = (e) => {
+        const t = btn.dataset.type || btn.getAttribute('data-type');
+        if (t) {
+          this.filterByType(t, btn);
+        }
+      };
+    });
+
+    // search debounce
+    if (this.dom.searchBox) {
+      let t = null;
+      this.dom.searchBox.oninput = (e) => { clearTimeout(t); t = setTimeout(()=> this.searchAssets(e.target.value), 250); };
+    }
+
+    // context menu click handlers will be generated inline when shown
+  }
+
+  // ------------------------------------------------------------------
+  // Asset ingestion and thumbnails
+  // ------------------------------------------------------------------
+  static async _addAssetFromFile(file, folderId = null) {
+    const type = this._getAssetType(file.name);
+    if (!type) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const id = `asset_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+      const dataUrl = reader.result;
+      let asset = { id, name: file.name, type, data: dataUrl, thumbnail: null, isFavorite: false, isBuiltIn: false, folderId };
+
+      // If JSON and detected as material, parse definition
+      if (type === 'material') {
+        // attempt to parse JSON text instead of dataURL for clarity
+        const textReader = new FileReader();
+        textReader.readAsText(file);
+        textReader.onload = () => {
+          try {
+            const def = JSON.parse(textReader.result);
+            asset.definition = def;
+            // generate material preview thumbnail
+            this._generateMaterialThumbnail(def).then(t => { asset.thumbnail = t; this.assets.push(asset); this._saveToStorage(); this.render(); if (typeof this.onAssetAdded === 'function') this.onAssetAdded(asset); });
+          } catch (err) {
+            console.warn('Invalid material JSON', err);
+            asset.thumbnail = this._svgIcon('material');
+            this.assets.push(asset); this._saveToStorage(); this.render();
+          }
+        };
+        return;
+      }
+
+      // For textures/models/hdri: generate thumbnail
+      asset.thumbnail = await this._generateThumbnail(dataUrl, type, file);
+      this.assets.push(asset);
+      this._saveToStorage();
+      this.render();
+      if (typeof this.onAssetAdded === 'function') this.onAssetAdded(asset);
+    };
+  }
+
+  static _generateThumbnail(dataURL, type, file) {
+    if (type === 'texture' || type === 'hdri') {
+      return new Promise(resolve => {
+        const img = new Image(); img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const canvas = document.createElement('canvas'); canvas.width = 128; canvas.height = 128;
+          const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, 128, 128);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = () => resolve(this._svgIcon('texture'));
+        img.src = dataURL;
+      });
+    }
+    if (type === 'model') {
+      // Attempt GLTF preview (like before) else fallback to model icon
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(128, 128);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+      scene.add(new THREE.AmbientLight(0xffffff, 2.0));
+      scene.add(new THREE.DirectionalLight(0xffffff, 2.0).position.set(2,3,1));
+      return new Promise(resolve => {
+        this.loaders.gltf.load(dataURL, gltf => {
+          const model = gltf.scene; const box = new THREE.Box3().setFromObject(model); const center = box.getCenter(new THREE.Vector3()); const size = box.getSize(new THREE.Vector3()); const maxDim = Math.max(size.x, size.y, size.z) || 1;
+          camera.position.copy(center); camera.position.z += maxDim * 1.5; camera.lookAt(center);
+          scene.add(model);
+          renderer.render(scene, camera);
+          resolve(renderer.domElement.toDataURL('image/png'));
+          renderer.dispose();
+        }, ()=>{}, ()=>{ resolve(this._svgIcon('model')); });
+      });
+    }
+    return Promise.resolve(this._svgIcon(type));
+  }
+
+  // Small material preview: render a lit sphere with maps if available (returns dataURL)
+  static _generateMaterialThumbnail(def) {
+    return new Promise(resolve => {
+      try {
+        const size = 128;
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(size, size);
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+        camera.position.set(0, 0, 3);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        const d = new THREE.DirectionalLight(0xffffff, 1.0); d.position.set(2,2,2); scene.add(d);
+        const mat = new THREE.MeshStandardMaterial({
+          color: def.color ? new THREE.Color(def.color) : 0xffffff,
+          roughness: def.roughness ?? 0.5,
+          metalness: def.metalness ?? 0.0,
+          emissive: def.emissive ? new THREE.Color(def.emissive) : 0x000000,
+          emissiveIntensity: def.emissiveIntensity ?? 1
         });
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 32, 16), mat);
+        scene.add(sphere);
+        const loader = new THREE.TextureLoader();
+        const slots = [['map','map'], ['normalMap','normalMap'], ['roughnessMap','roughnessMap'], ['metalnessMap','metalnessMap'], ['emissiveMap','emissiveMap'], ['displacementMap','displacementMap']];
+        let pending = 0;
+        for (const [k, srcKey] of slots) {
+          if (def[srcKey]) {
+            pending++;
+            loader.load(def[srcKey], (t) => { mat[k]=t; mat.needsUpdate=true; pending--; if (pending===0) finish(); }, undefined, ()=>{ pending--; if (pending===0) finish(); });
+          }
+        }
+        const finish = () => {
+          renderer.render(scene, camera);
+          try { const dURL = renderer.domElement.toDataURL('image/png'); renderer.dispose(); resolve(dURL); } catch (e) { renderer.dispose(); resolve(this._svgIcon('material')); }
+        };
+        if (pending === 0) finish();
+      } catch (e) { resolve(this._svgIcon('material')); }
+    });
+  }
+
+  static _fallbackThumb(type) { return this._svgIcon(type); }
+
+  // Simple inline SVG icons for types (string)
+  static _svgIcon(type) {
+    const icons = {
+      model: `<svg viewBox="0 0 24 24" width="64" height="64" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12 2 2 7l10 5 10-5-10-5zm0 8-10-5v12l10 5V10zm0 0 10-5v12l-10 5V10z"/></svg>`,
+      texture: `<svg viewBox="0 0 24 24" width="64" height="64" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.5"/><path fill="currentColor" d="M7 7h10v10H7z"/></svg>`,
+      hdri: `<svg viewBox="0 0 24 24" width="64" height="64" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>`,
+      material: `<svg viewBox="0 0 24 24" width="64" height="64" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>`,
+      primitive: `<svg viewBox="0 0 24 24" width="64" height="64" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="6" width="12" height="12" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>`,
+      light: `<svg viewBox="0 0 24 24" width="64" height="64" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M9 21h6v-1H9v1zm3-20C6.48 1 2 5.48 2 11c0 3.53 1.99 6.62 5 8.21V21h10v-1.79c3.01-1.59 5-4.68 5-8.21 0-5.52-4.48-10-10-10z"/></svg>`
+    };
+    return icons[type] || icons.model;
+  }
+
+  // ------------------------------------------------------------------
+  // Rendering UI: Folders + Assets grid
+  // ------------------------------------------------------------------
+  static render(searchQuery = '') {
+    if (!this.dom.grid) return;
+    this._renderFolderSidebar();
+
+    let assetsToRender = [];
+    switch (this.currentCategory) {
+      case 'project': assetsToRender = this.assets.filter(a => (this.openFolderId ? a.folderId === this.openFolderId : !a.folderId)); break;
+      case 'favorites': assetsToRender = this.assets.filter(a => a.isFavorite); break;
+      case 'primitives': assetsToRender = this._getPrimitiveAssets(); break;
+      case 'lights': assetsToRender = this._getLightAssets(); break;
+      default: assetsToRender = this.assets; break;
     }
-}
+    if (this.currentFilter !== 'all') assetsToRender = assetsToRender.filter(a => a.type === this.currentFilter);
+    if (searchQuery) assetsToRender = assetsToRender.filter(a => (a.name||'').toLowerCase().includes(searchQuery) || (a.tags||[]).some(t => t.includes(searchQuery)));
 
+    this.dom.grid.innerHTML = '';
+    for (const asset of assetsToRender) {
+      const item = document.createElement('div');
+      item.className = `asset-item ${asset.isFavorite ? 'favorite' : ''} ${this.selectedIds.has(asset.id) ? 'selected' : ''}`;
+      item.dataset.id = asset.id; item.draggable = true;
 
-/**
- * Toggles the visibility of the main assets panel.
- * Can be called from a button's onclick attribute in the main HTML.
- */
-function toggleAssetsPanel() {
-    const panel = document.querySelector('.assets-panel');
-    if (panel) {
-        // We toggle a class name on the element itself.
-        // The CSS will handle the actual showing and hiding.
-        panel.classList.toggle('panel-visible');
-        console.log(`Assets panel visibility toggled. Is visible: ${panel.classList.contains('panel-visible')}`);
-    } else {
-        console.error("Could not find the '.assets-panel' element to toggle.");
+      const thumbHtml = (asset.thumbnail && asset.thumbnail.startsWith('data:image')) ? `<img src="${asset.thumbnail}" />` : (asset.thumbnail ? asset.thumbnail : this._svgIcon(asset.type));
+      item.innerHTML = `<div class="asset-thumbnail">${thumbHtml}</div><div class="asset-name">${asset.name}</div><div class="asset-meta">${asset.type}</div>`;
+
+      item.onclick = (e) => {
+        const append = e.ctrlKey || e.metaKey;
+        this.selectAsset(asset.id, item, append);
+      };
+      item.ondblclick = () => this._addToScene(asset.id);
+      item.ondragstart = (e) => {
+        e.dataTransfer.setData('application/json', JSON.stringify({ assetId: asset.id }));
+        e.dataTransfer.effectAllowed = 'copy';
+      };
+      item.oncontextmenu = (e) => { e.preventDefault(); this._showContextMenu(e, asset.id); };
+
+      this.dom.grid.appendChild(item);
     }
-}
 
-/**
- * Toggles the visibility of a skeleton helper for a given model.
- * @param {THREE.Object3D} model The model whose skeleton should be toggled.
- */
-function toggleSkeletonVisibility(model) {
-    if (!model) return;
-    const scene = model.parent;
-    if (!scene) return;
-    
-    let helper = model.getObjectByName("SkeletonHelper");
-    if (helper) {
-        helper.visible = !helper.visible;
-    } else {
-        helper = new THREE.SkeletonHelper(model);
-        helper.name = "SkeletonHelper";
-        scene.add(helper);
+    if (assetsToRender.length === 0) this.dom.grid.innerHTML = '<div class="no-assets">No assets found.</div>';
+  }
+
+  static _renderFolderSidebar() {
+    const container = document.querySelector('.assets-categories');
+    if (!container) return;
+    container.innerHTML = '';
+    const top = document.createElement('div'); top.className = 'folder-actions';
+    top.innerHTML = `<button class="panel-btn" onclick="AssetsPanel.createFolder()">+ Folder</button>
+      <button class="panel-btn" onclick="AssetsPanel.exportJSON()">Export</button>
+      <label class="panel-btn file-import">Import<input type="file" style="display:none" onchange="(function(e){ AssetsPanel.importJSON(e.target.files[0]); })(event)"/></label>`;
+    container.appendChild(top);
+
+    const root = document.createElement('div'); root.className = `category-item ${!this.openFolderId && this.currentCategory==='project' ? 'active' : ''}`; root.dataset.folderId = ''; root.innerHTML = `<span class="category-icon">${this._svgIcon('primitive')}</span> Project Assets (root)`; root.onclick = () => { this.openFolderId = null; this.currentCategory = 'project'; document.querySelectorAll('.category-item.active').forEach(c => c.classList.remove('active')); root.classList.add('active'); this.render(); };
+    container.appendChild(root);
+
+    const buildList = (parentId, depth=0) => {
+      const folders = Object.values(this.folders).filter(f => (f.parentId||null) === (parentId||null)).sort((a,b)=> a.name.localeCompare(b.name));
+      for (const f of folders) {
+        const el = document.createElement('div');
+        el.className = `category-item ${this.openFolderId===f.id && this.currentCategory==='project' ? 'active' : ''}`;
+        el.style.paddingLeft = `${12 + depth*12}px`;
+        el.dataset.folderId = f.id;
+        el.innerHTML = `<span class="category-icon">${this._svgIcon('primitive')}</span> ${f.name}`;
+        el.onclick = (ev) => { ev.stopPropagation(); this.openFolderId = f.id; this.currentCategory='project'; document.querySelectorAll('.category-item.active').forEach(c => c.classList.remove('active')); el.classList.add('active'); this.render(); };
+        el.oncontextmenu = (ev) => { ev.preventDefault(); this._showFolderContextMenu(ev, f.id); };
+        container.appendChild(el);
+        buildList(f.id, depth+1);
+      }
+    };
+    buildList(null, 0);
+  }
+
+  // Context menus
+  static _showContextMenu(event, assetId) {
+    this.contextAssetId = assetId;
+    const asset = this._findById(assetId);
+    if (!asset || asset.isBuiltIn) return;
+    this.dom.contextMenu.style.display = 'block';
+    this.dom.contextMenu.style.left = `${event.clientX}px`;
+    this.dom.contextMenu.style.top = `${event.clientY}px`;
+    this.dom.contextMenu.innerHTML = '';
+
+    const create = (label, cb, style='') => { const d = document.createElement('div'); d.className = 'context-menu-item'; if (style) d.style = style; d.textContent = label; d.onclick = () => { cb(); this.dom.contextMenu.style.display='none'; }; this.dom.contextMenu.appendChild(d); };
+    create('Rename', ()=> this.renameAsset());
+    create(asset.isFavorite? 'Remove from Favorites' : 'Add to Favorites', ()=> this.toggleFavorite());
+    create('Move to Folder', ()=> this._showMoveAssetMenu(assetId));
+    create('Export Asset', ()=> this._exportSingleAsset(assetId));
+    create('Delete', ()=> this.deleteAsset(), 'color: var(--danger-color);');
+  }
+
+  static _showFolderContextMenu(event, folderId) {
+    this.dom.contextMenu.style.display = 'block';
+    this.dom.contextMenu.style.left = `${event.clientX}px`;
+    this.dom.contextMenu.style.top = `${event.clientY}px`;
+    this.dom.contextMenu.innerHTML = '';
+    const create = (label, cb, style='') => { const d = document.createElement('div'); d.className = 'context-menu-item'; if (style) d.style = style; d.textContent = label; d.onclick = () => { cb(); this.dom.contextMenu.style.display='none'; }; this.dom.contextMenu.appendChild(d); };
+    create('Rename Folder', ()=> this.renameFolder(folderId));
+    create('Delete Folder (Move contents to parent)', ()=> this.deleteFolder(folderId, {deleteContents:false}));
+    create('Delete Folder & Contents', ()=> { if (confirm('Delete folder and all its contents?')) this.deleteFolder(folderId, {deleteContents:true}); });
+  }
+
+  static _showMoveAssetMenu(assetId) {
+    const folderNames = [{ id: null, name: 'Root' }].concat(Object.values(this.folders).map(f=>({ id: f.id, name: f.name })));
+    const sel = prompt('Move asset to folder:\n' + folderNames.map((f,i)=>`${i}: ${f.name}`).join('\n'), '0');
+    const idx = parseInt(sel);
+    if (isNaN(idx)) return;
+    const target = folderNames[idx]; this.moveAssetToFolder(assetId, target.id);
+  }
+
+  // ------------------------------------------------------------------
+  // Helpers
+  // ------------------------------------------------------------------
+  static _findById(id) { return this.assets.find(a => a.id === id); }
+  static _removeAsset(id) { const idx = this.assets.findIndex(a => a.id === id); if (idx >= 0) { const [rem] = this.assets.splice(idx,1); if (typeof this.onAssetRemoved === 'function') this.onAssetRemoved(rem.id); } }
+
+  static _collectFolderTree(folderId) { const out = []; const rec = (fid) => { out.push(fid); const f = this.folders[fid]; if (!f) return; for (const c of f.children||[]) rec(c); }; rec(folderId); return out; }
+
+  static _selectAllInView() {
+    const nodes = this.dom.grid.querySelectorAll('.asset-item'); this.selectedIds.clear(); for (const n of nodes) this.selectedIds.add(n.dataset.id); this.render();
+  }
+
+  // ==================================================================
+  // ===                UPGRADED ASSET LIBRARIES                      ===
+  // ==================================================================
+  static _getPrimitiveAssets() {
+    const defaultMaterial = () => new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+    return [
+      { id: 'prim_cube', name: 'Cube', type: 'primitive', isBuiltIn: true, thumbnail: this._svgIcon('primitive'), factory: () => new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), defaultMaterial()) },
+      { id: 'prim_sphere', name: 'Sphere', type: 'primitive', isBuiltIn: true, thumbnail: this._svgIcon('primitive'), factory: () => new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 16), defaultMaterial()) },
+      { id: 'prim_plane', name: 'Plane', type: 'primitive', isBuiltIn: true, thumbnail: this._svgIcon('primitive'), factory: () => new THREE.Mesh(new THREE.PlaneGeometry(1, 1), defaultMaterial()) },
+      { id: 'prim_cylinder', name: 'Cylinder', type: 'primitive', isBuiltIn: true, thumbnail: this._svgIcon('primitive'), factory: () => new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1, 32), defaultMaterial()) },
+      { id: 'prim_wall', name: 'Wall', type: 'primitive', isBuiltIn: true, thumbnail: this._svgIcon('primitive'), factory: () => new THREE.Mesh(new THREE.BoxGeometry(4, 2.5, 0.15), defaultMaterial()) },
+      { id: 'prim_stair', name: 'Stairs', type: 'primitive', isBuiltIn: true, thumbnail: this._svgIcon('primitive'), factory: () => {
+        const steps = 10; const stepWidth = 1.2, stepHeight = 0.2, stepDepth = 0.3; const group = new THREE.Group();
+        for (let i = 0; i < steps; i++) { const geom = new THREE.BoxGeometry(stepWidth, stepHeight, stepDepth); const mesh = new THREE.Mesh(geom, defaultMaterial()); mesh.position.set(0, stepHeight / 2 + i * stepHeight, i * stepDepth); group.add(mesh); }
+        const boundingBox = new THREE.BoxGeometry(stepWidth, steps * stepHeight, steps * stepDepth); const wrapper = new THREE.Mesh(boundingBox, new THREE.MeshBasicMaterial({ visible: false, transparent: true, opacity: 0 })); wrapper.add(group); group.position.y = - (steps * stepHeight) / 2; group.position.z = - (steps * stepDepth) / 2; return wrapper;
+      }},
+      { id: 'prim_arch', name: 'Arch', type: 'primitive', isBuiltIn: true, thumbnail: this._svgIcon('primitive'), factory: () => { const shape = new THREE.Shape(); shape.moveTo(-1,0); shape.lineTo(-1,1.5); shape.absarc(0,1.5,1,Math.PI,0,true); shape.lineTo(1,0); shape.lineTo(-1,0); const extrudeSettings = { depth: 0.2, bevelEnabled: false }; const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings); geometry.center(); return new THREE.Mesh(geometry, defaultMaterial()); }},
+      { id: 'prim_column', name: 'Column', type: 'primitive', isBuiltIn: true, thumbnail: this._svgIcon('primitive'), factory: () => new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 3, 20), defaultMaterial()) },
+    ];
+  }
+
+  static _getLightAssets() {
+    return [
+      { id: 'light_point', name: 'Point Light', type: 'light', isBuiltIn: true, thumbnail: this._svgIcon('light'), factory: () => { const light = new THREE.PointLight(0xffffff, 50, 10); light.castShadow = true; return light; }},
+      { id: 'light_sun', name: 'Sun Light', type: 'light', isBuiltIn: true, thumbnail: this._svgIcon('light'), factory: () => { const light = new THREE.DirectionalLight(0xfff5e1, 8); light.castShadow = true; light.shadow.mapSize.width = 2048; light.shadow.mapSize.height = 2048; light.shadow.camera.near = 0.5; light.shadow.camera.far = 50; light.shadow.bias = -0.0001; return light; }},
+      { id: 'light_spot', name: 'Spotlight', type: 'light', isBuiltIn: true, thumbnail: this._svgIcon('light'), factory: () => { const light = new THREE.SpotLight(0xffffff, 200, 20, Math.PI/6, 0.2, 1.5); light.castShadow = true; return light; }},
+      { id: 'light_rect', name: 'Rect Area Light', type: 'light', isBuiltIn: true, thumbnail: this._svgIcon('light'), factory: () => { const light = new THREE.RectAreaLight(0x87ceeb, 10, 2, 3); return light; }},
+      { id: 'light_hemi', name: 'Hemisphere Sky', type: 'light', isBuiltIn: true, thumbnail: this._svgIcon('light'), factory: () => { const light = new THREE.HemisphereLight(0x87ceeb, 0x404040, 2); return light; }},
+    ];
+  }
+
+  // ensure builtins are present in assets array (without duplicating)
+  static _ensureBuiltins() {
+    const builtinPrims = this._getPrimitiveAssets();
+    const builtinLights = this._getLightAssets();
+    for (const b of [...builtinPrims, ...builtinLights]) {
+      if (!this.assets.some(a => a.id === b.id)) this.assets.unshift(b);
     }
-}
+  }
 
+  // ------------------------------------------------------------------
+  // Utility: get type from filename (including material json)
+  // ------------------------------------------------------------------
+  static _getAssetType = (filename) => {
+    const ext = filename.split('.').pop().toLowerCase();
+    if (['glb','gltf'].includes(ext)) return 'model';
+    if (['png','jpg','jpeg','webp','bmp'].includes(ext)) return 'texture';
+    if (['hdr','exr'].includes(ext)) return 'hdri';
+    if (['json'].includes(ext)) return 'material';
+    return null;
+  };
+
+  // single asset export
+  static _exportSingleAsset(assetId) {
+    const asset = this._findById(assetId); if (!asset) return;
+    if (asset.type === 'material' && asset.definition) {
+      const blob = new Blob([JSON.stringify(asset.definition, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = (asset.name||'material') + '.material.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      return;
+    }
+    const blob = new Blob([asset.data], { type: 'application/octet-stream' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = asset.name; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+
+  // Apply material asset to a mesh (loads maps and sets PBR material)
+  static _applyMaterialToMesh(asset, mesh) {
+    if (!mesh || !mesh.isMesh) {
+      console.warn('AssetsPanel: target is not a mesh');
+      return;
+    }
+    if (!asset.definition) { console.warn('AssetsPanel: material asset missing definition'); return; }
+    const def = asset.definition;
+    const mat = new THREE.MeshStandardMaterial({
+      color: def.color ? new THREE.Color(def.color) : 0xffffff,
+      roughness: def.roughness ?? 0.5,
+      metalness: def.metalness ?? 0.0,
+      emissive: def.emissive ? new THREE.Color(def.emissive) : 0x000000,
+      emissiveIntensity: def.emissiveIntensity ?? 1
+    });
+
+    const loader = new THREE.TextureLoader();
+    const promises = [];
+
+    const tryLoad = (key, assignTo) => {
+      if (!def[key]) return;
+      promises.push(new Promise((res) => {
+        loader.load(def[key], (tex) => { mat[assignTo] = tex; mat.needsUpdate = true; res(); }, undefined, () => { console.warn('Texture load failed', def[key]); res(); });
+      }));
+    };
+
+    tryLoad('map', 'map');
+    tryLoad('normalMap', 'normalMap');
+    tryLoad('roughnessMap', 'roughnessMap');
+    tryLoad('metalnessMap', 'metalnessMap');
+    tryLoad('emissiveMap', 'emissiveMap');
+    tryLoad('displacementMap', 'displacementMap');
+
+    Promise.all(promises).then(() => {
+      // preserve some settings from previous material (like side)
+      if (mesh.material && mesh.material.side) mat.side = mesh.material.side;
+      mesh.material = mat;
+      mesh.material.needsUpdate = true;
+      console.log(`Applied material '${asset.name}' to ${mesh.name || mesh.uuid}`);
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // single asset export helper, shortname
+  // ------------------------------------------------------------------
+  static _shortName(src) {
+    try { return src.split('/').pop(); } catch (e) { return src; }
+  }
+
+  // END OF CLASS
+}
