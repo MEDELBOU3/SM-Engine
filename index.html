@@ -735,6 +735,62 @@ setupPinnableButtons();
                 </button>
             </div>
 
+            <style>
+  
+  /* Tooltip container */
+  .tooltip {
+    visibility: hidden;
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    border-radius: 5px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above button */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none; /* Avoid tooltip blocking button */
+  }
+
+  /* Tooltip arrow */
+  .tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* Arrow at the bottom of tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+  }
+
+  /* Show tooltip on hover */
+  .tool-button:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+</style>
+               <div class="toolbar-group">
+                   <button class="tool-button" id="makeTerrain">
+                        Terrain
+                        <div class="tooltip">
+                           Click to open the SM-engine terrain software where you can create advanced terrains with full control and customization.
+                        </div>
+                   </button>
+               </div>
+
+             <script>
+                 const button = document.getElementById('makeTerrain');
+                button.addEventListener('click', () => {
+                    // Replace the URL with your actual SM-engine software link
+                    window.location.href = "SM-Engine-terrain-software.html";
+                });
+             </script>
+
 
             <div class="toolbar-group">
                 <button class="tool-button" id="open-animator-btn">
