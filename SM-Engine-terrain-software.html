@@ -1,0 +1,1221 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Terrain Studio — HTML/CSS/JS + Three.js</title>
+  <style>
+    :root{
+      --bg:#0a0a0b; --panel:#111114; --ink:#eaeaf0; --muted:#a5a7b0; --accent:#5ee3ff;
+      --border:#1c1d22; --shadow: 0 6px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial}
+    #app{display:grid;grid-template-columns:320px 1fr;height:100vh;}
+    .panel{background:var(--panel);border-right:1px solid var(--border);padding:14px 14px 18px;overflow:auto}
+    h1{font-size:18px;margin:0 0 6px;font-weight:700}
+    p.caption{margin:.25rem 0 1rem;color:var(--muted)}
+    .group{margin:14px 0;padding:12px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,#121217,#0e0e12)}
+    .group h2{margin:0 0 8px;font-size:13px;color:#bfc2cc;letter-spacing:.3px;text-transform:uppercase}
+    .row{display:flex;align-items:center;gap:8px;margin:8px 0}
+    .row label{flex:1;color:#cbd0da;font-size:13px}
+    .row input[type="range"]{flex:2}
+    .row input[type="number"], .row select{width:90px;background:#0c0c10;border:1px solid var(--border);color:var(--ink);padding:6px 8px;border-radius:10px}
+    .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    button{background:#16171c;border:1px solid var(--border);color:var(--ink);padding:10px 12px;border-radius:12px;cursor:pointer;box-shadow:var(--shadow)}
+    button:hover{border-color:#2a2b33}
+    canvas{display:block}
+    #viewport{position:relative}
+    .badge{position:absolute;left:10px;top:10px;background:#0d0f14b3;border:1px solid var(--border);padding:6px 10px;border-radius:999px;color:#cbd0da;font-size:12px;backdrop-filter: blur(6px)}
+    .kpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+    .chip{background:#0c0e12;border:1px solid var(--border);border-radius:12px;padding:10px}
+    .chip b{display:block;font-size:12px;color:#aab1bf}
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <aside class="panel">
+      <h1>Terrain Studio</h1>
+      <p class="caption">Procedural terrain • sculpting • advanced erosion • PBR tri-planar shading • export heightmap & GLB</p>
+
+      <section class="group" id="gen">
+        <h2>Generation</h2>
+        <div class="row"><label>Size <small>(N×N)</small></label>
+          <select id="sizeSel">
+            <option>129</option><option>257</option><option selected>385</option><option>513</option>
+            <option>769</option> 
+            <option>1025</option>
+          </select>
+        </div>
+        <div class="row"><label>Seed</label><input id="seed" type="number" value="42" min="1" max="99999" /></div>
+        <div class="row"><label>Noise Type</label>
+            <select id="noiseType">
+                <option value="simplex">Simplex (Basic)</option>
+                <option value="fbm" selected>fBm (Fractal)</option>
+                <option value="ridged">Ridged (Peaks)</option>
+                <option value="mixed">Mixed (Complex)</option>
+            </select>
+        </div>
+        <div class="row"><label>Scale</label><input id="scale" type="range" min="20" max="800" value="160" /></div>
+        <div class="row"><label>Amplitude</label><input id="amp" type="range" min="10" max="400" value="100" /></div>
+        <div class="row"><label>Octaves</label><input id="oct" type="range" min="1" max="10" value="6" /></div>
+        <div class="row"><label>Lacunarity</label><input id="lac" type="range" step="0.01" min="1.5" max="3.5" value="2.0" /></div>
+        <div class="row"><label>Persistence</label><input id="per" type="range" step="0.01" min="0.1" max="0.9" value="0.5" /></div>
+        <div class="row"><label>Bias</label><input id="bias" type="range" min="-120" max="120" value="0" /></div>
+        <div class="row"><label>Turbulence</label><input id="turb" type="range" min="0" max="50" value="0" /></div>
+        <div class="row"><label>Post Smooth (passes)</label><input id="psmooth" type="range" min="0" max="5" value="0" /></div>
+        <div class="btns" style="margin-top:10px">
+          <button id="regen">Regenerate</button>
+          <button id="resetGen">Reset Gen</button>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Brush</h2>
+        <div class="row"><label>Mode</label>
+          <select id="bmode"><option>raise</option><option>lower</option><option>smooth</option><option>flatten</option><option>noise</option></select>
+        </div>
+        <div class="row"><label>Radius</label><input id="brad" type="range" min="2" max="120" value="18" /></div>
+        <div class="row"><label>Strength</label><input id="bstr" type="range" min="0.1" max="12" step="0.1" value="1.8" /></div>
+        <div class="row"><label>Target Height</label><input id="btgt" type="number" value="20" /></div>
+        <div class="row"><label>Noise Freq</label><input id="bNoiseFreq" type="range" min="0.01" max="0.5" step="0.01" value="0.1" /></div>
+        <div class="row"><label>Falloff</label>
+            <select id="bFalloff">
+                <option value="linear">Linear</option>
+                <option value="smooth" selected>Smoothstep</option>
+                <option value="quadratic">Quadratic</option>
+            </select>
+        </div>
+        <p class="caption">Hold a modifier key (Shift/Ctrl/Alt) + Left-drag on terrain to sculpt. Plain Left-drag to orbit.</p>
+        <div class="btns" style="margin-top:10px">
+            <button id="resetBrush">Reset Brush</button>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Erosion</h2>
+        <div class="row"><label>Thermal (iters)</label><input id="thI" type="range" min="0" max="80" value="20" /></div>
+        <div class="row"><label>Talus Angle</label><input id="thT" type="range" min="0.2" max="3" step="0.1" value="0.9" /></div>
+        <div class="row"><label>Carry Amount</label><input id="thC" type="range" min="0.05" max="0.6" step="0.05" value="0.25" /></div>
+        <button id="runThermal" style="margin-top:8px">Run Thermal</button>
+        <div class="row" style="margin-top:8px"><label>Hydraulic (iters)</label><input id="hyI" type="range" min="0" max="120" value="25" /></div>
+        <div class="row"><label>Rainfall</label><input id="hyR" type="range" min="0.005" max="0.08" step="0.005" value="0.02" /></div>
+        <div class="row"><label>Evaporation</label><input id="hyE" type="range" min="0.001" max="0.08" step="0.001" value="0.03" /></div>
+        <div class="row"><label>Deposit Smooth</label><input id="hyS" type="range" min="0" max="1" step="0.05" value="0.5" /></div>
+        <div class="row"><label>Sediment Capacity</label><input id="hySc" type="range" min="0.01" max="0.5" step="0.01" value="0.08" /></div>
+        <button id="runHydraulic" style="margin-top:8px">Run Hydraulic</button>
+      </section>
+
+      <section class="group">
+        <h2>Scene & Materials</h2>
+        <div class="row"><label>Plane Size</label><input id="plane" type="range" min="200" max="1200" value="700" /></div>
+        <div class="row"><label>Max Height</label><input id="maxH" type="range" min="40" max="300" value="140" /></div>
+        <div class="row"><label>Water Level</label><input id="waterLevel" type="range" min="-100" max="100" value="-10" /></div>
+        <div class="row"><label>Time of Day</label><input id="sun" type="range" min="0" max="1" step="0.001" value="0.65" /></div>
+        <div class="row"><label>Ambient Light Strength</label><input id="ambientStr" type="range" min="0.1" max="1.0" step="0.05" value="0.4" /></div>
+        <div class="row"><label>Texture Scale <small>(world units/repeat)</small></label><input id="texScale" type="range" min="10" max="400" value="100" /></div>
+        <div class="row"><label>Sand/Grass Blend (Low H)</label><input id="lowGrassBlend" type="range" min="0" max="1" step="0.01" value="0.15" /></div>
+        <div class="row"><label>Sand/Grass Blend (High H)</label><input id="highGrassBlend" type="range" min="0" max="1" step="0.01" value="0.35" /></div>
+        <div class="row"><label>Rock Blend (Slope)</label><input id="rockBlend" type="range" min="0" max="1" step="0.01" value="0.5" /></div>
+        <div class="row"><label>Snow Blend (Height)</label><input id="snowBlend" type="range" min="0" max="1" step="0.01" value="0.85" /></div>
+        <div class="btns" style="margin-top:10px">
+          <button id="expHM">Export Heightmap</button>
+          <button id="expGLB">Export GLB</button>
+          <button id="resetCam">Reset Camera</button>
+        </div>
+      </section>
+
+      <div class="kpi">
+        <div class="chip"><b>Verts</b><span id="kVerts">—</span></div>
+        <div class="chip"><b>Brush</b><span id="kBrush">—</span></div>
+        <div class="chip"><b>FPS</b><span id="kFps">—</span></div>
+      </div>
+    </aside>
+
+    <main id="viewport">
+      <div class="badge">Left-drag to orbit • Shift+drag = smooth • Ctrl+drag = flatten • Alt+drag = noise</div>
+    </main>
+  </div>
+
+ <script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { Sky } from 'three/addons/objects/Sky.js';
+
+/* ---------------- Utilities ---------------- */
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const randMulberry = (seed)=>{let t=seed>>>0;return ()=>{t+=0x6D2B79F5;let r=Math.imul(t^(t>>>15),1|t);r^=r+Math.imul(r^(r>>>7),61|r);return((r^(r>>>14))>>>0)/4294967296}};
+const smoothstep = (edge0, edge1, x) => { const t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); };
+
+/* ---------------- Simplex Noise (compact) ---------------- */
+class Simplex2D{
+  constructor(seed=1){
+    const rnd=randMulberry(seed);
+    this.perm=new Uint8Array(512);
+    const p=new Uint8Array(256);
+    for(let i=0;i<256;i++)p[i]=i;
+    for(let i=255;i>0;i--){const j=(rnd()*(i+1))|0;[p[i],p[j]]=[p[j],p[i]]}
+    for(let i=0;i<512;i++)this.perm[i]=p[i&255]
+  }
+  noise(xin,yin){
+    const F=.5*(Math.sqrt(3)-1),G=(3-Math.sqrt(3))/6;
+    const s=(xin+yin)*F; const i=Math.floor(xin+s), j=Math.floor(yin+s);
+    const t=(i+j)*G; const X0=i-t, Y0=j-t;
+    const x0=xin-X0, y0=yin-Y0;
+    const i1=x0>y0?1:0, j1=x0>y0?0:1;
+    const x1=x0-i1+G, y1=y0-j1+G;
+    const x2=x0-1+2*G, y2=y0-1+2*G;
+    const ii=i&255, jj=j&255;
+    const grad=[ [1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[1,0],[-1,0],[0,1],[0,-1],[0,1],[0,-1] ];
+    let n0=0,n1=0,n2=0,gi0,gi1,gi2;
+    let t0=.5-x0*x0-y0*y0;if(t0>0){t0*=t0;gi0=this.perm[ii+this.perm[jj]]%12;n0=t0*t0*(grad[gi0][0]*x0+grad[gi0][1]*y0)}
+    let t1=.5-x1*x1-y1*y1;if(t1>0){t1*=t1;gi1=this.perm[ii+i1+this.perm[jj+j1]]%12;n1=t1*t1*(grad[gi1][0]*x1+grad[gi1][1]*y1)}
+    let t2=.5-x2*x2-y2*y2;if(t2>0){t2*=t2;gi2=this.perm[ii+1+this.perm[jj+1]]%12;n2=t2*t2*(grad[gi2][0]*x2+grad[gi2][1]*y2)}
+    return 70*(n0+n1+n2)
+  }
+  fBm(xin, yin, octaves, lacunarity, persistence) {
+      let total = 0; let frequency = 1; let amplitude = 1;
+      for (let i = 0; i < octaves; i++) {
+          total += this.noise(xin * frequency, yin * frequency) * amplitude;
+          frequency *= lacunarity;
+          amplitude *= persistence;
+      }
+      return total;
+  }
+  ridged(xin, yin, octaves, lacunarity, persistence) {
+      let total = 0; let frequency = 1; let amplitude = 0.5;
+      for (let i = 0; i < octaves; i++) {
+          total += (1 - Math.abs(this.noise(xin * frequency, yin * frequency))) * amplitude;
+          frequency *= lacunarity;
+          amplitude *= persistence;
+      }
+      return total;
+  }
+}
+
+/* ---------------- Heightmap generation & modifiers ---------------- */
+function generateHeightmap({size=257,seed=1,scale=200,amplitude=60,octaves=5,lacunarity=2,persistence=.5,bias=0,noiseType='fbm',turbulence=0}){
+  const N=size, hm=new Float32Array(N*N); const noiseGen=new Simplex2D(seed);
+  for(let y=0;y<N;y++){
+    for(let x=0;x<N;x++){
+      let v=0;
+      let nx = x / scale;
+      let ny = y / scale;
+
+      if (turbulence > 0) {
+        const warpScale = scale * 4;
+        const warpStrength = turbulence * 0.00005;
+        const warpX = noiseGen.fBm(x / warpScale, y / warpScale, 3, lacunarity, persistence);
+        const warpY = noiseGen.fBm(x / warpScale + 100, y / warpScale + 100, 3, lacunarity, persistence);
+        nx += warpX * warpStrength;
+        ny += warpY * warpStrength;
+      }
+
+      if (noiseType === 'simplex') {
+        v = noiseGen.noise(nx, ny);
+      } else if (noiseType === 'fbm') {
+        v = noiseGen.fBm(nx, ny, octaves, lacunarity, persistence);
+      } else if (noiseType === 'ridged') {
+        v = noiseGen.ridged(nx, ny, octaves, lacunarity, persistence);
+      } else if (noiseType === 'mixed') {
+        const fbmVal = noiseGen.fBm(nx, ny, octaves, lacunarity, persistence);
+        const ridgedVal = noiseGen.ridged(nx * 0.8, ny * 0.8, Math.max(1, octaves - 1), lacunarity + 0.5, persistence * 0.7);
+        v = fbmVal * 0.6 + ridgedVal * 0.4;
+      }
+
+      hm[y*N+x]=v*amplitude + bias;
+    }
+  }
+  return hm;
+}
+
+function smoothHeightmap(hm,N,passes=1){
+  const tmp=new Float32Array(hm.length);
+  const id=(x,y)=>y*N+x;
+  for(let p=0;p<passes;p++){
+    for(let y=0;y<N;y++){
+      for(let x=0;x<N;x++){
+        let s=0,c=0;
+        for(let j=-1;j<=1;j++){for(let i=-1;i<=1;i++){const xx=clamp(x+i,0,N-1),yy=clamp(y+j,0,N-1);s+=hm[id(xx,yy)];c++;}}
+        tmp[id(x,y)]=s/c;
+      }
+    }
+    hm.set(tmp);
+  }
+  return hm;
+}
+
+/* ---------------- Erosion: Thermal & Hydraulic (kept CPU but improved safety) ---------------- */
+function thermalErode(hm,N,iters=10,talus=1,carry=.25){
+  const id=(x,y)=>y*N+x;
+  for(let it=0;it<iters;it++){
+    const d=new Float32Array(hm.length);
+    for(let y=1;y<N-1;y++){
+      for(let x=1;x<N-1;x++){
+        const c=hm[id(x,y)]; let maxd=0,mx=0,my=0;
+        for(let j=-1;j<=1;j++){for(let i=-1;i<=1;i++){if(!i&&!j)continue;const dd=c-hm[id(x+i,y+j)];if(dd>maxd){maxd=dd;mx=i;my=j}}}
+        if(maxd>talus){const m=(maxd-talus)*carry;d[id(x,y)]-=m;d[id(x+mx,y+my)]+=m}
+      }
+    }
+    for(let k=0;k<hm.length;k++) hm[k]+=d[k];
+  }
+  return hm;
+}
+
+function hydraulicErode(hm,N,iters=20,rain=.01,evap=.02,dep=.5,sedCapacity=.08){
+  const id=(x,y)=>y*N+x;
+  const water=new Float32Array(N*N).fill(0.001);
+  const sediment=new Float32Array(N*N);
+  const K_e = 0.01; const K_d = dep; const waterFlowRate = 0.1;
+
+  for(let it=0;it<iters;it++){
+    for(let k=0;k<water.length;k++) water[k] += rain;
+    const nextWater = new Float32Array(water.length);
+    nextWater.set(water);
+
+    for(let y=1;y<N-1;y++){
+      for(let x=1;x<N-1;x++){
+        const currentIdx = id(x,y);
+        const H_total = hm[currentIdx] + water[currentIdx];
+
+        let outflow = 0;
+        const diffs = [];
+        let totalLowerDiff = 0;
+
+        for(let j=-1;j<=1;j++){
+          for(let i=-1;i<=1;i++){
+            if(!i&&!j) continue;
+            const neighborIdx = id(clamp(x+i,0,N-1), clamp(y+j,0,N-1));
+            const H_neighbor = hm[neighborIdx] + water[neighborIdx];
+            const diff = H_total - H_neighbor;
+            if(diff > 0) { diffs.push({idx: neighborIdx, diff: diff}); totalLowerDiff += diff; }
+          }
+        }
+
+        if(totalLowerDiff > 0 && water[currentIdx] > 0) {
+          outflow = Math.min(water[currentIdx], totalLowerDiff * waterFlowRate);
+          for(const neighbor of diffs) {
+            const flowAmount = outflow * (neighbor.diff / totalLowerDiff);
+            nextWater[neighbor.idx] += flowAmount;
+            nextWater[currentIdx] -= flowAmount;
+          }
+        }
+
+        const velocity = outflow > 0 ? Math.sqrt(totalLowerDiff / (diffs.length || 1)) : 0;
+        const currentSedCapacity = sedCapacity * velocity * water[currentIdx];
+
+        if (sediment[currentIdx] > currentSedCapacity) {
+          const depositAmount = (sediment[currentIdx] - currentSedCapacity) * K_d;
+          hm[currentIdx] += depositAmount;
+          sediment[currentIdx] -= depositAmount;
+        } else if (sediment[currentIdx] < currentSedCapacity) {
+          const erodeAmount = Math.min(hm[currentIdx], (currentSedCapacity - sediment[currentIdx]) * K_e);
+          hm[currentIdx] -= erodeAmount;
+          sediment[currentIdx] += erodeAmount;
+        }
+      }
+    }
+
+    water.set(nextWater);
+    for(let k=0;k<water.length;k++) water[k] = Math.max(0, water[k]-evap);
+  }
+
+  return hm;
+}
+
+/* ---------------- Scene & Renderer ---------------- */
+const viewport=document.getElementById('viewport');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+viewport.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0b0c10);
+
+const camera=new THREE.PerspectiveCamera(55, viewport.clientWidth/viewport.clientHeight, .1, 5000);
+camera.position.set(500,450,500);
+
+const controls=new OrbitControls(camera, renderer.domElement);
+controls.enableDamping=true; controls.maxPolarAngle=Math.PI*0.495; controls.target.set(0,0,0);
+controls.maxDistance = 1500; controls.minDistance = 50;
+
+/* ---------------- Lights ---------------- */
+const hemi=new THREE.HemisphereLight(0xbfd8ff,0x101012, .4); scene.add(hemi);
+const sunDir=new THREE.DirectionalLight(0xffffff, 5.0);
+sunDir.position.set(0.6,1,0.3);
+sunDir.castShadow = true;
+sunDir.shadow.mapSize.width = 2048;
+sunDir.shadow.mapSize.height = 2048;
+sunDir.shadow.camera.near = 1;
+sunDir.shadow.camera.far = 1500;
+sunDir.shadow.camera.left = -700;
+sunDir.shadow.camera.right = 700;
+sunDir.shadow.camera.top = 700;
+sunDir.shadow.camera.bottom = -700;
+scene.add(sunDir);
+
+/* ---------------- Sky ---------------- */
+const sky = new Sky();
+sky.scale.setScalar(10000);
+scene.add(sky);
+const sunVec = new THREE.Vector3();
+function updateSky(phase) {
+  const phi = THREE.MathUtils.degToRad(90 - (phase * 180.0));
+  const theta = THREE.MathUtils.degToRad(phase * 360.0);
+  sunVec.setFromSphericalCoords(1, phi, theta);
+  sky.material.uniforms['sunPosition'].value.copy(sunVec);
+  // tweak sky appearance slightly
+  sky.material.uniforms['turbidity'].value = 8.0;
+  sky.material.uniforms['rayleigh'].value = 2.2;
+  sky.material.uniforms['mieCoefficient'].value = 0.005;
+  sky.material.uniforms['mieDirectionalG'].value = 0.8;
+}
+
+/* ---------------- Textures (loader helpers) ---------------- */
+const textureLoader = new THREE.TextureLoader();
+const DEFAULT_ANISOTROPY_LEVEL = 4;
+
+const loadTexture = (url) => {
+  const tex = textureLoader.load(url);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = Math.min(DEFAULT_ANISOTROPY_LEVEL, renderer.capabilities.getMaxAnisotropy());
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.generateMipmaps = true;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.needsUpdate = true;
+  return tex;
+};
+
+const loadNormalTexture = (url) => {
+  const tex = textureLoader.load(url);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = Math.min(DEFAULT_ANISOTROPY_LEVEL, renderer.capabilities.getMaxAnisotropy());
+  tex.colorSpace = THREE.NoColorSpace;
+  tex.generateMipmaps = true;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.needsUpdate = true;
+  return tex;
+};
+
+const loadRoughnessTexture = (url) => {
+  const tex = textureLoader.load(url);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = Math.min(DEFAULT_ANISOTROPY_LEVEL, renderer.capabilities.getMaxAnisotropy());
+  tex.colorSpace = THREE.NoColorSpace;
+  tex.generateMipmaps = true;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.needsUpdate = true;
+  return tex;
+};
+
+/* ---------------- Texture sets ---------------- */
+const textureSets = {
+  sand: {
+    albedo: loadTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/coast_sand_01/coast_sand_01_diff_1k.jpg'),
+    normal: loadNormalTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/coast_sand_01/coast_sand_01_nor_gl_1k.jpg'),
+    roughness: loadRoughnessTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/coast_sand_01/coast_sand_01_rough_1k.jpg'),
+  },
+  grass: {
+    albedo: loadTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/aerial_grass_rock/aerial_grass_rock_diff_1k.jpg'),
+    normal: loadNormalTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/aerial_grass_rock/aerial_grass_rock_nor_gl_1k.jpg'),
+    roughness: loadRoughnessTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/aerial_grass_rock/aerial_grass_rock_rough_1k.jpg'),
+  },
+  rock: {
+    albedo: loadTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rock_face/rock_face_diff_1k.jpg'),
+    normal: loadNormalTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rock_face/rock_face_nor_gl_1k.jpg'),
+    roughness: loadRoughnessTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rock_face/rock_face_rough_1k.jpg'),
+  },
+  snow: {
+    albedo: loadTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/snowy_rocks_02/snowy_rocks_02_diff_1k.jpg'),
+    normal: loadNormalTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/snowy_rocks_02/snowy_rocks_02_nor_gl_1k.jpg'),
+    roughness: loadRoughnessTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/snowy_rocks_02/snowy_rocks_02_rough_1k.jpg'),
+  },
+};
+
+/* ---------------- State ---------------- */
+const state={
+  size:385, seed:42, noiseType:'fbm', scale:160, amplitude:100, oct:6, lac:2.0, per:0.5, bias:0, turbulence:0, psmooth:0,
+  plane:700, maxH:140, waterLevel:-10, ambientStrength:0.4,
+  brush:{mode:'raise', radius:18, strength:1.8, target:20, noiseFreq:0.1, falloff:'smooth'},
+  texScale: 100,
+  lowGrassBlend: 0.15, highGrassBlend: 0.35, rockBlend: 0.5, snowBlend: 0.85,
+};
+
+/* ---------------- DOM elements mapping (fixed & robust) ---------------- */
+const el = {
+  sizeSel: document.getElementById('sizeSel'),
+  seed: document.getElementById('seed'),
+  noiseType: document.getElementById('noiseType'),
+  scale: document.getElementById('scale'),
+  amp: document.getElementById('amp'),
+  oct: document.getElementById('oct'),
+  lac: document.getElementById('lac'),
+  per: document.getElementById('per'),
+  bias: document.getElementById('bias'),
+  turb: document.getElementById('turb'),
+  psmooth: document.getElementById('psmooth'),
+  regen: document.getElementById('regen'),
+  resetGen: document.getElementById('resetGen'),
+
+  bmode: document.getElementById('bmode'),
+  brad: document.getElementById('brad'),
+  bstr: document.getElementById('bstr'),
+  btgt: document.getElementById('btgt'),
+  bNoiseFreq: document.getElementById('bNoiseFreq'),
+  bFalloff: document.getElementById('bFalloff'),
+  resetBrush: document.getElementById('resetBrush'),
+
+  thI: document.getElementById('thI'),
+  thT: document.getElementById('thT'),
+  thC: document.getElementById('thC'),
+  runThermal: document.getElementById('runThermal'),
+
+  hyI: document.getElementById('hyI'),
+  hyR: document.getElementById('hyR'),
+  hyE: document.getElementById('hyE'),
+  hyS: document.getElementById('hyS'),
+  hySc: document.getElementById('hySc'),
+  runHydraulic: document.getElementById('runHydraulic'),
+
+  plane: document.getElementById('plane'),
+  maxH: document.getElementById('maxH'),
+  waterLevel: document.getElementById('waterLevel'),
+  sun: document.getElementById('sun'),
+  ambientStr: document.getElementById('ambientStr'),
+  texScale: document.getElementById('texScale'),
+  lowGrassBlend: document.getElementById('lowGrassBlend'),
+  highGrassBlend: document.getElementById('highGrassBlend'),
+  rockBlend: document.getElementById('rockBlend'),
+  snowBlend: document.getElementById('snowBlend'),
+  expHM: document.getElementById('expHM'),
+  expGLB: document.getElementById('expGLB'),
+  resetCam: document.getElementById('resetCam'),
+
+  kVerts: document.getElementById('kVerts'),
+  kBrush: document.getElementById('kBrush'),
+  kFps: document.getElementById('kFps'),
+};
+
+/* ---------------- Sync UI <-> State ---------------- */
+function syncFromUI(){
+  state.size=parseInt(el.sizeSel.value,10);
+  state.seed=parseInt(el.seed.value,10);
+  state.noiseType=el.noiseType.value;
+  state.scale=parseFloat(el.scale.value);
+  state.amplitude=parseFloat(el.amp.value);
+  state.oct=parseInt(el.oct.value,10);
+  state.lac=parseFloat(el.lac.value);
+  state.per=parseFloat(el.per.value);
+  state.bias=parseFloat(el.bias.value);
+  state.turbulence=parseFloat(el.turb.value);
+  state.psmooth=parseInt(el.psmooth.value,10);
+  state.plane=parseFloat(el.plane.value);
+  state.maxH=parseFloat(el.maxH.value);
+  state.waterLevel=parseFloat(el.waterLevel.value);
+  state.ambientStrength=parseFloat(el.ambientStr.value);
+
+  state.brush.mode=el.bmode.value;
+  state.brush.radius=parseFloat(el.brad.value);
+  state.brush.strength=parseFloat(el.bstr.value);
+  state.brush.target=parseFloat(el.btgt.value);
+  state.brush.noiseFreq=parseFloat(el.bNoiseFreq.value);
+  state.brush.falloff=el.bFalloff.value;
+
+  state.texScale=parseFloat(el.texScale.value);
+  state.lowGrassBlend=parseFloat(el.lowGrassBlend.value);
+  state.highGrassBlend=parseFloat(el.highGrassBlend.value);
+  state.rockBlend=parseFloat(el.rockBlend.value);
+  state.snowBlend=parseFloat(el.snowBlend.value);
+
+  sunPhase=parseFloat(el.sun.value);
+}
+
+function toUI(){
+  el.sizeSel.value=state.size; el.seed.value=state.seed; el.noiseType.value=state.noiseType;
+  el.scale.value=state.scale; el.amp.value=state.amplitude;
+  el.oct.value=state.oct; el.lac.value=state.lac; el.per.value=state.per; el.bias.value=state.bias; el.turb.value=state.turbulence; el.psmooth.value=state.psmooth;
+  el.bmode.value=state.brush.mode; el.brad.value=state.brush.radius; el.bstr.value=state.brush.strength; el.btgt.value=state.brush.target; el.bNoiseFreq.value=state.brush.noiseFreq; el.bFalloff.value=state.brush.falloff;
+  el.plane.value=state.plane; el.maxH.value=state.maxH; el.waterLevel.value=state.waterLevel; el.sun.value=sunPhase; el.ambientStr.value=state.ambientStrength;
+  el.texScale.value=state.texScale;
+  el.lowGrassBlend.value=state.lowGrassBlend; el.highGrassBlend.value=state.highGrassBlend; el.rockBlend.value=state.rockBlend; el.snowBlend.value=state.snowBlend;
+}
+
+/* ---------------- Height texture conversion ---------------- */
+function heightmapToTexture(hm,N,maxH){
+  const data=new Uint8Array(N*N*4);
+  for(let i=0;i<N*N;i++){
+    const v=clamp((hm[i]/maxH)*255,0,255)|0;
+    data[i*4]=v; data[i*4+1]=v; data[i*4+2]=v; data[i*4+3]=255;
+  }
+  const tex=new THREE.DataTexture(data,N,N,THREE.RGBAFormat);
+  tex.needsUpdate=true;
+  tex.minFilter=THREE.LinearMipmapLinearFilter; tex.magFilter=THREE.LinearFilter; tex.generateMipmaps=true;
+  return tex;
+}
+
+/* ---------------- Terrain materials & shaders (full) ---------------- */
+
+/* Vertex shader (improved) */
+const terrainVertexShader = `
+uniform sampler2D uHeightmap;
+uniform float uMaxHeight;
+uniform float uTerrainSize;
+uniform float uHeightmapResolution;
+
+varying vec3 vWorldPosition;
+varying vec3 vWorldNormal;
+varying float vHeightFactor;
+varying vec2 vUv;
+
+vec3 calculateNormal(vec2 uv, float maxHeight, sampler2D heightmap, float terrainSize, float resolution) {
+    float onePixel = 1.0 / resolution;
+    float hL = texture2D(heightmap, uv - vec2(onePixel, 0.0)).r * maxHeight;
+    float hR = texture2D(heightmap, uv + vec2(onePixel, 0.0)).r * maxHeight;
+    float hD = texture2D(heightmap, uv - vec2(0.0, onePixel)).r * maxHeight;
+    float hU = texture2D(heightmap, uv + vec2(0.0, onePixel)).r * maxHeight;
+
+    float dX_world = (2.0 * onePixel) * terrainSize;
+    float dZ_world = (2.0 * onePixel) * terrainSize;
+
+    vec3 sx = vec3(dX_world, hR - hL, 0.0);
+    vec3 sy = vec3(0.0, hU - hD, dZ_world);
+
+    return normalize(cross(sy, sx));
+}
+
+void main(){
+  vec3 pos = position;
+  vec2 uvw = uv;
+
+  float h_raw = texture2D(uHeightmap, uvw).r;
+  float height = h_raw * uMaxHeight;
+  pos.y += height;
+
+  vUv = uvw;
+  vWorldPosition = (modelMatrix * vec4(pos,1.0)).xyz;
+  vHeightFactor = h_raw;
+
+  vec3 localNormal = calculateNormal(uvw, uMaxHeight, uHeightmap, uTerrainSize, uHeightmapResolution);
+  vWorldNormal = normalize(mat3(modelMatrix) * localNormal);
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos,1.0);
+}
+`;
+
+/* Fragment shader (full PBR with tri-planar + normal reorientation + renormalize) */
+const terrainFragmentShader = `
+precision highp float;
+
+uniform sampler2D uHeightmap;
+uniform float uMaxHeight;
+uniform float uTextureScale;
+
+uniform sampler2D uAlbedo_Sand; uniform sampler2D uNormal_Sand; uniform sampler2D uRoughness_Sand;
+uniform sampler2D uAlbedo_Grass; uniform sampler2D uNormal_Grass; uniform sampler2D uRoughness_Grass;
+uniform sampler2D uAlbedo_Rock; uniform sampler2D uNormal_Rock; uniform sampler2D uRoughness_Rock;
+uniform sampler2D uAlbedo_Snow; uniform sampler2D uNormal_Snow; uniform sampler2D uRoughness_Snow;
+
+uniform float uLowGrassBlend;
+uniform float uHighGrassBlend;
+uniform float uRockBlend;
+uniform float uSnowBlend;
+
+uniform vec3 uLightDir;
+uniform vec3 uCameraPos;
+uniform float uAmbientStrength;
+
+varying vec3 vWorldPosition;
+varying vec3 vWorldNormal;
+varying float vHeightFactor;
+varying vec2 vUv;
+
+/* ---------- PBR helpers ---------- */
+float DistributionGGX(vec3 N, vec3 H, float roughness) {
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    return a2 / (3.14159265 * denom * denom);
+}
+
+float GeometrySchlickGGX(float NdotV, float roughness) {
+    float r = (roughness + 1.0);
+    float k = (r*r) / 8.0;
+    return NdotV / (NdotV * (1.0 - k) + k);
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+    float NdotV = max(dot(N,V),0.0);
+    float NdotL = max(dot(N,L),0.0);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+    return ggx1 * ggx2;
+}
+
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+/* ---------- Tri-planar sampling ---------- */
+vec4 triplanar(sampler2D tex, vec3 pos, vec3 normal, float scale) {
+    vec3 blendWeights = abs(normal);
+    blendWeights = normalize(max(vec3(0.00001), blendWeights));
+    blendWeights = pow(blendWeights, vec3(8.0));
+
+    vec4 cx = texture2D(tex, pos.yz * scale);
+    vec4 cy = texture2D(tex, pos.xz * scale);
+    vec4 cz = texture2D(tex, pos.xy * scale);
+
+    vec4 result = (cx * blendWeights.x + cy * blendWeights.y + cz * blendWeights.z) / (blendWeights.x + blendWeights.y + blendWeights.z);
+    return result;
+}
+
+/* Reorient normal sampled from normal map for each projection and blend */
+vec3 triplanarNormal(sampler2D normalMap, vec3 pos, vec3 worldNormal, float scale) {
+    vec3 blendWeights = pow(abs(worldNormal), vec3(8.0));
+    blendWeights = blendWeights / (dot(blendWeights, vec3(1.0)) + 0.0001);
+
+    vec3 nX = texture2D(normalMap, pos.yz * scale).rgb * 2.0 - 1.0;
+    vec3 nY = texture2D(normalMap, pos.xz * scale).rgb * 2.0 - 1.0;
+    vec3 nZ = texture2D(normalMap, pos.xy * scale).rgb * 2.0 - 1.0;
+
+    // Re-orient normals sampled on different planes into world space
+    vec3 worldNormalFromX = vec3(nX.b, nX.r, nX.g);
+    vec3 worldNormalFromY = vec3(nY.r, nY.b, nY.g);
+    vec3 worldNormalFromZ = vec3(nZ.r, nZ.g, nZ.b);
+
+    // Ensure orientation/sign consistency
+    worldNormalFromX *= sign(worldNormal.x);
+    worldNormalFromY *= sign(worldNormal.y);
+    worldNormalFromZ *= sign(worldNormal.z);
+
+    vec3 final = worldNormalFromX * blendWeights.x + worldNormalFromY * blendWeights.y + worldNormalFromZ * blendWeights.z;
+    return normalize(final);
+}
+
+void main(){
+  vec3 N = normalize(vWorldNormal);
+  vec3 L = normalize(uLightDir);
+  vec3 V = normalize(uCameraPos - vWorldPosition);
+
+  float h = vHeightFactor;
+  float slope = 1.0 - dot(N, vec3(0.0,1.0,0.0));
+  float texWorldScale = 1.0 / uTextureScale;
+  vec3 PBR_pos = vWorldPosition;
+
+  // Base: sand
+  vec3 albedo = triplanar(uAlbedo_Sand, PBR_pos, N, texWorldScale).rgb;
+  vec3 nmap = triplanarNormal(uNormal_Sand, PBR_pos, N, texWorldScale);
+  float rough = triplanar(uRoughness_Sand, PBR_pos, N, texWorldScale).r;
+
+  // Grass layer
+  float blendSandGrass = smoothstep(uLowGrassBlend, uHighGrassBlend, h);
+  vec3 gAlb = triplanar(uAlbedo_Grass, PBR_pos, N, texWorldScale).rgb;
+  vec3 gN = triplanarNormal(uNormal_Grass, PBR_pos, N, texWorldScale);
+  float gR = triplanar(uRoughness_Grass, PBR_pos, N, texWorldScale).r;
+
+  albedo = mix(albedo, gAlb, blendSandGrass);
+  nmap = normalize(mix(nmap, gN, blendSandGrass));
+  rough = mix(rough, gR, blendSandGrass);
+
+  // Rock layer (depends on slope, reduced by high snow)
+  float blendGrassRock = smoothstep(uRockBlend, 1.0, slope);
+  float rockContributionModifier = 1.0 - smoothstep(uSnowBlend - 0.05, uSnowBlend + 0.05, h);
+  blendGrassRock *= rockContributionModifier;
+
+  vec3 rAlb = triplanar(uAlbedo_Rock, PBR_pos, N, texWorldScale).rgb;
+  vec3 rN = triplanarNormal(uNormal_Rock, PBR_pos, N, texWorldScale);
+  float rR = triplanar(uRoughness_Rock, PBR_pos, N, texWorldScale).r;
+
+  albedo = mix(albedo, rAlb, blendGrassRock);
+  nmap = normalize(mix(nmap, rN, blendGrassRock));
+  rough = mix(rough, rR, blendGrassRock);
+
+  // Snow (height-based)
+  float blendSnow = smoothstep(uSnowBlend, 1.0, h);
+  vec3 sAlb = triplanar(uAlbedo_Snow, PBR_pos, N, texWorldScale).rgb;
+  vec3 sN = triplanarNormal(uNormal_Snow, PBR_pos, N, texWorldScale);
+  float sR = triplanar(uRoughness_Snow, PBR_pos, N, texWorldScale).r;
+
+  albedo = mix(albedo, sAlb, blendSnow);
+  nmap = normalize(mix(nmap, sN, blendSnow));
+  rough = mix(rough, sR, blendSnow);
+
+  // Final normal from blended normal map and geometry normal modifier
+  vec3 finalNormal = normalize(nmap);
+
+  // PBR: Cook-Torrance
+  vec3 H = normalize(V + L);
+  float NDF = DistributionGGX(finalNormal, H, rough);
+  float G   = GeometrySmith(finalNormal, V, L, rough);
+  vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), vec3(0.04)); // dielectric F0
+
+  vec3 numerator    = NDF * G * F;
+  float denominator = 4.0 * max(dot(finalNormal, V), 0.0) * max(dot(finalNormal, L), 0.0) + 0.0001;
+  vec3 specular     = numerator / denominator;
+
+  vec3 kS = F;
+  vec3 kD = vec3(1.0) - kS; // non-metallic
+  kD *= 1.0;
+
+  float NdotL = max(dot(finalNormal, L), 0.0);
+  vec3 diffuse = (kD * albedo / 3.14159265);
+
+  vec3 ambient = albedo * uAmbientStrength;
+
+  vec3 color = ambient + (diffuse + specular) * NdotL;
+
+  // tonemapping/gamma (basic)
+  color = pow(color, vec3(1.0/2.2));
+
+  gl_FragColor = vec4(color, 1.0);
+}
+`;
+
+/* ---------------- Shader material ---------------- */
+const terrainMat = new THREE.ShaderMaterial({
+  uniforms:{
+    uHeightmap:{value:null},
+    uMaxHeight:{value:state.maxH},
+    uTerrainSize:{value:state.plane},
+    uHeightmapResolution:{value:parseFloat(state.size)},
+    uTextureScale:{value:state.texScale},
+
+    uAlbedo_Sand:{value:textureSets.sand.albedo}, uNormal_Sand:{value:textureSets.sand.normal}, uRoughness_Sand:{value:textureSets.sand.roughness},
+    uAlbedo_Grass:{value:textureSets.grass.albedo}, uNormal_Grass:{value:textureSets.grass.normal}, uRoughness_Grass:{value:textureSets.grass.roughness},
+    uAlbedo_Rock:{value:textureSets.rock.albedo}, uNormal_Rock:{value:textureSets.rock.normal}, uRoughness_Rock:{value:textureSets.rock.roughness},
+    uAlbedo_Snow:{value:textureSets.snow.albedo}, uNormal_Snow:{value:textureSets.snow.normal}, uRoughness_Snow:{value:textureSets.snow.roughness},
+
+    uLowGrassBlend:{value:state.lowGrassBlend}, uHighGrassBlend:{value:state.highGrassBlend}, uRockBlend:{value:state.rockBlend}, uSnowBlend:{value:state.snowBlend},
+
+    uLightDir:{value:new THREE.Vector3(0.3,0.8,0.6).normalize()},
+    uCameraPos:{value:camera.position},
+    uAmbientStrength:{value:state.ambientStrength},
+  },
+  vertexShader: terrainVertexShader,
+  fragmentShader: terrainFragmentShader,
+  side:THREE.DoubleSide,
+  shadowSide: THREE.BackSide,
+});
+
+/* ---------------- Terrain mesh state ---------------- */
+let terrainMesh=null, heightTex=null, hm=null;
+let waterMesh=null;
+let brushMesh=null;
+
+/* ---------------- Build terrain ---------------- */
+function buildTerrain(){
+  if(terrainMesh){ scene.remove(terrainMesh); terrainMesh.geometry.dispose(); }
+  // safety clamp for segments to avoid OOM; keep structure but ensure performance
+  const seg = Math.min(state.size - 1, 513);
+  const geo = new THREE.PlaneGeometry(state.plane, state.plane, seg, seg);
+  geo.rotateX(-Math.PI/2);
+
+  geo.computeVertexNormals();
+
+  // generate and upload heightmap
+  hm = generateHeightmap({
+    size: state.size,
+    seed: state.seed,
+    noiseType: state.noiseType,
+    scale: state.scale,
+    amplitude: state.amplitude,
+    octaves: state.oct,
+    lacunarity: state.lac,
+    persistence: state.per,
+    bias: state.bias,
+    turbulence: state.turbulence
+  });
+
+  if(state.psmooth > 0) smoothHeightmap(hm, state.size, state.psmooth);
+
+  heightTex = heightmapToTexture(hm, state.size, state.maxH);
+
+  terrainMat.uniforms.uHeightmap.value = heightTex;
+  terrainMat.uniforms.uMaxHeight.value = state.maxH;
+  terrainMat.uniforms.uTerrainSize.value = state.plane;
+  terrainMat.uniforms.uHeightmapResolution.value = parseFloat(state.size);
+  terrainMat.uniforms.uTextureScale.value = state.texScale;
+  terrainMat.uniforms.uLowGrassBlend.value = state.lowGrassBlend;
+  terrainMat.uniforms.uHighGrassBlend.value = state.highGrassBlend;
+  terrainMat.uniforms.uRockBlend.value = state.rockBlend;
+  terrainMat.uniforms.uSnowBlend.value = state.snowBlend;
+  terrainMat.uniforms.uAmbientStrength.value = state.ambientStrength;
+
+  terrainMesh = new THREE.Mesh(geo, terrainMat);
+  terrainMesh.receiveShadow=true; terrainMesh.castShadow=true;
+  scene.add(terrainMesh);
+  el.kVerts.textContent = (geo.attributes.position.count|0).toLocaleString();
+
+  // water
+  if(waterMesh) scene.remove(waterMesh);
+  const waterGeo = new THREE.PlaneGeometry(state.plane * 1.5, state.plane * 1.5);
+  waterGeo.rotateX(-Math.PI/2);
+  const waterMat = new THREE.MeshPhysicalMaterial({
+    color: 0x336699,
+    metalness: 0.05,
+    roughness: 0.1,
+    transmission: 0.95,
+    transparent: true,
+    opacity: 0.9,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.05,
+    envMapIntensity: 1.0,
+    depthWrite: false,
+  });
+  const waterNormal = loadNormalTexture('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/water_surface_ocean/water_surface_ocean_nor_1k.jpg');
+  waterMat.normalMap = waterNormal;
+  waterMat.normalScale = new THREE.Vector2(0.3,0.3);
+  waterMesh = new THREE.Mesh(waterGeo, waterMat);
+  waterMesh.position.y = state.waterLevel;
+  scene.add(waterMesh);
+
+  // brush visualizer
+  if (!brushMesh) {
+    const brushGeometry = new THREE.CircleGeometry(1, 32);
+    brushGeometry.rotateX(-Math.PI / 2);
+    const brushMaterial = new THREE.MeshBasicMaterial({
+      color: 0x00ffff,
+      transparent: true,
+      opacity: 0.25,
+      depthTest: false,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    brushMesh = new THREE.Mesh(brushGeometry, brushMaterial);
+    brushMesh.position.y = -1000;
+    brushMesh.visible = false;
+    scene.add(brushMesh);
+  }
+}
+
+/* ---------------- Brush sculpting ---------------- */
+const raycaster=new THREE.Raycaster(); const mouse=new THREE.Vector2();
+const simplexBrushNoise = new Simplex2D(12345);
+
+function applyBrush(worldPoint, brushModeOverride=null){
+  const {mode,radius,strength,target,noiseFreq,falloff}=state.brush;
+  const N=state.size;
+  const half_plane_world = state.plane / 2;
+
+  const tx = ((worldPoint.x + half_plane_world) / state.plane) * (N - 1);
+  const ty = (N - 1) - (((worldPoint.z + half_plane_world) / state.plane) * (N - 1));
+
+  if(isNaN(tx)||isNaN(ty)) return;
+
+  const r_pixels = radius * (N / state.plane);
+  const r2_pixels = r_pixels * r_pixels;
+  const id=(x,y)=>y*N+x;
+
+  const actualMode = brushModeOverride || mode;
+
+  const minx=clamp(Math.floor(tx - r_pixels), 0, N-1);
+  const maxx=clamp(Math.ceil(tx + r_pixels), 0, N-1);
+  const miny=clamp(Math.floor(ty - r_pixels), 0, N-1);
+  const maxy=clamp(Math.ceil(ty + r_pixels), 0, N-1);
+
+  let changedPixels = false;
+
+  for(let y=miny;y<=maxy;y++){
+    for(let x=minx;x<=maxx;x++){
+      const dx=x-tx, dy=y-ty; const d2=dx*dx+dy*dy; if(d2>r2_pixels) continue;
+      let fall = 1 - (Math.sqrt(d2) / r_pixels);
+      if (falloff === 'smooth') fall = smoothstep(0, 1, fall);
+      else if (falloff === 'quadratic') fall = fall * fall;
+
+      const k=strength*fall; const idx=id(x,y);
+      let oldHeight = hm[idx];
+
+      if(actualMode==='raise') hm[idx]+=k;
+      else if(actualMode==='lower') hm[idx]-=k;
+      else if(actualMode==='smooth'){
+        let s=0,c=0;
+        for(let j=-1;j<=1;j++){for(let i=-1;i<=1;i++){const xx=clamp(x+i,0,N-1); const yy=clamp(y+j,0,N-1); s+=hm[id(xx,yy)]; c++;}}
+        hm[idx] = THREE.MathUtils.lerp(hm[idx], s/c, k*0.6);
+      } else if(actualMode==='flatten'){ hm[idx]=THREE.MathUtils.lerp(hm[idx], target, k); }
+      else if(actualMode==='noise'){
+        const noiseVal = simplexBrushNoise.noise(x*noiseFreq + Date.now()/1000, y*noiseFreq + Date.now()/1000);
+        hm[idx] += noiseVal * k * 0.5;
+      }
+
+      if (Math.abs(oldHeight - hm[idx]) > 0.001) { changedPixels = true; }
+    }
+  }
+
+  if (changedPixels) {
+    const data=heightTex.image.data;
+    for(let i=0;i<N*N;i++){const v=clamp((hm[i]/state.maxH)*255,0,255)|0; data[i*4]=v; data[i*4+1]=v; data[i*4+2]=v;}
+    heightTex.needsUpdate=true;
+  }
+}
+
+/* ---------------- Input handling for brush & orbit ---------------- */
+let isSculpting = false;
+let activeModifier = null;
+let lastBrushWorldPoint = null;
+
+renderer.domElement.addEventListener('pointerdown', e => {
+  if (e.button === 0) {
+    if (e.shiftKey) { activeModifier = 'Shift'; isSculpting = true; }
+    else if (e.ctrlKey) { activeModifier = 'Control'; isSculpting = true; }
+    else if (e.altKey) { activeModifier = 'Alt'; isSculpting = true; }
+    else { activeModifier = null; isSculpting = false; }
+  }
+
+  if (isSculpting) {
+    controls.enabled = false;
+    raycaster.setFromCamera(mouse, camera);
+    const hit = raycaster.intersectObject(terrainMesh, true)[0];
+    if (hit) {
+      lastBrushWorldPoint = hit.point.clone();
+      applyBrush(lastBrushWorldPoint, activeModifier ? (activeModifier === 'Shift' ? 'smooth' : (activeModifier === 'Control' ? 'flatten' : 'noise')) : state.brush.mode);
+    }
+  }
+});
+
+renderer.domElement.addEventListener('pointerup', e => {
+  isSculpting = false; activeModifier = null; lastBrushWorldPoint = null; controls.enabled = true;
+});
+
+renderer.domElement.addEventListener('pointerleave', e => {
+  isSculpting = false; activeModifier = null; lastBrushWorldPoint = null; controls.enabled = true;
+  if (brushMesh) brushMesh.visible = false;
+});
+
+window.addEventListener('keydown', e => {
+  if (e.repeat) return;
+  if (e.key === 'Shift') activeModifier = 'Shift';
+  if (e.key === 'Control') activeModifier = 'Control';
+  if (e.key === 'Alt') activeModifier = 'Alt';
+
+  if (e.buttons === 1 && (e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt')) {
+    controls.enabled = false;
+    isSculpting = true;
+    raycaster.setFromCamera(mouse, camera);
+    const hit = raycaster.intersectObject(terrainMesh, true)[0];
+    if (hit) {
+      lastBrushWorldPoint = hit.point.clone();
+      applyBrush(lastBrushWorldPoint, activeModifier === 'Shift' ? 'smooth' : (activeModifier === 'Control' ? 'flatten' : 'noise'));
+    }
+  }
+});
+
+window.addEventListener('keyup', e => {
+  if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
+    activeModifier = null;
+    if (e.buttons !== 1) { isSculpting = false; controls.enabled = true; }
+  }
+});
+
+renderer.domElement.addEventListener('pointermove', e => {
+  const rect=renderer.domElement.getBoundingClientRect();
+  mouse.x=((e.clientX-rect.left)/rect.width)*2-1; mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+
+  let brushModeOverride = state.brush.mode;
+  if (activeModifier === 'Shift') brushModeOverride = 'smooth';
+  else if (activeModifier === 'Control') brushModeOverride = 'flatten';
+  else if (activeModifier === 'Alt') brushModeOverride = 'noise';
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObject(terrainMesh, true);
+  if (intersects.length > 0) {
+    const hit = intersects[0];
+    brushMesh.position.copy(hit.point);
+    brushMesh.position.y += 0.5;
+    brushMesh.scale.setScalar(state.brush.radius);
+    brushMesh.visible = true;
+
+    if (activeModifier === 'Shift') brushMesh.material.color.set(0x00ff00);
+    else if (activeModifier === 'Control') brushMesh.material.color.set(0xff0000);
+    else if (activeModifier === 'Alt') brushMesh.material.color.set(0xffa500);
+    else if (e.buttons === 1) brushMesh.material.color.set(0x0000ff);
+    else brushMesh.material.color.set(0x00ffff);
+  } else {
+    brushMesh.visible = false;
+  }
+
+  if (isSculpting && e.buttons === 1) {
+    if(intersects.length > 0 && lastBrushWorldPoint) {
+      const currentWorldPoint = intersects[0].point;
+      const distance = lastBrushWorldPoint.distanceTo(currentWorldPoint);
+      const stepSize = state.brush.radius * 0.25;
+      const steps = Math.ceil(distance / stepSize);
+
+      for (let i = 1; i <= steps; i++) {
+        const alpha = i / steps;
+        const interpolatedPoint = new THREE.Vector3().lerpVectors(lastBrushWorldPoint, currentWorldPoint, alpha);
+        applyBrush(interpolatedPoint, brushModeOverride);
+      }
+      lastBrushWorldPoint.copy(currentWorldPoint);
+    } else if (intersects.length > 0 && !lastBrushWorldPoint) {
+      lastBrushWorldPoint = intersects[0].point.clone();
+      applyBrush(lastBrushWorldPoint, brushModeOverride);
+    }
+  }
+});
+
+/* ---------------- Buttons & UI events (wiring) ---------------- */
+el.runThermal.addEventListener('click',()=>{
+  syncFromUI();
+  const N=state.size;
+  thermalErode(hm,N, parseInt(el.thI.value,10), parseFloat(el.thT.value), parseFloat(el.thC.value));
+  const data=heightTex.image.data; for(let i=0;i<N*N;i++){const v=clamp((hm[i]/state.maxH)*255,0,255)|0; data[i*4]=v; data[i*4+1]=v; data[i*4+2]=v;} heightTex.needsUpdate=true;
+});
+
+el.runHydraulic.addEventListener('click',()=>{
+  syncFromUI();
+  const N=state.size;
+  hydraulicErode(hm,N, parseInt(el.hyI.value,10), parseFloat(el.hyR.value), parseFloat(el.hyE.value), parseFloat(el.hyS.value), parseFloat(el.hySc.value));
+  const data=heightTex.image.data; for(let i=0;i<N*N;i++){const v=clamp((hm[i]/state.maxH)*255,0,255)|0; data[i*4]=v; data[i*4+1]=v; data[i*4+2]=v;} heightTex.needsUpdate=true;
+});
+
+el.regen.addEventListener('click',()=>{ syncFromUI(); buildTerrain(); });
+el.resetGen.addEventListener('click',()=>{
+  state.size=385; state.seed=42; state.noiseType='fbm'; state.scale=160; state.amplitude=100; state.oct=6; state.lac=2.0; state.per=0.5; state.bias=0; state.turbulence=0; state.psmooth=0;
+  toUI();
+  buildTerrain();
+});
+el.resetBrush.addEventListener('click',()=>{
+  state.brush={mode:'raise',radius:18,strength:1.8,target:20, noiseFreq:0.1, falloff:'smooth'};
+  toUI();
+});
+
+['sizeSel','seed','noiseType','scale','amp','oct','lac','per','bias','turb','psmooth','plane','maxH'].forEach(k=>{
+  el[k].addEventListener('change',()=>{syncFromUI(); buildTerrain();});
+});
+
+['texScale','lowGrassBlend','highGrassBlend','rockBlend','snowBlend','ambientStr'].forEach(k=>{
+  el[k].addEventListener('input',()=>{
+    syncFromUI();
+    if(terrainMesh){
+      terrainMesh.material.uniforms.uTextureScale.value=state.texScale;
+      terrainMesh.material.uniforms.uLowGrassBlend.value=state.lowGrassBlend;
+      terrainMesh.material.uniforms.uHighGrassBlend.value=state.highGrassBlend;
+      terrainMesh.material.uniforms.uRockBlend.value=state.rockBlend;
+      terrainMesh.material.uniforms.uSnowBlend.value=state.snowBlend;
+      terrainMesh.material.uniforms.uMaxHeight.value=state.maxH;
+      terrainMesh.material.uniforms.uAmbientStrength.value=state.ambientStrength;
+    }
+  });
+});
+
+el.waterLevel.addEventListener('input',()=>{
+  syncFromUI();
+  if(waterMesh) waterMesh.position.y = state.waterLevel;
+});
+
+let sunPhase=parseFloat(el.sun.value);
+el.sun.addEventListener('input',()=>{ sunPhase=parseFloat(el.sun.value); });
+
+el.expHM.addEventListener('click',()=>{
+  const N=state.size; const canvas=document.createElement('canvas'); canvas.width=N; canvas.height=N; const ctx=canvas.getContext('2d');
+  const img=ctx.createImageData(N,N); for(let i=0;i<N*N;i++){const v=clamp((hm[i]/state.maxH)*255,0,255)|0; img.data[i*4]=v; img.data[i*4+1]=v; img.data[i*4+2]=v; img.data[i*4+3]=255;}
+  ctx.putImageData(img,0,0); const a=document.createElement('a'); a.download=`heightmap_${N}.png`; a.href=canvas.toDataURL('image/png'); a.click();
+});
+
+el.expGLB.addEventListener('click',()=>{
+  const exporter=new GLTFExporter();
+  const exportMesh = new THREE.Mesh(terrainMesh.geometry.clone(), new THREE.MeshPhysicalMaterial({
+      map: textureSets.grass.albedo,
+      normalMap: textureSets.grass.normal,
+      roughnessMap: textureSets.grass.roughness,
+      metalness: 0,
+      color: 0xffffff,
+      transparent: false,
+      side: THREE.DoubleSide
+  }));
+  const positions = exportMesh.geometry.attributes.position.array;
+  const N = state.size;
+  for (let i = 0; i < N * N; i++) {
+      positions[i * 3 + 1] = hm[i];
+  }
+  exportMesh.geometry.attributes.position.needsUpdate = true;
+  exportMesh.geometry.computeVertexNormals();
+
+  const exportScene = new THREE.Scene();
+  exportScene.add(exportMesh);
+  if(waterMesh) exportScene.add(waterMesh.clone());
+
+  exporter.parse(exportScene,(bin)=>{
+    const blob=new Blob([bin],{type:'model/gltf-binary'}); const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='terrain.glb'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+  },{binary:true, onlyVisible:true, includeCustomExtensions:true});
+});
+
+el.resetCam.addEventListener('click',()=>{
+  controls.reset();
+  camera.position.set(500,450,500);
+  controls.target.set(0,0,0);
+  controls.update();
+});
+
+/* ---------------- Resize ---------------- */
+const onResize=()=>{ renderer.setSize(viewport.clientWidth, viewport.clientHeight); camera.aspect=viewport.clientWidth/viewport.clientHeight; camera.updateProjectionMatrix(); }
+window.addEventListener('resize',onResize);
+
+/* ---------------- FPS ticker & animate ---------------- */
+let last=performance.now(), fps=0;
+function tickFPS(){ const now=performance.now(); const dt=now-last; last=now; fps=1000/dt; el.kFps.textContent = fps.toFixed(0); }
+
+function animate(){
+  requestAnimationFrame(animate);
+  controls.update();
+  tickFPS();
+
+  const a=sunPhase*Math.PI*2;
+  const lightDirVec = new THREE.Vector3(Math.cos(a)*0.8, 1.0, Math.sin(a)*0.8).normalize();
+  sunDir.position.copy(lightDirVec.multiplyScalar(800));
+  if (terrainMesh) {
+    terrainMesh.material.uniforms.uLightDir.value.copy(lightDirVec.normalize());
+    terrainMesh.material.uniforms.uCameraPos.value.copy(camera.position);
+
+    // brush visibility
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObject(terrainMesh, true);
+    if (intersects.length === 0) {
+      if(brushMesh) brushMesh.visible = false;
+    } else if (!brushMesh.visible) {
+      brushMesh.visible = true;
+    }
+  }
+
+  updateSky(sunPhase);
+  renderer.render(scene,camera);
+
+  let currentBrushModeText = state.brush.mode;
+  if (activeModifier === 'Shift') currentBrushModeText = 'smooth (Shift)';
+  else if (activeModifier === 'Control') currentBrushModeText = 'flatten (Ctrl)';
+  else if (activeModifier === 'Alt') currentBrushModeText = 'noise (Alt)';
+
+  el.kBrush.textContent = `${currentBrushModeText}, r=${state.brush.radius}, s=${state.brush.strength}`;
+}
+
+/* ---------------- Boot ---------------- */
+buildTerrain();
+animate();
+toUI();
+
+</script>
+
+</body>
+</html>
