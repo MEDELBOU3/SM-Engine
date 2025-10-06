@@ -5,6 +5,7 @@ class WaterSystem {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
+         this.waterMesh = null; 
         this.terrain = null;
         this.waterBodies = [];
         this.raycaster = new THREE.Raycaster();
@@ -1069,7 +1070,7 @@ function setupUIEventListeners() {
     }
 
     // --- SIMPLIFIED AND CORRECTED LOGIC ---
-    addTerrainBtn.addEventListener("click", function() {
+    /*addTerrainBtn.addEventListener("click", function() {
         // Always show the tools when the button is clicked.
         sculptingTools.style.display = "block";
         if (nodeEditorPanel) {
@@ -1080,7 +1081,57 @@ function setupUIEventListeners() {
         // The createTerrain function itself will handle if a terrain already exists.
         console.log("Add Terrain button clicked, calling createTerrain...");
         createTerrain({ width: 50, length: 50, resolution: 256 });
-    });
+    });*/ 
+
+   addTerrainBtn.addEventListener("click", function() {
+    sculptingTools.style.display = "block";
+    if (nodeEditorPanel) nodeEditorPanel.style.display = "block";
+
+    const loader = document.getElementById('terrain-loader');
+    const loaderBar = document.getElementById('terrain-loader-bar');
+    loader.style.display = 'block';
+    loaderBar.style.width = '0%';
+
+    // --- Simulated slow progress ---
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += Math.random() * 3; // slower increments
+        if (progress > 90) progress = 90; // wait for terrain to finish
+        loaderBar.style.width = progress + '%';
+    }, 150); // slower update
+
+    // --- Slow Terrain Creation ---
+    function createTerrainStepwise(settings, callback) {
+        const steps = 5; // divide terrain generation into 5 chunks
+        let step = 0;
+        
+        function nextStep() {
+            step++;
+            // Partial generation simulation
+            console.log(`Terrain step ${step}/${steps}`);
+            
+            if (step < steps) {
+                loaderBar.style.width = 20 + step * 12 + '%'; // increment visually
+                setTimeout(nextStep, 300); // delay between steps
+            } else {
+                // Call the original terrain creation at the end
+                createTerrain(settings);
+                loaderBar.style.width = '100%';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    clearInterval(progressInterval);
+                }, 400);
+            }
+        }
+        
+        nextStep();
+    }
+
+    // Start stepwise terrain creation
+    createTerrainStepwise({ width: 50, length: 50, resolution: 256 });
+});
+
+
 };
 
 
