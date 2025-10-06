@@ -1,0 +1,110 @@
+/* ===== GUI CONTAINER ===== */
+#GuiContainer {
+    display: none; /* toggle with JS */
+    margin: 10px auto;
+    padding: 0px;
+    background: rgb(20, 20, 20);
+}
+
+/* Inside container */
+#gui-container {
+    position: relative;
+    width: 100%;            /* keep full width as you want */
+    min-height: 4vh;
+    max-height: 65vh;
+    overflow-y: auto;
+    padding: 6px;
+    background: rgb(32, 32, 32);
+}
+
+/* ===== DAT.GUI STYLING ===== */
+.dat.GUI .main {
+    background-color: transparent;
+    color: #ddd;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+    border: none;
+}
+
+.dat.GUI .folder {
+    background-color: rgba(40, 40, 40, 0.9);
+    margin: 6px 0;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    transition: background 0.2s ease;
+}
+.dat.GUI .folder:hover {
+    background-color: rgba(55, 55, 55, 0.95);
+}
+
+.dat.GUI .folder > .title {
+    color: #ffcc00;
+    font-weight: 600;
+    padding: 6px 8px;
+    background: rgba(30, 30, 30, 0.95);
+    cursor: pointer;
+}
+
+.dat.GUI .controller {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px;
+}
+
+/* Labels aligned left, fixed width */
+.dat.GUI .controller label {
+    flex: 0 0 140px;   /* fixed label width */
+    font-size: 13px;
+    color: #ddd;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Inputs aligned right */
+.dat.GUI .controller input[type="range"],
+.dat.GUI .controller input[type="color"],
+.dat.GUI .controller input[type="text"],
+.dat.GUI .controller select {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* Checkboxes alignment */
+.dat.GUI .controller input[type="checkbox"] {
+    transform: scale(1.1);
+    margin-left: auto;
+}
+
+/* Inputs */
+.dat.GUI .controller input[type="range"],
+.dat.GUI .controller input[type="color"],
+.dat.GUI .controller select {
+    width: 100%;
+    border-radius: 4px;
+    padding: 2px;
+    border: 1px solid #444;
+    background: #2a2a2a;
+    color: #ddd;
+    outline: none;
+    transition: border 0.2s, background 0.2s;
+}
+.dat.GUI .controller input[type="range"]:hover,
+.dat.GUI .controller input[type="color"]:hover,
+.dat.GUI .controller select:hover {
+    border-color: #ffcc00;
+    background: #333;
+}
+
+.dat.GUI .controller input[type="color"] {
+    cursor: pointer;
+    height: 28px;
+}
+
+.dat.GUI .c input[type=range] {
+    accent-color: #ffcc00;
+}
