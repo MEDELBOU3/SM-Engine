@@ -1,0 +1,22 @@
+# Node modules and build output (not sent to GitHub)
+node_modules/
+dist/
+dist-*/
+package-lock.json
+
+# Trash and logs
+trash-files/
+*.log
+.DS_Store
+
+# IDE
+.vscode/local/
+.vscode/settings.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local

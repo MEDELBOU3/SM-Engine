@@ -1,0 +1,113 @@
+{
+  "name": "sm-engine",
+  "version": "1.0.0",
+  "description": "SM Engine - Advanced Web 3D Modeling & Game Editor",
+  "main": "electron-main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MEDELBOU3/SM-Engine.git"
+  },
+  "scripts": {
+    "start": "electron .",
+    "start:website": "powershell -Command \"Start-Process .\\SM-Engine-intro-website\\index.html\"",
+    "sync:offline-assets": "node tools/mirror-offline-assets.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win nsis portable",
+    "build:sculpt-wasm": "emcc sculpting/sculpt_engine.cpp -O3 -msimd128 -s WASM=1 -s MODULARIZE=1 -s EXPORT_NAME=\"SculptEngineWASM\" -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=67108864 -s MAXIMUM_MEMORY=1073741824 -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','HEAPF32','HEAPU32','HEAP32','getValue','setValue']\" -s EXPORTED_FUNCTIONS=\"['_wasm_alloc','_wasm_free','_set_mesh','_get_dirty_range','_build_adjacency','_build_bvh','_rebuild_bvh','_query_radius','_compute_normals','_sync_mask','_sync_normals','_sculpt_clay','_sculpt_inflate','_sculpt_flatten','_sculpt_smooth','_sculpt_pinch','_sculpt_crease','_sculpt_draw','_sculpt_layer','_sculpt_topology','_sculpt_surface_offset','_sculpt_directional_smooth','_sculpt_grab','_global_smooth','_hardness_contrast','_angle_preserving_smooth','_smooth_standalone']\" -o sculpting/sculpt_engine.js"
+  },
+  "keywords": [
+    "3d",
+    "editor",
+    "modeling",
+    "game",
+    "engine"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.smengine.app",
+    "productName": "SM Engine",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist*/**/*",
+      "!trash-files/**/*"
+    ],
+    "win": {
+      "icon": "assets/icons/app.png",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "MEDELBOU3",
+        "repo": "SM-Engine"
+      }
+    ]
+  },
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.19.3",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fortawesome/fontawesome-free": "^7.2.0",
+    "@vscode/codicons": "^0.0.45",
+    "acorn": "^8.16.0",
+    "ammo.js": "^0.0.10",
+    "boxicons": "^2.1.4",
+    "cannon": "^0.6.2",
+    "cannon-es": "^0.20.0",
+    "codemirror": "^6.0.2",
+    "d3-delaunay": "^6.0.4",
+    "dat.gui": "^0.7.9",
+    "es-module-shims": "^2.8.0",
+    "fflate": "^0.8.2",
+    "file-saver": "^2.0.5",
+    "gl-matrix": "^3.4.4",
+    "gsap": "^3.14.2",
+    "idb-keyval": "^6.2.2",
+    "jszip": "^3.10.1",
+    "lil-gui": "^0.21.0",
+    "litegraph.js": "^0.7.18",
+    "noisejs": "^2.1.0",
+    "remixicon": "^4.9.1",
+    "simplex-noise": "^4.0.3",
+    "stats.js": "^0.17.0",
+    "tern": "^0.24.3",
+    "three": "^0.159.0",
+    "three-csg-ts": "^3.2.0",
+    "three-mesh-bvh": "^0.9.9",
+    "three-spritetext": "^1.10.0",
+    "three-subdivide": "^1.1.5",
+    "vis-network": "^10.0.2"
+  }
+}

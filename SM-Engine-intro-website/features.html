@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SM Engine | Features</title>
+    <meta name="description" content="Explore SM Engine features across modeling, sculpting, game development, nodes, animation, rendering, and assets.">
+    <script>
+        tailwind = { config: { theme: { extend: { colors: { cream: "#f9f7f4", beige: "#f5f3f0", light: "#ffffff", dark: "#1a1a1a", muted: "#6b6b6b", accent: "#2d2d2d", gold: "#c4a66d" }, fontFamily: { sans: ["Inter", "sans-serif"], mono: ["JetBrains Mono", "monospace"] } } } } };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-page="features" class="bg-white text-slate-900">
+    <div class="site-shell min-h-screen">
+        <header class="site-header-shell fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8" data-site-header>
+            <div class="mx-auto max-w-7xl">
+                <div class="site-header-bar sm-card-strong px-4 py-3 sm:px-5" data-header-bar>
+                    <div class="flex items-center justify-between gap-4">
+                        <a href="./index.html" class="flex min-w-0 items-center gap-3">
+                            <img src="../assets/icons/logo.svg" alt="SM Engine logo" class="h-11 w-11 shrink-0 object-contain">
+                            <div class="min-w-0">
+                                <div class="truncate text-sm font-semibold tracking-wide text-slate-950">SM Engine</div>
+                                <div class="header-brand-subtitle truncate text-xs text-slate-600">Feature overview and capability map</div>
+                            </div>
+                        </a>
+                        <button type="button" class="inline-flex h-10 w-10 items-center justify-center border border-slate-300 bg-slate-50 text-slate-900 md:hidden" data-menu-button aria-expanded="false" aria-label="Toggle navigation">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+                        </button>
+                        <nav class="header-desktop-nav hidden items-center gap-1 md:flex">
+                            <a class="top-nav-link px-4 py-2 text-sm" data-nav="home" href="./index.html">Home</a>
+                            <div class="nav-dropdown relative" data-dropdown>
+                                <button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="features" aria-expanded="false">Features<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button>
+                                <div class="dropdown-panel sm-card-strong p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./features.html"><div class="text-sm font-semibold text-slate-950">Editor Capabilities</div><p class="mt-1 text-xs leading-6 text-slate-600">Modeling, sculpting, animation, nodes, physics, and assets.</p></a><a class="dropdown-link" href="./features.html"><div class="text-sm font-semibold text-slate-950">Media Workflows</div><p class="mt-1 text-xs leading-6 text-slate-600">Timeline systems, rendering views, media tools, and production-oriented interfaces.</p></a></div></div>
+                            </div>
+                            <div class="nav-dropdown relative" data-dropdown>
+                                <button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="workspaces" aria-expanded="false">Workspaces<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button>
+                                <div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./workspaces.html"><div class="text-sm font-semibold text-slate-950">Game Dev</div><p class="mt-1 text-xs leading-6 text-slate-600">Player systems, atmosphere, lighting, collisions, and runtime-style iteration.</p></a><a class="dropdown-link" href="./workspaces.html"><div class="text-sm font-semibold text-slate-950">Modeling + Nodes</div><p class="mt-1 text-xs leading-6 text-slate-600">Creation tools, sculpting, material graphs, assets, and focused editor modes.</p></a></div></div>
+                            </div>
+                            <div class="nav-dropdown relative" data-dropdown>
+                                <button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="showcase roadmap" aria-expanded="false">Explore<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button>
+                                <div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./showcase.html"><div class="text-sm font-semibold text-slate-950">Showcase</div><p class="mt-1 text-xs leading-6 text-slate-600">Polished screenshot storytelling and product gallery scenes.</p></a><a class="dropdown-link" href="./roadmap.html"><div class="text-sm font-semibold text-slate-950">Roadmap</div><p class="mt-1 text-xs leading-6 text-slate-600">Launch phases, future plans, and what gets developed next.</p></a></div></div>
+                            </div>
+                            <div class="nav-dropdown relative" data-dropdown>
+                                <button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="download" aria-expanded="false">Download<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button>
+                                <div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./download.html"><div class="text-sm font-semibold text-slate-950">Installer</div><p class="mt-1 text-xs leading-6 text-slate-600">Recommended Windows setup flow with direct download access.</p></a><a class="dropdown-link" href="./download.html#media"><div class="text-sm font-semibold text-slate-950">Media Slots</div><p class="mt-1 text-xs leading-6 text-slate-600">Trailer placeholders, demo sections, and launch-ready presentation blocks.</p></a></div></div>
+                            </div>
+                        </nav>
+                        <div class="header-actions hidden lg:flex">
+                            <a href="../dist/SM%20Engine%20Setup%201.0.0.exe" download class="header-download-btn bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Download App</a>
+                        </div>
+                    </div>
+                    <nav class="mt-3 hidden flex-col gap-2 border-t border-slate-300 pt-3 md:hidden" data-mobile-menu>
+                        <a class="top-nav-link px-4 py-3 text-sm" data-nav="home" href="./index.html">Home</a>
+                        <a class="top-nav-link px-4 py-3 text-sm" data-nav="features" href="./features.html">Features</a>
+                        <a class="top-nav-link px-4 py-3 text-sm" data-nav="workspaces" href="./workspaces.html">Workspaces</a>
+                        <a class="top-nav-link px-4 py-3 text-sm" data-nav="showcase" href="./showcase.html">Showcase</a>
+                        <a class="top-nav-link px-4 py-3 text-sm" data-nav="roadmap" href="./roadmap.html">Roadmap</a>
+                        <a class="top-nav-link px-4 py-3 text-sm" data-nav="download" href="./download.html">Download</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="pb-20">
+            <section class="reveal grid gap-8 lg:grid-cols-[0.92fr_1.08fr] min-h-screen items-center pt-32 md:pt-36 px-4 py-10 sm:px-6 lg:px-8 lg:py-14" style="background-image: url(https://4kwallpapers.com/images/walls/thumbs_3t/24212.png); background-position: center; background-size: cover; background-attachment: fixed; position: relative;">
+                <style>
+                    .feature-hero-section {
+                        position: relative;
+                    }
+                    
+                    .feature-hero-section::before {
+                        content: '';
+                        position: absolute;
+                        inset: 0;
+                        background: linear-gradient(135deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.15) 100%);
+                        z-index: 1;
+                        pointer-events: none;
+                    }
+                </style>
+                
+                <div class="relative z-10">
+                    <p class="font-mono-local text-xs uppercase tracking-[0.24em] text-amber-700">Feature page</p>
+                    <h1 class="mt-4 text-4xl font-semibold tracking-[-0.05em] text-slate-950 sm:text-5xl lg:text-6xl">A richer explanation of what SM Engine can do.</h1>
+                    <p class="mt-6 max-w-2xl text-base leading-8 text-slate-700">This page expands the product story with clearer feature groups, better visual hierarchy, and stronger room for future product media and examples.</p>
+                </div>
+                <div class="relative z-10">
+                    <div class="sm-card p-5">
+                        <img src="../screenshoots/Screenshot (1337).png" alt="Rendered viewport" class="object-cover">
+                    </div>
+                </div>
+            </section>
+
+            <section class="mx-auto max-w-7xl grid gap-4 py-10 md:grid-cols-2 xl:grid-cols-3 px-4 sm:px-6 lg:px-8">
+                <article class="reveal sm-card p-6"><div class="flex items-center gap-3"><span class="bg-amber-100 p-3 text-amber-700"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20l8-16 8 16"/></svg></span><h2 class="text-lg font-semibold text-slate-950">3D Modeling</h2></div><p class="mt-4 text-sm leading-7 text-slate-700">Primitive creation, object editing, transforms, architecture-oriented content tools, and scene workflows.</p></article>
+                <article class="reveal sm-card p-6"><div class="flex items-center gap-3"><span class="bg-blue-100 p-3 text-blue-700"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8M12 8v8M4 6h16v12H4z"/></svg></span><h2 class="text-lg font-semibold text-slate-950">2D + Motion Tools</h2></div><p class="mt-4 text-sm leading-7 text-slate-700">Dedicated 2D animation panels, timeline controls, frame editing, and visual workflow coverage beyond pure 3D.</p></article>
+                <article class="reveal sm-card p-6"><div class="flex items-center gap-3"><span class="bg-green-100 p-3 text-green-700"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h4v7H5zM10 5h4v14h-4zM15 9h4v10h-4z"/></svg></span><h2 class="text-lg font-semibold text-slate-950">Animation + Timeline</h2></div><p class="mt-4 text-sm leading-7 text-slate-700">Timeline views, keyframes, rig playback, and clip-based workflows for motion systems and runtime behavior.</p></article>
+                <article class="reveal sm-card p-6"><div class="flex items-center gap-3"><span class="bg-purple-100 p-3 text-purple-700"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h7v4H4zM13 7h7v10h-7zM4 13h7v4H4z"/></svg></span><h2 class="text-lg font-semibold text-slate-950">Node Editors</h2></div><p class="mt-4 text-sm leading-7 text-slate-700">Material graph editing, player graph systems, and visual pipelines for logic, shading, and procedural authoring.</p></article>
+                <article class="reveal sm-card p-6"><div class="flex items-center gap-3"><span class="bg-orange-100 p-3 text-orange-700"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 4v10l-7 4-7-4V7l7-4z"/></svg></span><h2 class="text-lg font-semibold text-slate-950">Rendering</h2></div><p class="mt-4 text-sm leading-7 text-slate-700">Viewport lighting, cinematic composition, atmosphere tests, and image-focused presentation across multiple render looks.</p></article>
+                <article class="reveal sm-card p-6"><div class="flex items-center gap-3"><span class="bg-pink-100 p-3 text-pink-700"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h10M4 17h13"/></svg></span><h2 class="text-lg font-semibold text-slate-950">Assets + Media</h2></div><p class="mt-4 text-sm leading-7 text-slate-700">Asset browsing, media pools, import panels, and editor views that support larger production workflows.</p></article>
+            </section>
+
+            <section class="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
+                <div class="reveal mb-6">
+                    <p class="font-mono-local text-xs uppercase tracking-[0.24em] text-cyan-200">Node systems</p>
+                    <h2 class="mt-3 text-3xl font-semibold tracking-[-0.04em] text-slate-50">Material nodes and player graph tools.</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-8 text-slate-300">These screenshots make the graph workflow visible instead of abstract. They show both the node authoring environment and the player graph side of the engine.</p>
+                </div>
+                <div class="grid gap-4 lg:grid-cols-[1.05fr_0.95fr_0.95fr]">
+                    <article class="reveal sm-card  p-5">
+                        <img src="../screenshoots/Screenshot 2026-03-23 001800.png" alt="Node editor workspace" class=" [22px] object-cover">
+                        <h3 class="mt-4 text-xl font-semibold">Node workspace</h3>
+                        <p class="mt-2 text-sm leading-7 text-slate-400">A broader graph editing view with panels, sockets, and authoring controls.</p>
+                    </article>
+                    <article class="reveal sm-card  p-5">
+                        <img src="../screenshoots/Screenshot 2026-03-23 001702.png" alt="Material node graph" class=" [22px] object-cover">
+                        <h3 class="mt-4 text-xl font-semibold">Material graph</h3>
+                        <p class="mt-2 text-sm leading-7 text-slate-400">A more detailed node composition screenshot for shader and procedural workflows.</p>
+                    </article>
+                    <article class="reveal sm-card  p-5">
+                        <img src="../screenshoots/Screenshot 2026-03-23 001143.png" alt="Player graph editor" class=" [22px] object-cover">
+                        <h3 class="mt-4 text-xl font-semibold">Player graph</h3>
+                        <p class="mt-2 text-sm leading-7 text-slate-400">Shows gameplay-facing graph tools and makes the runtime logic side feel concrete.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
+                <div class="reveal mb-6">
+                    <p class="font-mono-local text-xs uppercase tracking-[0.24em] text-amber-700">Animation</p>
+                    <h2 class="mt-3 text-3xl font-semibold tracking-[-0.04em] text-slate-950">Timeline, keyframes, and pose editing.</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-8 text-slate-700">This group makes it obvious that SM Engine has a real animation lane, not just playback controls.</p>
+                </div>
+                <div class="grid gap-4 md:grid-cols-3">
+                    <article class="reveal sm-card  p-5"><img src="../screenshoots/Screenshot (1319).png" alt="Animation workspace view one" class=" [22px] object-cover"><h3 class="mt-4 text-xl font-semibold text-slate-950">Animation view 01</h3><p class="mt-2 text-sm leading-7 text-slate-600">A timeline-oriented animation screenshot for rig control and motion setup.</p></article>
+                    <article class="reveal sm-card  p-5"><img src="../screenshoots/Screenshot (1320).png" alt="Animation workspace view two" class=" [22px] object-cover"><h3 class="mt-4 text-xl font-semibold text-slate-950">Animation view 02</h3><p class="mt-2 text-sm leading-7 text-slate-600">Use this to show another angle of the editor and animation tooling depth.</p></article>
+                    <article class="reveal sm-card  p-5"><img src="../screenshoots/Screenshot (1321).png" alt="Animation workspace view three" class=" [22px] object-cover"><h3 class="mt-4 text-xl font-semibold text-slate-950">Animation view 03</h3><p class="mt-2 text-sm leading-7 text-slate-600">A third capture to support multi-step storytelling around keyframes and motion editing.</p></article>
+                </div>
+            </section>
+
+            <section class="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
+                <div class="reveal mb-6">
+                    <p class="font-mono-local text-xs uppercase tracking-[0.24em] text-blue-700">Rendering</p>
+                    <h2 class="mt-3 text-3xl font-semibold tracking-[-0.04em] text-slate-950">Viewport looks, presentation, and final-frame style.</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-8 text-slate-700">These rendering images help the site communicate atmosphere, lighting quality, and final-shot direction rather than only raw UI.</p>
+                </div>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <article class="reveal sm-card  p-5"><img src="../screenshoots/Screenshot (1234).png" alt="Rendering workspace screenshot" class=" [22px] object-cover"><h3 class="mt-4 text-xl font-semibold text-slate-950">Rendering workspace</h3><p class="mt-2 text-sm leading-7 text-slate-600">A renderer-focused editor shot with controls and production framing.</p></article>
+                    <article class="reveal sm-card  p-5"><img src="../screenshoots/image.png" alt="Rendered scene preview one" class=" [22px] object-cover"><h3 class="mt-4 text-xl font-semibold text-slate-950">Rendered scene 01</h3><p class="mt-2 text-sm leading-7 text-slate-600">A scene image that pushes the site closer to a cinematic product presentation.</p></article>
+                    <article class="reveal sm-card  p-5"><img src="../screenshoots/image-.png" alt="Rendered scene preview two" class=" [22px] object-cover"><h3 class="mt-4 text-xl font-semibold text-slate-950">Rendered scene 02</h3><p class="mt-2 text-sm leading-7 text-slate-600">A second render example to show variation in look and output style.</p></article>
+                    <article class="reveal sm-card  p-5"><img src="../screenshoots/image--.png" alt="Rendered scene preview three" class=" [22px] object-cover"><h3 class="mt-4 text-xl font-semibold text-slate-950">Rendered scene 03</h3><p class="mt-2 text-sm leading-7 text-slate-600">Supports the rendering story with another polished visual result.</p></article>
+                </div>
+            </section>
+
+            <section class="mx-auto max-w-7xl grid gap-5 py-6 lg:grid-cols-3 px-4 sm:px-6 lg:px-8">
+                <article class="reveal sm-card  p-5">
+                    <img src="../screenshoots/Screenshot 2026-04-02 204956.png" alt="Asset browser and asset management" class=" [22px] object-cover">
+                    <p class="mt-4 font-mono-local text-xs uppercase tracking-[0.22em] text-green-700">Assets</p>
+                    <h3 class="mt-2 text-2xl font-semibold text-slate-950">Asset browser and project content.</h3>
+                    <p class="mt-3 text-sm leading-8 text-slate-700">A dedicated asset screenshot helps the website explain library management, imported content, and production organization.</p>
+                </article>
+                <article class="reveal sm-card  p-5">
+                    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                        <img src="../screenshoots/Screenshot (1344).png" alt="2D animation workspace one" class=" [22px] object-cover">
+                        <img src="../screenshoots/Screenshot (1211).png" alt="2D animation workspace two" class=" [22px] object-cover">
+                        <img src="../screenshoots/Screenshot 2026-04-02 205531.png" alt="2D animation workspace three" class=" [22px] object-cover">
+                    </div>
+                    <p class="mt-4 font-mono-local text-xs uppercase tracking-[0.22em] text-orange-700">2D animation</p>
+                    <h3 class="mt-2 text-2xl font-semibold text-slate-950">Frame-based and timeline-driven 2D tools.</h3>
+                    <p class="mt-3 text-sm leading-8 text-slate-700">These images let the site speak to 2D production directly instead of implying it with generic media language.</p>
+                </article>
+                <article class="reveal sm-card  p-5">
+                    <div class="grid gap-3">
+                        <img src="../screenshoots/Screenshot (1206).png" alt="Video editing workspace one" class=" [22px] object-cover">
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <img src="../screenshoots/Screenshot (1200).png" alt="Video editing workspace two" class=" [22px] object-cover">
+                            <img src="../screenshoots/Screenshot (1205).png" alt="Video editing workspace three" class=" [22px] object-cover">
+                        </div>
+                    </div>
+                    <p class="mt-4 font-mono-local text-xs uppercase tracking-[0.22em] text-pink-700">Video editing</p>
+                    <h3 class="mt-2 text-2xl font-semibold text-slate-950">Timeline and clip-editing workflows.</h3>
+                    <p class="mt-3 text-sm leading-8 text-slate-700">I used the three screenshots you listed here to make the video-editing part of the engine visible on the site.</p>
+                </article>
+            </section>
+        </main>
+
+        <footer class="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+            <div class="editorial-footer sm-card-strong  px-5 py-6 sm:px-8 sm:py-8">
+                <div class="grid gap-10 border-b border-slate-300 pb-10 lg:grid-cols-[0.82fr_0.95fr_1.05fr]">
+                    <div class="space-y-5"><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-600">Contact</div><div class="space-y-2 text-lg font-medium"><a class="footer-link block" href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">GitHub Repository</a><a class="footer-link block" href="../dist/SM%20Engine%20Setup%201.0.0.exe" download>Download Setup</a><a class="footer-link block" href="../dist/SM%20Engine%201.0.0.exe" download>Portable Build</a></div></div>
+                    <div class="grid gap-6 sm:grid-cols-2"><div><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-600">Navigation</div><div class="mt-4 space-y-2 text-lg"><a class="footer-link block" href="./features.html">Features</a><a class="footer-link block" href="./workspaces.html">Workspaces</a><a class="footer-link block" href="./download.html">Download</a></div></div><div><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-600">Explore</div><div class="mt-4 space-y-2 text-lg"><a class="footer-link block" href="./showcase.html">Showcase</a><a class="footer-link block" href="./roadmap.html">Roadmap</a><span class="block text-slate-600">Docs (Coming Soon)</span></div></div></div>
+                    <div class="space-y-5"><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-600">Studio Note</div><p class="max-w-md text-lg leading-[1.25] text-slate-700">SM Engine brings together 3D creation, game-dev systems, material nodes, animation, assets, and media workflows inside one growing desktop editor. This site is becoming the public home for that direction.</p></div>
+                </div>
+                <div class="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+                    <div class="grid gap-4 lg:grid-cols-[1fr_240px] lg:items-end"><div class="footer-wordmark text-[5rem] font-semibold sm:text-[7.5rem] lg:text-[10.5rem]" data-footer-word>SM Engine</div><div class="footer-thumb h-40 w-full lg:h-52"><img src="../screenshoots/Screenshot%20(493).png" alt="SM Engine footer preview"></div></div>
+                    <div class="grid gap-6 sm:grid-cols-2 lg:justify-self-end"><div class="space-y-2 text-lg"><a class="footer-link block" href="#">Terms &amp; Conditions</a><a class="footer-link block" href="#">Privacy Policy</a><a class="footer-link block" href="#">Cookies Policy</a></div><div class="flex flex-col items-start gap-3 lg:items-end lg:text-right"><div class="text-lg font-medium text-slate-950">&copy; <span data-year></span> SM Engine. All rights reserved.</div><div class=" border border-slate-300 bg-slate-50 px-4 py-2 text-sm text-slate-700">Preferences</div></div></div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="./script.js"></script>
+</body>
+</html>

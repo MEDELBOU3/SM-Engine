@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SM Engine | Download</title>
+    <meta name="description" content="Download the SM Engine installer or portable executable and prepare the page for launch videos and product media.">
+    <script>
+        tailwind = { config: { theme: { extend: { colors: { cream: "#f9f7f4", beige: "#f5f3f0", light: "#ffffff", dark: "#1a1a1a", muted: "#6b6b6b", accent: "#2d2d2d", gold: "#c4a66d" }, fontFamily: { sans: ["Inter", "sans-serif"], mono: ["JetBrains Mono", "monospace"] } } } } };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-page="download" class="bg-white text-slate-900">
+    <div class="site-shell min-h-screen">
+        <header class="site-header-shell fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8" data-site-header>
+            <div class="mx-auto max-w-7xl">
+                <div class="site-header-bar sm-card-strong  px-4 py-3 sm:px-5" data-header-bar>
+                    <div class="flex items-center justify-between gap-4">
+                        <a href="./index.html" class="flex min-w-0 items-center gap-3">
+                            <img src="../assets/icons/logo.svg" alt="SM Engine logo" class="h-11 w-11 shrink-0 object-contain">
+                            <div class="min-w-0"><div class="truncate text-sm font-semibold tracking-wide text-slate-950">SM Engine</div><div class="header-brand-subtitle truncate text-xs text-slate-600">Download and launch assets</div></div>
+                        </a>
+                        <button type="button" class="inline-flex h-10 w-10 items-center justify-center  border border-slate-300 bg-slate-50 text-slate-900 md:hidden" data-menu-button aria-expanded="false" aria-label="Toggle navigation"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+                        <nav class="header-desktop-nav hidden items-center gap-1 md:flex">
+                            <a class="top-nav-link  px-4 py-2 text-sm" data-nav="home" href="./index.html">Home</a>
+                            <div class="nav-dropdown relative" data-dropdown><button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="features" aria-expanded="false">Features<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button><div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./features.html"><div class="text-sm font-semibold text-slate-950">Editor Capabilities</div><p class="mt-1 text-xs leading-6 text-slate-600">Modeling, sculpting, animation, nodes, physics, and assets.</p></a><a class="dropdown-link" href="./features.html"><div class="text-sm font-semibold text-slate-950">Media Workflows</div><p class="mt-1 text-xs leading-6 text-slate-600">Timeline systems, rendering views, media tools, and production-oriented interfaces.</p></a></div></div></div>
+                            <div class="nav-dropdown relative" data-dropdown><button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="workspaces" aria-expanded="false">Workspaces<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button><div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./workspaces.html"><div class="text-sm font-semibold text-slate-950">Game Dev</div><p class="mt-1 text-xs leading-6 text-slate-600">Player systems, atmosphere, lighting, collisions, and runtime-style iteration.</p></a><a class="dropdown-link" href="./workspaces.html"><div class="text-sm font-semibold text-slate-950">Modeling + Nodes</div><p class="mt-1 text-xs leading-6 text-slate-600">Creation tools, sculpting, material graphs, assets, and focused editor modes.</p></a></div></div></div>
+                            <div class="nav-dropdown relative" data-dropdown><button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="showcase roadmap" aria-expanded="false">Explore<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button><div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./showcase.html"><div class="text-sm font-semibold text-slate-950">Showcase</div><p class="mt-1 text-xs leading-6 text-slate-600">Polished screenshot storytelling and product gallery scenes.</p></a><a class="dropdown-link" href="./roadmap.html"><div class="text-sm font-semibold text-slate-950">Roadmap</div><p class="mt-1 text-xs leading-6 text-slate-600">Launch phases, future plans, and what gets developed next.</p></a></div></div></div>
+                            <div class="nav-dropdown relative" data-dropdown><button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="download" aria-expanded="false">Download<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button><div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./download.html"><div class="text-sm font-semibold text-slate-950">Installer</div><p class="mt-1 text-xs leading-6 text-slate-600">Recommended Windows setup flow with direct download access.</p></a><a class="dropdown-link" href="./download.html#media"><div class="text-sm font-semibold text-slate-950">Media Slots</div><p class="mt-1 text-xs leading-6 text-slate-600">Trailer placeholders, demo sections, and launch-ready presentation blocks.</p></a></div></div></div>
+                        </nav>
+                        <div class="header-actions hidden lg:flex">
+                            <a href="../dist/SM%20Engine%20Setup%201.0.0.exe" download class="header-download-btn  bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-900">Download App</a>
+                        </div>
+                    </div>
+                    <nav class="mt-3 hidden flex-col gap-2 border-t border-slate-300 pt-3 md:hidden" data-mobile-menu>
+                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="home" href="./index.html">Home</a>
+                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="features" href="./features.html">Features</a>
+                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="workspaces" href="./workspaces.html">Workspaces</a>
+                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="showcase" href="./showcase.html">Showcase</a>
+                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="roadmap" href="./roadmap.html">Roadmap</a>
+                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="download" href="./download.html">Download</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="pb-20">
+            <section class="reveal grid gap-8 lg:grid-cols-[0.9fr_1.1fr] min-h-screen items-center pt-32 md:pt-36 px-4 py-10 sm:px-6 lg:px-8 lg:py-14" style="background-image: url(https://4kwallpapers.com/images/walls/thumbs_3t/13559.png); background-position: center; background-size: cover; background-attachment: fixed; position: relative;">
+                <style>
+                    .download-hero-section {
+                        position: relative;
+                    }
+                    
+                    .download-hero-section::before {
+                        content: '';
+                        position: absolute;
+                        inset: 0;
+                        background: linear-gradient(135deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.15) 100%);
+                        z-index: 1;
+                        pointer-events: none;
+                    }
+                </style>
+                
+                <div class="relative z-10">
+                    <p class="font-mono-local text-xs uppercase tracking-[0.24em] text-blue-700">Download center</p>
+                    <h1 class="mt-4 text-4xl font-semibold tracking-[-0.05em] text-slate-950 sm:text-5xl lg:text-6xl">Turn the website into a real install page.</h1>
+                    <p class="mt-6 max-w-2xl text-base leading-8 text-slate-700">This page focuses on the direct action: download the app, understand the build options, and install the Electron desktop build for Windows 10 and Windows 11 machines with 8 GB RAM or more.</p>
+                </div>
+                <div class="relative z-10">
+                    <div class="sm-card p-5"><img src="../screenshoots/Screenshot (1237).png" alt="Large SM Engine screenshot" class="object-cover"></div>
+                </div>
+            </section>
+            <section class="mx-auto max-w-7xl grid gap-4 py-10 md:grid-cols-2 xl:grid-cols-4 px-4 sm:px-6 lg:px-8">
+                <article class="reveal sm-card  p-6"><div class="font-mono-local text-xs uppercase tracking-[0.2em] text-amber-700">Recommended</div><h2 class="mt-3 text-2xl font-semibold text-slate-950">Windows Installer</h2><p class="mt-3 text-sm leading-8 text-slate-700">Best for most users who want a guided setup flow on Windows 10 or Windows 11.</p><a href="../dist/SM%20Engine%20Setup%201.0.0.exe" download class="mt-6 inline-flex  bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-900">Download Setup .exe</a><div class="mt-4  bg-slate-100 px-4 py-3 font-mono-local text-xs text-slate-700" data-download-path="installer">dist/SM Engine Setup 1.0.0.exe</div></article>
+                <article class="reveal sm-card  p-6"><div class="font-mono-local text-xs uppercase tracking-[0.2em] text-orange-700">Portable</div><h2 class="mt-3 text-2xl font-semibold text-slate-950">Standalone EXE</h2><p class="mt-3 text-sm leading-8 text-slate-700">Good for testing, sharing, or running without the installer path on PCs with 8 GB RAM or more.</p><a href="../dist/SM%20Engine%201.0.0.exe" download class="mt-6 inline-flex  border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100">Download Portable</a><div class="mt-4  bg-slate-100 px-4 py-3 font-mono-local text-xs text-slate-700" data-download-path="portable">dist/SM Engine 1.0.0.exe</div></article>
+                <article class="reveal sm-card  p-6"><div class="font-mono-local text-xs uppercase tracking-[0.2em] text-blue-700">Requirements</div><h2 class="mt-3 text-2xl font-semibold text-slate-950">Desktop baseline</h2><p class="mt-3 text-sm leading-8 text-slate-700">Target Windows 10 and Windows 11 systems with 8 GB RAM or more for a comfortable install and launch experience.</p><div class="mt-6 border border-slate-300 bg-slate-50 px-5 py-4 text-sm leading-7 text-slate-700">Electron desktop build, native installer, portable .exe option, and the intro website as the public landing page.</div></article>
+                <article class="reveal sm-card  p-6"><div class="font-mono-local text-xs uppercase tracking-[0.2em] text-purple-700">Source</div><h2 class="mt-3 text-2xl font-semibold text-slate-950">Repository</h2><p class="mt-3 text-sm leading-8 text-slate-700">For issues, source browsing, releases, and future publishing workflows.</p><a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer" class="mt-6 inline-flex  border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100">Open GitHub</a><div class="mt-4  bg-slate-100 px-4 py-3 font-mono-local text-xs text-slate-700">github.com/MEDELBOU3/SM-Engine</div></article>
+            </section>
+            <section class="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
+                <div class="reveal border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-950">
+                    The buttons on this page download from the latest GitHub Release. If a file still shows 404, upload the matching `.exe` assets to the repository's latest release first.
+                </div>
+            </section>
+            <section id="media" class="mx-auto max-w-7xl py-10 px-4 sm:px-6 lg:px-8">
+                <div class="reveal mb-6">
+                    <p class="font-mono-local text-xs uppercase tracking-[0.24em] text-purple-700">Video demos</p>
+                    <h2 class="mt-4 text-3xl font-semibold tracking-[-0.04em] text-slate-950">Real engine footage, ready inside the launch page.</h2>
+                    <p class="mt-3 max-w-3xl text-base leading-8 text-slate-700">This section now uses your Vimeo demos directly so visitors can watch SM Engine in motion without leaving the website. The first clip acts like the lead demo, and the others support it with more engine views.</p>
+                </div>
+                <div class="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                    <article class="reveal sm-card  p-4 sm:p-5">
+                        <div class="mb-4 flex items-center justify-between gap-4">
+                            <div>
+                                <div class="font-mono-local text-xs uppercase tracking-[0.18em] text-blue-700">Primary demo</div>
+                                <h3 class="mt-2 text-2xl font-semibold text-slate-950">SM Engine workspace and runtime overview</h3>
+                            </div>
+                            <span class=" border border-slate-300 bg-slate-100 px-3 py-1 text-xs text-slate-700">Vimeo</span>
+                        </div>
+                        <div class="video-embed-card">
+                            <div class="video-embed-frame">
+                                <iframe src="https://player.vimeo.com/video/1179623724?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="SM Engine 2026-03-23 21-58-15"></iframe>
+                            </div>
+                        </div>
+                    </article>
+                    <div class="grid gap-4">
+                        <article class="reveal sm-card  p-4 sm:p-5">
+                            <div class="mb-4 flex items-center justify-between gap-4">
+                                <div>
+                                    <div class="font-mono-local text-xs uppercase tracking-[0.18em] text-orange-700">Demo clip 02</div>
+                                    <h3 class="mt-2 text-xl font-semibold text-slate-950">Editor walkthrough and interface depth</h3>
+                                </div>
+                                <span class=" border border-slate-300 bg-slate-100 px-3 py-1 text-xs text-slate-700">Vimeo</span>
+                            </div>
+                            <div class="video-embed-card">
+                                <div class="video-embed-frame">
+                                    <iframe src="https://player.vimeo.com/video/1179630983?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="SM Engine 2026-03-30 23-24-13"></iframe>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="reveal sm-card  p-4 sm:p-5">
+                            <div class="mb-4 flex items-center justify-between gap-4">
+                                <div>
+                                    <div class="font-mono-local text-xs uppercase tracking-[0.18em] text-green-700">Demo clip 03</div>
+                                    <h3 class="mt-2 text-xl font-semibold text-slate-950">Gameplay-style scene preview</h3>
+                                </div>
+                                <span class=" border border-slate-300 bg-slate-100 px-3 py-1 text-xs text-slate-700">Vimeo</span>
+                            </div>
+                            <div class="video-embed-card">
+                                <div class="video-embed-frame">
+                                    <iframe src="https://player.vimeo.com/video/1179625704?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="SM Engine 2026-03-29 01-28-57"></iframe>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+            <div class="editorial-footer sm-card-strong  px-5 py-6 sm:px-8 sm:py-8">
+                <div class="grid gap-10 border-b border-slate-300 pb-10 lg:grid-cols-[0.82fr_0.95fr_1.05fr]">
+                    <div class="space-y-5"><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-600">Contact</div><div class="space-y-2 text-lg font-medium"><a class="footer-link block" href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">GitHub Repository</a><a class="footer-link block" href="../dist/SM%20Engine%20Setup%201.0.0.exe" download>Download Setup</a><a class="footer-link block" href="../dist/SM%20Engine%201.0.0.exe" download>Portable Build</a></div></div>
+                    <div class="grid gap-6 sm:grid-cols-2"><div><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-600">Navigation</div><div class="mt-4 space-y-2 text-lg"><a class="footer-link block" href="./features.html">Features</a><a class="footer-link block" href="./workspaces.html">Workspaces</a><a class="footer-link block" href="./download.html">Download</a></div></div><div><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-600">Explore</div><div class="mt-4 space-y-2 text-lg"><a class="footer-link block" href="./showcase.html">Showcase</a><a class="footer-link block" href="./roadmap.html">Roadmap</a><span class="block text-slate-600">Docs (Coming Soon)</span></div></div></div>
+                    <div class="space-y-5"><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-600">Studio Note</div><p class="max-w-md text-lg leading-[1.25] text-slate-700">SM Engine brings together 3D creation, game-dev systems, material nodes, animation, assets, and media workflows inside one growing desktop editor. This site is becoming the public home for that direction.</p></div>
+                </div>
+                <div class="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+                    <div class="grid gap-4 lg:grid-cols-[1fr_240px] lg:items-end"><div class="footer-wordmark text-[5rem] font-semibold sm:text-[7.5rem] lg:text-[10.5rem]" data-footer-word>SM Engine</div><div class="footer-thumb h-40 w-full lg:h-52"><img src="../screenshoots/Screenshot%20(493).png" alt="SM Engine footer preview"></div></div>
+                    <div class="grid gap-6 sm:grid-cols-2 lg:justify-self-end"><div class="space-y-2 text-lg"><a class="footer-link block" href="#">Terms &amp; Conditions</a><a class="footer-link block" href="#">Privacy Policy</a><a class="footer-link block" href="#">Cookies Policy</a></div><div class="flex flex-col items-start gap-3 lg:items-end lg:text-right"><div class="text-lg font-medium text-slate-950">&copy; <span data-year></span> SM Engine. All rights reserved.</div><div class=" border border-slate-300 bg-slate-50 px-4 py-2 text-sm text-slate-700">Preferences</div></div></div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="https://player.vimeo.com/api/player.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>
