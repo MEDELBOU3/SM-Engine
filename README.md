@@ -1,36 +1,38 @@
-# ✨ SM-Engine: 3D Modeling & Physics Editor ✨
+# ✨ SM-Engine: Advanced Web 3D Modeling & Game Editor ✨
 
-<div class="logo" style="transform: scale(2); transform-origin: left center;">
-    <img src="logo.svg" alt="SM Engine Logo" width="120" height="120" class="logo__icon">
-    <span class="logo__text">SM Engine<span class="logo__text-pro">TM</span></span>
+<div align="center">
+  <img src="assets/icons/app.png" alt="SM Engine Logo" width="180" height="180">
+  <br />
+  <h1>SM Engine<span style="font-size: 0.5em; vertical-align: super;">TM</span></h1>
 </div>
 
 <p align="center">
-  <strong>A comprehensive and modular 3D modeling editor built with html css js and webGL, featuring node-based workflows, integrated physics simulation, and powerful brush tools.</strong>
+  <strong>A professional-grade, modular 3D Modeling and Game Development Suite.</strong><br />
+  Built with Three.js, Electron, and WebAssembly, featuring high-performance sculpting, node-based visual scripting, and advanced character animation systems.
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   <img src="https://img.shields.io/badge/Platform-Windows-informational" alt="Platform: Windows">
-  <img src="https://img.shields.io/badge/.NET-4.8-blueviolet" alt=".NET Framework 4.8">
-  <img src="https://img.shields.io/badge/OpenGL-4.0%2B-success" alt="OpenGL 4.0+">
-  <a href="https://github.com/medelbou3/SM-Engine/releases"><img src="https://img.shields.io/github/v/release/medelbou3/SM-Engine?include_prereleases" alt="Release"></a>
+  <img src="https://img.shields.io/badge/Engine-Three.js-blue" alt="Three.js">
+  <img src="https://img.shields.io/badge/Runtime-Electron-9feaf9" alt="Electron">
+  <a href="https://github.com/MEDELBOU3/SM-Engine/releases"><img src="https://img.shields.io/github/v/release/MEDELBOU3/SM-Engine?include_prereleases" alt="Release"></a>
   <a href="https://github.com/medelbou3/SM-Engine/issues"><img src="https://img.shields.io/github/issues/medelbou3/SM-Engine" alt="Issues"></a>
 </p>
 
 ---
 
-<h2 align="center">📺 Video Tutorial</h2>
+<h2 align="center">🎬 Official Trailer & Tutorial</h2>
 
 <p align="center">
   <a href="https://youtu.be/EY7ggEMSEGI" target="_blank">
-    <img src="https://img.youtube.com/vi/EY7ggEMSEGI/hqdefault.jpg" alt="Watch the video" />
+    <img src="https://img.youtube.com/vi/EY7ggEMSEGI/maxresdefault.jpg" alt="Watch the SM Engine Video" width="80%" />
   </a>
 </p>
 
 ---
 
-## 📸 Visual Showcase
+## 🖼️ Visual Showcase
 
 <div align="center">
   <img src="screenshoots/Screenshot%20(93).png" alt="Main Editor Interface" width="90%">
