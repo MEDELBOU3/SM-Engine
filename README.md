@@ -1,9 +1,5 @@
-# ✨ SM-Engine: 3D Modeling & Physics Editor ✨
 # ✨ SM-Engine: Advanced Web 3D Modeling & Game Editor ✨
 
-<div class="logo" style="transform: scale(2); transform-origin: left center;">
-    <img src="logo.svg" alt="SM Engine Logo" width="120" height="120" class="logo__icon">
-    <span class="logo__text">SM Engine<span class="logo__text-pro">TM</span></span>
 <div align="center">
   <img src="assets/icons/app.png" alt="SM Engine Logo" width="180" height="180">
   <br />
@@ -11,7 +7,6 @@
 </div>
 
 <p align="center">
-  <strong>A comprehensive and modular 3D modeling editor built with html css js and webGL, featuring node-based workflows, integrated physics simulation, and powerful brush tools.</strong>
   <strong>A professional-grade, modular 3D Modeling and Game Development Suite.</strong><br />
   Built with Three.js, Electron, and WebAssembly, featuring high-performance sculpting, node-based visual scripting, and advanced character animation systems.
 </p>
@@ -19,9 +14,6 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   <img src="https://img.shields.io/badge/Platform-Windows-informational" alt="Platform: Windows">
-  <img src="https://img.shields.io/badge/.NET-4.8-blueviolet" alt=".NET Framework 4.8">
-  <img src="https://img.shields.io/badge/OpenGL-4.0%2B-success" alt="OpenGL 4.0+">
-  <a href="https://github.com/medelbou3/SM-Engine/releases"><img src="https://img.shields.io/github/v/release/medelbou3/SM-Engine?include_prereleases" alt="Release"></a>
   <img src="https://img.shields.io/badge/Engine-Three.js-blue" alt="Three.js">
   <img src="https://img.shields.io/badge/Runtime-Electron-9feaf9" alt="Electron">
   <a href="https://github.com/MEDELBOU3/SM-Engine/releases"><img src="https://img.shields.io/github/v/release/MEDELBOU3/SM-Engine?include_prereleases" alt="Release"></a>
@@ -30,52 +22,75 @@
 
 ---
 
-<h2 align="center">📺 Video Tutorial</h2>
 <h2 align="center">🎬 Official Trailer & Tutorial</h2>
 
 <p align="center">
   <a href="https://youtu.be/EY7ggEMSEGI" target="_blank">
-    <img src="https://img.youtube.com/vi/EY7ggEMSEGI/hqdefault.jpg" alt="Watch the video" />
     <img src="https://img.youtube.com/vi/EY7ggEMSEGI/maxresdefault.jpg" alt="Watch the SM Engine Video" width="80%" />
   </a>
 </p>
 
 ---
 
-## ️ Visual Showcase
+## 🖼️ Visual Showcase
 
 <div align="center">
-  <img src="screenshoots/Screenshot%20(93).png" alt="SM Engine Workspace" width="100%">
-  <p><em>The primary SM Engine environment featuring the Scene Hierarchy, integrated Asset Browser, and high-fidelity 3D Viewport.</em></p>
+  <img src="screenshoots/Screenshot%20(93).png" alt="Main Editor Interface" width="90%">
+    <img src="screenshoots/Screenshot%20(492).png" alt="Main Editor Interface" width="90%">
+  <p><em>Main interface with the powerful Node Editor panel and 3D viewport</em></p>
 </div>
 
-### 🌋 Modeling & Sculpting
 <div align="center">
-  <img src="screenshoots/modeling.png" alt="Precision Modeling" width="49%">
-  <img src="screenshoots/sculpting%26modeling.png" alt="WASM Sculpting" width="49%">
-  <p><em>Advanced mesh manipulation: from precise vertex-level modeling to organic WASM-powered sculpting brushes.</em></p>
+  <img src="screenshoots/Screenshot%20(92).png" alt="Physics Simulation" width="90%">
+  <p><em>The integrated physics engine with real-time object interactions</em></p>
 </div>
 
-### 🏗️ Architectural Engineering
 <div align="center">
-  <img src="screenshoots/confirm-wall-placement2.png" alt="Wall Generation" width="49%">
-  <img src="screenshoots/window-placement-preview.png" alt="Window Placement" width="49%">
-  <p><em>Rapid environment prototyping with path-based wall generation and dynamic architectural component placement.</em></p>
+  <img src="screenshoots/Screenshot%20(56).png" alt="Brush Modeling Tools" width="90%">
+  <p><em>Brush Modeling panel with density controls and import options</em></p>
 </div>
 
-### 🧬 Technical Systems
 <div align="center">
-  <img src="screenshoots/Screenshot%20(390).png" alt="Code IDE" width="49%">
-  <img src="screenshoots/Screenshot%20(496).png" alt="MetaSound Graph" width="49%">
-  <p><em>Unified technical workflows: VS-style Code Editor for logic and the MetaSound Graph for procedural audio design.</em></p>
+  <img src="screenshoots/sculpting&modeling.png" alt="Brush Modeling Tools" width="90%">
+  <img src="screenshoots/modeling.png" alt="Brush Modeling Tools" width="90%">
+  <img src="screenshoots/Screenshot (494).png" alt="Brush Modeling Tools" width="90%">
+  <p><em>Modeling and sculpting tools in real time</em></p>
 </div>
 
-### ⚙️ Physics & Dynamics
 <div align="center">
-  <img src="screenshoots/Screenshot%20(92).png" alt="Physics Simulation" width="100%">
-  <p><em>Real-time rigid body dynamics and collision physics powered by Rapier3D.</em></p>
+  <img src="screenshoots/Screenshot (390).png" alt="code editor" width="90%">
+  <p><em>Create anything you want using html css and js</em></p>
 </div>
 
+<div align="center">
+  <h2>Architecture Tools</h2>
+  <h3>Wall Tools</h3>
+  <img src="screenshoots/wall-preview.png" alt="line preview" width="90%">
+  <img src="screenshoots/confirm-wall-placement1.png" alt="wall added" width="90%">
+  <img src="screenshoots/confirm-wall-placement2.png" alt="wall added-select" width="90%">
+  <h3>Windows and doors tools</h3>
+  <img src="screenshoots/window-placement-preview.png" alt="box preview" width="90%">
+  <img src="screenshoots/Screenshot (334).png" alt="box preview" width="90%">
+  <img src="screenshoots/Screenshot (335).png" alt="box preview" width="90%">
+  <p><em>Architecture Tools Wall to build what you need</em></p>
+  
+</div>
+
+<div align="center">
+  <img src="screenshoots/Screenshot%20(91).png" alt="Editor Workspace" width="90%">
+  <p><em>Workspace overview with Scene Hierarchy and Asset Management</em></p>
+</div>
+
+<div align="center">
+  <img src="screenshoots/Screenshot%20(54).png" alt="3D Viewport" width="90%">
+  <p><em>High-fidelity rendering in the 3D viewport</em></p>
+</div>
+
+<div align="center">
+  <h2>Sound Editor</h2>
+  <img src="screenshoots/Screenshot (496).png" alt="box preview" width="90%">
+  <p><em>Sound and music editor</em></p>
+</div>
 ---
 
 ## 🌟 Core Features
@@ -85,28 +100,18 @@
 - **Dynamic Parameters:** Adjustable brush size, strength, density and falloff for complete control
 - **Reference Support:** Directly upload and use reference models as sculpting guides
 - **Seamless Import:** Drag-and-drop support for base meshes via the integrated file browser
-### 🎨 High-Performance Modeling
-- **WASM Sculpting:** High-speed organic mesh manipulation powered by C++ WebAssembly.
-- **Precision Modeling:** Vertex, Edge, and Face level editing with industry-standard transform gizmos.
-- **Pro Brushes:** ZBrush-style toolkit including Clay, Inflate, Smooth, and Pinch with adjustable falloff.
 
 ### 🔗 Visual Node Editor
 - **Graphical Programming:** Design complex materials, shaders, and procedural geometry without writing code
 - **Real-time Preview:** Instant visual feedback as you connect and modify nodes
 - **Extensible Architecture:** Create and share custom node types with the SM-Engine community
 - **Template Library:** Pre-built node graphs for common materials and effects
-### 🔗 Visual Programming
-- **Multi-Graph Editor:** Design player logic, material shaders, and VFX systems using a unified node-based interface.
-- **Live Preview:** Instant feedback on logic and shader changes without recompilation.
 
 ### ⚙️ Integrated Physics Engine
 - **Multiple Simulation Environments:** Set up and switch between different physics scenarios
 - **Comprehensive Dynamics:** Simulate rigid bodies, soft bodies, cloth, and fluid interactions
 - **Advanced Controls:** Configure gravity, friction, restitution, and collision properties
 - **Constraints System:** Create joints, hinges, springs, and mechanical linkages
-### 🏗️ Architectural Toolkit
-- **Dynamic Walls:** Draw paths to generate walls with custom height and thickness.
-- **Smart Components:** Drag-and-drop windows, doors, and stairs that align to paths.
 
 ### 🖼️ Advanced Viewport
 - **High-Performance Rendering:**webGL powered visualization with PBR materials
@@ -120,9 +125,6 @@
 - **Asset Management:** Dedicated panel for importing, organizing, and applying materials and models
 - **File Format Support:** Import/export for industry-standard formats (.obj, .fbx, .stl, .dae, .gltf)
 - **Session Recording:** Capture your workflow for tutorials or time-lapse demonstrations
-### ⚙️ Physics & Animation
-- **Dual Engine Physics:** Native support for Rapier3D (WASM) and Cannon-es simulations.
-- **Motion Matching:** Next-gen character animation system (UAL2) for fluid, natural movement.
 
 ---
 
@@ -136,24 +138,24 @@ SM-Engine is built on modern and reliable technologies:
   - Ideal for real-time interactive applications
 
 ## 🧱 Graphics API
-- **Three.js**  
+- **[Three.js](https://threejs.org/)**  
   - Built on top of WebGL
   - Simplifies 3D rendering, lighting, materials, and cameras
 
 ## 🖼 GUI Framework
-- **dat.GUI** or **Tweakpane**
+- **[dat.GUI](https://github.com/dataarts/dat.gui)** or **[Tweakpane](https://cocopon.github.io/tweakpane/)**
   - Lightweight GUI for real-time controls and debugging
 - **Optional (Advanced UI):**
-  - **React.js** or **Vue.js** for component-based UIs
+  - **[React.js](https://reactjs.org/)** or **[Vue.js](https://vuejs.org/)** for component-based UIs
 
 ## 🎮 Physics Engine
-- **Ammo.js**
+- **[Ammo.js](https://github.com/kripken/ammo.js)**
   - Port of Bullet Physics to JavaScript/WebAssembly
-- **Alternative: Cannon-es**
+- **Alternative: [Cannon-es](https://github.com/pmndrs/cannon-es)**
   - Easier to use, great for games and simulations
 
 ## 🧳 Asset Processing (3D Models)
-- **Three.js Loaders**
+- **[Three.js Loaders](https://threejs.org/docs/#examples/en/loaders/GLTFLoader)**
   - Use `GLTFLoader`, `FBXLoader`, `OBJLoader` for importing models
 - **Recommended format: GLTF/GLB**
   - Optimized for web performance
@@ -165,23 +167,23 @@ SM-Engine is built on modern and reliable technologies:
 - **Hot Reloading:**
   - Implement with `fetch()` + `ShaderMaterial.needsUpdate = true`
   - Use **Vite** or **Webpack** with file watching for live shader reloading
-----
+---
 
 ## 🧩 Optional Tools for Development
 
 ### 🔧 Dev Environment
-- **Vite** or **Parcel** for bundling and fast dev server
+- **[Vite](https://vitejs.dev/)** or **[Parcel](https://parceljs.org/)** for bundling and fast dev server
 
 ### 🎨 Post-Processing
 - Use `EffectComposer` with `ShaderPass`, `BloomPass`, etc. for advanced visual effects
 
 ### 🔍 Scene Graph Inspector
-- Built-in **Three.js Editor** or custom developer tools
+- Built-in **[Three.js Editor](https://threejs.org/editor/)** or custom developer tools
 
-----
+---
 
 
-----
+---
 
 ## 📐 Interface Overview
 
@@ -213,7 +215,7 @@ SM-Engine features a customizable, panel-based interface designed for productivi
 - **Right:** Properties and settings for selected objects or tools
 - **Bottom:** Real-time performance metrics and application status
 
-----
+---
 
 ## 🚀 Quick Start Guide
 
@@ -253,7 +255,7 @@ Get up and running with SM-Engine in just a few steps:
    - Zoom: Mouse Wheel or Alt + Right Mouse Button
    - Focus on object: F key (with object selected)
 
-----
+---
 
 ## 🔧 System Requirements
 
@@ -269,20 +271,20 @@ Get up and running with SM-Engine in just a few steps:
 | Input | Keyboard and mouse | + Graphics tablet for sculpting |
 | Software | .NET Framework 4.8 | .NET Framework 4.8 |
 
-----
+---
 
 ## 💾 Installation & Running
 
 ### Option 1: Using the Installer (Recommended)
 
-1. Download the latest installer from the Releases Page
+1. Download the latest installer from the [Releases Page](https://github.com/medelbou3/SM-Engine/releases)
 2. Run the `SM-Engine-Setup.exe` file
 3. Follow the installation wizard instructions
 4. Launch SM-Engine from the desktop shortcut or Start menu
 
 ### Option 2: Portable Version
 
-1. Download the portable .zip file from the Releases Page
+1. Download the portable .zip file from the [Releases Page](https://github.com/medelbou3/SM-Engine/releases)
 2. Extract all contents to a folder of your choice
 3. Run `SM-Engine.exe` from the extracted folder
 4. Note: .NET Framework 4.8 must be installed on your system
@@ -302,7 +304,7 @@ Get up and running with SM-Engine in just a few steps:
    - BulletSharp NuGet package (automatically restored)
 
 3. **Build the Project:**
-   - Open `SM-Engine.sln` in Studio
+   - Open `SM-Engine.sln` in Visual Studio
    - Select Build > Build Solution (or press Ctrl+Shift+B)
    - Select the desired configuration (Debug/Release)
 
@@ -310,13 +312,13 @@ Get up and running with SM-Engine in just a few steps:
    - Press F5 in Visual Studio to run with debugging
    - Or navigate to `bin/Release` and run `SM-Engine.exe`
 
-----
+---
 
 ## 🤝 Contributing
 
 We welcome contributions to SM-Engine! Here's how you can help:
 
-1. **Report Issues:** Found a bug or have a suggestion? Open an issue on our Issue Tracker
+1. **Report Issues:** Found a bug or have a suggestion? Open an issue on our [Issue Tracker](https://github.com/medelbou3/SM-Engine/issues)
 
 2. **Contribute Code:**
    - Fork the repository
@@ -329,9 +331,9 @@ We welcome contributions to SM-Engine! Here's how you can help:
 
 4. **Testing:** Try new features and provide feedback
 
-See CONTRIBUTING.md for detailed contribution guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
 
-----
+---
 
 ## 🛣️ Roadmap
 
@@ -355,54 +357,27 @@ Our development roadmap for upcoming versions:
 - AI-assisted modeling tools
 - Mobile companion app
 
-----
+---
 
 ## 📜 License
 
-SM-Engine is distributed under the MIT License. See the LICENSE file for full details.
+SM-Engine is distributed under the MIT License. See the [LICENSE](LICENSE) file for full details.
 
-----
+---
 
 ## 🙏 Acknowledgements
 
-- OpenTK for the OpenGL wrapper
-- BulletSharp for physics simulation
-- Assimp.Net for 3D model importing
-- Icons8 for UI icons
+- [OpenTK](https://opentk.net/) for the OpenGL wrapper
+- [BulletSharp](https://github.com/AndresTraks/BulletSharp) for physics simulation
+- [Assimp.Net](https://bitbucket.org/Starnick/assimpnet) for 3D model importing
+- [Icons8](https://icons8.com/) for UI icons
 - All our contributors and community members
-| Layer | Technologies |
-| :--- | :--- |
-| **Core** | JavaScript (ES6+), C++ (WebAssembly) |
-| **Runtime** | Electron (Native Windows Desktop) |
-| **Graphics** | Three.js (WebGL 2.0 / WebGPU Ready) |
-| **Physics** | Rapier3D, Cannon-es |
-| **UI Engine** | Golden Layout, CodeMirror 6 |
 
 ---
-
-## 💾 Installation & Development
-
-### Standard User
-1. Download the latest `SM-Engine.Setup.exe` from Releases.
-2. Run the installer and launch from your desktop.
-
-### For Developers
-1. **Clone:** `git clone https://github.com/MEDELBOU3/SM-Engine.git`
-2. **Install:** `npm install`
-3. **Start:** `npm start`
-
----
-
-## 📜 License
-SM-Engine is distributed under the MIT License. See the LICENSE file for full details.
 
 <p align="center">
   <a href="https://github.com/medelbou3/SM-Engine">GitHub</a> •
   <a href="https://github.com/medelbou3/SM-Engine/wiki">Documentation</a> •
   <a href="https://github.com/medelbou3/SM-Engine/discussions">Community</a> •
   <a href="https://github.com/medelbou3/SM-Engine/issues">Issues</a>
-  <a href="https://github.com/MEDELBOU3/SM-Engine">GitHub</a> •
-  <a href="https://github.com/MEDELBOU3/SM-Engine/wiki">Documentation</a> •
-  <a href="https://github.com/MEDELBOU3/SM-Engine/discussions">Community</a> •
-  <a href="https://github.com/MEDELBOU3/SM-Engine/issues">Issues</a>
 </p>
