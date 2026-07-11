@@ -1,0 +1,244 @@
+/* --- TERRAIN NODE EDITOR (TNE) PROFESSIONAL STYLES (Houdini/Blender Inspired) --- */
+
+.tne-tab {
+    background: #18181b;
+    border: none;
+    border-right: 1px solid #27272a;
+    color: #71717a;
+    padding: 10px 0;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tne-tab:hover {
+    color: #d4d4d8;
+    background: #1c1c21;
+}
+
+.tne-tab-active {
+    background: #1c1c21;
+    color: #3b82f6;
+    border-bottom: 2px solid #3b82f6;
+}
+
+.tne-tab:last-child {
+    border-right: none;
+}
+
+.tne-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #52525b;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 16px 4px 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #27272a;
+}
+
+/* --- Node Buttons --- */
+.tne-node-btn, .tne-preset-btn {
+    width: 100%;
+    background: #27272a;
+    border: 1px solid #3f3f46;
+    color: #a1a1aa;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tne-node-btn:hover, .tne-preset-btn:hover {
+    background: #323238;
+    border-color: #52525b;
+    color: #f4f4f5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.tne-node-btn:active, .tne-preset-btn:active {
+    transform: translateY(0);
+}
+
+.tne-node-btn svg {
+    opacity: 0.6;
+    transition: opacity 0.15s;
+}
+
+.tne-node-btn:hover svg {
+    opacity: 1;
+}
+
+/* --- Paint Buttons --- */
+.tne-paint-btn {
+    background: #1c1c21;
+    border: 1px solid #3f3f46;
+    color: #a1a1aa;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.tne-paint-btn:hover {
+    background: #27272a;
+    border-color: #52525b;
+    color: #d4d4d8;
+}
+
+.tne-paint-active {
+    background: #1e293b;
+    border-color: #3b82f6;
+    color: #60a5fa;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
+/* --- Node Boxes (Houdini style) --- */
+.node-box {
+    position: absolute;
+    min-width: 160px;
+    background: #18181b;
+    border: 1px solid #3f3f46;
+    border-radius: 6px;
+    color: #d4d4d8;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.node-box.selected {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4), 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.node-header {
+    background: #27272a;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    border-bottom: 1px solid #3f3f46;
+    border-radius: 6px 6px 0 0;
+    cursor: grab;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.node-ports-wrapper {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.node-port-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #a1a1aa;
+}
+
+.node-port {
+    width: 10px;
+    height: 10px;
+    background: #3f3f46;
+    border: 2px solid #18181b;
+    border-radius: 50%;
+    cursor: crosshair;
+    transition: all 0.2s;
+}
+
+.node-port:hover {
+    background: #60a5fa;
+    transform: scale(1.3);
+}
+
+.node-remove-btn {
+    background: none;
+    border: none;
+    color: #71717a;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.node-remove-btn:hover {
+    color: #f87171;
+}
+
+/* --- Node Params (Sidebar Bottom) --- */
+#node-params-container .param-row {
+    margin-bottom: 12px;
+}
+
+#node-params-container .param-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: #f4f4f5;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #27272a;
+}
+
+#node-params-container label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    color: #a1a1aa;
+    font-size: 10px;
+}
+
+#node-params-container .param-value {
+    color: #d4d4d8;
+    font-family: monospace;
+}
+
+#node-params-container input[type="range"] {
+    width: 100%;
+    height: 4px;
+    background: #27272a;
+    border-radius: 2px;
+    appearance: none;
+    accent-color: #3b82f6;
+}
+
+#node-params-container input[type="checkbox"] {
+    accent-color: #3b82f6;
+    cursor: pointer;
+}
+
+/* --- Custom Scrollbar --- */
+.tne-tab-panel::-webkit-scrollbar {
+    width: 5px;
+}
+
+.tne-tab-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tne-tab-panel::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 10px;
+}
+
+.tne-tab-panel::-webkit-scrollbar-thumb:hover {
+    background: #52525b;
+}

@@ -1,0 +1,29 @@
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    background: #252525;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #cccccc;
+}
+
+.panel-header svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    fill: #888;
+}
+
+.property-group {
+    padding: 14px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.property-group:last-child {
+    border-bottom: none;
+}

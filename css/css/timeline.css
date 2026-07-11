@@ -1,0 +1,3377 @@
+/* Theme tokens are centralized in roots.css. */
+
+
+
+.view-tab {
+  min-height: 28px;
+  height: 100%;
+  padding: 0 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.view-tab:hover {
+  background: var(--timeline-surface-hover);
+  color: var(--text-primary);
+}
+
+.view-tab.active {
+  background: var(--timeline-layer-item-selected-bg);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.timeline-controls .tool-button,
+.timeline-controls button,
+.timeline-controls select,
+.timeline-controls input {
+  min-height: 30px;
+  border-radius: 6px;
+}
+
+body.gl-enabled .timeline.resizable-content-panel,
+body.gl-enabled #timelineBody {
+  box-shadow: none;
+}
+
+@media (max-width: 1280px) {
+  .timeline-layers {
+    min-width: 180px;
+  }
+
+  .timeline-controls {
+    gap: 6px;
+    padding: 5px 8px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .timeline-view-tabs {
+    min-height: 32px;
+    padding: 0 8px;
+  }
+
+  .view-tab {
+    padding: 0 10px;
+    font-size: 10px;
+  }
+
+  .timeline-layers {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 820px) {
+  .timeline-controls {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .timeline-layers {
+    min-width: 148px;
+  }
+}
+
+
+.tool-button.active {
+  background-color: var(--button-bg);
+  color: var(--button-text-color);
+  box-shadow: var(--button-active-shadow);
+}
+
+
+/* =====================================================================
+   1. TIMELINE PANEL CONTAINER (.timeline.resizable-content-panel)
+   This is the main wrapper for the entire timeline UI.
+   ===================================================================== */
+
+.timeline.resizable-content-panel {
+  position: absolute;
+  bottom: 0;
+  /* REMOVED: width, left, transform. These will be managed by `left` and `right` properties */
+  left: var(--hierarchy-live-width, var(--hierarchy-width-default));
+  /* Aligned with editor-scene's left */
+  right: var(--inspector-live-width, var(--inspector-width-default));
+  /* Default state: aligned with inspector's left */
+  /* Initial height, JS will override and manage */
+  resize: none;
+  min-height: 50px;
+  height: var(--timeline-height);
+  max-height: 750px;
+  background: var(--primary-dark);
+  border-top: 1px solid var(--border-color);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  /* Adjust transitions to reflect `left` and `right` changes instead of `width/transform` */
+  transition: height 0.14s ease-out, right 0.14s ease-out;
+}
+
+
+/* Timeline Resize Handle - no change */
+.resize-handle-timeline {
+  height: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--timeline-border);
+  cursor: row-resize;
+  user-select: none;
+  z-index: 3;
+  transition: background-color 0.2s ease;
+}
+
+.resize-handle-timeline:hover {
+  background-color: var(--timeline-border-accent);
+}
+
+/* Timeline Global States (Hidden/Expanded) */
+.timeline.hidden {
+  height: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.timeline.expanded {
+  /* When inspector is closed, timeline also expands to the right edge */
+  right: 0;
+  /* REMOVED: width, left, transform properties that define specific width values */
+  /* If you still need specific width/left/transform for OTHER reasons, re-evaluate.
+       But for expanding/contracting with inspector, `right: 0` is simpler. */
+}
+
+/* Path animation panel */
+#animateObjbyPath {
+  position: relative;
+  display: none;
+  flex: 0 0 auto;
+  min-height: 180px;
+  height: 220px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--timeline-surface-0);
+}
+
+#animateObjbyPath.path-open {
+  display: block;
+}
+
+.path-tools-sidebar-slot {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#animateObjbyPath.path-docked-sidebar {
+  display: block !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100% !important;
+  border-bottom: none;
+}
+
+
+/* =====================================================================
+   2. TIMELINE STATUS BAR (#stats-panel)
+   Displays performance metrics (FPS, Objects, Triangles).
+   ===================================================================== */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* pushes left & right apart */
+  width: 100%;
+}
+
+/* Push the stats container to the right */
+.status-bar-stats {
+  display: flex;
+  gap: 15px;
+  margin: 8px;
+}
+
+/* Ensure tabs align left */
+.timeline-view-tabs {
+  display: flex;
+}
+
+/* Fix for your existing rule */
+.status-bar>div {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.status-bar div {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+
+/* =====================================================================
+   3. TIMELINE CONTROLS BAR (.timeline-controls)
+   Contains playback buttons, time display, and zoom controls.
+   ===================================================================== */
+.timeline-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0px 0px;
+    background: #2b2b2b; /* Professional Dark Grey */
+    border-bottom: 1px solid #1a1a1a;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    color: #ccc;
+    user-select: none;
+}
+.playback-controls-group, .secend-part {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.timeline-sculpt-panel {
+  display: none;
+  flex-direction: column;
+  background: var(--timeline-surface-0);
+  border-top: 1px solid var(--timeline-border);
+  border-bottom: 1px solid var(--timeline-border);
+  color: var(--text-primary);
+}
+/* Select Inputs (Styling them to match) */
+select, .time-input {
+      background: #252525;
+    border: 1px solid #1a1a1a;
+    color: #bbb;
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    width: 70px; /* Fixed width prevents layout shift */
+    text-align: center;
+}
+body.timeline-sculpt-mode-active .timeline-sculpt-panel {
+  display: flex;
+}
+
+.sculpt-shelf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: var(--timeline-surface-1);
+  border-bottom: 1px solid var(--timeline-border);
+}
+
+.sculpt-shelf-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.sculpt-shelf-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(var(--accent-green-rgb), 0.15);
+  flex-shrink: 0;
+}
+
+.sculpt-shelf-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sculpt-shelf-brand-copy strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sculpt-shelf-brand-copy span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.sculpt-shelf-tabs {
+  display: inline-flex;
+  gap: 6px;
+  background: var(--timeline-surface-0);
+  border: 1px solid var(--timeline-border);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.sculpt-shelf-tab {
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.sculpt-shelf-tab.active {
+  background: var(--timeline-layer-item-selected-bg);
+  color: var(--text-primary);
+}
+
+.sculpt-shelf-actions,
+.sculpt-shelf-inline-actions {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sculpt-shelf-action {
+  border: 1px solid var(--timeline-border-strong);
+  background: var(--timeline-surface-2);
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sculpt-shelf-action.primary {
+  background: rgba(var(--accent-green-rgb), 0.16);
+  border-color: rgba(var(--accent-green-rgb), 0.45);
+  color: var(--accent-green);
+}
+
+.sculpt-shelf-panels {
+  display: flex;
+  flex-direction: column;
+}
+
+.sculpt-shelf-panel {
+  display: none;
+  padding: 12px 14px 14px;
+  gap: 12px;
+}
+
+.sculpt-shelf-panel.active {
+  display: flex;
+  flex-direction: column;
+}
+
+.sculpt-shelf-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.timeline-sculpt-brush-btn,
+.timeline-hair-brush-btn {
+  min-width: 86px;
+  border: 1px solid var(--timeline-border);
+  background: var(--timeline-surface-1);
+  color: var(--text-secondary);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.timeline-sculpt-brush-btn i,
+.timeline-hair-brush-btn i {
+  font-size: 13px;
+}
+
+.timeline-sculpt-brush-btn.active,
+.timeline-hair-brush-btn.active {
+  background: var(--timeline-layer-item-selected-bg);
+  border-color: rgba(var(--accent-green-rgb), 0.45);
+  color: var(--text-primary);
+  box-shadow: inset 0 0 0 1px rgba(var(--accent-green-rgb), 0.18);
+}
+
+.sculpt-shelf-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sculpt-shelf-card {
+  background: var(--timeline-surface-1);
+  border: 1px solid var(--timeline-border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 110px;
+}
+
+.sculpt-shelf-card.wide {
+  grid-column: span 1;
+}
+
+.sculpt-shelf-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sculpt-shelf-metric {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sculpt-shelf-note {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.sculpt-shelf-toggle-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.sculpt-shelf-slider-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+}
+
+.sculpt-shelf-slider-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.sculpt-shelf-slider-grid input[type="range"] {
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .sculpt-shelf-header {
+    flex-wrap: wrap;
+  }
+
+  .sculpt-shelf-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sculpt-shelf-card.wide {
+    grid-column: span 1;
+  }
+}
+
+/* --- 2D Brush Panel (High Density) --- */
+.timeline-2d-brush-panel {
+  background: var(--a2d-panel-bg);
+  color: var(--a2d-panel-text);
+  padding: 0;
+  border-top: 1px solid var(--a2d-panel-border);
+  display: none;
+  /* Controlled by JS or body class */
+  flex-direction: column;
+  gap: 0;
+  height: auto;
+  flex-basis: auto;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: max-height 0.3s ease, flex 0.3s ease;
+}
+
+body.animation-2d-mode-active .timeline-2d-brush-panel {
+  display: flex;
+  max-height: 100%;
+  flex-shrink: 0;
+  flex-basis: auto;
+}
+
+body.animation-2d-panel-collapsed .timeline-2d-brush-panel {
+  max-height: 42px;
+  overflow: hidden;
+}
+
+/* Collapsed state - header visible, content hidden, panel shrinks to header only */
+.timeline-2d-brush-panel.collapsed {
+  max-height: 50px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: 50px;
+}
+
+.timeline-2d-brush-panel.collapsed .brush-shelf-strip,
+.timeline-2d-brush-panel.collapsed .brush-panel-status,
+.timeline-2d-brush-panel.collapsed .brush-panel-content {
+  display: none !important;
+}
+
+.brush-shelf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px;
+  background: var(--a2d-panel-toolbar-bg);
+  border-bottom: 1px solid var(--a2d-panel-border);
+  flex-shrink: 0;
+  transition: border-color 0.2s ease;
+}
+
+.timeline-2d-brush-panel.collapsed .brush-shelf-header {
+  border-bottom: 1px solid var(--a2d-panel-border-strong);
+}
+
+.brush-panel-content {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.brush-panel-grid {
+  min-height: 0;
+}
+
+/* Brush Strip are fixed by being outside the scrollable grid */
+.brush-shelf-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.brush-shelf-tab {
+  background: var(--timeline-surface-2);
+  border: 1px solid var(--timeline-border-strong);
+  color: var(--text-secondary);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.brush-shelf-tab.active {
+  background: var(--timeline-accent-soft);
+  color: var(--text-primary);
+  border-color: var(--timeline-border-accent);
+}
+
+.brush-shelf-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.brush-action-btn {
+  width: 25px;
+  height: 25px;
+  background: var(--timeline-surface-2);
+  border: 1px solid var(--timeline-border-strong);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.brush-action-btn:hover {
+  background: var(--timeline-surface-hover);
+  color: var(--text-primary);
+}
+
+.brush-action-btn.active {
+  background: var(--timeline-layer-item-selected-bg);
+  color: var(--text-primary);
+  border-color: var(--timeline-border-accent);
+}
+
+.brush-panel-status {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--timeline-row-even);
+  flex-shrink: 0;
+  background: var(--timeline-surface-1);
+}
+
+.brush-shelf-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 10px;
+  min-height: 48px;
+  height: 50px;
+  max-height: 60px;
+  background: var(--a2d-panel-strip-bg);
+  border-top: 1px solid var(--a2d-panel-border-light);
+  border-bottom: 1px solid var(--a2d-panel-border-light);
+  align-items: center;
+}
+
+.brush-shelf-item {
+  width: 45px;
+  height: 45px;
+  border-radius: 6px;
+  border: 1px solid var(--a2d-panel-border-strong);
+  background: var(--a2d-panel-card-bg);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.brush-shelf-item:hover {
+  border-color: color-mix(in srgb, var(--a2d-panel-accent) 44%, var(--a2d-panel-border) 56%);
+  background: var(--a2d-panel-card-bg-hover);
+}
+
+.brush-shelf-item.active {
+  border-color: var(--a2d-panel-accent);
+  box-shadow: 0 0 0 1px rgba(var(--accent-orange-rgb), 0.35), 0 0 10px rgba(var(--accent-orange-rgb), 0.22);
+  background: var(--a2d-panel-card-bg-active);
+}
+
+.brush-fallback {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+}
+
+.brush-shelf-item.active .brush-fallback {
+  color: var(--text-primary);
+}
+
+.brush-thumb-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.brush-shelf-item.has-thumb .brush-fallback {
+  opacity: 0;
+}
+
+.brush-shelf-item.thumb-missing .brush-fallback {
+  opacity: 1;
+}
+
+
+.brush-panel-content {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  gap: 12px;
+}
+
+.brush-panel-sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--timeline-border);
+  display: flex;
+  flex-direction: column;
+  background: var(--timeline-surface-1);
+  border-radius: 4px 0 0 4px;
+}
+
+.brush-panel-sidebar .brush-section {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.brush-panel-sidebar .section-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  overflow: hidden;
+}
+
+.layer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--timeline-surface-0);
+  flex-grow: 1;
+  overflow-y: auto;
+  border: 1px solid var(--timeline-border);
+  border-radius: 4px;
+}
+
+.layer-stack-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  background: var(--timeline-surface-2);
+  border-bottom: 1px solid var(--timeline-row-even);
+  cursor: pointer;
+  height: 38px;
+  user-select: none;
+  position: relative;
+}
+
+.layer-stack-item:hover {
+  background: var(--timeline-surface-hover);
+}
+
+.layer-stack-item.active {
+  background: var(--timeline-layer-item-selected-bg);
+  color: var(--text-primary);
+}
+
+.layer-stack-item.active .layer-meta {
+  color: color-mix(in srgb, var(--text-primary) 80%, var(--accent-blue) 20%);
+}
+
+.layer-previews {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.layer-vis-btn,
+.layer-lock-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+
+.layer-stack-item.active .layer-vis-btn,
+.layer-stack-item.active .layer-lock-btn {
+  color: var(--text-primary);
+}
+
+.layer-vis-btn:hover,
+.layer-lock-btn:hover {
+  color: var(--text-primary);
+}
+
+.layer-thumb {
+  width: 32px;
+  height: 24px;
+  background: var(--primary-dark);
+  border: 1px solid var(--timeline-border-strong);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.layer-thumb-checker {
+  position: absolute;
+  inset: 0;
+  background-image: conic-gradient(var(--timeline-surface-3) 0.25turn, var(--timeline-surface-1) 0.25turn 0.5turn, var(--timeline-surface-3) 0.5turn 0.75turn, var(--timeline-surface-1) 0.75turn);
+  background-size: 8px 8px;
+  opacity: 0.5;
+}
+
+.layer-thumb-canvas {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.layer-info {
+  flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.layer-meta {
+  font-size: 8px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.layer-name-row {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.layer-name-text {
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.layer-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: transparent;
+}
+
+.layer-stack-item.active .layer-indicator {
+  background: var(--accent-blue);
+}
+
+.layer-btns {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.layer-btns button {
+  flex: 1;
+  background: var(--timeline-surface-2);
+  border: 1px solid var(--timeline-border-strong);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  padding: 4px 0;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.layer-btns button:hover {
+  background: var(--timeline-surface-hover);
+  color: var(--text-primary);
+}
+
+.texture-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.texture-item {
+  background: var(--timeline-surface-2);
+  border: 1px solid var(--timeline-border-strong);
+  color: var(--text-muted);
+  padding: 6px 2px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.texture-item:hover {
+  background: var(--timeline-surface-hover);
+  color: var(--text-primary);
+}
+
+.texture-item.active {
+  background: var(--timeline-layer-item-selected-bg);
+  color: var(--text-primary);
+  border-color: var(--timeline-border-accent);
+}
+
+.brush-panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  /* Space for scrollbar */
+}
+
+.brush-panel-grid::-webkit-scrollbar {
+  width: 5px;
+}
+
+.brush-panel-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.brush-panel-grid::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+.brush-panel-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--timeline-border-strong);
+}
+
+.brush-panel-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.brush-section {
+  border: 1px solid var(--timeline-border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.section-header {
+  background: var(--timeline-surface-2);
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.section-header span {
+  flex-grow: 1;
+}
+
+.section-content {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.section-content-two-col {
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Prop Rows */
+.prop-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.prop-row label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.prop-row input[type=range] {
+  flex-grow: 1;
+  height: 3px;
+  background: var(--border-color);
+  border-radius: 2px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.prop-row input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.prop-val {
+  min-width: 40px;
+  background: var(--timeline-surface-0);
+  border: 1px solid var(--timeline-border);
+  color: var(--accent-blue);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.prop-row select {
+  background: var(--timeline-surface-2);
+  border: 1px solid var(--timeline-border-strong);
+  color: var(--timeline-text-soft);
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  flex-grow: 1;
+}
+
+.prop-row-chk {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.prop-row-chk label {
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.prop-label-sm {
+  font-size: 9px;
+  color: var(--timeline-text-faint);
+  text-transform: uppercase;
+  margin-top: 4px;
+  font-weight: 800;
+}
+
+/* Layers */
+.layer-stack {
+  height: 60px;
+  background: var(--timeline-surface-0);
+  border: 1px solid var(--timeline-border);
+  border-radius: 3px;
+  overflow-y: auto;
+}
+
+.layer-item {
+  padding: 4px 8px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--timeline-row-even);
+}
+
+.layer-item.active {
+  background: var(--timeline-surface-2);
+  color: var(--timeline-text-soft);
+}
+
+.layer-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 50%;
+  margin-left: auto;
+}
+
+.layer-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.layer-btns button {
+  background: transparent;
+  border: none;
+  color: var(--timeline-text-faint);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.layer-btns button:hover {
+  color: var(--timeline-text-soft);
+}
+
+/* Frame Ops */
+.frame-btns-row {
+  display: flex;
+  gap: 4px;
+}
+
+.brush-op-btn {
+  flex-grow: 1;
+  background: var(--timeline-surface-2);
+  border: 1px solid var(--timeline-border-strong);
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.brush-op-btn:hover {
+  background: var(--timeline-surface-hover);
+  color: var(--text-primary);
+}
+
+.brush-op-btn.danger {
+  border-color: var(--timeline-danger-border);
+  background: var(--timeline-danger-surface);
+  color: color-mix(in srgb, var(--accent-danger) 68%, white 32%);
+}
+
+/* OnionViz */
+.onion-viz-bar {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  margin-bottom: 4px;
+}
+
+.onion-viz-bar div {
+  flex-grow: 1;
+  border-radius: 1px;
+}
+
+.onion-viz-bar div:nth-child(1) {
+  background: var(--accent-blue);
+}
+
+.onion-viz-bar div:nth-child(2) {
+  background: var(--accent-success);
+}
+
+.onion-viz-bar div:nth-child(3) {
+  background: var(--border-color);
+}
+
+.prop-mini-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.prop-mini-group label {
+  font-size: 9px;
+  color: var(--timeline-text-faint);
+}
+
+.prop-row-sm {
+  display: flex;
+  gap: 8px;
+}
+
+.chk-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.decor-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 0;
+  font-size: 32px;
+  color: rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+.brush-op-btn.danger {
+  border-color: var(--timeline-danger-border);
+  color: color-mix(in srgb, var(--accent-danger) 32%, white 68%);
+}
+
+/* Group for main playback buttons to have a tighter internal gap */
+.playback-controls-group {
+  display: flex;
+  gap: 5px;
+  /* Tighter gap for playback buttons */
+  align-items: center;
+  /* The inline style `border-color: red;` will override here.
+       If you want it controlled by CSS, remove the inline style from HTML. */
+}
+
+/* Optional visual separator between functional groups within timeline-controls */
+.controls-separator {
+    width: 1px;
+    height: 20px;
+    background: #444;
+    margin: 0 10px;
+}
+
+/* Section for zoom, interpolation, and loop controls (pushed to the right) */
+.secend-part {
+  margin-left: auto;
+  /* pushes it to the far right */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* adds spacing between elements inside */
+  color: var(--status-bar-text);
+}
+
+/* Icons within timeline tool buttons */
+.timeline-controls .tool-button .fas {
+  font-size: 12px;
+}
+
+/* --- Inactive Button Colors --- */
+/* Individual button color overrides for icon buttons (Inactive state) */
+/* --- Base Button Styles --- */
+.timeline-controls .tool-button {
+  background: #3d3d3d;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+}
+
+/* Base state colors */
+.timeline-controls #stop.tool-button { color: var(--accent-red); }
+.timeline-controls #play.tool-button { color: var(--accent-green); }
+.timeline-controls #pause.tool-button { color: var(--accent-orange); }
+.timeline-controls #add-keyframe.tool-button { color: var(--accent-yellow); }
+.timeline-controls #delete-keyframe.tool-button { color: var(--text-secondary); }
+
+.timeline-controls #step-backward.tool-button,
+.timeline-controls #step-forward.tool-button,
+.timeline-controls #step-backward-sec.tool-button,
+.timeline-controls #step-forward-sec.tool-button {
+  color: var(--text-secondary);
+}
+
+/* Hover effect */
+.timeline-controls .tool-button:hover:not(.active) {
+  background: #4a4a4a;
+  border-color: #555;
+}
+
+/* --- Active State Logic --- */
+/* Unified active state base for all buttons */
+.timeline-controls .tool-button.active {
+  border: none;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  transform: scale(0.98); /* Subtle press effect */
+}
+
+/* Play/Forward Active */
+.timeline-controls #play.tool-button.active,
+.timeline-controls #step-forward.tool-button.active,
+.timeline-controls #step-forward-sec.tool-button.active {
+  background-color: var(--accent-green);
+  color: var(--text-primary);
+  box-shadow: 0 0 8px rgba(var(--accent-green-rgb), 0.6);
+}
+
+/* Pause Active */
+.timeline-controls #pause.tool-button.active {
+  background-color: var(--accent-orange);
+  color: var(--text-primary);
+  box-shadow: 0 0 8px rgba(var(--accent-orange-rgb), 0.6);
+}
+
+/* Stop/Backward Active */
+.timeline-controls #stop.tool-button.active,
+.timeline-controls #step-backward.tool-button.active,
+.timeline-controls #step-backward-sec.tool-button.active {
+  background-color: var(--accent-red);
+  color: var(--text-primary);
+  box-shadow: 0 0 8px rgba(var(--accent-red-rgb), 0.6);
+}
+
+/* Keyframe Active */
+.timeline-controls #add-keyframe.tool-button.active {
+  background-color: var(--accent-yellow);
+  color: var(--primary-dark);
+  box-shadow: 0 0 8px rgba(var(--accent-yellow-rgb), 0.6);
+}
+
+/* --- Micro-adjustments for Icons --- */
+.timeline-controls .tool-button i {
+  font-size: 13px;
+  pointer-events: none; /* Ensures click registers on button, not icon */
+}
+
+/* Time Display */
+#time-display {
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+  /* Keep original size */
+  font-weight: 500;
+  /* Slightly bolder for readability */
+  color: var(--text-primary);
+
+  padding: 4px 10px;
+  /* Small tweak for better breathing room */
+  min-width: 85px;
+  /* Keeps width stable when numbers change */
+  text-align: center;
+  flex-shrink: 0;
+
+  background: var(--timeline-surface-2);
+  /* Subtle depth */
+  border: 1px solid var(--border-color);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.4);
+  /* Adds depth */
+
+  transition: all 0.2s ease-in-out;
+}
+
+#time-display:hover {
+  background: var(--timeline-surface-hover);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+
+/* Zoom Controls (+/- Buttons) */
+.zoom-controls {
+  display: flex;
+  gap: 6px;
+  /* small tweak for better spacing */
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.zoom-controls .tool-button {
+  background: var(--accent-blue);
+  /* consistent accent */
+  color: var(--text-primary);
+  /* icon color */
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  /* smoother look */
+  width: 28px;
+  /* give icons breathing room */
+  height: 28px;
+  display: flex;
+  /* center icon perfectly */
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  /* icon size */
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  /* smooth hover */
+}
+
+.zoom-controls .tool-button:hover {
+  background: var(--accent-green);
+  /* highlight on hover */
+  border-color: var(--accent-green);
+  transform: scale(1.1);
+  /* subtle zoom-in effect */
+  color: var(--text-primary);
+  /* make icon pop */
+}
+
+.zoom-controls .tool-button:active {
+  transform: scale(0.95);
+  /* tactile feedback */
+}
+
+
+/* =====================================================================
+   4. TIMELINE MAIN BODY (.timeline-body)
+   This is the flexible area containing the layers list and the track.
+   ===================================================================== */
+.timeline-body {
+  display: flex;
+  flex-grow: 1;
+  /* Occupy remaining vertical space */
+  overflow: hidden;
+  /* Crucial to contain scrolling areas */
+  position: relative;
+  background: var(--timeline-bg-track-area);
+  min-height: 0;
+}
+
+
+/* =====================================================================
+   5. TIMELINE LAYERS PANEL (.timeline-layers)
+   The left sidebar listing animated objects.
+   ===================================================================== */
+/* Sidebar container for layers */
+.timeline-layers {
+  width: 20%;
+  /* Original measurement */
+  background: var(--timeline-surface-1);
+  border-right: 1px solid var(--timeline-border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  user-select: none;
+  box-sizing: border-box;
+  padding-top: 0;
+  min-height: 0;
+  overflow-x: hidden;
+}
+
+/* Layers list wrapper */
+.layers-list {
+  padding-bottom: 5px;
+  /* Bottom spacing */
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* Each object/layer item */
+.layer-item {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  height: 30px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(var(--text-primary-rgb), 0.05);
+  border-left: 1px solid var(--text-muted);
+  transition: background-color 0.15s ease, font-weight 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  line-height: 30px;
+}
+
+.tree-node {
+  flex-wrap: wrap;
+  align-items: center;
+  height: auto;
+  min-height: 30px;
+  line-height: 30px;
+}
+
+.tree-node>.layer-children {
+  flex: 0 0 100%;
+  width: 100%;
+  padding-left: 0;
+  margin-left: 18px;
+}
+
+.tree-node>.expand-icon,
+.tree-node>.type-icon,
+.tree-node>.object-name,
+.tree-node>.group-name {
+  flex-shrink: 0;
+}
+
+.tree-node>.object-name,
+.tree-node>.group-name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.layer-item:hover {
+  background-color: var(--timeline-layer-item-hover-bg);
+}
+
+
+/* Selected object/layer */
+.layer-item.selected {
+  background-color: color-mix(in srgb, var(--accent-success) 24%, var(--timeline-surface-1) 76%);
+  border-left: 3px solid var(--accent-success);
+  color: var(--button-text-color);
+  font-weight: 600;
+}
+
+/* Object name span */
+.object-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Expand/collapse icon */
+.expand-icon {
+  margin-right: 6px;
+  font-size: 12px;
+  width: 12px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.type-icon {
+  margin-right: 8px;
+  font-size: 10px;
+  color: var(--timeline-text-faint);
+}
+
+
+/* Child layers container (hidden by default) */
+.layer-children {
+  padding-left: 18px;
+  /* Indentation for hierarchy */
+  display: none;
+  /* JS toggles display */
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Optional: nested items style */
+.layer-children .layer-item {
+  font-weight: normal;
+  font-size: 12.5px;
+}
+
+
+
+
+/* =====================================================================
+   6. TIMELINE TRACK AREA (.timeline-track)
+   The main right area containing the ruler and keyframe content.
+   ===================================================================== */
+.timeline-track {
+  flex-grow: 1;
+  /* Occupy remaining horizontal space within .timeline-body */
+  width: 80%;
+  /* RESPECTED ORIGINAL MEASUREMENT (though flex-grow handles it) */
+  height: 100%;
+  /* RESPECTED ORIGINAL MEASUREMENT */
+  position: relative;
+  overflow-x: hidden;
+  /* Hide overflow, JS handles `translateX` for scrolling */
+  background: var(--timeline-bg-track-area);
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  /* Stack ruler and content vertically */
+}
+
+.timeline-track:active {
+  cursor: grabbing;
+}
+
+
+/* =====================================================================
+   7. TIMELINE RULER (.timeline-scale)
+   The time-scale displayed at the top of the track area.
+===================================================================== */
+.timeline-scale {
+    position: relative;
+    height: 24px;
+    background: #252525;
+    border-bottom: 1px solid #1a1a1a;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* Base Marker */
+.timeline-scale-marker {
+    position: absolute;
+    bottom: 0;
+    background: #414040;
+    pointer-events: none;
+}
+
+/* Tier 1: Major Second Markers (The "Tall" lines) */
+.timeline-scale-marker.major {
+    height: 12px;
+    width: 1px;
+    background: #5d5d5d;
+}
+
+/* Tier 2: Half-second/Frame Markers (The "Short" lines) */
+.timeline-scale-marker.minor {
+    height: 6px;
+    width: 1px;
+    background: #444;
+}
+
+.timeline-scale-marker.sub-minor {
+    height: 3px;
+    width: 1px;
+    background: #333;
+}
+
+/* Time Label Styling */
+.timeline-scale-label {
+    position: absolute;
+    top: -16px;
+    left: 4px;
+    font-family: 'Courier New', monospace; /* Monospace is essential for professional timecode */
+    font-size: 10px;
+    color: #888;
+    white-space: nowrap;
+}
+
+
+.context-menu-timeline {
+  position: absolute;
+  background: var(--timeline-surface-1);
+  border: 1px solid var(--timeline-border-strong);
+  border-radius: 4px;
+  padding: 4px 0;
+  list-style: none;
+  margin: 0;
+  display: none;
+  z-index: 2000;
+  width: 130px;
+  min-width: 130px;
+  font-family: sans-serif;
+}
+
+.context-menu-timeline li {
+  padding: 3px 6px;
+  cursor: pointer;
+  color: var(--timeline-text-soft);
+  font-size: 13px;
+}
+
+.context-menu-timeline li:hover {
+  background: var(--timeline-surface-hover);
+  color: var(--text-primary);
+}
+
+.context-menu-timeline .separator {
+  height: 1px;
+  background: var(--timeline-border);
+  margin: 4px 0;
+  pointer-events: none;
+}
+
+/* =====================================================================
+   8. TIMELINE CONTENT (.timeline-content)
+   The main area where the playhead and keyframe tracks reside.
+   ===================================================================== */
+#timeline-content {
+  /* Targeting by ID as per your HTML */
+  position: relative;
+  flex-grow: 1;
+  /* Occupy remaining height within .timeline-track */
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--timeline-bg-track-area);
+  /* width: 100%; height: 100%; -- Removed, flex-grow handles size, JS sets virtual width */
+  transition: transform 0.1s ease-out;
+  /* Only transform for pan, JS sets width */
+  transform-origin: left;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Anchor button */
+#statsToggle {
+  position: relative;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* keep above other UI */
+}
+
+.submenu-content,
+.animation-library {
+  display: none;
+  position: absolute;
+  top: 100%;
+  z-index: 999;
+  left: 0;
+  background: var(--timeline-overlay-bg);
+  color: var(--text-primary);
+  min-width: 220px;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.submenu-content:not(.networking-insights-panel) div,
+.animation-library div {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.submenu-content:not(.networking-insights-panel) div:hover,
+.animation-library div:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.submenu-content:not(.networking-insights-panel) div:last-child,
+.animation-library div:last-child {
+  border-bottom: none;
+}
+
+/* Arrow indicator for dropdown */
+.submenu-content:not(.networking-insights-panel)::before,
+.animation-library::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 20px;
+  width: 12px;
+  height: 12px;
+  background: rgba(20, 20, 20, 0.98);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+}
+
+/* Main Container */
+#statsMenu {
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  width: auto;
+  height: auto;
+  min-height: 360px;
+  min-width: 720px;
+  padding: 10px !important;
+  z-index: 10050;
+  left: var(--hierarchy-live-width, var(--hierarchy-width-default));
+  right: var(--inspector-live-width);
+  top: calc(var(--total-toolbar-height) - 6px);
+  bottom: var(--timeline-height);
+  border-radius: 0;
+  border: 1px solid var(--timeline-border) !important;
+  background: var(--timeline-surface-0) !important;
+  box-shadow: none;
+  overflow: hidden;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  color: var(--text-primary);
+}
+
+#statsMenu.open {
+  display: flex;
+}
+
+#statsMenu.maximized {
+  width: auto;
+  height: auto;
+  top: calc(var(--total-toolbar-height) + 8px) !important;
+  left: var(--hierarchy-live-width, var(--hierarchy-width-default)) !important;
+  right: var(--inspector-live-width) !important;
+  bottom: var(--timeline-height) !important;
+  max-width: none;
+}
+
+#statsToggleCaret {
+  font-size: 12px;
+  color: var(--timeline-text-soft);
+}
+
+.networking-insights-panel .insights-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--timeline-surface-1);
+  border: 1px solid var(--timeline-border);
+  padding: 7px 10px;
+  border-radius: 0;
+}
+
+.networking-insights-panel .insights-title-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.networking-insights-panel .insights-title-wrap i {
+  color: var(--timeline-text-soft);
+}
+
+.networking-insights-panel .insights-header-actions {
+  display: inline-flex;
+  gap: 7px;
+}
+
+.networking-insights-panel .insights-chip {
+  border: 1px solid var(--timeline-border-strong);
+  background: var(--timeline-surface-2);
+  color: var(--timeline-text-soft);
+  border-radius: 0;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.networking-insights-panel .insights-chip.active {
+  background: var(--timeline-accent-soft);
+  border-color: var(--timeline-border-accent);
+  color: var(--text-primary);
+}
+
+.networking-insights-panel .insights-toolbar {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr .8fr;
+  gap: 8px;
+}
+
+.networking-insights-panel .insights-guide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  border: 1px solid var(--timeline-border);
+  background: var(--timeline-surface-1);
+  padding: 8px;
+}
+
+.networking-insights-panel .insights-guide.hidden {
+  display: none;
+}
+
+.networking-insights-panel .insights-guide-item {
+  border: 1px solid var(--timeline-border-strong);
+  background: var(--timeline-surface-2);
+  color: var(--timeline-text-soft);
+  padding: 6px 7px;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.networking-insights-panel .insights-select {
+  height: 32px;
+  border: 1px solid var(--timeline-border-strong);
+  background: var(--timeline-surface-1);
+  color: var(--timeline-text-soft);
+  border-radius: 0;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.networking-insights-panel .insights-select.compact {
+  width: 180px;
+}
+
+.networking-insights-panel .insights-main {
+  display: grid;
+  grid-template-columns: 2.1fr 1.1fr;
+  gap: 8px;
+  min-height: 0;
+  flex: 1;
+}
+
+.networking-insights-panel .insights-left,
+.networking-insights-panel .insights-right {
+  min-height: 0;
+  border: 1px solid var(--timeline-border);
+  background: var(--timeline-surface-1);
+  border-radius: 0;
+}
+
+.networking-insights-panel .insights-left {
+  display: grid;
+  grid-template-rows: auto 1.1fr auto 0.9fr auto 0.9fr;
+}
+
+.networking-insights-panel .insights-panel-title {
+  font-size: 12px;
+  color: var(--timeline-text-soft);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--timeline-border);
+  background: var(--timeline-surface-2);
+}
+
+.networking-insights-panel .insights-summary {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  color: var(--timeline-text-soft);
+  background: var(--timeline-surface-0);
+  border-bottom: 1px solid var(--timeline-border);
+  padding: 6px 8px;
+}
+
+#insightsBandwidthCanvas {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  background: var(--timeline-bg-track-area);
+  display: block;
+}
+
+.networking-insights-panel .insights-event-lane {
+  min-height: 140px;
+  background: var(--timeline-surface-2);
+  overflow: auto;
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  align-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.networking-insights-panel .insight-event-item {
+  border: 1px solid var(--timeline-border-strong);
+  background: var(--timeline-surface-3);
+  color: var(--timeline-text-soft);
+  border-radius: 0;
+  padding: 3px 7px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.networking-insights-panel .insight-event-item.dir-incoming {
+  border-color: color-mix(in srgb, var(--accent-success) 48%, var(--timeline-border) 52%);
+  background: var(--timeline-success-surface);
+}
+
+.networking-insights-panel .insight-event-item.dir-outgoing {
+  border-color: color-mix(in srgb, var(--accent-warning) 42%, var(--timeline-border) 58%);
+  background: var(--timeline-warning-surface);
+}
+
+.networking-insights-panel .insight-event-item.active {
+  border-color: var(--timeline-border-accent);
+  color: var(--text-primary);
+}
+
+.networking-insights-panel .insights-breakdown {
+  min-height: 120px;
+  border: 1px solid var(--timeline-border);
+  background: var(--timeline-surface-0);
+  color: var(--timeline-text-soft);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  padding: 8px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.networking-insights-panel .insights-right {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.networking-insights-panel .insights-filter-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 1px solid var(--timeline-border);
+  background: var(--timeline-surface-2);
+}
+
+.networking-insights-panel .insights-search {
+  flex: 1;
+  height: 32px;
+  border: 1px solid var(--timeline-border-strong);
+  background: var(--timeline-surface-0);
+  color: var(--timeline-text-soft);
+  border-radius: 0;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.networking-insights-panel .insights-table-wrap {
+  min-height: 0;
+  overflow: auto;
+}
+
+.networking-insights-panel .insights-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.networking-insights-panel .insights-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  background: var(--timeline-surface-2);
+  color: var(--timeline-text-soft);
+  border-bottom: 1px solid var(--timeline-border);
+  padding: 7px 8px;
+}
+
+.networking-insights-panel .insights-table thead th:not(:first-child),
+.networking-insights-panel .insights-table tbody td:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.networking-insights-panel .insights-table tbody td {
+  border-bottom: 1px solid var(--timeline-border);
+  padding: 5px 8px;
+}
+
+.networking-insights-panel .insights-table tbody tr:nth-child(odd) {
+  background: var(--timeline-row-odd);
+}
+
+.networking-insights-panel .insights-table tbody tr:nth-child(even) {
+  background: var(--timeline-row-even);
+}
+
+.networking-insights-panel .insights-table tbody tr.insights-row-all {
+  background: color-mix(in srgb, var(--timeline-layer-item-selected-bg) 22%, var(--timeline-surface-1) 78%) !important;
+  font-weight: 600;
+}
+
+.networking-insights-panel .insights-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.networking-insights-panel .insights-kpi {
+  border: 1px solid var(--timeline-border);
+  background: var(--timeline-surface-1);
+  color: var(--timeline-text-soft);
+  padding: 7px 9px;
+  font-size: 12px;
+  min-height: 60px;
+  white-space: pre-line;
+  overflow: auto;
+}
+
+@media (max-width: 1100px) {
+  #statsMenu {
+    min-width: 0;
+    left: 0;
+    right: 0;
+    top: calc(var(--total-toolbar-height) + 6px);
+    bottom: var(--timeline-height);
+  }
+
+  .networking-insights-panel .insights-main {
+    grid-template-columns: 1fr;
+  }
+
+  .networking-insights-panel .insights-guide {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Specific styling for your existing IDs */
+#nanite-stats,
+#status {
+  font-size: 12px;
+  letter-spacing: .2px;
+}
+
+/* Value highlighting for status */
+#status {
+  color: color-mix(in srgb, var(--accent-success) 70%, white 30%);
+}
+
+/* Integrated Sentinel HUD */
+#sentinel-hud-integrated {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Heading for the scalability engine */
+#sentinel-hud-integrated div:first-child {
+  font-size: 9px;
+  color: var(--timeline-text-faint) !important;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+/* Individual Data Rows (FPS, Tris, etc) */
+.sentinel-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Consolas', 'Monospace', sans-serif;
+  font-size: 11px;
+}
+
+.sentinel-label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.sentinel-value {
+  color: var(--accent-info);
+  font-weight: bold;
+}
+
+/* The "Culprit" section at the bottom */
+.sentinel-bottleneck {
+  background: rgba(var(--accent-warning-rgb), 0.08);
+  border: 1px solid rgba(var(--accent-warning-rgb), 0.24);
+  padding: 6px;
+  margin-top: 10px;
+  border-radius: 2px;
+}
+
+.sentinel-bottleneck span:first-child {
+  font-size: 9px;
+  color: var(--accent-warning);
+  display: block;
+}
+
+.animation-bar {
+  position: absolute;
+  top: 4px;
+  height: 14px;
+  background: var(--timeline-layer-item-selected-bg);
+  border-radius: 3px;
+  opacity: 0.8;
+}
+
+/* =====================================================================
+   9. PLAYHEAD (#playhead)
+   The vertical line indicating current time.
+===================================================================== */
+#playhead {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 2px;
+  background: #f2f2f2;
+  z-index: 100;
+  transform: translateX(-50%);
+  cursor: ew-resize;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .45), 0 0 10px rgba(255, 255, 255, .22);
+}
+
+/* ===== HEAD (circle) ===== */
+#playhead::before {
+  content: '';
+  position: absolute;
+
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 16px;
+  border-radius: 2px 2px 4px 4px;
+  background: #ff3030;
+  border: 1px solid rgba(255, 255, 255, .35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+}
+
+/* ===== OPTIONAL SMALL POINTER ===== */
+#playhead::after {
+  content: '';
+  position: absolute;
+
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #ff3030;
+  background: transparent;
+}
+
+.timeline-track-row.bone-track {
+  background-color: rgba(var(--text-primary-rgb), 0.05);
+  /* A distinct color for bone tracks */
+  margin-left: 20px;
+  /* Indent bone tracks */
+  border-left: 2px solid var(--timeline-border-accent);
+}
+
+.keyframe.bone-keyframe {
+  background-color: var(--timeline-selected);
+  /* A different color for bone keyframes */
+  transform: translateY(-50%) rotate(45deg) scale(0.8);
+  border-radius: 2px;
+}
+
+/* =====================================================================
+   10. KEYFRAMES CONTAINER (#keyframes-container)
+   Holds all the individual track rows and keyframes.
+   ===================================================================== */
+#keyframes-container {
+  /* Targeting by ID as per your HTML */
+  position: relative;
+  top: auto;
+  left: auto;
+  height: max-content;
+  min-height: 100%;
+  width: 100%;
+  overflow: visible;
+  background: transparent;
+  /* Allow timeline-bg-track-area to show through */
+  pointer-events: none;
+  /* Allows interaction to pass through to track background for panning */
+  transform-origin: left top;
+}
+
+#keyframes-container.zoom-preview-active {
+  will-change: transform;
+}
+
+/* =====================================================================
+   11. TRACK ROWS (.timeline-track-row)
+   Individual horizontal lanes for each object's keyframes.
+   ===================================================================== */
+.timeline-track-row {
+  position: relative;
+  height: 30px;
+  min-height: 30px;
+  border-bottom: 1px solid var(--timeline-border);
+  /* Background color is now set directly via inline style in JavaScript */
+}
+
+.interpolation-line {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.timeline-track-row.group-track {
+  background-color: color-mix(in srgb, var(--timeline-row-even) 78%, var(--secondary-dark) 22%);
+}
+
+/* Active channel track highlighting */
+.timeline-track-row.active {
+  background-color: var(--timeline-layer-item-hover-bg);
+}
+
+/* Make summary keyframes on the main object track distinct */
+.keyframe.summary-keyframe {
+  background-color: color-mix(in srgb, var(--accent-warning) 78%, white 22%);
+  width: 4px;
+  border-radius: 1px;
+  transform: translateX(-2px);
+  /* Center the tick */
+  pointer-events: none;
+  /* Summary keyframes are not interactive */
+}
+
+/* svg overlay */
+#keyframe-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  /* allow clicks through to keyframes */
+  overflow: visible;
+}
+
+/* path styles */
+.keyframe-path {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.95;
+}
+
+
+.timeline-track-row:nth-child(odd) {
+  background-color: var(--timeline-row-odd);
+}
+
+.timeline-track-row:nth-child(even) {
+  background-color: var(--timeline-row-even);
+}
+
+/* =====================================================================
+   12. INDIVIDUAL KEYFRAME (.keyframe)
+   The visual markers representing keyframe data points.
+   ===================================================================== */
+.keyframe {
+  position: absolute;
+  top: 50%;
+  background-color: var(--timeline-keyframe);
+  border: 1px solid var(--timeline-keyframe-border);
+  border-radius: 2px;
+  width: 10px;
+  height: 10px;
+  transition: transform 0.1s;
+  transform: translate(-50%, -50%) rotate(45deg);
+  pointer-events: auto;
+  z-index: 3;
+}
+
+.keyframe.selected {
+  background-color: var(--timeline-selected);
+  border-color: var(--text-primary);
+  transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+}
+
+.keyframe:hover {
+  background-color: var(--timeline-keyframe-hover-bg);
+  /* Original color was #ffdd33 */
+  border-color: var(--accent-yellow);
+  transform: translate(-50%, -50%) rotate(45deg) scale(1.1);
+}
+
+.keyframe.selected:hover {
+  background-color: color-mix(in srgb, var(--timeline-keyframe-selected-bg), white 15%);
+  /* Lighter tint on hover if already selected */
+  border-color: color-mix(in srgb, var(--timeline-keyframe-selected-border), white 15%);
+  /* Keep same transform, or slightly more subtle, so it doesn't jump too much from selected state */
+}
+
+/* Track row for the selected object (good as is) *
+.timeline-track-row.selected-object-track {
+    /*background-color: color-mix(in srgb, var(--timeline-layer-item-selected-bg), black 50%); *
+    background-color: var(--selected-track-random-color);
+}*/
+
+.timeline-track-row.selected-object-track {
+  background-color: color-mix(in srgb, var(--accent-success) 18%, var(--timeline-row-even) 82%) !important;
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--accent-success) 80%, white 20%);
+  outline: 1px solid color-mix(in srgb, var(--accent-success) 42%, transparent 58%);
+  outline-offset: -1px;
+}
+
+.timeline-track-line {
+  position: absolute;
+  height: 2px;
+  /* Thickness of the line */
+  top: calc(50% - 1px);
+  /* Centers the line vertically within the track row */
+  z-index: 1;
+  /* Ensures lines are behind keyframes */
+  pointer-events: none;
+  /* Prevents lines from blocking keyframe clicks */
+  background-color: transparent;
+  /* Default transparent */
+  transition: all 0.1s ease-out;
+  /* Smooth transition for line style changes */
+}
+
+/* Specific styles for different interpolation types */
+.line-linear {
+  background-color: var(--color-green);
+  /* Example: solid green line for linear */
+}
+
+.line-bezier {
+  /* For true bezier curves, you'd need SVG or Canvas.
+       Here, we simulate with a slightly thicker/dashed line, or a custom pattern */
+  border-top: 2px solid var(--color-orange);
+  /* Example: orange solid line for bezier */
+  height: 0px;
+  /* Make border the line itself */
+  /* Could also use background: linear-gradient() or radial-gradient() for a visual curve hint */
+}
+
+.line-constant {
+  border-top: 2px dashed var(--color-red);
+  /* Example: dashed red line for constant */
+  height: 0px;
+}
+
+/* Interpolation Selector */
+.interpolation-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.interpolation-selector label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.interpolation-selector select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: var(--tertiary-dark);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  padding: 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  padding-right: 24px;
+  /* Space for custom arrow */
+  background-image: url("data:image/svg+xml,%3Csvg fill='white' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 12px;
+}
+
+.interpolation-selector select:hover {
+  border-color: var(--accent-blue);
+}
+
+.interpolation-selector select:focus {
+  outline: none;
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 2px rgba(63, 169, 245, 0.3);
+}
+
+/* Playback Range Controls */
+.playback-range-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* spacing between elements */
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Label styling */
+.playback-range-controls label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #888;
+}
+
+.playback-range-controls .time-input {
+  width: 60px;
+  /* compact but readable */
+  padding: 4px 8px;
+  font-size: 13px;
+  font-family: 'Fira Code', monospace;
+  /* consistent with time-display */
+  color: var(--text-primary);
+  background: var(--tertiary-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  /* match zoom buttons */
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.playback-range-controls .time-input:focus {
+  outline: none;
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 2px rgba(63, 169, 245, 0.3);
+}
+
+.playback-range-controls .time-input:hover {
+  border-color: var(--accent-blue);
+  background: var(--tertiary-light);
+}
+
+
+/* Specific keyframe types (for visual differentiation, if implemented later) */
+.keyframe.position-key {
+  background-color: var(--accent-red);
+}
+
+/* Original #ff5555 */
+.keyframe.rotation-key {
+  background-color: var(--accent-green);
+}
+
+/* Original #55ff55 */
+.keyframe.scale-key {
+  background-color: var(--accent-blue);
+}
+
+/* Original #5555ff */
+
+/* Playback Range Controls Container */
+.playback-range-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Spacing between elements */
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-left: 1px solid var(--border-color);
+  /* Add a separator visually */
+  padding-left: 10px;
+  /* Space from the separator */
+}
+
+/* Container to keep labels and inputs aligned */
+.playback-range-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ccc;
+    font-size: 11px;
+}
+
+/* Hide the default checkbox */
+#loop-toggle {
+    display: none;
+}
+
+/* Create the Toggle Switch Track */
+.loop-toggle-label {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 16px;
+    background: #333;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+    border: 1px solid #1a1a1a;
+}
+
+/* Create the Toggle Knob */
+.loop-toggle-label::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    left: 2px;
+    top: 1px;
+    background: #888;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+/* Toggle Active State */
+#loop-toggle:checked + .loop-toggle-label {
+    background: var(--accent-green);
+}
+
+#loop-toggle:checked + .loop-toggle-label::after {
+    left: 16px;
+    background: white;
+}
+
+/* Time Input fields for loop start/end */
+.playback-range-controls .time-input {
+  width: 70px;
+  /* Make it a bit wider for 00:00:000 */
+  padding: 4px 6px;
+  font-size: 13px;
+  font-family: 'Fira Code', monospace;
+  /* Consistent with time-display */
+  color: var(--text-primary);
+  background: var(--tertiary-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  /* Slightly less round than zoom buttons */
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.playback-range-controls .time-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  /* Consistent focus highlight */
+  box-shadow: 0 0 0 1px rgba(var(--accent-blue-rgb), 0.5);
+}
+
+.playback-range-controls .time-input:hover {
+  border-color: var(--accent-blue);
+}
+
+/* Specific styling for the 'Set' buttons for start/end */
+.playback-range-controls #set-loop-start,
+.playback-range-controls #set-loop-end {
+  background: var(--secondary-dark);
+  /* More subtle background for these context buttons */
+  border-color: var(--border-color);
+  width: 24px;
+  /* Smaller square button */
+  height: 24px;
+  padding: 0;
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.playback-range-controls #set-loop-start:hover,
+.playback-range-controls #set-loop-end:hover {
+  background: rgba(var(--text-primary-rgb), var(--hover-bg-opacity));
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.playback-range-controls #set-loop-start:active,
+.playback-range-controls #set-loop-end:active {
+  background-color: rgba(var(--text-primary-rgb), var(--hover-bg-opacity) * 1.5);
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* Visual Loop Range Markers on the timeline (inside keyframe-lines SVG) */
+.timeline-loop-start-handle,
+.timeline-loop-end-handle {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  /* The line itself */
+  height: 100%;
+  /* Spans full height of timeline-content */
+  background-color: var(--accent-blue);
+  /* Distinct loop range color */
+  pointer-events: none;
+  /* Initially non-interactive */
+  z-index: 10;
+  /* Above regular grid lines, below playhead */
+}
+
+/* Visual element representing the start handle head/triangle */
+.timeline-loop-start-handle::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  /* Position above the track content */
+  left: 0;
+  /* Centered */
+  transform: translateX(-50%) rotate(45deg);
+  /* Diamond shape */
+  width: 10px;
+  height: 10px;
+  background-color: var(--accent-blue);
+  border: 1px solid rgba(var(--accent-blue-rgb), 0.7);
+  z-index: 12;
+  box-shadow: var(--shadow-base);
+  pointer-events: auto;
+  /* Make the handle itself interactive */
+  cursor: ew-resize;
+  /* Cursor for dragging */
+}
+
+/* Visual element representing the end handle head/triangle */
+.timeline-loop-end-handle::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  /* Centered */
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background-color: var(--accent-blue);
+  border: 1px solid rgba(var(--accent-blue-rgb), 0.7);
+  z-index: 12;
+  box-shadow: var(--shadow-base);
+  pointer-events: auto;
+  /* Make the handle itself interactive */
+  cursor: ew-resize;
+}
+
+/* Ensure the parent can contain absolute children */
+.timeline-content {
+    position: relative; 
+    width: 100%;
+    height: 100%;
+}
+
+.loop-zone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(0, 128, 255, 0.15);
+  border-left: 2px solid rgba(0, 128, 255, 0.6);
+  border-right: 2px solid rgba(0, 128, 255, 0.6);
+  pointer-events: none;
+  display: none; /* Controlled by JS */
+  z-index: 10; /* Lower than keyframes/playhead, but inside timeline-content */
+}
+
+/* Timeline markers container */
+.timeline-markers-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  /* Allows clicks to pass through */
+  z-index: 25;
+  overflow: visible;
+}
+
+/* Individual timeline marker */
+.timeline-marker {
+  position: absolute;
+  z-index: 20;
+  top: 6px;
+  width: 12px;
+  height: calc(100% - 12px);
+  transform: translateX(-50%);
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/* Marker handle (draggable part) */
+.timeline-marker .marker-handle {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-top: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background-color: var(--timeline-playhead);
+  /* eye-catching color */
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effect for better UX */
+.timeline-marker .marker-handle:hover {
+  background-color: var(--text-primary);
+  transform: scale(1.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Marker label (tooltip-like) */
+.timeline-marker .marker-label {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--text-primary);
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Show label on hover */
+.timeline-marker:hover .marker-label {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* Dragging state */
+.timeline-marker.dragging {
+  opacity: 0.8;
+  transform: translateX(-50%) scale(1.05);
+}
+
+
+/* =====================================================================
+   13. ADDITIONAL TIMELINE COMPONENTS (Provided in original, not in HTML)
+   These rules are kept for completeness, assuming they might be used
+   in other parts of your UI or future HTML additions.
+   ===================================================================== */
+.timeline-fps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+}
+
+.timeline-fps select {
+  background: var(--tertiary-dark);
+  color: var(--text-primary);
+  border: 1px solid var(--input-border);
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+.timeline-header {
+  padding: 4px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--secondary-dark);
+}
+
+.timeline-tracks-container {
+  /* If you implement a separate container for tracks */
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.timeline-footer {
+  padding: 4px 8px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  background: var(--secondary-dark);
+  color: var(--text-muted);
+}
+
+.timeline-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --- GRAPH EDITOR SPECIFIC STYLES --- */
+
+#graph-editor-container {
+  /* Targeting by ID for specific graph container */
+  display: flex;
+  /* Kept flex */
+  flex-direction: column;
+  flex-grow: 1;
+  /* Crucial for vertical sizing within the .timeline.resizable-content-panel */
+  width: 100%;
+  /* Ensure it spans the full width */
+  background: var(--primary-dark);
+  /* Use theme variable */
+  box-sizing: border-box;
+  /* Include padding/border in element's total width/height */
+  overflow: hidden;
+  /* Hide anything that overflows the container */
+  border-top: 1px solid var(--border-color);
+  /* Visual separation from timeline controls */
+  /* Add subtle inner shadow for depth */
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+  /* Default text color for the container */
+}
+
+.graph-editor-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  background: #111418;
+}
+
+.graph-editor-bar {
+  height: 34px;
+  background: var(--timeline-surface-1);
+  border-bottom: 1px solid var(--timeline-border);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 8px;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.graph-editor-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--timeline-text-soft);
+}
+
+.graph-expand-btn {
+  margin-left: auto;
+  background: var(--timeline-surface-2);
+  border: 1px solid var(--timeline-border-strong);
+  color: var(--text-primary);
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.graph-expand-btn:hover {
+  border-color: var(--timeline-border-accent);
+}
+
+body.graph-editor-expanded #graph-editor-container {
+  position: fixed;
+  top: var(--total-toolbar-height);
+  left: var(--hierarchy-live-width, var(--hierarchy-width-default));
+  right: var(--inspector-live-width);
+  bottom: var(--timeline-height);
+  width: auto;
+  height: auto;
+  z-index: 50;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Graph Sidebar (Channel List) */
+#graph-channels-list {
+  /* Targeted by ID, as used in JS `document.getElementById` */
+  width: 200px;
+  /* Fixed width */
+  flex-shrink: 0;
+  /* Prevents shrinking */
+  background: var(--secondary-dark);
+  /* Use theme variable */
+  border-right: 1px solid var(--border-color);
+  /* Use theme variable for border */
+  overflow-y: auto;
+  /* Enable vertical scrolling */
+  color: var(--text-primary);
+  /* Ensure text is visible */
+  box-sizing: border-box;
+  display: flex;
+  /* Make it a flex container */
+  flex-direction: column;
+  /* Stack header and items vertically */
+}
+
+/* NEW: Graph Sidebar Header */
+.graph-sidebar-header {
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--secondary-dark), black 10%);
+  /* Slightly darker header */
+  flex-shrink: 0;
+  /* Ensure header doesn't shrink */
+  margin-bottom: 5px;
+  /* Space between header and first channel item */
+}
+
+
+.graph-channel-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  /* Prevent channel labels from wrapping */
+  text-overflow: ellipsis;
+  /* Truncate long labels */
+  overflow: hidden;
+  color: var(--text-secondary);
+  /* Default text color for channel items */
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  /* Smooth transitions */
+  border-left: 3px solid transparent;
+  /* Placeholder for active state highlight */
+}
+
+.graph-channel-item:hover {
+  background: var(--timeline-layer-item-hover-bg);
+  /* Consistent themed hover */
+  color: var(--text-primary);
+  /* Make text brighter on hover */
+}
+
+.graph-channel-item.active {
+  background: var(--accent-blue);
+  /* Use accent color for active item */
+  color: var(--text-primary);
+  /* White text on blue background */
+  font-weight: 600;
+  /* Bolder for active state */
+  border-left-color: var(--accent-green);
+  /* Green border for active state (like selection indicator) */
+  box-shadow: inset 3px 0 0 0 var(--accent-green);
+  /* Visual cue on left side */
+}
+
+.graph-channel-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  /* Prevent color circle from shrinking */
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  /* Subtle border for definition */
+  box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.1);
+  /* Inner glow for visual depth */
+}
+
+.graph-canvas {
+  flex: 1;
+  /* Takes remaining horizontal space */
+  cursor: grab;
+  /* JS switches to move/crosshair/ew-resize only over editable graph elements */
+  display: block;
+  /* Ensures it behaves correctly within flex */
+  height: 100%;
+  /* Full height of the container */
+  box-sizing: border-box;
+  /* Include padding/border in element's total width/height */
+  /* No explicit width/height here; flex:1 handles it, and JS sets canvas.width/height attributes */
+  background: var(--timeline-graph-bg);
+  /* Match the graph canvas closer to the channels sidebar tone */
+  border-left: 1px solid var(--border-color);
+  /* Visual separation from sidebar */
+  /* Optional: subtle rounded corners for the canvas itself */
+  border-radius: 0;
+  /* Top-left, Top-right, Bottom-right, Bottom-left */
+  touch-action: none;
+}
+
+.graph-canvas:active {
+  cursor: grabbing;
+}
+
+.graph-context-menu {
+  position: fixed;
+  z-index: 12000;
+  display: none;
+  min-width: 220px;
+  padding: 6px;
+  background: var(--timeline-surface-1);
+  border: 1px solid var(--timeline-border);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+.graph-context-menu.open {
+  display: block;
+}
+
+.graph-context-menu button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 12px;
+  padding: 7px 9px;
+  cursor: pointer;
+}
+
+.graph-context-menu button:hover {
+  background: var(--timeline-accent-soft);
+}
+
+.graph-context-sep {
+  height: 1px;
+  background: var(--timeline-border);
+  margin: 5px 0;
+}
+
+.animation-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--timeline-border-strong);
+  margin: 10px 0;
+}
+
+.animation-item {
+  padding: 6px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--timeline-border-strong);
+}
+
+.animation-item:hover {
+  background: var(--timeline-surface-hover);
+}
+
+.animation-item.active {
+  background: var(--timeline-layer-item-selected-bg);
+}
+
+/* --- END GRAPH EDITOR SPECIFIC STYLES --- */
+
+
+/* Controls */
+.control-group {
+  margin-bottom: 10px;
+}
+
+.control-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+select,
+input[type="range"] {
+  width: 100%;
+}
+
+select {
+  background: var(--timeline-surface-3);
+  color: var(--text-primary);
+  border: 1px solid var(--timeline-border-strong);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--timeline-border-accent);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--timeline-surface-3);
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--accent-blue);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--accent-blue);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+}
+
+.slider-container input[type="range"] {
+  flex: 1;
+}
+
+.slider-value {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  min-width: 40px;
+  text-align: right;
+}
+
+/* Checkboxes */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* Buttons */
+.btn-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btnMd {
+  flex: 1;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  background: var(--timeline-surface-3);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.btnMd:hover {
+  background: var(--timeline-surface-hover);
+}
+
+.btnMd.full-width {
+  width: 100%;
+}
+
+.btnMd.danger {
+  background: var(--timeline-danger-surface);
+}
+
+.btnMd.danger:hover {
+  background: color-mix(in srgb, var(--accent-danger) 28%, var(--primary-dark) 72%);
+}
+
+/* Status indicator */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--timeline-surface-2);
+  border-bottom: 1px solid var(--timeline-border);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: gray;
+}
+
+#status-dot.active {
+  background: var(--accent-success);
+}
+
+#status-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Info Box */
+.info-box {
+  padding: 10px 12px;
+  font-size: 12px;
+  background: var(--timeline-surface-1);
+  color: var(--text-secondary);
+  border-top: 1px solid var(--timeline-border);
+  border-radius: 0 0 8px 8px;
+}
+
+.info-box strong {
+  color: var(--timeline-text-soft);
+}
+
+/* Toolbar (floating below viewport) */
+#curve-toolbar {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--timeline-surface-2);
+  border: 1px solid var(--timeline-border-strong);
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: none;
+  gap: 6px;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.toolbar-btn {
+  background: var(--timeline-surface-3);
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.toolbar-btn:hover {
+  background: var(--timeline-surface-hover);
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 20px;
+  background: var(--timeline-border-strong);
+  margin: 0 4px;
+}
+
+/* Overlay instructions */
+#instructions-overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--timeline-overlay-bg);
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: var(--timeline-text-soft);
+  font-size: 12px;
+  display: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* NLA Clip Styling */
+.nla-clip {
+  position: absolute;
+  height: 18px;
+  top: 2px;
+  background: var(--timeline-layer-item-selected-bg);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.27);
+  border-radius: 3px;
+  cursor: grab;
+  overflow: hidden;
+  z-index: 5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.clip-label {
+  font-size: 9px;
+  color: white;
+  padding-left: 5px;
+  pointer-events: none;
+}
+
+.keyframe-mini {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--accent-warning);
+  top: 7px;
+  border-radius: 50%;
+}
+
+/* Event Marker Styling */
+.keyframe.event-marker {
+  background: var(--accent-warning) !important;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  /* Diamond */
+  border: 1px solid white;
+}
+
+.event-marker::after {
+  content: '⚡';
+  font-size: 8px;
+  position: absolute;
+  top: -12px;
+  left: -2px;
+}

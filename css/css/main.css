@@ -1,0 +1,227 @@
+/*global and complet roots*/
+@import url("roots.css");
+/* --- Vendor / Library Styles (Go up one level to reach assets) --- */
+@import url("../assets/vendor/golden-layout/dist/css/goldenlayout-base.css");
+@import url("../assets/vendor/golden-layout/dist/css/themes/goldenlayout-dark-theme.css");
+@import url("goldenlayout-theme-override.css");
+
+/* --- Core UI & Layout (Now in the same folder) --- */
+@import url("style.css");
+@import url("gui.css");
+@import url("meuni-bar.css");
+@import url("workspace-selector.css");
+@import url("modal.css");
+@import url("layouts/global-modal.css");
+@import url("water.css");
+
+/* --- Panels & Tools --- */
+@import url("preview.css");
+@import url("tools.css");
+@import url("search.css");
+@import url("assets-panel.css");
+@import url("file-browser.css");
+@import url("preferences.css");
+@import url("js-console.css");
+@import url("AdvancedColorPicker.css");
+@import url("spreadsheet.css");
+@import url("ui-software/panels.css");
+
+
+/* --- Specific Editors --- */
+@import url("code-editor.css");
+@import url("timeline.css");
+@import url("video-editing.css");
+@import url("sound-editor.css");
+@import url("sound/metasound.css");
+@import url("stor.css");
+@import url("storyboard-panel-professional.css");
+
+/* --- 2D & VFX --- */
+@import url("2d-editor.css");
+@import url("2D/viewport-tag-2d.css");
+@import url("2D/animation-2d-mode.css");
+@import url("vfx/vfx-editor.css");
+
+/* --- Modeling & Graphs --- */
+@import url("bone-editor.css");
+@import url("layouts/mat-editor.css");
+@import url("layouts/player-graph-native.css");
+@import url("layouts/sculpt-panel.css");
+@import url("../advanced-modeler/ui/advanced-modeler-ui.css");
+
+/* --- GoldenLayout Customizations (for better integration with our theme) --- */
+@import url("blender-top-bar.css");
+@import url("material-panel.css");
+@import url("pro-panel.css");
+@import url("timeline-selection-box.css");
+
+/* Generic Visibility Classes */
+.menu-dropdown.show, .submenu-dropdown.show, .menu-dropdown.active, .submenu-dropdown.active {
+    display: flex !important;
+    z-index: 10000;
+}
+
+.menu-trigger.active {
+    background-color: #3d3d3d;
+    color: #00bcd4;
+}
+
+/* Timeline rescue layer: stable rows, graph view, and editor expansion states. */
+.timeline-layer-item {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 8px;
+    color: var(--timeline-text-soft, #aeb6c2);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.timeline-layer-item:hover,
+.timeline-layer-item.selected {
+    background: var(--timeline-layer-item-selected-bg, #343a44);
+    color: var(--text-primary, #fff);
+}
+
+.timeline-layer-item.empty {
+    color: var(--timeline-text-faint, #737c8a);
+    cursor: default;
+}
+
+.timeline-scale-marker {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    min-width: 34px;
+    border-left: 1px solid rgba(255,255,255,0.08);
+    color: var(--timeline-text-faint, #78808a);
+    font-size: 10px;
+    padding-left: 4px;
+    line-height: 20px;
+    pointer-events: none;
+}
+
+#global-node-editor-container {
+    display: none;
+}
+
+#global-node-editor-container .node-sub-editor {
+    display: none;
+}
+
+#global-node-editor-container .node-sub-editor.active {
+    display: block;
+}
+
+body.node-editor-expanded #global-node-editor-container,
+body.bone-editor-expanded #bone-editor {
+    position: fixed;
+    left: var(--hierarchy-width, 320px);
+    right: 0;
+    top: 96px;
+    bottom: 0;
+    z-index: 12000;
+    display: flex !important;
+    flex-direction: column;
+    background: var(--primary-dark, #111418);
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+}
+/* Code editor and video editor reliability layer */
+#code-editor-panel.open {
+  display: flex !important;
+  right: 0 !important;
+  z-index: 20000 !important;
+}
+
+#code-editor-panel .vs-code-wrapper {
+  position: relative;
+  min-height: 0;
+}
+
+#monaco-editor-host {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+  min-height: 0;
+  background: #1e1e1e;
+}
+
+#code-editor-panel .monaco-editor-host + textarea,
+#code-editor-panel #js-editor[style*="display: none"] {
+  display: none !important;
+}
+
+body.video-editing-mode #video-editing-container {
+  display: block !important;
+}
+
+body.video-editing-mode #video-editor-toolbar {
+  display: flex !important;
+}
+
+.video-timeline-header {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.video-track-area {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  background: #15171d;
+}
+
+.video-track-labels {
+  border-right: 1px solid rgba(255,255,255,0.08);
+  color: #aab2bf;
+  font-size: 11px;
+}
+
+.video-track-labels > div {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.video-track-lanes {
+  position: relative;
+  overflow: auto;
+}
+
+.video-track-row {
+  position: relative;
+  height: 76px;
+  min-width: 900px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 64px),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+}
+
+.video-clip-item {
+  position: absolute;
+  top: 12px;
+  height: 28px;
+  border: 1px solid rgba(94, 151, 246, 0.8);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #3264c8, #244a9b);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  padding: 0 8px;
+  cursor: pointer;
+}

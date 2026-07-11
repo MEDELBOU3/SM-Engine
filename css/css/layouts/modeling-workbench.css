@@ -1,0 +1,435 @@
+/* Modeling + Architecture Workbench (scoped to #modelingTools only) */
+#modelingTools {
+    --mw-bg: #282828;
+    --mw-surface: #383838;
+    --mw-surface-2: #2f2f2f;
+    --mw-border: #313131;
+    --mw-border-soft: #2a2a2a;
+    --mw-text: #e8e8e8;
+    --mw-text-dim: #b5b5b5;
+    --mw-accent: #8d8d8d;
+    --mw-danger: #d06a6a;
+    background: var(--mw-border);
+    border: 1px solid #2c2c2c;
+    border-radius: 12px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    overflow: visible;
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    min-height: max-content;
+    height: auto;
+}
+
+#modelingTools .panel-header {
+    margin: 0;
+    padding: 10px 12px;
+    min-height: 40px;
+    border: none;
+    background: #2b2b2b;
+    border-bottom: 1px solid var(--mw-border);
+    color: var(--mw-text);
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+#modelingTools .panel-header .expand-button,
+#modelingTools .panel-header .panel-expand-btn {
+    color: var(--mw-text-dim);
+}
+
+#modelingTools .panel-header .expand-button i,
+#modelingTools .panel-header .panel-expand-btn i {
+    font-size: 16px;
+    color: #ffffff !important;
+}
+
+#modelingTools .panel-header .expand-button,
+#modelingTools .panel-header .panel-expand-btn {
+    color: #ffffff !important;
+}
+
+#modelingTools .panel-content.modeling-workbench {
+    margin: 0;
+    padding: 10px;
+    gap: 10px;
+    max-height: none;
+    height: auto;
+    overflow: visible;
+}
+
+#modelingTools .selection-controls.modeling-primary-actions {
+    background: #2b2b2b;
+    border: 1px solid var(--mw-border);
+    padding: 10px;
+    overflow: visible;
+}
+
+#modelingTools .selection-controls.modeling-primary-actions .panel-button {
+    width: 100%;
+    background: var(--mw-surface-2);
+    color: var(--mw-text);
+    border: 1px solid var(--mw-border-soft);
+    margin-top: 6px;
+    min-height: 34px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#modelingTools .panel-button:hover,
+#modelingTools .panel-button:focus {
+    border-color: #6a6a6a;
+    background: #2b2b2b;
+    color: #f1f1f1;
+}
+
+#modelingTools .panel-button:active {
+    transform: translateY(1px);
+}
+
+#modelingTools #toggle-modeling.panel-button {
+    background: #2b2b2b;
+    border-color: #575757;
+}
+
+#modelingTools #delete-active-object.panel-button {
+    background: linear-gradient(180deg, #402626, #332020);
+    border-color: #614040;
+    color: #ffd7df;
+}
+
+#modelingTools .selection-mode-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+#modelingTools .panel-button-tool {
+    width: 100%;
+    height: 42px;
+    border-radius: 8px;
+    border: 1px solid var(--mw-border-soft);
+    background: var(--mw-border);
+    color: var(--mw-text);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+#modelingTools .panel-button-tool svg {
+    width: 22px;
+    height: 22px;
+    stroke: #dddddd;
+}
+
+#modelingTools .panel-button-tool:hover {
+    transform: translateY(-1px);
+    border-color: #5a5a5a;
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.25);
+}
+
+#modelingTools .panel-button-tool.active,
+#modelingTools .panel-button-tool.active-tool {
+    background: linear-gradient(180deg, #4a4a4a, #363636) !important;
+    border-color: #757575 !important;
+    box-shadow: 0 0 0 1px rgba(180, 180, 180, 0.2), 0 10px 18px rgba(0, 0, 0, 0.35);
+}
+
+#modelingTools #controls.modeling-quick-dimensions {
+    margin-top: 10px;
+    background: #171717;
+    border: 1px solid var(--mw-border-soft);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+#modelingTools #controls.modeling-quick-dimensions h3 {
+    margin: 0 0 8px 0;
+    color: #d0d0d0;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+#modelingTools .modeling-stat-control {
+    background: var(--mw-surface);
+    border: 1px solid var(--mw-border-soft);
+    padding: 5px 8px;
+}
+
+#modelingTools .modeling-stat-control:hover {
+    border-color: #474747;
+}
+
+#modelingTools .modeling-stat-control + .modeling-stat-control {
+    margin-top: 8px;
+}
+
+#modelingTools .modeling-stat-control label {
+    display: block;
+    color: var(--mw-text-dim);
+    font-size: 11px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+}
+
+#modelingTools .tool-separator {
+    margin: 6px 0;
+    height: 1px;
+    border: 0;
+    background: linear-gradient(90deg, transparent, rgba(95, 95, 95, 0.6), transparent);
+}
+
+#modelingTools .tool-section {
+    margin: 0;
+    padding: 10px;
+    border: 1px solid var(--mw-border);
+    background: var(--mw-surface);
+}
+
+#modelingTools .tool-section h4 {
+    margin: 0 0 8px 0;
+    color: #dddddd;
+    font-size: 12px;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+    border: none;
+}
+
+#modelingTools .tool-section .button-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+    gap: 8px;
+    margin-top: 0;
+}
+
+#modelingTools .spline-section {
+    padding: 12px;
+}
+
+#modelingTools .spline-controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+#modelingTools .spline-controls-grid .panel-button,
+#modelingTools .spline-controls-grid .panel-select {
+    width: 100%;
+    min-height: 34px;
+    margin: 0;
+    border-radius: 8px;
+}
+
+#modelingTools .spline-controls-grid #spline-extrude {
+    grid-column: 1 / -1;
+}
+
+#modelingTools .snapping-section {
+    padding: 12px;
+}
+
+#modelingTools .snapping-controls-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 8px;
+    align-items: center;
+}
+
+#modelingTools .snapping-controls-grid #toggle-snapping {
+    min-width: 120px;
+}
+
+#modelingTools .snapping-controls-grid .snap-grid-input {
+    grid-column: 1 / -1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #cfcfcf;
+    font-size: 12px;
+    margin: 0;
+}
+
+#modelingTools .snapping-controls-grid .snap-grid-input input {
+    width: 72px;
+    min-width: 72px;
+}
+
+#modelingTools .advanced-modeling-section {
+    padding: 12px;
+}
+
+#modelingTools .advanced-modeling-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+#modelingTools #openAdvancedModeler {
+    width: 100%;
+    min-height: 38px;
+    border-radius: 8px;
+    border: 1px solid #5c5c5c;
+    background: linear-gradient(180deg, #3b3b3b, #2a2a2a);
+    color: #f1f1f1;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+#modelingTools #openAdvancedModeler i {
+    margin-right: 6px;
+}
+
+#modelingTools .advanced-modeling-desc {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #a8a8a8;
+}
+
+#modelingTools .tool-options {
+    border: 1px solid var(--mw-border-soft);
+    border-radius: 8px;
+    background: #171717 !important;
+    color: var(--mw-text);
+}
+
+#modelingTools .spin-options-panel {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    display: block;
+    margin-top: 10px;
+    padding: 12px;
+    border-left: 3px solid #5f5f5f;
+    background: linear-gradient(180deg, #202020, #181818) !important;
+}
+
+#modelingTools .spin-options-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #3f3f3f;
+}
+
+#modelingTools .spin-options-row {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#modelingTools .spin-options-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: #c6c6c6;
+}
+
+#modelingTools .spin-options-input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    background: #111111;
+    border: 1px solid #3f3f3f;
+    color: #e8e8e8;
+    border-radius: 6px;
+}
+
+#modelingTools .spin-options-help {
+    font-size: 11px;
+    color: #a2a2a2;
+    margin: 6px 0 0;
+}
+
+#modelingTools .spin-options-submit {
+    width: 100%;
+    margin-top: 6px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #4a4a4a, #353535);
+    border: 1px solid #606060;
+    color: #f0f0f0;
+}
+
+#renderingMenu button i {
+    width: 16px;
+    margin-right: 8px;
+    text-align: center;
+}
+
+#modelingTools #window-presets-panel {
+    background: #171717 !important;
+    color: var(--mw-text) !important;
+    border-color: var(--mw-border) !important;
+}
+
+#modelingTools .tool-options h4,
+#modelingTools .tool-options label,
+#modelingTools .tool-instructions {
+    color: var(--mw-text-dim);
+}
+
+#modelingTools .tool-options p,
+#modelingTools .tool-options span,
+#modelingTools .tool-options small {
+    color: #a7a7a7;
+}
+
+#modelingTools .panel-select,
+#modelingTools .panel-input,
+#modelingTools input[type="number"],
+#modelingTools select,
+#modelingTools input[type="text"] {
+    background: #101010;
+    border: 1px solid var(--mw-border-soft);
+    color: var(--mw-text);
+    border-radius: 6px;
+}
+
+#modelingTools .panel-select:focus,
+#modelingTools .panel-input:focus,
+#modelingTools input[type="number"]:focus,
+#modelingTools select:focus,
+#modelingTools input[type="text"]:focus {
+    border-color: #6d6d6d;
+    box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.2);
+    outline: none;
+}
+
+#modelingTools input[type="range"] {
+    background: linear-gradient(90deg, #555555, #6d6d6d);
+    height: 4px;
+}
+
+#modelingTools input[type="range"]::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #1a1a1a;
+    background: #d4d4d4;
+}
+
+#modelingTools .modifiers-panel,
+#modelingTools #modifiers-panel {
+    background: linear-gradient(180deg, rgba(34, 34, 34, 0.92), rgba(22, 22, 22, 0.92));
+}
+
+#modelingTools #modifier-list-container {
+    background: #161616;
+    border: 1px solid var(--mw-border-soft);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+#modelingTools .modifier-entry {
+    background: #242424;
+    border: 1px solid #3a3a3a;
+    border-radius: 7px;
+    margin-bottom: 6px;
+}
+
+@media (max-width: 900px) {
+    #modelingTools .tool-section .button-container {
+        grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+    }
+}

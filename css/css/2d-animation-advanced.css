@@ -1,0 +1,392 @@
+/* Advanced 2D Animation UI Styles */
+
+#advanced-2d-animation-panel {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: #e0e0e0;
+    padding: 12px;
+    margin: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+    z-index: 10000;
+    width: 320px;
+}
+
+#advanced-2d-animation-panel h3 {
+    margin: 0 0 12px 0;
+    color: #00ff88;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+}
+
+#advanced-2d-animation-panel fieldset {
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 8px;
+    margin: 8px 0;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+#advanced-2d-animation-panel legend {
+    color: #00ccff;
+    font-weight: bold;
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 0 4px;
+}
+
+#advanced-2d-animation-panel label {
+    display: block;
+    margin: 6px 0;
+    cursor: pointer;
+    color: #c0c0c0;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+#advanced-2d-animation-panel label:hover {
+    color: #ffffff;
+}
+
+#advanced-2d-animation-panel input[type="checkbox"] {
+    margin-right: 6px;
+    cursor: pointer;
+    accent-color: #00ff88;
+    width: 14px;
+    height: 14px;
+}
+
+#advanced-2d-animation-panel input[type="range"] {
+    width: 100%;
+    margin: 4px 0;
+    cursor: pointer;
+    height: 5px;
+    border-radius: 3px;
+    background: #333;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+#advanced-2d-animation-panel input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+}
+
+#advanced-2d-animation-panel input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+}
+
+#advanced-2d-animation-panel button {
+    width: 100%;
+    padding: 8px 12px;
+    margin-top: 6px;
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+}
+
+#advanced-2d-animation-panel button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.5);
+}
+
+#advanced-2d-animation-panel button:active {
+    transform: translateY(0);
+}
+
+/* Scrollbar styling */
+#advanced-2d-animation-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+#advanced-2d-animation-panel::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+#advanced-2d-animation-panel::-webkit-scrollbar-thumb {
+    background: #00ff88;
+    border-radius: 4px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+#advanced-2d-animation-panel::-webkit-scrollbar-thumb:hover {
+    background: #00ffaa;
+}
+
+/* Keyframe Graph Styles */
+#keyframe-graph-container {
+    background: #0a0a0a;
+    border: 2px solid #00ff88;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.keyframe-graph-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* 2D Animation Mode Active State */
+body.animation-2d-mode-active {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+body.animation-2d-mode-active #animation-2d-container {
+    background: linear-gradient(to bottom, #1a1a2e, #16213e);
+    border: 2px solid #00ff88;
+    box-shadow: inset 0 0 40px rgba(0, 255, 136, 0.1);
+}
+
+/* Brush Settings Enhanced */
+.brush-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: rgba(0, 20, 40, 0.5);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #004d80;
+}
+
+.brush-control-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.brush-control-item label {
+    font-size: 10px;
+    color: #00ccff;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.brush-control-item input,
+.brush-control-item select {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.brush-control-item input:focus,
+.brush-control-item select:focus {
+    border-color: #00ff88;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
+
+/* Animation 2D Toolbar Enhancements */
+#animation-2d-toolbar {
+    background: linear-gradient(to right, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+    border: 1px solid #00ff88;
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.2);
+    border-radius: 6px;
+}
+
+#animation-2d-toolbar .st-btn {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+#animation-2d-toolbar .st-btn:hover {
+    background: #222;
+    border-color: #00ccff;
+    box-shadow: 0 0 10px rgba(0, 204, 255, 0.3);
+}
+
+#animation-2d-toolbar .st-btn.active {
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    color: #000;
+    border-color: #00ffaa;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+}
+
+/* Keyframe Markers */
+.animation2d-keyframe-marker {
+    background: linear-gradient(to bottom, #00ff88, #00ccff);
+    border: 2px solid #00ffaa;
+    border-radius: 3px;
+    width: 8px;
+    height: 12px;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+    transition: all 0.2s ease;
+}
+
+.animation2d-keyframe-marker.active {
+    width: 10px;
+    height: 14px;
+    box-shadow: 0 0 12px rgba(0, 255, 136, 0.8);
+}
+
+/* Brush Shelf Styling */
+.brush-shelf-item {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00ccff;
+}
+
+.brush-shelf-item:hover {
+    border-color: #00ccff;
+    box-shadow: 0 0 8px rgba(0, 204, 255, 0.3);
+    background: #222;
+}
+
+.brush-shelf-item.active {
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    color: #000;
+    border-color: #00ffaa;
+    box-shadow: 0 0 12px rgba(0, 255, 136, 0.6);
+}
+
+/* Advanced Effects Panel */
+.effects-panel {
+    background: linear-gradient(135deg, rgba(0, 20, 40, 0.8), rgba(0, 10, 20, 0.8));
+    border: 1px solid #004d80;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 8px 0;
+}
+
+.effect-toggle {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.effect-toggle:hover {
+    background: rgba(0, 255, 136, 0.05);
+}
+
+/* Color and gradient presets */
+.color-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin: 8px 0;
+}
+
+.color-preset {
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.color-preset:hover {
+    transform: scale(1.1);
+    border-color: #00ff88;
+}
+
+/* Animation Timeline Enhanced */
+.timeline-enhanced {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 8px;
+    margin: 8px 0;
+}
+
+.timeline-scrubber {
+    background: linear-gradient(to right, #00ff88, #00ccff);
+    height: 3px;
+    border-radius: 2px;
+    position: relative;
+}
+
+.timeline-scrubber-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #00ff88;
+    border-radius: 50%;
+    left: 0;
+    top: -5px;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+}
+
+/* Help text and tooltips */
+.advanced-help-text {
+    font-size: 9px;
+    color: #666;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Status indicators */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.active {
+    background-color: #00ff88;
+}
+
+.status-indicator.inactive {
+    background-color: #666;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Print and export styles */
+@media print {
+    #advanced-2d-animation-panel {
+        display: none;
+    }
+    
+    #animation-2d-container {
+        border: 2px solid black;
+    }
+}

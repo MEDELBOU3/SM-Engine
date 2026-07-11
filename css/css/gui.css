@@ -1,0 +1,225 @@
+/* ===== GUI CONTAINER ===== */
+#GuiContainer {
+    display: none; /* toggle with JS */
+    margin: 10px auto;
+    padding: 0px;
+    background: rgb(20, 20, 20);
+}
+
+/* Inside container */
+#gui-container {
+    position: relative;
+    width: 100%;            /* keep full width as you want */
+    height: auto;
+    overflow-y: auto;
+    padding: 3px;
+    background: rgb(19, 19, 19);
+}
+
+/* ===== DAT.GUI STYLING ===== */
+.dat.GUI .main {
+    background-color: transparent;
+    color: #ddd;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+    border: none;
+}
+
+.dat.GUI .folder {
+    background-color: rgba(40, 40, 40, 0.9);
+    margin: 6px 0;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    transition: background 0.2s ease;
+}
+.dat.GUI .folder:hover {
+    background-color: rgba(55, 55, 55, 0.95);
+}
+
+.dat.GUI .folder > .title {
+    color: #ffcc00;
+    font-weight: 600;
+    padding: 6px 8px;
+    background: rgba(30, 30, 30, 0.95);
+    cursor: pointer;
+}
+
+.dat.GUI .controller {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px;
+}
+
+/* Labels aligned left, fixed width */
+.dat.GUI .controller label {
+    flex: 0 0 140px;   /* fixed label width */
+    font-size: 13px;
+    color: #ddd;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Inputs aligned right */
+.dat.GUI .controller input[type="range"],
+.dat.GUI .controller input[type="color"],
+.dat.GUI .controller input[type="text"],
+.dat.GUI .controller select {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* Checkboxes alignment */
+.dat.GUI .controller input[type="checkbox"] {
+    transform: scale(1.1);
+    margin-left: auto;
+}
+
+/* Inputs */
+.dat.GUI .controller input[type="range"],
+.dat.GUI .controller input[type="color"],
+.dat.GUI .controller select {
+    width: 100%;
+    border-radius: 4px;
+    padding: 2px;
+    border: 1px solid #444;
+    background: #2a2a2a;
+    color: #ddd;
+    outline: none;
+    transition: border 0.2s, background 0.2s;
+}
+.dat.GUI .controller input[type="range"]:hover,
+.dat.GUI .controller input[type="color"]:hover,
+.dat.GUI .controller select:hover {
+    border-color: #ffcc00;
+    background: #333;
+}
+
+.dat.GUI .controller input[type="color"] {
+    cursor: pointer;
+    height: 28px;
+}
+
+.dat.GUI .c input[type=range] {
+    accent-color: #ffcc00;
+}
+
+/* === General style for all controller labels === */
+.dg .name {
+  font-size: 13px;               /* ← change font size here */
+  color: #e0e0ff;                /* light blue-ish / purple-ish */
+  font-weight: 500;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  padding-left: 4px;
+  letter-spacing: 0.3px;
+}
+
+/* Make slider labels (like Softness) stand out more */
+.dg .c .name {
+  color: #a5d8ff;                /* brighter blue for sliders */
+  font-weight: 600;
+  width: 110px;                  /* wider label area - prevents text cut-off */
+  text-align: left;
+}
+
+/* Slider track & handle styling */
+.dg .slider {
+  height: 8px !important;
+}
+
+.dg .slider-fg {
+  background: #4dabf7 !important;   /* blue fill */
+}
+
+.dg .slider:hover .slider-fg {
+  background: #339af0 !important;
+}
+
+/* Number/value display on the right */
+.dg .c .value {
+  color: #ffffff;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+/* Optional: make whole row nicer when focused/hovered */
+.dg.main:focus .c.focused,
+.dg.main:hover .c.focused {
+  background: rgba(40, 40, 60, 0.5);
+}
+
+/* The whole row/container of the controller */
+.dg .c .select-controller {          /* sometimes called .selector or just .c */
+  background: rgba(30, 30, 50, 0.6) !important;
+  border-radius: 4px;
+  border: 1px solid #444;
+}
+
+/* The visible <select> element itself */
+.dg select {
+  background: #1e1e2e !important;     /* dark background */
+  color: #e0e0ff !important;          /* light text */
+  border: 1px solid #4a4a6a !important;
+  border-radius: 4px;
+  padding: 4px 8px;
+  /*space from top and bottom*/
+  margin: 8px auto;
+  font-size: 13px;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  width: 100%;
+  height: 26px;
+  appearance: none;                   /* removes default arrow on many browsers */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><polygon points='0,0 12,0 6,12' fill='%23a0c0ff'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 10px;
+  cursor: pointer;
+}
+
+/* Hover / focus state */
+.dg select:hover,
+.dg select:focus {
+  background-color: #2a2a44 !important;
+  border-color: #6a8aff !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(60, 120, 255, 0.3);
+}
+
+/* Dropdown options (when opened) */
+.dg select option {
+  background: #1e1e2e;
+  color: #e0e0ff;
+  padding: 6px;
+}
+
+/* Make label nicer (matches your earlier Softness slider style) */
+.dg .name {
+  color: #a5d8ff !important;
+  font-weight: 600;
+  width: 140px !important;           /* give more space for "Shadow Resolution" */
+  font-size: 13.5px;
+}
+
+/* Current selected value text color (inside the closed select) */
+.dg select {
+  color: #ffffffcc !important;
+}
+
+.dg .cr:has(select) {
+  margin-bottom: 10px !important;
+}
+
+/* Or more compatible version (no :has() support in older browsers) */
+.dg .selector,
+.dg .select-controller,
+.dg .cr .selector {          /* dat.GUI sometimes uses these classes */
+  margin-bottom: 12px !important;
+}

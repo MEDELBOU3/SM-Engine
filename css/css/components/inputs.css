@@ -1,0 +1,38 @@
+.input-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.input-row label {
+    font-size: 13px;
+    color: #bbbbbb;
+    min-width: 120px;
+}
+
+.inspector-input,
+.inspector-select {
+    width: 100px;
+    padding: 6px 8px;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #e0e0e0;
+    font-size: 13px;
+}
+
+.inspector-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,...");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 24px;
+}
+
+.inspector-input:focus,
+.inspector-select:focus {
+    outline: none;
+    border-color: #4a9eff;
+    box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3);
+}

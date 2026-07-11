@@ -1,0 +1,392 @@
+
+:root {
+    --primary: #00D1FF;
+    --secondary: #FF3366;
+    --accent: #00FFCC;
+    --dark: #1F2525;
+    --darker: #151A1A;
+    --light: #E6F0F0;
+    --gray: #404848;
+    --success: #00CC66;
+    --warning: #FFCC00;
+    --error: #FF3366;
+    --bg-dark: rgba(31, 37, 37, 0.9);
+    --glow: #00FFCC;
+}
+
+.sound-controls-header {
+    width: auto; /* Adjust width to fit the buttons */
+    height: auto;
+    background: var(--dark);
+    display: flex;
+    border-radius: 8px;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    position: fixed;
+    right: 24%;
+    top: 23vh;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.sound-controls-header.expanded{
+   right: 2%;
+   margin-top: 5px;
+}
+
+.header-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.transport-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/*
+.sound-controls-meter {
+    display: flex;
+    flex-wrap: nowrap;
+
+    gap: 30px;
+    padding: 5px;
+    background: #222;
+    width: 100%;
+}*/
+
+
+.time-display {
+    color: white;
+    font-size: 14px;
+    background: #333;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.left-sidebar, .right-sidebar {
+    background: var(--dark);
+    padding: 30px;
+    overflow-y: auto;
+    border: 1px solid var(--gray);
+}
+
+.main-content {
+    padding: 30px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.visualization-container {
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    gap: 30px;
+    flex: 1;
+    height: auto;
+}
+
+.sound-controls-header-vis {
+    display: none; /* This is hiding the entire visualization container */
+}
+
+.viz-panel {
+    background: var(--bg-dark);
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.15);
+    height:  200px; /* Ensure it takes full available height */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.viz-header {
+    position: absolute;
+    top: 20px;
+    left: 25px;
+    font-size: 1.1rem;
+    color: var(--accent);
+    text-shadow: 0 0 6px rgba(0, 255, 204, 0.4);
+    z-index: 1;
+}
+
+#spectrumCanvas, #waveformCanvas,  #eqCanvas, #dynamicsCanvas, #phaseCanvas {
+    width: 100%;
+    height: 100%; /* Fill the viz-panel */
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    border: 1px solid var(--gray);
+    display: block; /* Ensure canvas is a block element */
+}
+
+/* ... (your existing CSS) ... */
+
+.sound-controls-meter {
+    /* display: none; */ /* Controlled by JS */
+    display: flex; /* Keep this as flex or block, depending on overall layout */
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 15px;
+    background: var(--dark);
+    width: auto; /* Or 100% */
+    border-radius: 8px;
+    justify-content: center; /* Centers the meter-section if it's narrower than sound-controls-meter */
+}
+
+/* Styles for the PARENT of the .meter-group elements */
+.meter-section {
+    display: flex;
+    /* flex-direction: column; */ /* REMOVE or change this line */
+    flex-direction: row;     /*   Lay out children (meter-group) horizontally */
+    align-items: flex-start; /*   Align groups to the top. Use 'center' or 'flex-end' if preferred */
+    gap: 30px;               /*   Space between the meter groups */
+    /* Optionally, if I want the section to center its content if it's wider: */
+    /* justify-content: center; */
+}
+
+.meter-title {
+    color: var(--accent);
+    margin-bottom: 10px; /* Increased margin for better separation from meters */
+    text-shadow: 0 0 6px rgba(0, 255, 204, 0.3);
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-align: center; /* Center title above its meters */
+    width: 100%;        /* Make title take full width of its group for centering */
+}
+
+/* Styles for EACH individual meter group (Input, Master) */
+.meter-group {
+    display: flex;
+    flex-direction: column; /* Each group's items (title, meters) are stacked vertically */
+    align-items: center;    /* Center the items within this column */
+    gap: 10px;              /* Gap between title and its meter containers, or between meter containers */
+}
+
+/* Styles for a container holding an individual meter bar (e.g., left, right, master) */
+.meter-container {
+    width: 25px;
+    height: 120px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--gray);
+    /* If you have L/R meters, you might want them side-by-side within their group */
+    /* If so, the .meter-group for Input Meters might need different styling */
+}
+
+/* If your Input Meters (L/R) should also be side-by-side WITHIN their .meter-group */
+/* You'd need a wrapper around the L/R meter-containers or adjust the "Input Meters" .meter-group */
+
+/* Example: If Input Meters group should have L/R side-by-side: */
+/*
+.meter-group.input-meters-layout {
+    flex-direction: column; / * Title above meters * /
+}
+.input-meters-wrapper { / * You would add this div in HTML around L/R meter-containers * /
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+*/
+
+
+/* ... (rest of your CSS for .meter-fill, etc.) ... */
+
+/*
+.meter-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}*/
+
+/*
+.meter-title {
+    color: var(--accent);
+    margin-bottom: 5px;
+    text-shadow: 0 0 6px rgba(0, 255, 204, 0.3);
+    font-size: 1rem;
+    font-weight: bold;
+}*/
+
+/*
+.meter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}*/
+
+.effect-rack {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 10px;
+    padding: 10px;
+}
+
+
+.effect-module {
+    background: var(--bg-dark);
+    padding: 25px;
+    border: 1px solid var(--gray);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.effect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--gray);
+}
+
+.effect-title {
+    color: var(--accent);
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-shadow: 0 0 6px rgba(0, 255, 204, 0.3);
+}
+
+.slider-container {
+    margin: 10px 0;
+}
+
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: var(--light);
+}
+
+
+
+
+.meter-container {
+    width: 30px;
+    height: 150px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--gray);
+}
+
+@keyframes peakFlash {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Scale Markings */
+.meter-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(to bottom, 
+        transparent 0%, 
+        transparent 25%, 
+        rgba(255, 255, 255, 0.1) 25%, 
+        rgba(255, 255, 255, 0.1) 26%,
+        transparent 26%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0.1) 51%,
+        transparent 51%,
+        transparent 75%,
+        rgba(255, 255, 255, 0.1) 75%, 
+        rgba(255, 255, 255, 0.1) 76%,
+        transparent 76%);
+    pointer-events: none;
+}
+
+.meter-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(to top, 
+        var(--error) 0%, 
+        var(--warning) 50%, 
+        var(--success) 100%);
+    transition: height 0.03s ease;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+/* Peak Indicator */
+.meter-fill.peak::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--light);
+    opacity: 1;
+    animation: peakFlash 0.5s ease-out;
+}
+
+.btn {
+    width: 30px;
+    height: 30px;
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 14px;
+    position: relative;
+}
+
+.btn:hover {
+    background: #666;
+}
+
+
+
+.btn.active {
+    background: var(--accent);
+    color: var(--dark);
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+}
+
+@media (max-width: 1200px) {
+    .studio-workspace {
+        grid-template-columns: 280px 1fr;
+    }
+    .right-sidebar {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .studio-workspace {
+        grid-template-columns: 1fr;
+    }
+    .left-sidebar {
+        display: none;
+    }
+    .effect-rack {
+        grid-template-columns: 1fr;
+        padding: 15px 0;
+    }
+    .effect-module {
+        padding: 20px;
+    }
+}

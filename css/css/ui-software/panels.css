@@ -1,0 +1,223 @@
+/* --- CSS VARIABLES FOR THEME --- */
+:root {
+    --ph-bg-base: #1e1e1e;       /* Main background */
+    --ph-bg-panel: #252526;      /* Panel body */
+    --ph-bg-header: #333333;     /* Panel header */
+    --ph-bg-card: #2d2d30;       /* Card background */
+    --ph-bg-input: #181818;      /* Input background */
+    --ph-bg-btn: #3e3e42;        /* Button background */
+    --ph-bg-btn-hover: #505055;
+    --ph-bg-btn-active: #2d2d30;
+    
+    --ph-accent: #007acc;        /* Software primary blue */
+    --ph-accent-hover: #0098ff;
+    
+    --ph-text-bright: #ffffff;
+    --ph-text-main: #cccccc;
+    --ph-text-dim: #858585;
+    
+    --ph-border: #3e3e42;
+    --ph-radius: 4px;
+    --ph-font: 'Segoe UI', Inter, Roboto, Helvetica, sans-serif;
+}
+
+/* --- MAIN PANEL --- */
+.panel {
+    width: 320px; /* Adjustable width */
+    background-color: var(--ph-bg-panel);
+    color: var(--ph-text-main);
+    font-family: var(--ph-font);
+    font-size: 12px;
+    border: 1px solid var(--ph-border);
+    border-radius: var(--ph-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    /* Note: Remove display:none from your HTML to see this! */
+}
+
+.panel-header {
+    background-color: var(--ph-bg-header);
+    color: var(--ph-text-bright);
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    user-select: none;
+}
+
+.panel-header:hover {
+    background-color: var(--ph-bg-btn);
+}
+
+.panel-content {
+    padding: 12px;
+}
+
+/* --- TYPOGRAPHY & LAYOUT --- */
+.ph-sec-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ph-text-dim);
+    font-weight: 700;
+}
+
+.ph-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* --- CARDS (Sub-panels) --- */
+.ph-card {
+    background-color: var(--ph-bg-card);
+    border: 1px solid var(--ph-border);
+    border-radius: var(--ph-radius);
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.ph-card:last-child {
+    margin-bottom: 0;
+}
+
+.ph-card-title {
+    font-weight: 600;
+    color: var(--ph-text-bright);
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--ph-border);
+}
+
+/* --- BUTTONS --- */
+.ph-btn {
+    background-color: var(--ph-bg-btn);
+    color: var(--ph-text-bright);
+    border: 1px solid transparent;
+    border-radius: var(--ph-radius);
+    padding: 5px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.1s ease;
+}
+
+.ph-btn:hover { background-color: var(--ph-bg-btn-hover); }
+.ph-btn:active { background-color: var(--ph-bg-btn-active); border-color: var(--ph-border); }
+
+.ph-btn-icon {
+    padding: 6px;
+    flex: 1; /* Distributes evenly in flex row */
+}
+
+.ph-btn-large { width: 100%; padding: 8px; }
+
+.ph-btn-action { flex: 1; }
+
+.ph-btn-primary {
+    background-color: var(--ph-accent);
+    color: white;
+    flex: 1;
+}
+.ph-btn-primary:hover { background-color: var(--ph-accent-hover); }
+
+/* --- PROPERTY ROWS (Label + Input) --- */
+.ph-prop-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.ph-prop-row:last-child {
+    margin-bottom: 0;
+}
+
+.ph-prop-label {
+    width: 40%; /* Left column width */
+    color: var(--ph-text-main);
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ph-prop-ctrl {
+    width: 60%; /* Right column width */
+    display: flex;
+    align-items: center;
+}
+
+/* --- INPUTS --- */
+.ph-num-input, .ph-select {
+    width: 100%;
+    background-color: var(--ph-bg-input);
+    color: var(--ph-text-bright);
+    border: 1px solid var(--ph-border);
+    border-radius: 3px;
+    padding: 4px 6px;
+    font-size: 12px;
+    font-family: var(--ph-font);
+    box-sizing: border-box;
+}
+
+.ph-num-input:focus, .ph-select:focus {
+    outline: none;
+    border-color: var(--ph-accent);
+}
+
+.ph-checkbox {
+    accent-color: var(--ph-accent);
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* --- VECTOR / CLIPPING INPUTS (N/F) --- */
+.ph-vec-input-wrap {
+    display: flex;
+    align-items: center;
+    background-color: var(--ph-bg-input);
+    border: 1px solid var(--ph-border);
+    border-radius: 3px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.ph-vec-input-wrap:focus-within {
+    border-color: var(--ph-accent);
+}
+
+.ph-vec-axis {
+    background-color: var(--ph-bg-btn);
+    color: var(--ph-text-dim);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 6px;
+    border-right: 1px solid var(--ph-border);
+    user-select: none;
+}
+
+.ph-vec-input {
+    border: none;
+    background: transparent;
+    padding: 4px;
+}
+
+.ph-vec-input:focus { outline: none; }
+
+/* Scrollbar styling for dropdowns/panel */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--ph-bg-base); }
+::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #5a5a5a; }
+
+

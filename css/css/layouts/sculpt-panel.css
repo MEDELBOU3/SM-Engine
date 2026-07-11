@@ -1,0 +1,713 @@
+
+/* Font and Root Styling */
+#sculpting-panel {
+    display: none; /* Forced hidden by default */
+    background:
+        radial-gradient(circle at top left, rgba(57, 108, 181, 0.12), transparent 28%),
+        linear-gradient(180deg, #171a21, #0f1218 55%, #0c0f14);
+    border: 1px solid rgba(104, 156, 235, 0.22);
+    margin: 10px 0;
+    width: 100% !important;
+    max-width: 100%;
+    position: relative !important;
+    border-radius: 14px;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: max-content;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
+    isolation: isolate;
+}
+
+/* Activated via Toolbar */
+#sculpting-panel.active-mode,
+#sculpting-panel[style*="display: block"] {
+    display: flex !important;
+    flex-direction: column;
+    align-self: stretch;
+}
+
+.inspector-main-content > #sculpting-panel {
+    flex: 0 0 auto;
+    align-self: stretch;
+}
+
+/* Scrollbar - Clean and Minimal */
+#sculpting-panel::-webkit-scrollbar {
+    width: 8px;
+}
+#sculpting-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+#sculpting-panel::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+#sculpting-panel::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Header - Professional Title Bar */
+.sculpting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+    background: linear-gradient(to bottom, rgba(40, 50, 68, 0.98), rgba(21, 26, 35, 0.98));
+    border-bottom: 1px solid rgba(139, 179, 239, 0.14);
+}
+
+.sculpting-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.close-btn:hover {
+    opacity: 1;
+}
+.close-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: #888;
+    transition: stroke 0.2s;
+}
+.close-btn:hover svg {
+    stroke: #fff;
+}
+
+/* Status Bar - Clean, Even Spacing */
+#sculpting-panel .status-bar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    padding: 14px 18px;
+    background: rgba(10, 14, 20, 0.78);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#sculpting-panel .status-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(102, 128, 163, 0.1);
+}
+
+#sculpting-panel .status-label {
+    color: #666;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+}
+
+#sculpting-panel .status-value {
+    color: #ccc;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+/* Sections */
+.sculpting-section {
+    display: block;
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.sculpting-section:last-child {
+    border-bottom: none;
+}
+
+.section-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #88bfff;
+    margin-bottom: 14px;
+}
+
+/* Activation Buttons */
+.button-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.action-btn:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+.action-btn:active {
+    transform: translateY(0);
+}
+
+.action-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.action-btn.activate {
+    background: #2e7d32;
+    color: #fff;
+}
+.action-btn.activate svg {
+    fill: currentColor;
+}
+
+.action-btn.deactivate {
+    background: #c62828;
+    color: #fff;
+}
+.action-btn.deactivate svg {
+    fill: currentColor;
+}
+
+.action-btn.undo,
+.action-btn.reset {
+    background: linear-gradient(180deg, #232a35, #1a1f28);
+    color: #d5deeb;
+    border: 1px solid rgba(105, 128, 161, 0.25);
+}
+.action-btn.undo svg,
+.action-btn.reset svg {
+    stroke: currentColor;
+    fill: none;
+}
+
+/* Brush Grid */
+.brush-grid-extended {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.brush-category {
+    background: linear-gradient(180deg, rgba(22, 25, 31, 0.98), rgba(12, 14, 18, 0.98));
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid rgba(108, 129, 161, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.category-label {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #222;
+}
+
+.brush-btn {
+    background: linear-gradient(180deg, #273140, #181d25);
+    border: 1px solid rgba(114, 137, 173, 0.18);
+    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    padding: 8px;
+    margin: 8px auto;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+}
+.brush-btn:hover {
+    background: linear-gradient(180deg, #344257, #1f2631);
+    border-color: rgba(133, 167, 219, 0.42);
+    transform: translateY(-1px);
+}
+.brush-btn.active {
+    background: linear-gradient(180deg, #18456d, #102c46);
+    border-color: #69b1ff;
+    box-shadow: 0 0 16px rgba(84, 167, 255, 0.28);
+}
+.brush-btn.active .brush-icon svg {
+    transform: scale(1.1);
+    stroke: #8dccff;
+}
+
+.brush-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    transition: all 0.2s;
+}
+
+.brush-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: #ccc;
+}
+.brush-btn.active .brush-name {
+    color: #ff9800;
+}
+
+/* Each parameter group */
+.param-group {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.param-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Label */
+.param-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #cccccc;
+}
+
+/* Controls row */
+.param-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Custom range slider */
+.slider {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: #333;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+/* Track (WebKit) */
+.slider::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+    background: #333;
+}
+
+/* Filled portion (WebKit) */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #4a9eff;
+    cursor: pointer;
+    border: 3px solid #222;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: all 0.2s ease;
+}
+
+/* Hover & focus */
+.slider:hover::-webkit-slider-thumb,
+.slider:focus::-webkit-slider-thumb {
+    transform: scale(1.15);
+    background: #6bb3ff;
+    box-shadow: 0 4px 12px rgba(74,158,255,0.4);
+}
+
+/* Firefox thumb */
+.slider::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #4a9eff;
+    cursor: pointer;
+    border: 3px solid #222;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: all 0.2s ease;
+}
+
+.slider:hover::-moz-range-thumb,
+.slider:focus::-moz-range-thumb {
+    transform: scale(1.15);
+    background: #6bb3ff;
+}
+
+/* Firefox track */
+.slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+    background: #333;
+}
+
+/* Filled track effect (progress) - WebKit only (good enough for most cases) */
+.slider::-webkit-slider-runnable-track {
+    background: linear-gradient(to right, #4a9eff 0%, #4a9eff var(--value, 50%), #333 var(--value, 50%), #333 100%);
+}
+
+/* Number input */
+.param-input {
+    width: 68px;
+    padding: 6px 8px;
+    background: #121722;
+    border: 1px solid rgba(108, 129, 161, 0.24);
+    border-radius: 6px;
+    color: #e0e0e0;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* Remove spinners */
+.param-input::-webkit-inner-spin-button,
+.param-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.param-input {
+    -moz-appearance: textfield;
+}
+
+/* Focus style */
+.param-input:focus {
+    outline: none;
+    border-color: #4a9eff;
+    box-shadow: 0 0 0 2px rgba(74,158,255,0.3);
+}
+
+/* Current value display */
+.param-value {
+    width: 48px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+/* Min/Max descriptive labels */
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Toggles */
+.toggle-group {
+    margin-bottom: 14px;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 13px;
+    color: #eee;
+}
+
+.checkbox-input {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #555;
+    border-radius: 4px;
+    background: #1a1a1a;
+    margin-right: 10px;
+    position: relative;
+    transition: all 0.2s;
+}
+.checkbox-input:checked {
+    background: #ff9800;
+    border-color: #ff9800;
+}
+.checkbox-input:checked::after {
+    content: '✓';
+    color: #000;
+    font-weight: bold;
+    position: absolute;
+    top: -2px;
+    left: 2px;
+    font-size: 14px;
+}
+
+.toggle-hint {
+    font-size: 11px;
+    color: #777;
+    margin-top: 4px;
+    margin-left: 28px;
+}
+
+/* Axis Selection */
+.axis-selection {
+    margin-top: 12px;
+}
+
+.axis-label {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 6px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.axis-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.axis-btn {
+    flex: 1;
+    background: #222226;
+    border: 1px solid #333;
+    color: #aaa;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+.axis-btn:hover {
+    background: #2a2a2e;
+    color: #fff;
+}
+.axis-btn.active {
+    background: var(--ph-accent) !important;
+    color: #fff !important;
+    border-radius: 2px;
+}
+
+/* Tool Buttons */
+.tool-button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+.tool-btn:active {
+    transform: translateY(0);
+}
+
+.tool-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+}
+
+.tool-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: #ddd;
+}
+
+/* Shortcuts */
+.shortcuts-list {
+    background: #10141b;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(106, 126, 157, 0.14);
+}
+
+.shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #222;
+}
+.shortcut-item:last-child {
+    border-bottom: none;
+}
+
+.shortcut-key {
+    font-family: 'Consolas', 'Courier New', monospace;
+    color: #8dc7ff;
+    background: #1f2833;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+.sculpting-activation-note {
+    margin-top: 12px;
+    color: #93a8c7;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.compact-toggle .toggle-hint {
+    margin-left: 0;
+    margin-top: 8px;
+    display: block;
+}
+
+.sculpt-nav-board-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.sculpt-nav-board {
+    position: relative;
+    flex: 1;
+    min-height: 140px;
+    border-radius: 18px;
+    border: 1px solid rgba(103, 131, 169, 0.24);
+    background:
+        radial-gradient(circle at center, rgba(100, 169, 255, 0.14), transparent 38%),
+        linear-gradient(180deg, rgba(24, 31, 40, 0.98), rgba(12, 16, 22, 0.98));
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+}
+
+.sculpt-nav-board.is-active {
+    cursor: grabbing;
+    border-color: rgba(125, 180, 255, 0.55);
+    box-shadow: 0 0 0 1px rgba(94, 168, 255, 0.2) inset, 0 0 18px rgba(41, 124, 221, 0.22);
+}
+
+.nav-board-glow {
+    position: absolute;
+    inset: 18px;
+    border-radius: 50%;
+    border: 1px dashed rgba(129, 179, 255, 0.14);
+}
+
+.nav-board-center {
+    position: absolute;
+    inset: 50%;
+    width: 12px;
+    height: 12px;
+    margin-left: -6px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: #71b7ff;
+    box-shadow: 0 0 16px rgba(113, 183, 255, 0.6);
+}
+
+.nav-board-label {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #d9e9ff;
+}
+
+.nav-board-label span {
+    font-size: 11px;
+    font-weight: 400;
+    color: #89a1c4;
+}
+
+.sculpt-nav-zoom {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.nav-zoom-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid rgba(109, 141, 183, 0.24);
+    background: linear-gradient(180deg, #26303e, #171c24);
+    color: #e8f2ff;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.nav-zoom-btn:hover {
+    border-color: rgba(125, 180, 255, 0.5);
+    background: linear-gradient(180deg, #314153, #1e2631);
+}
+
+.resolution-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.sculpt-select {
+    flex: 1;
+    min-height: 42px;
+    background: #121722;
+    border: 1px solid rgba(108, 129, 161, 0.24);
+    border-radius: 8px;
+    color: #dde7f4;
+    padding: 0 12px;
+}
+
+@media (max-width: 1400px) {
+    .brush-grid-extended {
+        grid-template-columns: 1fr;
+    }
+}
+
+.shortcut-desc {
+    font-size: 12px;
+    color: #aaa;
+}
+
+/* Hint Text */
+.hint-text {
+    font-size: 11px;
+    color: #777;
+    margin-top: 10px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+/* General SVG Defaults */
+svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
