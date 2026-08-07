@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engine Architecture - SM Engine Documentation</title>
+    <link rel="stylesheet" href="./docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="top-nav">
+        <a href="../index.html" class="nav-brand">
+            <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.1</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../index.html">Main Site</a></li>
+                <li><a href="../features.html">Features</a></li>
+                <li><a href="index.html" class="active">Documentation</a></li>
+                <li><a href="../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Getting Started
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Introduction & Overview</a></li>
+                    <li><a href="getting-started.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="interface.html" class="sidebar-link">Interface & Layout</a></li>
+                    <li><a href="shortcuts.html" class="sidebar-link">Keyboard Shortcuts</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    3D Creation
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="modeling.html" class="sidebar-link">Mesh Modeling & Modifiers</a></li>
+                    <li><a href="sculpting.html" class="sidebar-link">Sculpting & Terrain</a></li>
+                    <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
+                    <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
+                    <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    Animation & 2D
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Node Editors & Systems
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="node-editors.html" class="sidebar-link">Visual Node Graphs</a></li>
+                    <li><a href="physics.html" class="sidebar-link">Physics & Dynamics</a></li>
+                    <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
+                    <li><a href="scripting.html" class="sidebar-link">JavaScript Scripting API</a></li>
+                    <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Engine & Developer
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="architecture.html" class="sidebar-link active">Engine Architecture</a></li>
+                    <li><a href="workspaces.html" class="sidebar-link">Workspaces & Modes</a></li>
+                    <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
+                    <li><a href="video-editing.html" class="sidebar-link">Video Editing</a></li>
+                    <li><a href="audio.html" class="sidebar-link">Audio & MetaSound</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="index.html">Docs</a> / Engine & Developer / Engine Architecture
+                </nav>
+
+                <h1>Engine Architecture</h1>
+                <p class="page-lead">
+                    Under the hood of SM Engine: how the editor boots, which libraries power its core, how render/simulation systems are wired, and where each source folder lives.
+                </p>
+
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Runtime stack</strong>
+                        The editor runs on <strong>Three.js r147</strong> (WebGL2), with physics from <strong>ammo.js / Bullet</strong> and <strong>cannon-es</strong>, UI dialogs via <strong>dat.GUI / lil-gui</strong>, node graphs via <strong>LiteGraph</strong>, and code editing through <strong>CodeMirror</strong> + <strong>Monaco</strong>. The desktop shell is <strong>Electron</strong>.
+                    </div>
+                </div>
+
+                <h2 id="bootstrap">Application Bootstrap</h2>
+                <p>
+                    The entry point is <code>index.html</code>. It loads roughly <strong>120 local scripts</strong> in dependency order, ending with the engine core (<code>engine/globals.js</code>, <code>engine/grid-materials-obstacles.js</code>, <code>engine/camera-system.js</code>, <code>engine/animate-loop.js</code>, <code>engine/SMViewportSystem.js</code>) and finally the main orchestrator <code>index.js</code>. The whole scene is bootstrapped by a single guarded <code>async function init()</code> in <code>index.js</code>.
+                </p>
+                <ol>
+                    <li><strong>Guard &amp; error handling</strong> — <code>initStarted</code>/<code>initCompleted</code> flags keep init idempotent; a global <code>window.__smInitErrorHandler</code> captures startup errors.</li>
+                    <li><strong>Scene</strong> — a <code>THREE.Scene</code> (background <code>0x393939</code>) is created and exposed as <code>window.scene</code>, seeded with a hemisphere "editor" light.</li>
+                    <li><strong>Camera</strong> — <code>window.cameraSystem = new CameraSystem(scene, container, ...)</code> builds the perspective camera (<code>window.camera</code>) and a top-down orthographic camera (<code>window.orthographicCamera</code>), then wires <code>THREE.OrbitControls</code> as <code>window.controls</code> (right-mouse disarmed).</li>
+                    <li><strong>Renderer</strong> — a raw <code>THREE.WebGLRenderer</code> (antialias, <code>logarithmicDepthBuffer</code>, PCFSoft shadow maps, ACESFilmic tone mapping, exposure 0.55) is created and exposed as <code>window.renderer</code>.</li>
+                    <li><strong>Viewport system</strong> — <code>window.SMViewportSystem</code> takes over <code>#sm-viewport-root</code> to host the multi-panel (tiling / game / mirror) viewport layout.</li>
+                    <li><strong>Transform gizmo</strong> — <code>THREE.TransformControls</code> as <code>window.transformControls</code>, attached to the active camera and hardened for gizmo rendering.</li>
+                    <li><strong>Engine subsystems</strong> — <code>NaniteSystem</code> (auto-LOD), <code>PerformanceManager</code>, <code>WaterSystem</code>, <code>LumenLightingSystem</code>, <code>SkyLightingSystem</code> (weather + atmosphere), terrain node editor, rig manager, UV inspector, history, sculpting, persistence and the game environment (floor + obstacles) are constructed in dependency order.</li>
+                    <li><strong>Persistence</strong> — <code>window.persistenceManager</code> restores the last saved scene and starts a 60-second auto-save timer.</li>
+                    <li><strong>Render loop</strong> — <code>animate()</code> is kicked via <code>requestAnimationFrame</code>.</li>
+                </ol>
+
+                <h2 id="core-modules">Core Module Map</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>File</th>
+                                <th>Responsibility</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>renderer</code> / <code>scene</code></td>
+                                <td><code>index.js</code></td>
+                                <td>WebGL renderer, scene graph, guards, auto-save bridge (global <code>window.renderer</code>, <code>window.scene</code>).</td>
+                            </tr>
+                            <tr>
+                                <td><code>CameraSystem</code></td>
+                                <td><code>engine/camera-system.js</code></td>
+                                <td>Perspective + orthographic cameras, orbit/perspective switching, <code>camera-update</code> events.</td>
+                            </tr>
+                            <tr>
+                                <td><code>animate()</code></td>
+                                <td><code>engine/animate-loop.js</code></td>
+                                <td>The per-frame engine: physics tick, timeline playback, LOD, water/vegetation wind, viewport scissor rendering.</td>
+                            </tr>
+                            <tr>
+                                <td><code>SMViewportSystem</code></td>
+                                <td><code>engine/SMViewportSystem.js</code></td>
+                                <td>Multi-panel tiling viewports, game-view panels, mirror splits, panel aspect/camera routing.</td>
+                            </tr>
+                            <tr>
+                                <td><code>WorkspaceManager</code></td>
+                                <td><code>js/app/WorkspaceManager.js</code></td>
+                                <td>FILM / GAME_DEV / TERRAIN workspaces, per-mode scene presets, business modal.</td>
+                            </tr>
+                            <tr>
+                                <td><code>SMTimeline</code></td>
+                                <td><code>js/timeline/sm-timeline-core.js</code></td>
+                                <td>Keyframes, playback, mixer sync, interpolation, binary evaluator.</td>
+                            </tr>
+                            <tr>
+                                <td><code>PhysicsSystem</code></td>
+                                <td><code>physics/ui/PhysicsUI.js</code></td>
+                                <td>Ammo/Bullet rigid bodies, soft bodies, forces, joints, collision masks.</td>
+                            </tr>
+                            <tr>
+                                <td><code>ScenePersistenceManager</code></td>
+                                <td><code>processing/persistence/ScenePersistenceManager.js</code></td>
+                                <td>Save/load scene JSON (IndexedDB), auto-save, project files.</td>
+                            </tr>
+                            <tr>
+                                <td><code>HistoryManager</code></td>
+                                <td><code>history/history.js</code></td>
+                                <td>Unified undo/redo stack (default 50 steps) for transforms, timeline, materials.</td>
+                            </tr>
+                            <tr>
+                                <td><code>PanelRegistry</code></td>
+                                <td><code>panels/PanelRegistry.js</code></td>
+                                <td>Boots modular panels: welcome, toolbar, hierarchy, inspector, modeling, timeline, asset, VFX, code, bone-rig.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="folder-layout">Repository Folder Layout</h2>
+                <ul>
+                    <li><code>engine/</code> — renderer &amp; scene shell: camera-system, animate-loop, globals, grid-materials-obstacles (room floor/environment), advanced-lighting, SMViewportSystem, motion-matching player control.</li>
+                    <li><code>js/app/</code> — WorkspaceManager, app-bootstrap (global bindings, panel resizers), editor-mode-save assistant.</li>
+                    <li><code>js/timeline/</code> — sm-timeline-core, animation-converter, binary evaluator, timeline audio/events.</li>
+                    <li><code>panels/</code> — all dockable panels and the welcome modal (Toolbar, Hierarchy, Inspector, Timeline, Sculpting, Asset, Code, BoneRig, VFX, Camera/lighting).</li>
+                    <li><code>modeling/</code> + <code>modifiers/</code> — mesh tools (knife, loop cut, bevel, bridges) plus the modifier stack (array, mirror, subdivision, bevel, solidify, decimate, lattice…).</li>
+                    <li><code>sculpting/</code> — brushes, WASM sculpt engine (<code>sculpt_engine.cpp</code>), terrain sculpting, vegetation painting, hair system.</li>
+                    <li><code>nodes/</code> — node editors: <code>MaterialNodeEditor.js</code>, <code>NodeTerrainEditor.js</code>, VFX studio, explosions.</li>
+                    <li><code>physics/</code> — <code>PhysicsSystem</code> implementation living in physics/ui, zones, material brush.</li>
+                    <li><code>rendering/</code> — <code>SMRenderPipeline.js</code> (post-processing passes, quality presets, offline/video render engine).</li>
+                    <li><code>runtime/</code> — packaged game export loader (<code>game-export-system.js</code>, exported web template).</li>
+                    <li><code>advanced-modeler/</code> — parametric/curve sketching: ProfileExtrusion, TwoDProfileDrawer, curve tangents, multiview canvas.</li>
+                    <li><code>animations/</code> — character animation, bone controller, player graph, riggings, animation grid/camera tools.</li>
+                    <li><code>2D-editor/</code> — 2D canvas drawing, brush system, onion skin, storyboard, sprite editor, color/coloring system.</li>
+                    <li><code>video-editing/</code> — tabbed inspector video editor, clip/color timeline.</li>
+                    <li><code>nodes + MetaSound</code> — <code>js/MetaSoundEditor/</code> and <code>engine/soundes/</code> host the audio graph editor.</li>
+                </ul>
+
+                <h2 id="globals">Global Singletons & Wiring</h2>
+                <p>
+                    SM Engine exposes a set of globals via <code>window</code> so panels and scripts share one instance each:
+                </p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Global</th>
+                                <th>Set by</th>
+                                <th>Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>window.scene</code></td><td><code>index.js</code></td><td>The active THREE.Scene.</td></tr>
+                            <tr><td><code>window.renderer</code></td><td><code>index.js</code></td><td>WebGLRenderer instance.</td></tr>
+                            <tr><td><code>window.camera</code> / <code>window.orthographicCamera</code></td><td><code>engine/camera-system.js</code></td><td>Perspective and ortho cameras.</td></tr>
+                            <tr><td><code>window.controls</code></td><td><code>engine/camera-system.js</code></td><td>OrbitControls / Blender-style controls.</td></tr>
+                            <tr><td><code>window.transformControls</code></td><td><code>index.js</code></td><td>Move/rotate/scale gizmo.</td></tr>
+                            <tr><td><code>window.SMTimeline</code></td><td><code>js/timeline/sm-timeline-core.js</code></td><td>Timeline playback controller.</td></tr>
+                            <tr><td><code>window.SMViewportSystem</code></td><td><code>engine/SMViewportSystem.js</code></td><td>Multi-viewport panels.</td></tr>
+                            <tr><td><code>window.historyManager</code></td><td><code>history/history.js</code></td><td>Unified undo/redo.</td></tr>
+                            <tr><td><code>window.persistenceManager</code></td><td><code>processing/persistence/ScenePersistenceManager.js</code></td><td>Scene save/load/auto-save.</td></tr>
+                            <tr><td><code>window.cameraSystem</code></td><td><code>index.js</code></td><td>Camera rig manager.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout tip">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                    <div class="callout-body">
+                        <strong>Scene patching</strong>
+                        To keep the hierarchy, timeline, LOD system and persistence in sync, SM Engine pathtches <code>scene.add()</code>/<code>scene.remove()</code> at boot so every object added or removed is automatically registered with the timeline (unless flagged <code>userData.ignoreInTimeline</code>) and the auto-saver.
+                    </div>
+                </div>
+
+                <div class="page-navigation">
+                    <a href="index.html" class="nav-card">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Documentation Overview</span>
+                    </a>
+                    <a href="workspaces.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Step</span>
+                        <span class="nav-card-title">Workspaces & Modes →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="./docs.js"></script>
+</body>
+</html>

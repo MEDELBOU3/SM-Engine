@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface & Layout - SM Engine Documentation</title>
+    <title>Workspaces & Modes - SM Engine Documentation</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
         <a href="../index.html" class="nav-brand">
             <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
             <span class="brand-title">SM Engine</span>
-            <span class="brand-badge">Docs v1.0</span>
+            <span class="brand-badge">Docs v1.1</span>
         </a>
         <div class="nav-center">
             <ul class="nav-links">
@@ -38,6 +38,7 @@
     </header>
 
     <div class="docs-container">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-group">
                 <div class="sidebar-group-title">
@@ -47,7 +48,7 @@
                 <ul class="sidebar-links">
                     <li><a href="index.html" class="sidebar-link">Introduction & Overview</a></li>
                     <li><a href="getting-started.html" class="sidebar-link">Installation & Setup</a></li>
-                    <li><a href="interface.html" class="sidebar-link active">Interface & Layout</a></li>
+                    <li><a href="interface.html" class="sidebar-link">Interface & Layout</a></li>
                     <li><a href="shortcuts.html" class="sidebar-link">Keyboard Shortcuts</a></li>
                 </ul>
             </div>
@@ -90,14 +91,15 @@
                     <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
                 </ul>
             </div>
-                    <div class="sidebar-group">
+
+            <div class="sidebar-group">
                 <div class="sidebar-group-title">
                     <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                     Engine & Developer
                 </div>
                 <ul class="sidebar-links">
                     <li><a href="architecture.html" class="sidebar-link">Engine Architecture</a></li>
-                    <li><a href="workspaces.html" class="sidebar-link">Workspaces & Modes</a></li>
+                    <li><a href="workspaces.html" class="sidebar-link active">Workspaces & Modes</a></li>
                     <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
                     <li><a href="video-editing.html" class="sidebar-link">Video Editing</a></li>
                     <li><a href="audio.html" class="sidebar-link">Audio & MetaSound</a></li>
@@ -105,110 +107,96 @@
             </div>
         </aside>
 
+        <!-- Main Content -->
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / Getting Started / Interface & Layout
+                    <a href="index.html">Docs</a> / Engine & Developer / Workspaces & Modes
                 </nav>
 
-                <h1>Interface & Layout Reference</h1>
+                <h1>Workspaces & Modes</h1>
                 <p class="page-lead">
-                    Comprehensive overview of the SM Engine user interface components, panel docking system, viewport gizmos, and workspace tabs.
+                    SM Engine is a mode-based editor. Each workspace (FILM, GAME_DEV, TERRAIN) reconfigures the scene, lighting, and environment, and the Game Dev workspace further switches between 2D, 2.5D and 3D play viewports.
                 </p>
 
-                <h2 id="main-regions">Main Interface Regions</h2>
-                <p>The workspace consists of five core flexible regions:</p>
+                <h2 id="workspace-manager">Workspace Manager</h2>
+                <p>
+                    The <code>WorkspaceManager</code> (<code>js/app/WorkspaceManager.js</code>) owns the mode registry, the workspace "business" modal, per-mode scene presets and recent project list. Each mode stores a settings block that describes which environment layers are active:
+                </p>
                 <ul>
-                    <li><strong>Top Header Menu Bar:</strong> File, Edit, Add, Render, Window, Help menus, and Workspace Tab Selector (Layout, Modeling, Scripting, Graph Workspace, 2D Animation).</li>
-                    <li><strong>Left Tools Panel:</strong> Mode-specific creation tools (Select, Move, Rotate, Scale, Extrude, Loop Cut, Sculpt Brushes).</li>
-                    <li><strong>Central 3D Viewport:</strong> WebGL interactive scene canvas with 3D orientation gizmo, grid plane, camera overlays, and context menus.</li>
-                    <li><strong>Right Sidebar (Hierarchy & Inspector):</strong> Outliner scene graph tree on top, Object/Material/Physics Inspector properties panel on bottom.</li>
-                    <li><strong>Bottom Drawer (Timeline / Node Graph):</strong> Dockable timeline with keyframes, playback controls, graph editor, spreadsheet data, or visual node graph wrappers.</li>
+                    <li><strong>sky</strong> — enables the atmospheric sky / HDRI dome.</li>
+                    <li><strong>fog</strong> — toggles scene fog for depth and atmosphere.</li>
+                    <li><strong>floor</strong> — the unreal-style ground plane (<code>UnrealEngineFloor</code>).</li>
+                    <li><strong>obstacles</strong> — the <code>ObstaclesGroup</code> of gameplay blockers.</li>
+                    <li><strong>player / horse</strong> — loads the playable character and horse controllers.</li>
+                    <li><strong>grid</strong> — Blender-style ground grid.</li>
+                    <li><strong>studioLights</strong> — neutral editor lighting rig.</li>
                 </ul>
 
-                <h2 id="viewport-navigation">3D Viewport Controls</h2>
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Action</th>
-                                <th>Mouse / Gesture</th>
-                                <th>Hotkey</th>
+                                <th>Mode</th>
+                                <th>Key</th>
+                                <th>Purpose</th>
+                                <th>Default Scene Layers</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Orbit View</strong></td>
-                                <td>Middle Mouse Button (MMB) + Drag</td>
-                                <td><code>Numpad 2/4/6/8</code></td>
+                                <td><strong>Film / Studio</strong></td>
+                                <td><code>FILM</code></td>
+                                <td>Clean studio viewport for modeling, sculpting, 2D animation and rendering.</td>
+                                <td>Studio lights, grid helper, minimal sky, full creation tools.</td>
                             </tr>
                             <tr>
-                                <td><strong>Pan View</strong></td>
-                                <td>Shift + Middle Mouse Button + Drag</td>
-                                <td><code>Shift + MMB</code></td>
+                                <td><strong>Game Development</strong></td>
+                                <td><code>GAME_DEV</code></td>
+                                <td>UE-style gameplay iteration with player, horse, controls, collisions.</td>
+                                <td>Sky atmosphere + haze, floor + obstacles, player/horse controllers, collision & gameplay lighting.</td>
                             </tr>
                             <tr>
-                                <td><strong>Zoom View</strong></td>
-                                <td>Scroll Wheel or Ctrl + MMB Drag</td>
-                                <td><code>+ / -</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Frame Selected</strong></td>
-                                <td>Click Object</td>
-                                <td><code>Numpad .</code> or <code>F</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>View Align</strong></td>
-                                <td>Click Axis Gizmo (X/Y/Z)</td>
-                                <td><code>Numpad 1 (Front), 3 (Right), 7 (Top)</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Toggle Camera View</strong></td>
-                                <td>Click Camera Button</td>
-                                <td><code>Numpad 0</code></td>
+                                <td><strong>Terrain</strong></td>
+                                <td><code>TERRAIN</code></td>
+                                <td>Landscape focused workspace with terrain generation/vegetation.</td>
+                                <td>Terrain nodes, vegetation, distance markers, heightfield workflows.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h2 id="inspector-tabs">Inspector Panel Tabs</h2>
-                <p>When an object is selected in the 3D Viewport or Hierarchy Outliner, the Inspector displays detailed property tabs:</p>
+                <h2 id="game-modes">Game Viewport Modes (2D / 2.5D / 3D)</h2>
+                <p>
+                    Within the GAME_DEV workspace, <code>GameModeManager</code> (<code>js/mode-Manager/GameModeManager.js</code>) switches the play viewport:
+                </p>
+                <ul>
+                    <li><strong>2D</strong> (<code>MODE_2D</code>) — orthographic camera (top-down), arcade-style physics, background &amp; grid visible.</li>
+                    <li><strong>2.5D</strong> (<code>MODE_2_5D</code>) — perspective camera with a wider FOV for pseudo-3D platforming.</li>
+                    <li><strong>3D</strong> (<code>MODE_3D</code>) — full perspective gameplay, advanced lighting, HDRI background, and hidden edit-mode grid.</li>
+                </ul>
 
-                <div class="card-grid">
-                    <div class="doc-card">
-                        <div class="doc-card-title">1. Transform Tab</div>
-                        <p class="doc-card-desc">Exact X/Y/Z numerical values for Position, Rotation (Euler degrees or Quaternion), Scale, Dimensions, and Origin Point alignment.</p>
-                    </div>
-
-                    <div class="doc-card">
-                        <div class="doc-card-title">2. Material Tab</div>
-                        <p class="doc-card-desc">Assigned material slots, PBR base color, metallic/roughness sliders, emission color, transparency, and Shader Editor launcher.</p>
-                    </div>
-
-                    <div class="doc-card">
-                        <div class="doc-card-title">3. Physics Tab</div>
-                        <p class="doc-card-desc">Rigid Body type (Dynamic, Static, Kinematic), mass, friction, restitution (bounciness), collision shapes (Box, Sphere, Convex Mesh).</p>
-                    </div>
-
-                    <div class="doc-card">
-                        <div class="doc-card-title">4. Modifiers Tab</div>
-                        <p class="doc-card-desc">Stack of non-destructive procedural modifiers: Subdivision Surface, Mirror, Array, Bevel, Boolean, Solidify, Decimate.</p>
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Preset persistence</strong>
+                        The active workspace is stored in <code>localStorage.sm_workspace_mode</code> and the play view mode in <code>sm_game_dev_mode</code>, so the editor reopens with your last setup.
                     </div>
                 </div>
 
-                <h2 id="multi-view-layouts">Multi-View Split Screen</h2>
+                <h2 id="welcome-modal">Startup &amp; Welcome Modal</h2>
                 <p>
-                    Click the <strong>Split View</strong> button in the viewport header to divide the canvas into 2-viewport or 4-viewport orthographic split views (Top, Front, Side, Perspective), ideal for precision architectural modeling and animation posing.
+                    On first launch the editor shows the <code>WorkspaceManager</code> startup modal with recent projects, a <em>Create</em> box (new FILM or GAME_DEV project) and game-view submode buttons. Recent projects are kept in <code>localStorage.sm_projects</code> and can be loaded directly back into their workspace.
                 </p>
 
                 <div class="page-navigation">
-                    <a href="getting-started.html" class="nav-card">
+                    <a href="architecture.html" class="nav-card">
                         <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← Installation & Setup</span>
+                        <span class="nav-card-title">← Engine Architecture</span>
                     </a>
-                    <a href="shortcuts.html" class="nav-card next">
+                    <a href="timeline.html" class="nav-card next">
                         <span class="nav-card-sub">Next Step</span>
-                        <span class="nav-card-title">Keyboard Shortcuts →</span>
+                        <span class="nav-card-title">Timeline System →</span>
                     </a>
                 </div>
             </main>

@@ -91,6 +91,19 @@
                     <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
                 </ul>
             </div>
+                    <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Engine & Developer
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="architecture.html" class="sidebar-link">Engine Architecture</a></li>
+                    <li><a href="workspaces.html" class="sidebar-link">Workspaces & Modes</a></li>
+                    <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
+                    <li><a href="video-editing.html" class="sidebar-link">Video Editing</a></li>
+                    <li><a href="audio.html" class="sidebar-link">Audio & MetaSound</a></li>
+                </ul>
+            </div>
         </aside>
 
         <!-- Main Content Area -->
@@ -175,6 +188,61 @@
                             <span class="doc-card-title">Visual Node Graphs</span>
                         </div>
                         <p class="doc-card-desc">Five dedicated graph editors: Player Logic visual scripting, VFX Composer particle graph, Terrain Generator, Material Graph, and MetaSound audio editor.</p>
+                    </a>
+                </div>
+
+                <h2 id="engine-developer">Engine & Developer Guides</h2>
+                <p>Deep-dive documentation for the engine internals, workspaces, and media pipelines:</p>
+
+                <div class="card-grid">
+                    <a href="architecture.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            </div>
+                            <span class="doc-card-title">Engine Architecture</span>
+                        </div>
+                        <p class="doc-card-desc">Boot sequence, core module map, repository layout, and the global singletons that wire the editor together.</p>
+                    </a>
+
+                    <a href="workspaces.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            </div>
+                            <span class="doc-card-title">Workspaces & Modes</span>
+                        </div>
+                        <p class="doc-card-desc">FILM, GAME_DEV and TERRAIN workspaces plus the 2D/2.5D/3D game viewport modes and their scene presets.</p>
+                    </a>
+
+                    <a href="timeline.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                            <span class="doc-card-title">Timeline System</span>
+                        </div>
+                        <p class="doc-card-desc">Keyframes, playback, mixer sync, binary evaluator, and how the timeline integrates with the scene graph.</p>
+                    </a>
+
+                    <a href="video-editing.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                            </div>
+                            <span class="doc-card-title">Video Editing</span>
+                        </div>
+                        <p class="doc-card-desc">Non-linear clip editing, color grading, split-screen previews, and rendering the 3D scene to video.</p>
+                    </a>
+
+                    <a href="audio.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                            </div>
+                            <span class="doc-card-title">Audio & MetaSound</span>
+                        </div>
+                        <p class="doc-card-desc">Sound editor, LiteGraph-based MetaSound node authoring, and gameplay audio integration.</p>
                     </a>
                 </div>
 

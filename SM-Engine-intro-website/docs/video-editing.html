@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface & Layout - SM Engine Documentation</title>
+    <title>Video Editing - SM Engine Documentation</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
         <a href="../index.html" class="nav-brand">
             <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
             <span class="brand-title">SM Engine</span>
-            <span class="brand-badge">Docs v1.0</span>
+            <span class="brand-badge">Docs v1.1</span>
         </a>
         <div class="nav-center">
             <ul class="nav-links">
@@ -38,6 +38,7 @@
     </header>
 
     <div class="docs-container">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-group">
                 <div class="sidebar-group-title">
@@ -47,7 +48,7 @@
                 <ul class="sidebar-links">
                     <li><a href="index.html" class="sidebar-link">Introduction & Overview</a></li>
                     <li><a href="getting-started.html" class="sidebar-link">Installation & Setup</a></li>
-                    <li><a href="interface.html" class="sidebar-link active">Interface & Layout</a></li>
+                    <li><a href="interface.html" class="sidebar-link">Interface & Layout</a></li>
                     <li><a href="shortcuts.html" class="sidebar-link">Keyboard Shortcuts</a></li>
                 </ul>
             </div>
@@ -90,7 +91,8 @@
                     <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
                 </ul>
             </div>
-                    <div class="sidebar-group">
+
+            <div class="sidebar-group">
                 <div class="sidebar-group-title">
                     <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                     Engine & Developer
@@ -99,116 +101,67 @@
                     <li><a href="architecture.html" class="sidebar-link">Engine Architecture</a></li>
                     <li><a href="workspaces.html" class="sidebar-link">Workspaces & Modes</a></li>
                     <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
-                    <li><a href="video-editing.html" class="sidebar-link">Video Editing</a></li>
+                    <li><a href="video-editing.html" class="sidebar-link active">Video Editing</a></li>
                     <li><a href="audio.html" class="sidebar-link">Audio & MetaSound</a></li>
                 </ul>
             </div>
         </aside>
 
+        <!-- Main Content -->
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / Getting Started / Interface & Layout
+                    <a href="index.html">Docs</a> / Engine & Developer / Video Editing
                 </nav>
 
-                <h1>Interface & Layout Reference</h1>
+                <h1>Video Editing</h1>
                 <p class="page-lead">
-                    Comprehensive overview of the SM Engine user interface components, panel docking system, viewport gizmos, and workspace tabs.
+                    SM Engine includes a non-linear video editing workspace for clip composition, trimming, color grading, and exporting rendered frames from the 3D scene.
                 </p>
 
-                <h2 id="main-regions">Main Interface Regions</h2>
-                <p>The workspace consists of five core flexible regions:</p>
+                <h2 id="video-editor">Advanced Video Editor</h2>
+                <p>
+                    The editor is implemented in <code>video-editing/video-editor-advanced.js</code>. It provides a tabbed inspector with:
+                </p>
                 <ul>
-                    <li><strong>Top Header Menu Bar:</strong> File, Edit, Add, Render, Window, Help menus, and Workspace Tab Selector (Layout, Modeling, Scripting, Graph Workspace, 2D Animation).</li>
-                    <li><strong>Left Tools Panel:</strong> Mode-specific creation tools (Select, Move, Rotate, Scale, Extrude, Loop Cut, Sculpt Brushes).</li>
-                    <li><strong>Central 3D Viewport:</strong> WebGL interactive scene canvas with 3D orientation gizmo, grid plane, camera overlays, and context menus.</li>
-                    <li><strong>Right Sidebar (Hierarchy & Inspector):</strong> Outliner scene graph tree on top, Object/Material/Physics Inspector properties panel on bottom.</li>
-                    <li><strong>Bottom Drawer (Timeline / Node Graph):</strong> Dockable timeline with keyframes, playback controls, graph editor, spreadsheet data, or visual node graph wrappers.</li>
+                    <li><strong>Clip management</strong> — import, order, trim and layer video/image clips on a timeline.</li>
+                    <li><strong>Color grading</strong> — per-clip color wheels (lift/gamma/gain style controls) and sub-tab color adjustments.</li>
+                    <li><strong>Playback preview</strong> — a dedicated preview panel synced to the timeline clock.</li>
+                    <li><strong>History</strong> — edit actions are recorded via <code>window.veHistory</code> so they can be undone.</li>
+                    <li><strong>Export</strong> — timeline is handed to <code>window.veaExportEngine</code> for rendering the final video.</li>
                 </ul>
 
-                <h2 id="viewport-navigation">3D Viewport Controls</h2>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Action</th>
-                                <th>Mouse / Gesture</th>
-                                <th>Hotkey</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Orbit View</strong></td>
-                                <td>Middle Mouse Button (MMB) + Drag</td>
-                                <td><code>Numpad 2/4/6/8</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Pan View</strong></td>
-                                <td>Shift + Middle Mouse Button + Drag</td>
-                                <td><code>Shift + MMB</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Zoom View</strong></td>
-                                <td>Scroll Wheel or Ctrl + MMB Drag</td>
-                                <td><code>+ / -</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Frame Selected</strong></td>
-                                <td>Click Object</td>
-                                <td><code>Numpad .</code> or <code>F</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>View Align</strong></td>
-                                <td>Click Axis Gizmo (X/Y/Z)</td>
-                                <td><code>Numpad 1 (Front), 3 (Right), 7 (Top)</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Toggle Camera View</strong></td>
-                                <td>Click Camera Button</td>
-                                <td><code>Numpad 0</code></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h2 id="inspector-tabs">Inspector Panel Tabs</h2>
-                <p>When an object is selected in the 3D Viewport or Hierarchy Outliner, the Inspector displays detailed property tabs:</p>
-
-                <div class="card-grid">
-                    <div class="doc-card">
-                        <div class="doc-card-title">1. Transform Tab</div>
-                        <p class="doc-card-desc">Exact X/Y/Z numerical values for Position, Rotation (Euler degrees or Quaternion), Scale, Dimensions, and Origin Point alignment.</p>
-                    </div>
-
-                    <div class="doc-card">
-                        <div class="doc-card-title">2. Material Tab</div>
-                        <p class="doc-card-desc">Assigned material slots, PBR base color, metallic/roughness sliders, emission color, transparency, and Shader Editor launcher.</p>
-                    </div>
-
-                    <div class="doc-card">
-                        <div class="doc-card-title">3. Physics Tab</div>
-                        <p class="doc-card-desc">Rigid Body type (Dynamic, Static, Kinematic), mass, friction, restitution (bounciness), collision shapes (Box, Sphere, Convex Mesh).</p>
-                    </div>
-
-                    <div class="doc-card">
-                        <div class="doc-card-title">4. Modifiers Tab</div>
-                        <p class="doc-card-desc">Stack of non-destructive procedural modifiers: Subdivision Surface, Mirror, Array, Bevel, Boolean, Solidify, Decimate.</p>
-                    </div>
-                </div>
-
-                <h2 id="multi-view-layouts">Multi-View Split Screen</h2>
+                <h2 id="scene-export">Rendering the 3D Scene to Video</h2>
                 <p>
-                    Click the <strong>Split View</strong> button in the viewport header to divide the canvas into 2-viewport or 4-viewport orthographic split views (Top, Front, Side, Perspective), ideal for precision architectural modeling and animation posing.
+                    To render the 3D viewport (or an animation) into video, SM Engine uses <code>SMRenderPipeline</code> (<code>rendering/SMRenderPipeline.js</code>):
+                </p>
+                <ul>
+                    <li><code>SMFrameBufferWindow</code> — presents render output and captures it as a WebM stream via MediaRecorder for live export.</li>
+                    <li><code>SMRenderEngine</code> — offline frame-stepping executor that renders the scene (with post-processing: bloom, SSAO, color grading, FXAA) frame by frame into the selected codec.</li>
+                    <li>Frame timings follow the timeline clock, so keyframed animations are reproduced exactly.</li>
+                </ul>
+
+                <div class="callout tip">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                    <div class="callout-body">
+                        <strong>WebM by default</strong>
+                        Live captures use the browser-native MediaRecorder pipeline (WebM/VP9); for maximum quality prefer the offline <code>SMRenderEngine</code> path, which supports full-resolution frame stepping.
+                    </div>
+                </div>
+
+                <h2 id="split-view">Split-Screen & Mirror View</h2>
+                <p>
+                    The editor's split-view system (<code>js/scene/SceneSplitViewManager.js</code>) can mirror the 3D view into multiple panes, which is used to preview the 2D animation or video composition alongside the 3D scene while editing.
                 </p>
 
                 <div class="page-navigation">
-                    <a href="getting-started.html" class="nav-card">
+                    <a href="timeline.html" class="nav-card">
                         <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← Installation & Setup</span>
+                        <span class="nav-card-title">← Timeline System</span>
                     </a>
-                    <a href="shortcuts.html" class="nav-card next">
+                    <a href="audio.html" class="nav-card next">
                         <span class="nav-card-sub">Next Step</span>
-                        <span class="nav-card-title">Keyboard Shortcuts →</span>
+                        <span class="nav-card-title">Audio & MetaSound →</span>
                     </a>
                 </div>
             </main>
