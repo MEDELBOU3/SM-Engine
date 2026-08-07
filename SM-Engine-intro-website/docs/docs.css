@@ -1,0 +1,698 @@
+/* ==========================================================================
+   SM Engine Documentation Stylesheet
+   Theme: Dark / Light Mode Support, Modern Typography, Custom Scrollbar
+   ========================================================================== */
+
+/* ─── Root CSS Variables ───────────────────────────────────────────────── */
+:root {
+    /* Dark Theme Defaults */
+    --bg-primary: #0a0a0c;
+    --bg-secondary: #121215;
+    --bg-tertiary: #18181c;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --bg-card-hover: rgba(255, 255, 255, 0.06);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-color: #f59e0b;
+    --accent-hover: #d97706;
+    --accent-glow: rgba(245, 158, 11, 0.15);
+    --border-color: #27272a;
+    --border-light: #3f3f46;
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+    --code-header-bg: #1e293b;
+    --scrollbar-track: #0e0e11;
+    --scrollbar-thumb: #27272a;
+    --scrollbar-thumb-hover: #3f3f46;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --table-header-bg: rgba(245, 158, 11, 0.08);
+}
+
+[data-theme="light"] {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --bg-card: rgba(0, 0, 0, 0.02);
+    --bg-card-hover: rgba(0, 0, 0, 0.05);
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --accent-color: #d97706;
+    --accent-hover: #b45309;
+    --accent-glow: rgba(217, 119, 6, 0.12);
+    --border-color: #e2e8f0;
+    --border-light: #cbd5e1;
+    --code-bg: #0f172a; /* Code remains dark for contrast */
+    --code-text: #f1f5f9;
+    --code-header-bg: #1e293b;
+    --scrollbar-track: #f1f5f9;
+    --scrollbar-thumb: #cbd5e1;
+    --scrollbar-thumb-hover: #94a3b8;
+    --shadow-color: rgba(0, 0, 0, 0.08);
+    --table-header-bg: rgba(217, 119, 6, 0.08);
+}
+
+/* ─── Reset & Base ─────────────────────────────────────────────────────── */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ─── Custom Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* ─── SVG Icon Utility ─────────────────────────────────────────────────── */
+.doc-icon {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.doc-icon.sm { width: 14px; height: 14px; }
+.doc-icon.lg { width: 22px; height: 22px; }
+
+/* ─── Top Header Navigation ────────────────────────────────────────────── */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 100;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.nav-brand img {
+    height: 32px;
+    width: 32px;
+    object-contain: contain;
+}
+
+.brand-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+}
+
+.brand-badge {
+    font-size: 0.7rem;
+    background-color: var(--accent-glow);
+    color: var(--accent-color);
+    padding: 0.15rem 0.45rem;
+    border-radius: 12px;
+    border: 1px solid var(--accent-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.nav-center {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.25rem;
+    list-style: none;
+}
+
+.nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--accent-color);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Search Box */
+.search-container {
+    position: relative;
+    width: 260px;
+}
+
+.search-input {
+    width: 100%;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.45rem 0.75rem 0.45rem 2.2rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.search-icon-inside {
+    position: absolute;
+    left: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.theme-toggle-btn:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    background: var(--bg-card-hover);
+}
+
+/* ─── Docs Layout ──────────────────────────────────────────────────────── */
+.docs-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ─── Left Sidebar Navigation ─────────────────────────────────────────── */
+.sidebar {
+    width: 280px;
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem 1rem 3rem 1rem;
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.sidebar-group-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    padding-left: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.75rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.88rem;
+    border-radius: 6px;
+    font-weight: 450;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-link:hover {
+    background-color: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.sidebar-link.active {
+    background-color: var(--accent-glow);
+    color: var(--accent-color);
+    font-weight: 600;
+    border-left: 3px solid var(--accent-color);
+}
+
+/* ─── Main Content Area ───────────────────────────────────────────────── */
+.content-wrapper {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.content {
+    flex: 1;
+    padding: 2.5rem 3.5rem 5rem 3.5rem;
+    overflow-y: auto;
+    max-width: 960px;
+}
+
+.toc-sidebar {
+    width: 220px;
+    padding: 2.5rem 1.5rem 3rem 1rem;
+    border-left: 1px solid var(--border-color);
+    overflow-y: auto;
+    flex-shrink: 0;
+    font-size: 0.82rem;
+}
+
+.toc-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.toc-list a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s;
+    display: block;
+    line-height: 1.4;
+}
+
+.toc-list a:hover,
+.toc-list a.active {
+    color: var(--accent-color);
+}
+
+/* ─── Typography & Content Formatting ────────────────────────────────── */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+}
+
+.breadcrumb a {
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    color: var(--accent-color);
+}
+
+h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    line-height: 1.25;
+}
+
+.page-lead {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    margin: 2.5rem 0 1rem 0;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 1.75rem 0 0.75rem 0;
+}
+
+p {
+    margin-bottom: 1.2rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+ul, ol {
+    margin-bottom: 1.2rem;
+    padding-left: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+li {
+    margin-bottom: 0.4rem;
+}
+
+a.doc-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent-color);
+}
+
+a.doc-link:hover {
+    border-bottom-style: solid;
+}
+
+/* ─── Callout Boxes ────────────────────────────────────────────────────── */
+.callout {
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    background-color: var(--bg-tertiary);
+    border-left: 4px solid var(--accent-color);
+    display: flex;
+    gap: 0.85rem;
+    font-size: 0.9rem;
+}
+
+.callout-icon {
+    color: var(--accent-color);
+    margin-top: 0.15rem;
+}
+
+.callout-body {
+    flex: 1;
+}
+
+.callout-body strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.callout.tip {
+    border-left-color: #10b981;
+    background-color: rgba(16, 185, 129, 0.08);
+}
+.callout.tip .callout-icon { color: #10b981; }
+
+.callout.warning {
+    border-left-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.08);
+}
+.callout.warning .callout-icon { color: #ef4444; }
+
+.callout.note {
+    border-left-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.08);
+}
+.callout.note .callout-icon { color: #3b82f6; }
+
+/* ─── Code Blocks & Inline Code ────────────────────────────────────────── */
+code {
+    font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+    background-color: var(--code-bg);
+    color: var(--accent-color);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+    border: 1px solid var(--border-color);
+}
+
+pre {
+    background-color: var(--code-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+}
+
+.code-header {
+    background-color: var(--code-header-bg);
+    padding: 0.4rem 1rem;
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+pre code {
+    display: block;
+    padding: 1rem;
+    color: var(--code-text);
+    background: transparent;
+    border: none;
+    font-size: 0.88rem;
+    overflow-x: auto;
+    line-height: 1.5;
+}
+
+/* ─── Tables ───────────────────────────────────────────────────────────── */
+.table-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+th {
+    background-color: var(--table-header-bg);
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: var(--bg-card-hover);
+}
+
+/* ─── Cards Grid ───────────────────────────────────────────────────────── */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin: 1.75rem 0;
+}
+
+.doc-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.doc-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 16px var(--shadow-color);
+}
+
+.doc-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.doc-card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background-color: var(--accent-glow);
+    color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.doc-card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.doc-card-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* ─── Bottom Page Navigation ──────────────────────────────────────────── */
+.page-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    gap: 1rem;
+}
+
+.nav-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-secondary);
+    text-decoration: none;
+    color: var(--text-secondary);
+    transition: border-color 0.2s, background-color 0.2s;
+    min-width: 180px;
+}
+
+.nav-card:hover {
+    border-color: var(--accent-color);
+    background-color: var(--bg-card-hover);
+    color: var(--accent-color);
+}
+
+.nav-card-sub {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.nav-card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.nav-card:hover .nav-card-title {
+    color: var(--accent-color);
+}
+
+.nav-card.next {
+    text-align: right;
+    margin-left: auto;
+}
+
+/* ─── Responsive Adjustments ──────────────────────────────────────────── */
+@media (max-width: 992px) {
+    .toc-sidebar { display: none; }
+    .content { padding: 2rem 2rem 4rem 2rem; }
+    .sidebar { width: 240px; }
+}
+
+@media (max-width: 768px) {
+    .docs-container { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; max-height: 200px; border-right: none; border-bottom: 1px solid var(--border-color); }
+    .content { padding: 1.5rem 1rem 3rem 1rem; }
+    .search-container { width: 180px; }
+    .nav-links { display: none; }
+}

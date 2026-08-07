@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materials & Shader Nodes - SM Engine Documentation</title>
+    <link rel="stylesheet" href="./docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="top-nav">
+        <a href="../index.html" class="nav-brand">
+            <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../index.html">Main Site</a></li>
+                <li><a href="../features.html">Features</a></li>
+                <li><a href="index.html" class="active">Documentation</a></li>
+                <li><a href="../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Getting Started
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Introduction & Overview</a></li>
+                    <li><a href="getting-started.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="interface.html" class="sidebar-link">Interface & Layout</a></li>
+                    <li><a href="shortcuts.html" class="sidebar-link">Keyboard Shortcuts</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    3D Creation
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="modeling.html" class="sidebar-link">Mesh Modeling & Modifiers</a></li>
+                    <li><a href="sculpting.html" class="sidebar-link">Sculpting & Terrain</a></li>
+                    <li><a href="materials.html" class="sidebar-link active">Materials & Shader Nodes</a></li>
+                    <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
+                    <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    Animation & 2D
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Node Editors & Systems
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="node-editors.html" class="sidebar-link">Visual Node Graphs</a></li>
+                    <li><a href="physics.html" class="sidebar-link">Physics & Dynamics</a></li>
+                    <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
+                    <li><a href="scripting.html" class="sidebar-link">JavaScript Scripting API</a></li>
+                    <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="index.html">Docs</a> / 3D Creation / Materials & Shader Nodes
+                </nav>
+
+                <h1>Material Node Editor & Shader Graph</h1>
+                <p class="page-lead">
+                    Complete reference for SM Engine's node-based material authoring system, Principled BSDF shader model, and GLSL code injection framework.
+                </p>
+
+                <h2 id="principled-bsdf">Principled BSDF Node</h2>
+                <p>
+                    The <strong>Principled BSDF</strong> node combines multiple physically-based rendering layers into a single comprehensive shader node (similar to Disney / Blender Principled BSDF):
+                </p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Socket Name</th>
+                                <th>Type</th>
+                                <th>Default</th>
+                                <th>PBR Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>BaseColor</strong></td>
+                                <td>Color / vec3</td>
+                                <td><code>#ffffff</code></td>
+                                <td>Surface albedo color or diffuse texture input.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Metallic</strong></td>
+                                <td>Float (0-1)</td>
+                                <td><code>0.00</code></td>
+                                <td>Blends between dielectric (0) and metallic (1) reflection behavior.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Roughness</strong></td>
+                                <td>Float (0-1)</td>
+                                <td><code>0.50</code></td>
+                                <td>Controls specular reflection microfacet sharpness.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Opacity</strong></td>
+                                <td>Float (0-1)</td>
+                                <td><code>1.00</code></td>
+                                <td>Alpha transparency level (requires <code>transparent: true</code>).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Emission</strong></td>
+                                <td>Color / vec3</td>
+                                <td><code>#000000</code></td>
+                                <td>Self-illuminating emissive radiance color.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>EmissionStrength</strong></td>
+                                <td>Float</td>
+                                <td><code>0.00</code></td>
+                                <td>Multiplier scale for self-illumination radiance.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Transmission</strong></td>
+                                <td>Float (0-1)</td>
+                                <td><code>0.00</code></td>
+                                <td>Glass transparency refractivity layer.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IOR</strong></td>
+                                <td>Float (1-2.5)</td>
+                                <td><code>1.50</code></td>
+                                <td>Index of refraction for transparent materials (Water: 1.33, Glass: 1.5, Diamond: 2.42).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Clearcoat</strong></td>
+                                <td>Float (0-1)</td>
+                                <td><code>0.00</code></td>
+                                <td>Extra glossy specular coating layer (car paint, lacquered wood).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Normal</strong></td>
+                                <td>Vector3</td>
+                                <td><code>null</code></td>
+                                <td>Tangent-space normal map vector input.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="node-library-reference">Complete Shader Node Reference</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Node Name</th>
+                                <th>Category</th>
+                                <th>Outputs</th>
+                                <th>Function</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Float Value</strong></td>
+                                <td>Value</td>
+                                <td><code>float</code></td>
+                                <td>Outputs a single scalar floating point value with slider.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RGB Color</strong></td>
+                                <td>Value</td>
+                                <td><code>vec3</code></td>
+                                <td>Outputs a hex color picker vec3 (R, G, B).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Texture Sampler</strong></td>
+                                <td>Texture</td>
+                                <td><code>vec3 / float</code></td>
+                                <td>Samples 2D texture maps (Albedo, Roughness, Normal, Metallic, AO).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>UV Map</strong></td>
+                                <td>Input</td>
+                                <td><code>vec2</code></td>
+                                <td>Outputs surface mesh UV texture coordinates (<code>vUv</code>).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Time Input</strong></td>
+                                <td>Input</td>
+                                <td><code>float</code></td>
+                                <td>Outputs global elapsed scene time multiplier for animation.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Math (Add/Sub/Mul/Div)</strong></td>
+                                <td>Math</td>
+                                <td><code>float</code></td>
+                                <td>Performs scalar math operations between two float inputs.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Math (Sin/Cos/Power/Sqrt)</strong></td>
+                                <td>Math</td>
+                                <td><code>float</code></td>
+                                <td>Trigonometric and exponential GLSL mathematical functions.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mix (Color / Float)</strong></td>
+                                <td>Vector</td>
+                                <td><code>vec3 / float</code></td>
+                                <td>Linear interpolation (<code>mix</code>) between inputs A and B based on Alpha factor.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fresnel</strong></td>
+                                <td>Vector</td>
+                                <td><code>float</code></td>
+                                <td>Calculates Schlick's Fresnel reflection factor based on view angle and IOR.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Panner</strong></td>
+                                <td>UV</td>
+                                <td><code>vec2</code></td>
+                                <td>Animates UV coordinate offsets over time (water flow, scrolling screens).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tiling & Offset</strong></td>
+                                <td>UV</td>
+                                <td><code>vec2</code></td>
+                                <td>Scales TileX/TileY and Offsets X/Y for UV map coordinates.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Color Ramp</strong></td>
+                                <td>Color</td>
+                                <td><code>vec3</code></td>
+                                <td>Maps a scalar float input onto a multi-stop color gradient.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Water Waves</strong></td>
+                                <td>Fluid</td>
+                                <td><code>vec3 / float</code></td>
+                                <td>Procedural wave height displacement and normal distortion.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="glsl-compilation">GLSL Code Generation Engine</h2>
+                <p>
+                    When <strong>Apply to Object</strong> or <strong>Auto-Compile</strong> is active, <code>MaterialNodeEditor.js</code> performs a topological sort of the graph node order, resolves variable type coercions (e.g. converting float scalar to <code>vec3(f, f, f)</code> for grayscale BaseColor input), and injects GLSL code directly into Three.js <code>onBeforeCompile</code> shader chunks:
+                </p>
+                <pre><code class="language-glsl">// Sample generated GLSL shader injection chunk
+float node_5_0 = 0.5000;
+vec3 node_3_0 = texture2D(uTex_node_3, vUv).rgb * 1.0000;
+
+#include &lt;color_fragment&gt;
+diffuseColor.rgb = node_3_0 * vec3(node_5_0, node_5_0, node_5_0);</code></pre>
+
+                <div class="page-navigation">
+                    <a href="sculpting.html" class="nav-card">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Sculpting & Terrain</span>
+                    </a>
+                    <a href="lighting.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Section</span>
+                        <span class="nav-card-title">Lighting & Atmosphere →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="./docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sculpting & Terrain - SM Engine Documentation</title>
+    <link rel="stylesheet" href="./docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="top-nav">
+        <a href="../index.html" class="nav-brand">
+            <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../index.html">Main Site</a></li>
+                <li><a href="../features.html">Features</a></li>
+                <li><a href="index.html" class="active">Documentation</a></li>
+                <li><a href="../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Getting Started
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Introduction & Overview</a></li>
+                    <li><a href="getting-started.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="interface.html" class="sidebar-link">Interface & Layout</a></li>
+                    <li><a href="shortcuts.html" class="sidebar-link">Keyboard Shortcuts</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    3D Creation
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="modeling.html" class="sidebar-link">Mesh Modeling & Modifiers</a></li>
+                    <li><a href="sculpting.html" class="sidebar-link active">Sculpting & Terrain</a></li>
+                    <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
+                    <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
+                    <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    Animation & 2D
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Node Editors & Systems
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="node-editors.html" class="sidebar-link">Visual Node Graphs</a></li>
+                    <li><a href="physics.html" class="sidebar-link">Physics & Dynamics</a></li>
+                    <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
+                    <li><a href="scripting.html" class="sidebar-link">JavaScript Scripting API</a></li>
+                    <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="index.html">Docs</a> / 3D Creation / Sculpting & Terrain
+                </nav>
+
+                <h1>Sculpting & Terrain System</h1>
+                <p class="page-lead">
+                    Technical documentation for organic mesh sculpting, dynamic topology, heightfield terrain editing, and vegetation density painting.
+                </p>
+
+                <h2 id="sculpt-mode">Sculpt Mode Overview</h2>
+                <p>
+                    Switch to <strong>Sculpt Mode</strong> from the Mode dropdown menu or press <code>Ctrl + Tab → Sculpt</code>. Sculpting deforms mesh surface vertices using spherical brush influence falloffs.
+                </p>
+
+                <h2 id="brush-palette">Sculpting Brushes Reference</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Brush Tool</th>
+                                <th>Shortcut</th>
+                                <th>Effect & Behavior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Draw Brush</strong></td>
+                                <td><code>X</code></td>
+                                <td>Pulls vertices outward along brush normal direction to create raised surfaces or ridges.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Clay / Clay Strips</strong></td>
+                                <td><code>C</code></td>
+                                <td>Applies flat strips of clay, ideal for building organic muscle forms and underlying anatomy.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Crease Brush</strong></td>
+                                <td><code>Shift + C</code></td>
+                                <td>Pinches vertices inward to carve sharp narrow cuts, wrinkles, and cracks into surfaces.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Flatten Brush</strong></td>
+                                <td><code>T</code></td>
+                                <td>Projects vertices onto an averaged plane, flattening peaks and uneven surfaces.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Smooth Brush</strong></td>
+                                <td><code>Shift (Hold)</code></td>
+                                <td>Averages vertex positions to eliminate harsh bumps and smooth surface mesh geometry.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Grab / Elastic Deform</strong></td>
+                                <td><code>G</code></td>
+                                <td>Pulls a volume of mesh geometry along the cursor vector, stretching shapes like rubber.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pinch Brush</strong></td>
+                                <td><code>P</code></td>
+                                <td>Pulls vertices towards the brush center to sharpen edges and tighten details.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mask Brush</strong></td>
+                                <td><code>M</code></td>
+                                <td>Paints a grayscale mask onto vertices. Masked regions (black) are protected from sculpting operations.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="dyntopo">Dynamic Topology (Dyntopo)</h2>
+                <p>
+                    Dynamic Topology automatically subdivides or triangulates mesh geometry locally underneath the sculpt brush stroke. This allows sculpting complex organic forms without requiring pre-subdivided base geometry.
+                </p>
+                <ul>
+                    <li><strong>Detail Size:</strong> Controls polygon density (in pixels or absolute units). Smaller values produce finer detail.</li>
+                    <li><strong>Refine Method:</strong> Choose <em>Subdivide Edges</em> (add detail), <em>Collapse Edges</em> (reduce detail), or <em>Subdivide Collapse</em>.</li>
+                </ul>
+
+                <h2 id="terrain-sculpting">Terrain & Heightfield System</h2>
+                <p>
+                    The <strong>Terrain Sculpting System</strong> uses specialized heightmap displacement brushes for landscape design:
+                </p>
+                <ul>
+                    <li><strong>Raise / Lower:</strong> Adjust heightmap elevation.</li>
+                    <li><strong>Erosion Brush:</strong> Simulates hydraulic and thermal erosion patterns on mountain slopes.</li>
+                    <li><strong>Flatten & Ramp:</strong> Create flat plateaus, roads, and smooth slope ramps between two elevations.</li>
+                    <li><strong>Noise Generator:</strong> Applies Perlin/Simplex procedural noise displacement to terrain mesh.</li>
+                </ul>
+
+                <h2 id="vegetation-painting">Vegetation & Foilage Painter</h2>
+                <p>
+                    Instantly paint 3D foliage (trees, grass tufts, rocks, flowers) directly onto terrain or mesh surfaces:
+                </p>
+                <ul>
+                    <li><strong>Density & Radius:</strong> Controls instance count per stroke.</li>
+                    <li><strong>Random Scale & Rotation:</strong> Adds natural variation in size and Y-axis rotation to painted instances.</li>
+                    <li><strong>Surface Alignment:</strong> Automatically aligns instanced stems to surface normal directions.</li>
+                </ul>
+
+                <div class="page-navigation">
+                    <a href="modeling.html" class="nav-card">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Mesh Modeling & Modifiers</span>
+                    </a>
+                    <a href="materials.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Section</span>
+                        <span class="nav-card-title">Materials & Shader Nodes →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="./docs.js"></script>
+</body>
+</html>

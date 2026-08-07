@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Overview - SM Engine</title>
+    <link rel="stylesheet" href="./docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="top-nav">
+        <a href="../index.html" class="nav-brand">
+            <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../index.html">Main Site</a></li>
+                <li><a href="../features.html">Features</a></li>
+                <li><a href="index.html" class="active">Documentation</a></li>
+                <li><a href="../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Getting Started
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link active">Introduction & Overview</a></li>
+                    <li><a href="getting-started.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="interface.html" class="sidebar-link">Interface & Layout</a></li>
+                    <li><a href="shortcuts.html" class="sidebar-link">Keyboard Shortcuts</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    3D Creation
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="modeling.html" class="sidebar-link">Mesh Modeling & Modifiers</a></li>
+                    <li><a href="sculpting.html" class="sidebar-link">Sculpting & Terrain</a></li>
+                    <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
+                    <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
+                    <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    Animation & 2D
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Node Editors & Systems
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="node-editors.html" class="sidebar-link">Visual Node Graphs</a></li>
+                    <li><a href="physics.html" class="sidebar-link">Physics & Dynamics</a></li>
+                    <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
+                    <li><a href="scripting.html" class="sidebar-link">JavaScript Scripting API</a></li>
+                    <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="index.html">Docs</a> / Getting Started / Introduction
+                </nav>
+
+                <h1>SM Engine Documentation</h1>
+                <p class="page-lead">
+                    Welcome to the official technical documentation for <strong>SM Engine</strong> — a high-performance desktop application for 3D modeling, node-based material authoring, procedural terrain sculpting, 2D/3D animation, physics simulation, and game development.
+                </p>
+
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Architecture Overview</strong>
+                        SM Engine is built on Three.js, WebGL2, Electron, and customized C++/WASM graphics modules. It offers a unified suite of professional tools comparable to Blender, Unreal Engine, and Houdini inside a responsive workspace.
+                    </div>
+                </div>
+
+                <h2 id="core-capabilities">Engine Capabilities</h2>
+                <p>Explore the primary functional areas of SM Engine:</p>
+
+                <div class="card-grid">
+                    <a href="modeling.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                            </div>
+                            <span class="doc-card-title">3D Modeling</span>
+                        </div>
+                        <p class="doc-card-desc">Edit Mode mesh editing with Extrude, Loop Cut, Bevel, Knife, Inset, and real-time Modifier Stack (Subdivision, Array, Mirror, Boolean).</p>
+                    </a>
+
+                    <a href="sculpting.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path></svg>
+                            </div>
+                            <span class="doc-card-title">Sculpt & Terrain</span>
+                        </div>
+                        <p class="doc-card-desc">Dynamic topology sculpting, organic brushes (Draw, Grab, Flatten, Crease), procedural heightfield terrain, and vegetation painting.</p>
+                    </a>
+
+                    <a href="materials.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0 0 20z"></path></svg>
+                            </div>
+                            <span class="doc-card-title">Material Node Graph</span>
+                        </div>
+                        <p class="doc-card-desc">Full GLSL shader editor with Principled BSDF, procedural noise, PBR texture mapping, UV animators, and instant shader compilation.</p>
+                    </a>
+
+                    <a href="animation.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                            <span class="doc-card-title">3D Animation & Rigging</span>
+                        </div>
+                        <p class="doc-card-desc">Timeline keyframing, Graph Editor curve tweaking, bone armature controller, motion-matching character control, and NLA animation clip library.</p>
+                    </a>
+
+                    <a href="animation-2d.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"></path></svg>
+                            </div>
+                            <span class="doc-card-title">2D Animation & Grease Pencil</span>
+                        </div>
+                        <p class="doc-card-desc">Pressure-sensitive 2D brush drawing, multi-layer keyframing, onion skinning, exposure controls, storyboard manager, and video export.</p>
+                    </a>
+
+                    <a href="node-editors.html" class="doc-card">
+                        <div class="doc-card-header">
+                            <div class="doc-card-icon">
+                                <svg class="doc-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            </div>
+                            <span class="doc-card-title">Visual Node Graphs</span>
+                        </div>
+                        <p class="doc-card-desc">Five dedicated graph editors: Player Logic visual scripting, VFX Composer particle graph, Terrain Generator, Material Graph, and MetaSound audio editor.</p>
+                    </a>
+                </div>
+
+                <h2 id="engine-workflow">Workspace Layout & Navigation</h2>
+                <p>
+                    SM Engine utilizes a tabbed workspace paradigm allowing real-time switching between 3D Viewport, Scripting Mode, Node Editors, Timeline, UV Inspector, and Spreadsheet Data Views.
+                </p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Workspace Tab</th>
+                                <th>Primary Mode</th>
+                                <th>Key Functions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>Layout</code></td>
+                                <td>Object & Viewport</td>
+                                <td>3D object placement, transform gizmos, light setup, selection</td>
+                            </tr>
+                            <tr>
+                                <td><code>Modeling</code></td>
+                                <td>Edit & Sculpt</td>
+                                <td>Vertex/Edge/Face manipulation, extrude, loop cut, modifier stack</td>
+                            </tr>
+                            <tr>
+                                <td><code>Scripting</code></td>
+                                <td>Code Editor</td>
+                                <td>JavaScript runtime environment, scene automation, custom logic</td>
+                            </tr>
+                            <tr>
+                                <td><code>Graph Workspace</code></td>
+                                <td>Node Editors</td>
+                                <td>Shader graphs, player logic, terrain generation, VFX, audio nodes</td>
+                            </tr>
+                            <tr>
+                                <td><code>2D Animation</code></td>
+                                <td>Grease Pencil</td>
+                                <td>Vector stroke drawing, onion skinning, storyboard timeline</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="key-features">Key Feature Highlights</h2>
+                <ul>
+                    <li><strong>Nanite Virtual Geometry:</strong> Automatic dynamic LOD reduction and GPU buffer streaming for multi-million polygon meshes.</li>
+                    <li><strong>Lumen GI & Atmosphere:</strong> Real-time global illumination, atmospheric scattering sky model, time-of-day control, and dynamic water shader.</li>
+                    <li><strong>Comprehensive History:</strong> Unified undo/redo stack managing 3D viewport object transforms, 2D animation keyframes, material edits, and code actions.</li>
+                    <li><strong>Cross-Platform Project Persistence:</strong> Instant project JSON serialization and export to standalone executable or web package.</li>
+                </ul>
+
+                <div class="page-navigation">
+                    <div></div>
+                    <a href="getting-started.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Step</span>
+                        <span class="nav-card-title">Installation & Setup →</span>
+                    </a>
+                </div>
+            </main>
+
+            <!-- Table of Contents Right Sidebar -->
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="./docs.js"></script>
+</body>
+</html>

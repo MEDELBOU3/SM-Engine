@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface & Layout - SM Engine Documentation</title>
+    <link rel="stylesheet" href="./docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="top-nav">
+        <a href="../index.html" class="nav-brand">
+            <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../index.html">Main Site</a></li>
+                <li><a href="../features.html">Features</a></li>
+                <li><a href="index.html" class="active">Documentation</a></li>
+                <li><a href="../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Getting Started
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Introduction & Overview</a></li>
+                    <li><a href="getting-started.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="interface.html" class="sidebar-link active">Interface & Layout</a></li>
+                    <li><a href="shortcuts.html" class="sidebar-link">Keyboard Shortcuts</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    3D Creation
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="modeling.html" class="sidebar-link">Mesh Modeling & Modifiers</a></li>
+                    <li><a href="sculpting.html" class="sidebar-link">Sculpting & Terrain</a></li>
+                    <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
+                    <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
+                    <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    Animation & 2D
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Node Editors & Systems
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="node-editors.html" class="sidebar-link">Visual Node Graphs</a></li>
+                    <li><a href="physics.html" class="sidebar-link">Physics & Dynamics</a></li>
+                    <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
+                    <li><a href="scripting.html" class="sidebar-link">JavaScript Scripting API</a></li>
+                    <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="index.html">Docs</a> / Getting Started / Interface & Layout
+                </nav>
+
+                <h1>Interface & Layout Reference</h1>
+                <p class="page-lead">
+                    Comprehensive overview of the SM Engine user interface components, panel docking system, viewport gizmos, and workspace tabs.
+                </p>
+
+                <h2 id="main-regions">Main Interface Regions</h2>
+                <p>The workspace consists of five core flexible regions:</p>
+                <ul>
+                    <li><strong>Top Header Menu Bar:</strong> File, Edit, Add, Render, Window, Help menus, and Workspace Tab Selector (Layout, Modeling, Scripting, Graph Workspace, 2D Animation).</li>
+                    <li><strong>Left Tools Panel:</strong> Mode-specific creation tools (Select, Move, Rotate, Scale, Extrude, Loop Cut, Sculpt Brushes).</li>
+                    <li><strong>Central 3D Viewport:</strong> WebGL interactive scene canvas with 3D orientation gizmo, grid plane, camera overlays, and context menus.</li>
+                    <li><strong>Right Sidebar (Hierarchy & Inspector):</strong> Outliner scene graph tree on top, Object/Material/Physics Inspector properties panel on bottom.</li>
+                    <li><strong>Bottom Drawer (Timeline / Node Graph):</strong> Dockable timeline with keyframes, playback controls, graph editor, spreadsheet data, or visual node graph wrappers.</li>
+                </ul>
+
+                <h2 id="viewport-navigation">3D Viewport Controls</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Mouse / Gesture</th>
+                                <th>Hotkey</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Orbit View</strong></td>
+                                <td>Middle Mouse Button (MMB) + Drag</td>
+                                <td><code>Numpad 2/4/6/8</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pan View</strong></td>
+                                <td>Shift + Middle Mouse Button + Drag</td>
+                                <td><code>Shift + MMB</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Zoom View</strong></td>
+                                <td>Scroll Wheel or Ctrl + MMB Drag</td>
+                                <td><code>+ / -</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Frame Selected</strong></td>
+                                <td>Click Object</td>
+                                <td><code>Numpad .</code> or <code>F</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>View Align</strong></td>
+                                <td>Click Axis Gizmo (X/Y/Z)</td>
+                                <td><code>Numpad 1 (Front), 3 (Right), 7 (Top)</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Toggle Camera View</strong></td>
+                                <td>Click Camera Button</td>
+                                <td><code>Numpad 0</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="inspector-tabs">Inspector Panel Tabs</h2>
+                <p>When an object is selected in the 3D Viewport or Hierarchy Outliner, the Inspector displays detailed property tabs:</p>
+
+                <div class="card-grid">
+                    <div class="doc-card">
+                        <div class="doc-card-title">1. Transform Tab</div>
+                        <p class="doc-card-desc">Exact X/Y/Z numerical values for Position, Rotation (Euler degrees or Quaternion), Scale, Dimensions, and Origin Point alignment.</p>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-card-title">2. Material Tab</div>
+                        <p class="doc-card-desc">Assigned material slots, PBR base color, metallic/roughness sliders, emission color, transparency, and Shader Editor launcher.</p>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-card-title">3. Physics Tab</div>
+                        <p class="doc-card-desc">Rigid Body type (Dynamic, Static, Kinematic), mass, friction, restitution (bounciness), collision shapes (Box, Sphere, Convex Mesh).</p>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-card-title">4. Modifiers Tab</div>
+                        <p class="doc-card-desc">Stack of non-destructive procedural modifiers: Subdivision Surface, Mirror, Array, Bevel, Boolean, Solidify, Decimate.</p>
+                    </div>
+                </div>
+
+                <h2 id="multi-view-layouts">Multi-View Split Screen</h2>
+                <p>
+                    Click the <strong>Split View</strong> button in the viewport header to divide the canvas into 2-viewport or 4-viewport orthographic split views (Top, Front, Side, Perspective), ideal for precision architectural modeling and animation posing.
+                </p>
+
+                <div class="page-navigation">
+                    <a href="getting-started.html" class="nav-card">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Installation & Setup</span>
+                    </a>
+                    <a href="shortcuts.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Step</span>
+                        <span class="nav-card-title">Keyboard Shortcuts →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="./docs.js"></script>
+</body>
+</html>

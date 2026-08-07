@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyboard Shortcuts Reference - SM Engine Documentation</title>
+    <link rel="stylesheet" href="./docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="top-nav">
+        <a href="../index.html" class="nav-brand">
+            <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../index.html">Main Site</a></li>
+                <li><a href="../features.html">Features</a></li>
+                <li><a href="index.html" class="active">Documentation</a></li>
+                <li><a href="../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Getting Started
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Introduction & Overview</a></li>
+                    <li><a href="getting-started.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="interface.html" class="sidebar-link">Interface & Layout</a></li>
+                    <li><a href="shortcuts.html" class="sidebar-link active">Keyboard Shortcuts</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    3D Creation
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="modeling.html" class="sidebar-link">Mesh Modeling & Modifiers</a></li>
+                    <li><a href="sculpting.html" class="sidebar-link">Sculpting & Terrain</a></li>
+                    <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
+                    <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
+                    <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    Animation & 2D
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Node Editors & Systems
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="node-editors.html" class="sidebar-link">Visual Node Graphs</a></li>
+                    <li><a href="physics.html" class="sidebar-link">Physics & Dynamics</a></li>
+                    <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
+                    <li><a href="scripting.html" class="sidebar-link">JavaScript Scripting API</a></li>
+                    <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="index.html">Docs</a> / Getting Started / Keyboard Shortcuts
+                </nav>
+
+                <h1>Keyboard Shortcuts Reference</h1>
+                <p class="page-lead">
+                    Complete reference table of keyboard hotkeys and modal shortcuts across all SM Engine editor modes.
+                </p>
+
+                <h2 id="general-shortcuts">Global & File Operations</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Shortcut</th>
+                                <th>Function</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>Ctrl + S</code></td><td>Save Project (.smproj JSON)</td></tr>
+                            <tr><td><code>Ctrl + O</code></td><td>Open Existing Project File</td></tr>
+                            <tr><td><code>Ctrl + Z</code></td><td>Undo Action</td></tr>
+                            <tr><td><code>Ctrl + Y</code> or <code>Ctrl + Shift + Z</code></td><td>Redo Action</td></tr>
+                            <tr><td><code>Ctrl + C</code></td><td>Copy Selected Object(s) to Clipboard</td></tr>
+                            <tr><td><code>Ctrl + V</code></td><td>Paste Object(s) from Clipboard</td></tr>
+                            <tr><td><code>Ctrl + D</code> or <code>Shift + D</code></td><td>Duplicate Selection</td></tr>
+                            <tr><td><code>Delete</code> or <code>X</code></td><td>Delete Selected Object or Element</td></tr>
+                            <tr><td><code>F11</code></td><td>Toggle Fullscreen Viewport</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="transform-shortcuts">3D Viewport & Transform Modal</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Shortcut</th>
+                                <th>Function</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>G</code></td><td>Grab / Move Object (Modal transform)</td></tr>
+                            <tr><td><code>R</code></td><td>Rotate Object</td></tr>
+                            <tr><td><code>S</code></td><td>Scale Object</td></tr>
+                            <tr><td><code>X / Y / Z</code> (during modal)</td><td>Constrain movement/rotation/scale to X, Y, or Z axis</td></tr>
+                            <tr><td><code>Shift + Z</code> (during modal)</td><td>Lock Z axis (Move along XY ground plane only)</td></tr>
+                            <tr><td><code>Numeric Typing</code> (e.g. <code>G → X → 5</code>)</td><td>Move exactly 5 units along X axis</td></tr>
+                            <tr><td><code>Escape</code> or <code>Right Click</code></td><td>Cancel modal transform and restore initial state</td></tr>
+                            <tr><td><code>Enter</code> or <code>Left Click</code></td><td>Confirm transform and write to history</td></tr>
+                            <tr><td><code>Tab</code></td><td>Toggle Object Mode / Edit Mode</td></tr>
+                            <tr><td><code>A</code></td><td>Select All Objects</td></tr>
+                            <tr><td><code>Alt + A</code></td><td>Deselect All</td></tr>
+                            <tr><td><code>B</code></td><td>Box Select tool</td></tr>
+                            <tr><td><code>C</code></td><td>Circle / Brush Select tool</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="edit-mode-shortcuts">Edit Mode Mesh Modeling</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Shortcut</th>
+                                <th>Function</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>1</code></td><td>Vertex Select Mode</td></tr>
+                            <tr><td><code>2</code></td><td>Edge Select Mode</td></tr>
+                            <tr><td><code>3</code></td><td>Face Select Mode</td></tr>
+                            <tr><td><code>E</code></td><td>Extrude Vertices/Edges/Faces along normals</td></tr>
+                            <tr><td><code>Ctrl + R</code></td><td>Loop Cut & Slide (Scroll wheel adjusts loop count)</td></tr>
+                            <tr><td><code>I</code></td><td>Inset Faces</td></tr>
+                            <tr><td><code>Ctrl + B</code></td><td>Bevel Edges / Vertices</td></tr>
+                            <tr><td><code>K</code></td><td>Knife Tool (Cut geometry along drawn line)</td></tr>
+                            <tr><td><code>F</code></td><td>Make Edge / Face from selected vertices</td></tr>
+                            <tr><td><code>M</code></td><td>Merge Vertices (At Center, At First, At Last, By Distance)</td></tr>
+                            <tr><td><code>Alt + J</code></td><td>Tris to Quads conversion</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="node-editor-shortcuts">Node Editor Shortcuts</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Shortcut</th>
+                                <th>Function</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>Shift + A</code></td><td>Open Add Node Search Palette</td></tr>
+                            <tr><td><code>MMB Drag</code></td><td>Pan Node Editor Canvas</td></tr>
+                            <tr><td><code>Scroll Wheel</code></td><td>Zoom Node Canvas in/out</td></tr>
+                            <tr><td><code>Ctrl + Click Wire</code></td><td>Cut Connection Wire</td></tr>
+                            <tr><td><code>H</code></td><td>Collapse / Expand Selected Node</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="page-navigation">
+                    <a href="interface.html" class="nav-card">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Interface & Layout</span>
+                    </a>
+                    <a href="modeling.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Section</span>
+                        <span class="nav-card-title">Mesh Modeling & Modifiers →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="./docs.js"></script>
+</body>
+</html>
