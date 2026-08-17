@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,11 @@
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
 
     <!-- Header Navigation -->
@@ -28,11 +32,24 @@
         </div>
         <div class="nav-actions">
             <div class="search-container">
-                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
                 <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
             </div>
             <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
-                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="doc-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
             </button>
         </div>
     </header>
@@ -41,7 +58,10 @@
         <aside class="sidebar">
             <div class="sidebar-group">
                 <div class="sidebar-group-title">
-                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    <svg class="doc-icon sm" viewBox="0 0 24 24">
+                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                        <polyline points="13 2 13 9 20 9"></polyline>
+                    </svg>
                     Getting Started
                 </div>
                 <ul class="sidebar-links">
@@ -49,17 +69,27 @@
                     <li><a href="getting-started.html" class="sidebar-link">Installation & Setup</a></li>
                     <li><a href="interface.html" class="sidebar-link">Interface & Layout</a></li>
                     <li><a href="shortcuts.html" class="sidebar-link">Keyboard Shortcuts</a></li>
+                    <li><a href="workspaces.html" class="sidebar-link">Workspaces & Modes</a></li>
+                    <li><a href="outliner-settings.html" class="sidebar-link">Outliner & Settings</a></li>
                 </ul>
             </div>
 
             <div class="sidebar-group">
                 <div class="sidebar-group-title">
-                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    <svg class="doc-icon sm" viewBox="0 0 24 24">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                        </path>
+                    </svg>
                     3D Creation
                 </div>
                 <ul class="sidebar-links">
                     <li><a href="modeling.html" class="sidebar-link">Mesh Modeling & Modifiers</a></li>
                     <li><a href="sculpting.html" class="sidebar-link">Sculpting & Terrain</a></li>
+                    <li><a href="hair-system.html" class="sidebar-link">Hair & Fur Grooming</a></li>
+                    <li><a href="terrain-sculpting.html" class="sidebar-link">Terrain Sculpting Workspace</a></li>
+                    <li><a href="atmosphere-sky.html" class="sidebar-link">Sky & Viewports</a></li>
+                    <li><a href="architectural-tools.html" class="sidebar-link">Architectural Tools</a></li>
                     <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
                     <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
                     <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
@@ -68,39 +98,85 @@
 
             <div class="sidebar-group">
                 <div class="sidebar-group-title">
-                    <svg class="doc-icon sm" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    <svg class="doc-icon sm" viewBox="0 0 24 24">
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                    </svg>
                     Animation & 2D
                 </div>
                 <ul class="sidebar-links">
                     <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
+                    <li><a href="graph-editor.html" class="sidebar-link">Graph Editor Curves</a></li>
                     <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
+                    <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
                 </ul>
             </div>
 
             <div class="sidebar-group">
                 <div class="sidebar-group-title">
-                    <svg class="doc-icon sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <svg class="doc-icon sm" viewBox="0 0 24 24">
+                        <path d="M12 2l3 7 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1z"></path>
+                    </svg>
+                    Environments & Gameplay
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
+                    <li><a href="gameplay-mode.html" class="sidebar-link">Gameplay & Sample Mode</a></li>
+                    <li><a href="player-controller.html" class="sidebar-link">Player Controller</a></li>
+                    <li><a href="vegetation.html" class="sidebar-link">Vegetation Painting</a></li>
+                    <li><a href="water-system.html" class="sidebar-link">Water System</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
                     Node Editors & Systems
                 </div>
                 <ul class="sidebar-links">
                     <li><a href="node-editors.html" class="sidebar-link active">Visual Node Graphs</a></li>
+                    <li><a href="geometry-nodes.html" class="sidebar-link">Geometry Nodes</a></li>
+                    <li><a href="metasound.html" class="sidebar-link">MetaSound Audio Editor</a></li>
                     <li><a href="physics.html" class="sidebar-link">Physics & Dynamics</a></li>
-                    <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
+                    <li><a href="ragdoll.html" class="sidebar-link">Ragdoll System</a></li>
                     <li><a href="scripting.html" class="sidebar-link">JavaScript Scripting API</a></li>
                     <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
                 </ul>
             </div>
-                    <div class="sidebar-group">
+
+            <div class="sidebar-group">
                 <div class="sidebar-group-title">
-                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    <svg class="doc-icon sm" viewBox="0 0 24 24">
+                        <path d="M23 7l-7 5 7 5V7z"></path>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                    </svg>
+                    Media Production
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="video-editing.html" class="sidebar-link">Video Editing</a></li>
+                    <li><a href="video-sequencer.html" class="sidebar-link">Video Sequencer</a></li>
+                    <li><a href="video-export.html" class="sidebar-link">Video Export & Delivery</a></li>
+                    <li><a href="video-effects.html" class="sidebar-link">Video Effects & Color</a></li>
+                    <li><a href="audio.html" class="sidebar-link">Audio & MetaSound</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
                     Engine & Developer
                 </div>
                 <ul class="sidebar-links">
                     <li><a href="architecture.html" class="sidebar-link">Engine Architecture</a></li>
-                    <li><a href="workspaces.html" class="sidebar-link">Workspaces & Modes</a></li>
-                    <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
-                    <li><a href="video-editing.html" class="sidebar-link">Video Editing</a></li>
-                    <li><a href="audio.html" class="sidebar-link">Audio & MetaSound</a></li>
+                    <li><a href="performance.html" class="sidebar-link">Performance & Optimization</a></li>
                 </ul>
             </div>
         </aside>
@@ -113,12 +189,26 @@
 
                 <h1>Visual Node Graphs System</h1>
                 <p class="page-lead">
-                    Technical documentation for SM Engine's dockable <strong>Graph Workspace</strong>, managed by <code>GlobalNodeEditorManager.js</code> across 5 specialized node graph sub-editors.
+                    Technical documentation for SM Engine's dockable <strong>Graph Workspace</strong>, managed by
+                    <code>GlobalNodeEditorManager.js</code> across 5 specialized node graph sub-editors.
                 </p>
 
                 <h2 id="graph-workspace">The Graph Workspace Manager</h2>
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../../assets/screenshots/Visual-Node-Graphs-System.png"
+                            alt="Visual Node Graphs System in SM Engine">
+                    </div>
+
+                    <figcaption class="doc-caption">
+                        Figure: Visual Node Graphs System in SM Engine, showing the Graph Workspace Manager, node
+                        library, graph canvas, material node network, preview panel, and node properties.
+                    </figcaption>
+                </figure>
+
                 <p>
-                    The <code>GlobalNodeEditorManager</code> provides a tabbed header bar allowing seamless switching between node graph environments:
+                    The <code>GlobalNodeEditorManager</code> provides a tabbed header bar allowing seamless switching
+                    between node graph environments:
                 </p>
 
                 <div class="table-wrapper">
@@ -134,27 +224,32 @@
                             <tr>
                                 <td><strong>Player Logic</strong></td>
                                 <td><code>player-graph.js</code></td>
-                                <td>Visual scripting for character movement, input triggers, collision events, and game state logic.</td>
+                                <td>Visual scripting for character movement, input triggers, collision events, and game
+                                    state logic.</td>
                             </tr>
                             <tr>
                                 <td><strong>VFX Composer</strong></td>
                                 <td><code>nodes/vfx/vfx.js</code></td>
-                                <td>Particle emitter configuration, velocity curves, color over lifetime, and sprite effect graphs.</td>
+                                <td>Particle emitter configuration, velocity curves, color over lifetime, and sprite
+                                    effect graphs.</td>
                             </tr>
                             <tr>
                                 <td><strong>Terrain Generator</strong></td>
                                 <td><code>NodeTerrainEditor.js</code></td>
-                                <td>Procedural heightmap terrain generation (Noise, Hydraulic Erosion, Slope Terracing, Blend Masks).</td>
+                                <td>Procedural heightmap terrain generation (Noise, Hydraulic Erosion, Slope Terracing,
+                                    Blend Masks).</td>
                             </tr>
                             <tr>
                                 <td><strong>Material Graph</strong></td>
                                 <td><code>MaterialNodeEditor.js</code></td>
-                                <td>GLSL PBR shader node creation, texture sampling, math ops, and instant compilation.</td>
+                                <td>GLSL PBR shader node creation, texture sampling, math ops, and instant compilation.
+                                </td>
                             </tr>
                             <tr>
                                 <td><strong>MetaSound Editor</strong></td>
                                 <td><code>MetaSoundEditor.js</code></td>
-                                <td>Procedural audio synthesis, wave oscillation, audio filters (LPF/HPF), spatial 3D audio graph.</td>
+                                <td>Procedural audio synthesis, wave oscillation, audio filters (LPF/HPF), spatial 3D
+                                    audio graph.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -165,29 +260,46 @@
                     Visually program gameplay events without writing raw code:
                 </p>
                 <ul>
-                    <li><strong>Event Nodes:</strong> On Start, On Update (Tick), On Key Press, On Trigger Enter, On Collision.</li>
-                    <li><strong>Action Nodes:</strong> Apply Impulse/Force, Play Animation Clip, Set Light Color, Spawn Prefab, Destroy Object.</li>
+                    <li><strong>Event Nodes:</strong> On Start, On Update (Tick), On Key Press, On Trigger Enter, On
+                        Collision.</li>
+                    <li><strong>Action Nodes:</strong> Apply Impulse/Force, Play Animation Clip, Set Light Color, Spawn
+                        Prefab, Destroy Object.</li>
                     <li><strong>Control Flow:</strong> Branch (If/Else), Sequence, Gate, For Loop, Delay timer.</li>
                 </ul>
 
                 <h2 id="vfx-composer">2. VFX Particle Composer</h2>
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../../assets/screenshots/VFX-Particle-Composer.png"
+                            alt="SM Engine interface preview of VFX Particle Composer">
+                    </div>
+                    <figcaption class="doc-caption">Figure: Interactive overview of VFX Particle Composer in SM Engine
+                        workspace.</figcaption>
+                </figure>
                 <p>
                     Author real-time WebGL particle systems:
                 </p>
                 <ul>
                     <li><strong>Spawn Module:</strong> Rate per second, Burst count, Cone/Sphere/Box emitter shape.</li>
-                    <li><strong>Particle Properties:</strong> Lifetime, Initial Velocity, Gravity Scale, Rotation Speed.</li>
-                    <li><strong>Color & Alpha Gradient:</strong> Fade in/out over normalized particle lifetime (0.0 to 1.0).</li>
+                    <li><strong>Particle Properties:</strong> Lifetime, Initial Velocity, Gravity Scale, Rotation Speed.
+                    </li>
+                    <li><strong>Color & Alpha Gradient:</strong> Fade in/out over normalized particle lifetime (0.0 to
+                        1.0).</li>
                 </ul>
 
                 <h2 id="metasound">3. MetaSound Audio Graph</h2>
                 <p>
-                    The <strong>MetaSound Editor</strong> processes node-based audio synthesis (similar to Unreal Engine MetaSounds):
+                    The <strong>MetaSound Editor</strong> (<code>sound-graph-wrapper</code> tab) processes node-based
+                    audio
+                    synthesis (similar to Unreal Engine MetaSounds) on the Web Audio API — see the dedicated
+                    <a href="metasound.html">MetaSound Audio Editor</a> page:
                 </p>
                 <ul>
                     <li><strong>Oscillators:</strong> Sine, Square, Sawtooth, Triangle wave audio generators.</li>
-                    <li><strong>Audio Filters:</strong> Low-Pass Filter (LPF), High-Pass Filter (HPF), Reverb Delay, Gain Volume.</li>
-                    <li><strong>3D Spatial Audio:</strong> Attenuation falloff distance curves for positional 3D sound emitters in the scene.</li>
+                    <li><strong>Audio Filters:</strong> EQ Filter, Delay/Echo, Mixer/Gain volume and 3D Panner nodes.
+                    </li>
+                    <li><strong>Wave Player:</strong> imported audio assets with loop control, plus live compile-to-play
+                        with cue export.</li>
                 </ul>
 
                 <div class="page-navigation">
@@ -211,4 +323,5 @@
 
     <script src="./docs.js"></script>
 </body>
+
 </html>

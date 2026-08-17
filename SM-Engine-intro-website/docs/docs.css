@@ -141,7 +141,7 @@ body {
 .nav-brand img {
     height: 32px;
     width: 32px;
-    object-contain: contain;
+    object-fit: contain;
 }
 
 .brand-title {
@@ -695,4 +695,189 @@ tr:hover td {
     .content { padding: 1.5rem 1rem 3rem 1rem; }
     .search-container { width: 180px; }
     .nav-links { display: none; }
+}
+
+/* ─── Documentation Figure & Image Containers ────────────────────────── */
+.doc-figure {
+    width: 100%;
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+}
+.doc-image-frame {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-tertiary);
+    overflow: hidden;
+    box-shadow: 0 8px 24px var(--shadow-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.doc-image-frame img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    object-fit: contain;
+}
+.doc-figure--panel {
+    width: 100%;
+    margin: 2rem 0;
+}
+.doc-image-frame--panel {
+    width: 100%;
+    min-height: 420px;
+    height: min(720px, 72vh);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px var(--shadow-color);
+}
+.doc-image-frame--panel img.doc-panel-image {
+    width: auto;
+    height: auto;
+    max-width: min(100%, 460px);
+    max-height: calc(100% - 2px);
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    flex: 0 1 auto;
+}
+.doc-image-frame--panel img.doc-panel-image--wide {
+    max-width: 100%;
+}
+.doc-image-frame--panel img.doc-panel-image--narrow {
+    max-width: min(100%, 360px);
+}
+.doc-image-placeholder {
+    width: 100%;
+    min-height: 280px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, var(--bg-tertiary) 100%);
+    border: 1px dashed var(--border-light);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    transition: border-color 0.2s ease;
+}
+.doc-image-placeholder:hover {
+    border-color: var(--accent-color);
+}
+.doc-image-placeholder svg {
+    width: 48px;
+    height: 48px;
+    stroke: var(--accent-color);
+    opacity: 0.85;
+}
+.doc-image-placeholder span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.doc-caption {
+    width: 100%;
+    max-width: 760px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+}
+@media (max-width: 768px) {
+    .doc-image-frame--panel {
+        min-height: 340px;
+        height: min(620px, 68vh);
+        padding: 14px;
+    }
+    .doc-image-frame--panel img.doc-panel-image,
+    .doc-image-frame--panel img.doc-panel-image--narrow {
+        max-width: min(100%, 380px);
+    }
+}
+@media (max-width: 480px) {
+    .doc-image-frame--panel {
+        min-height: 300px;
+        height: min(540px, 64vh);
+        padding: 10px;
+    }
+    .doc-image-frame--panel img.doc-panel-image,
+    .doc-image-frame--panel img.doc-panel-image--narrow {
+        max-width: 100%;
+    }
+}
+
+.doc-gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.doc-gallery-grid .doc-image-frame.full-width {
+    grid-column: 1 / -1;
+}
+
+.doc-gallery-grid .doc-image-frame img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 4px solid #c0c0c0;
+}
+
+/* =========================================================
+   ULTRA-WIDE / PANORAMIC DOCUMENTATION IMAGES
+   Keeps the original image resolution and aspect ratio.
+   ========================================================= */
+
+.doc-figure--wide {
+    width: 100%;
+    margin: 2rem 0;
+}
+
+.doc-image-frame--wide {
+    width: 100%;
+    display: block;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 10px;
+
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+
+    box-shadow: 0 8px 24px var(--shadow-color);
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        var(--scrollbar-thumb)
+        var(--scrollbar-track);
+}
+
+.doc-image-frame--wide .doc-wide-image {
+    display: block;
+
+    width: auto;
+    height: auto;
+
+    max-width: none;
+
+    object-fit: contain;
+
+    /* Keep the browser's normal high-quality interpolation */
+    image-rendering: auto;
 }

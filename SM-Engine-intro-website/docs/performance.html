@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Render Pipeline & Nanite - SM Engine Documentation</title>
+    <title>Performance & Optimization - SM Engine Documentation</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <!-- Header Navigation -->
     <header class="top-nav">
         <a href="../index.html" class="nav-brand">
             <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
@@ -68,7 +66,7 @@
             <li><a href="architectural-tools.html" class="sidebar-link">Architectural Tools</a></li>
             <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
             <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
-            <li><a href="rendering.html" class="sidebar-link active">Render Pipeline & Nanite</a></li>
+            <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
         </ul>
     </div>
 
@@ -136,7 +134,7 @@
         </div>
         <ul class="sidebar-links">
             <li><a href="architecture.html" class="sidebar-link">Engine Architecture</a></li>
-            <li><a href="performance.html" class="sidebar-link">Performance & Optimization</a></li>
+            <li><a href="performance.html" class="sidebar-link active">Performance & Optimization</a></li>
         </ul>
     </div>
 </aside>
@@ -144,92 +142,88 @@
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / 3D Creation / Render Pipeline & Nanite
+                    <a href="index.html">Docs</a> / Engine & Developer / Performance & Optimization
                 </nav>
+<h1>Performance & Optimization</h1>
+            <p>
+                Maintaining high frame rates while pushing visual fidelity is a primary challenge in 3D development. SM Engine provides comprehensive profiling tools and dynamic optimization systems via <code>EngineSentinel.js</code>, <code>PerformanceManager.js</code>, and <code>NaniteSystem.js</code> to keep your applications running smoothly.
+            </p>
 
-                <h1>Render Pipeline & Virtual Geometry</h1>
-                <p class="page-lead">
-                    Technical documentation for the SM Render Pipeline (PBR), Nanite virtualized geometry engine, post-processing stack, and export formats.
-                </p>
-
-                <h2 id="render-pipeline">SM Render Pipeline Architecture</h2>
+            <h2 id="engine-sentinel">Engine Sentinel</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-placeholder">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <span>Interface Preview: SM Render Pipeline Architecture</span>
+                        <span>Interface Preview: Engine Sentinel</span>
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of SM Render Pipeline Architecture in SM Engine workspace.</figcaption>
+                    <figcaption class="doc-caption">Figure: Interactive overview of Engine Sentinel in SM Engine workspace.</figcaption>
                 </figure>
 
-                <p>
-                    The <code>SMRenderPipeline.js</code> architecture employs a multi-pass WebGL2 rendering pipeline:
-                </p>
-                <ul>
-                    <li><strong>G-Buffer Pass:</strong> Writes World Normal, Albedo, Metallic-Roughness, Depth, and Motion Vectors into floating-point framebuffer targets.</li>
-                    <li><strong>Lighting & Shadow Pass:</strong> Computes PBR direct lighting (PCF shadow map filtering for point, spot, and directional lights).</li>
-                    <li><strong>Post-Processing Stack:</strong> Bloom, Screen Space Ambient Occlusion (SSAO), Chromatic Aberration, Vignette, Depth of Field, and Tone Mapping (ACESFilmic / Neutral).</li>
-                </ul>
+            <p>
+                The Engine Sentinel is a real-time profiling overlay built directly into the viewport. It monitors the health of the engine loop and alerts you to bottlenecks.
+            </p>
+            <ul>
+                <li><strong>FPS / Frame Time:</strong> Monitors overall frame rate and specific ms-timings for logic, physics, and rendering loops.</li>
+                <li><strong>GPU/CPU Tracking:</strong> Displays utilization ratios to help identify whether you are CPU bound (too much scripting/physics) or GPU bound (heavy shaders/overdraw).</li>
+                <li><strong>Memory Usage:</strong> Tracks VRAM allocated to Geometry, Textures, and Audio.</li>
+                <li><strong>Warning Thresholds:</strong> The overlay will flash yellow or red when memory or frame times exceed safe thresholds defined in project settings.</li>
+                <li><strong>Automatic Profiling Mode:</strong> When enabled, the engine will dump a detailed JSON report of the slowest functions over a 60-second window.</li>
+            </ul>
 
-                <h2 id="nanite-system">Nanite Virtual Geometry System</h2>
-                <p>
-                    The <code>NaniteSystem.js</code> module optimizes massive high-poly meshes (up to several million polygons):
-                </p>
-                <ul>
-                    <li><strong>Hierarchical Cluster Grouping:</strong> Hierarchically clusters mesh triangles into localized 128-triangle clusters.</li>
-                    <li><strong>Screen-Space Error LOD:</strong> Dynamically swaps cluster detail levels based on pixel coverage on screen.</li>
-                    <li><strong>Frustum & Occlusion Culling:</strong> Culls clusters outside camera view frustum or behind occlusion depth buffers.</li>
-                </ul>
+            <h2 id="performance-manager">Performance Manager</h2>
+            <p>
+                The Performance Manager handles scene-level culling and distance-based optimizations automatically.
+            </p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>System</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>LOD System</strong></td><td>Automatically swaps meshes to lower polygon versions (Level of Detail) as they move further from the camera.</td></tr>
+                        <tr><td><strong>Object Culling</strong></td><td>Utilizes Frustum Culling (not drawing things behind the camera) and Occlusion Culling (not drawing things hidden behind walls).</td></tr>
+                        <tr><td><strong>Batch Rendering</strong></td><td>Groups thousands of identical instanced objects (like trees or grass) into a single GPU draw call.</td></tr>
+                        <tr><td><strong>Texture Streaming</strong></td><td>Loads high-resolution mipmaps only for objects close to the camera, saving massive amounts of VRAM.</td></tr>
+                        <tr><td><strong>Shadow Distance</strong></td><td>Fades out dynamic shadows past a certain radius, falling back to baked lighting or ambient occlusion.</td></tr>
+                    </tbody>
+                </table>
+            </div>
 
-                <h2 id="export-formats">Export Formats & Asset Pipeline</h2>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Format</th>
-                                <th>File Extension</th>
-                                <th>Supported Content</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>GLTF / GLB</strong></td>
-                                <td><code>.glb / .gltf</code></td>
-                                <td>Mesh geometry, PBR materials, skinning armatures, keyframe animation tracks, embedded textures.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Wavefront OBJ</strong></td>
-                                <td><code>.obj + .mtl</code></td>
-                                <td>Static mesh geometry, UV coordinates, basic MTL material colors.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Filmbox FBX</strong></td>
-                                <td><code>.fbx</code></td>
-                                <td>3D mesh, skeletal hierarchy, animation clips (interoperable with Maya/Unreal Engine).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>PNG Render</strong></td>
-                                <td><code>.png</code></td>
-                                <td>High-resolution transparent or background image snapshot of the active viewport render.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>WebM / MP4 Video</strong></td>
-                                <td><code>.webm / .mp4</code></td>
-                                <td>Real-time encoded video file of viewport animation playbacks.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <h2 id="nanite-system">Nanite System</h2>
+            <p>
+                SM Engine includes a virtualized geometry system based on <code>NaniteSystem.js</code>. Nanite allows you to import cinematic-quality scanned meshes with millions of polygons without bogging down the GPU.
+            </p>
+            <ul>
+                <li><strong>Virtualized Geometry:</strong> Nanite breaks meshes into hierarchical clusters. It only streams and renders the specific polygon clusters that are visible and large enough to matter on screen.</li>
+                <li><strong>Automatic LOD:</strong> Eradicates the need for manual LOD generation. The system seamlessly scales detail down to the pixel level based on the <em>Screen Space Error Threshold</em> parameter.</li>
+                <li><strong>Toggle per Object:</strong> You can enable or disable Nanite on a per-mesh basis in the mesh properties panel.</li>
+                <li><strong>Cluster Visualization:</strong> View the cluster breakdown in real-time using the Nanite Debug view mode.</li>
+            </ul>
+            <div class="callout callout-note">
+                <strong>Best Practice:</strong> Nanite is highly recommended for dense, opaque meshes with >100k polygons. It is less effective and not recommended for low-poly geometry, transparent materials (like glass or leaves), or heavily deforming skeletal meshes.
+            </div>
 
-                <div class="page-navigation">
-                    <a href="lighting.html" class="nav-card">
-                        <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← Lighting & Atmosphere</span>
-                    </a>
-                    <a href="animation.html" class="nav-card next">
-                        <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">3D Animation & Rigging →</span>
-                    </a>
-                </div>
+            <h2 id="stack-optimizer">Stack Optimizer</h2>
+            <p>
+                When working with complex Modifiers or Geometry Nodes, the Stack Optimizer works in the background to ensure real-time playback.
+            </p>
+            <ul>
+                <li><strong>Evaluation Order:</strong> Groups compute-heavy modifiers together.</li>
+                <li><strong>Caching:</strong> Caches the evaluated mesh states of static objects so they don't recompute every frame.</li>
+                <li><strong>Incremental Updates:</strong> Only updates the specific vertices affected by a localized modifier, rather than recalculating the entire mesh.</li>
+            </ul>
+
+            <h2 id="tips">General Optimization Tips</h2>
+            <ul>
+                <li><strong>Use Instancing:</strong> Whenever you have repeated objects (crates, pillars, trees), use instances rather than duplicates to save memory and draw calls.</li>
+                <li><strong>Keep Modifiers Shallow:</strong> For objects that deform in real-time, keep the modifier stack as small as possible.</li>
+                <li><strong>Disable Shadows on Small Objects:</strong> Pebbles and small debris do not need to cast dynamic shadows. Turn off their shadow casting to save render time.</li>
+                <li><strong>Bake Lighting:</strong> For static environments, use baked lightmaps rather than real-time directional lights for ambient bounces.</li>
+            </ul>
+
+        
             </main>
 
             <aside class="toc-sidebar">

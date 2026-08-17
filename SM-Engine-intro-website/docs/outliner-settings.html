@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Animation & Storyboard - SM Engine Documentation</title>
+    <title>Outliner & Engine Settings - SM Engine Documentation</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,6 @@
 
 <body>
 
-    <!-- Header Navigation -->
     <header class="top-nav">
         <a href="../index.html" class="nav-brand">
             <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
@@ -70,7 +69,7 @@
                     <li><a href="interface.html" class="sidebar-link">Interface & Layout</a></li>
                     <li><a href="shortcuts.html" class="sidebar-link">Keyboard Shortcuts</a></li>
                     <li><a href="workspaces.html" class="sidebar-link">Workspaces & Modes</a></li>
-                    <li><a href="outliner-settings.html" class="sidebar-link">Outliner & Settings</a></li>
+                    <li><a href="outliner-settings.html" class="sidebar-link active">Outliner & Settings</a></li>
                 </ul>
             </div>
 
@@ -107,7 +106,7 @@
                 <ul class="sidebar-links">
                     <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
                     <li><a href="graph-editor.html" class="sidebar-link">Graph Editor Curves</a></li>
-                    <li><a href="animation-2d.html" class="sidebar-link active">2D Animation & Storyboard</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
                     <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
                 </ul>
             </div>
@@ -183,113 +182,207 @@
 
         <div class="content-wrapper">
             <main class="content">
-                <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / Animation & 2D / 2D Animation & Storyboard
-                </nav>
+                <div class="breadcrumb">
+                    <a href="index.html">Docs</a> / <a href="architecture.html">Engine & Developer</a> / Outliner &
+                    Engine Settings
+                </div>
 
-                <h1>2D Animation (Grease Pencil) & Storyboard</h1>
-                <p class="page-lead">
-                    Technical reference for SM Engine's 2D vector drawing system, multi-layer canvas, onion skinning,
-                    and storyboard sequence integration.
+                <h1 id="outliner-settings-overview">Outliner & Engine Settings</h1>
+
+                <p>The Outliner and Settings panels provide foundational control over scene organization and engine-wide
+                    configuration parameters. This document explores the <code>HierarchyPanel.js</code> implementation
+                    of the Outliner and the comprehensive configuration options available via
+                    <code>settingsPanel.js</code>.
                 </p>
 
-                <h2 id="2d-overview">Overview</h2>
+                <h2 id="outliner-hierarchy">Outliner Scene Hierarchy</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/2D-Overview.png"
-                            alt="SM Engine interface preview of 2D Overview">
+                        <img src="../../assets/screenshots/Outliner-Scene-Hierarchy.png"
+                            alt="SM Engine interface preview of Main Interface Regions">
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of 2D workspace in SM Engine.
-                    </figcaption>
+                    <figcaption class="doc-caption">Figure: Interactive overview of Outliner Scene Hierarchy in SM
+                        Engine workspace.</figcaption>
                 </figure>
 
-                <p>
-                    The <strong>Animation2DManager</strong> provides a Blender Grease Pencil-style 2D vector stroke
-                    system embedded directly in the 3D space or overlay canvas.
-                </p>
+                <p>The Outliner serves as the structural backbone of your scene, presenting a hierarchical tree-view
+                    display of all instantiated entities including static meshes, skeletal armatures, cameras, lights,
+                    and organizational collections.</p>
 
-                <h2 id="brush-tools">2D Vector Drawing Tools</h2>
-                <figure class="doc-figure doc-figure--wide">
-                    <div class="doc-image-frame doc-image-frame--wide">
-                        <img src="../../assets/screenshots/brush-toolbar.png"
-                            alt="SM Engine brush and tool presets toolbar" class="doc-wide-image" loading="lazy"
-                            decoding="async">
-                    </div>
+                <h3 id="hierarchy-features">Core Features</h3>
+                <ul>
+                    <li><strong>Tree-View Display:</strong> Clearly visualizes parent-child relationships. Child
+                        transforms act in local space relative to their parent node.</li>
+                    <li><strong>Drag-and-Drop Parenting:</strong> Intuitively reparent objects by dragging a node onto
+                        another. Hold <code>Shift</code> while dropping to preserve global transform data during
+                        reparenting operations.</li>
+                    <li><strong>Advanced Search & Filtering:</strong> Rapidly locate assets via the search bar. Supports
+                        regex and type-filtering (e.g., typing <code>t:light</code> filters the view to display only
+                        light entities).</li>
+                </ul>
 
-                    <figcaption class="doc-caption">
-                        Figure: SM Engine brush preset toolbar showing the available painting and editing tools.
-                    </figcaption>
-                </figure>
+                <h3 id="visibility-toggles">State Toggles</h3>
+                <p>Each node in the outliner exposes several rapid-access state toggles:</p>
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Tool</th>
+                                <th>Icon Indicator</th>
                                 <th>Function</th>
+                                <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Pencil / Ink Pen</strong></td>
-                                <td>Draws pressure-sensitive smooth vector stroke curves with color and width
-                                    parameters.</td>
+                                <td><strong>Eye Icon</strong></td>
+                                <td>Viewport Visibility</td>
+                                <td>Toggles the object's visibility in the current 3D viewport. Does not affect final
+                                    rendering.</td>
                             </tr>
                             <tr>
-                                <td><strong>Eraser Tool</strong></td>
-                                <td>Erases vector strokes either by point collision or whole stroke segment removal.
-                                </td>
+                                <td><strong>Padlock Icon</strong></td>
+                                <td>Selection Lock</td>
+                                <td>Prevents the object from being accidentally selected or modified in the viewport.
+                                    Ideal for background geometry.</td>
                             </tr>
                             <tr>
-                                <td><strong>Fill Bucket</strong></td>
-                                <td>Fills closed vector stroke boundaries with solid color or gradient fills.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Stroke Selection</strong></td>
-                                <td>Selects, translates, rotates, and scales existing 2D vector stroke shapes.</td>
+                                <td><strong>Render Icon (Camera)</strong></td>
+                                <td>Render Toggle</td>
+                                <td>Dictates whether the object is evaluated during the final rendering or compilation
+                                    pipeline.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h2 id="layers-onion-skinning">Layers & Onion Skinning</h2>
+                <h2 id="engine-settings">Engine Settings & Preferences</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/Layers-and-Onion-Skinning.png"
-                            alt="SM Engine interface preview of Layers & Onion Skinning">
+                        <img src="../../assets/screenshots/Engine-Settings-and-Preferences.png"
+                            alt="SM Engine interface preview of Engine Settings & Preferences">
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of Layers & Onion Skinning in SM Engine
-                        workspace.</figcaption>
+                    <figcaption class="doc-caption">Figure: Interactive overview of Engine Settings & Preferences in SM
+                        Engine workspace.</figcaption>
                 </figure>
+                <p>The Engine Settings panel (Shortcut: <code>Ctrl + ,</code>) offers exhaustive customization over
+                    performance scaling, interface behavior, and global rendering properties.</p>
+
+                <h3 id="graphics-performance">Graphics & Performance</h3>
+                <p>Configure hardware utilization and fidelity parameters.</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Values</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Max FPS</strong></td>
+                                <td>30, 60, 120, Uncapped</td>
+                                <td>Limits application tick rate. Uncapped is recommended for profiling.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Shadow Map Res</strong></td>
+                                <td>512 to 4096</td>
+                                <td>Dictates the sharpness of dynamic shadows. Highly impactful on VRAM.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Anti-Aliasing</strong></td>
+                                <td>None, FXAA, SMAA, TAA</td>
+                                <td>Method for reducing jagged edges. TAA provides the best temporal stability but
+                                    requires motion vector calculation.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ambient Occlusion</strong></td>
+                                <td>Off, SSAO, GTAO</td>
+                                <td>Simulates localized shadowing in crevices. GTAO provides physically accurate
+                                    occlusion.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 id="keymap-shortcuts">Keymap & Shortcuts</h3>
+                <p>SM Engine features a fully customizable input abstraction layer. Users can rebind viewport navigation
+                    (Maya vs Blender vs Unreal presets), modeling hotkeys, and custom tool macros.</p>
+
+                <pre><code class="language-javascript">
+// Example: Programmatically overriding a shortcut
+engine.input.bindAction('Modeling.Extrude', {
+    key: 'E',
+    modifiers: ['Ctrl'],
+    event: 'pressed',
+    context: 'VIEWPORT_3D'
+});
+            </code></pre>
+
+                <h3 id="color-management">Color Management</h3>
+                <p>Ensure color accuracy across workflows via the global color management pipeline.</p>
                 <ul>
-                    <li><strong>Multi-Layer Stack:</strong> Organize 2D drawings across Background, Rough Sketch,
-                        Lineart, and Color layers with visibility and opacity controls.</li>
-                    <li><strong>Onion Skinning:</strong> Displays ghosted previews of previous frames (tinted blue/cyan)
-                        and upcoming frames (tinted orange/red) for traditional frame-by-frame animators.</li>
-                    <li><strong>Frame Exposure (Holds):</strong> Extend keyframe exposure duration across multiple
-                        frames (On Ones, On Twos, On Threes).</li>
+                    <li><strong>Color Space:</strong> Defines the working space of the engine. Supports standard sRGB
+                        for basic projects, Linear for compositing, and ACEScg for industry-standard HDR cinematic
+                        pipelines.</li>
+                    <li><strong>Exposure & Gamma:</strong> Global scene luminosity adjustments.</li>
+                    <li><strong>Look Presets:</strong> Applies tone-mapping curves. Options include Filmic, AgX (highly
+                        recommended for natural highlight roll-off), and High Contrast styles.</li>
                 </ul>
 
-                <h2 id="storyboard-integration">Storyboard Sequence System</h2>
-                <p>
-                    The <strong>Storyboard2DManager</strong> sequences 2D animation panels along a narrative shot list
-                    with audio sync, panel captions, camera pan/zoom cuts, and instant MP4/WebM video export.
-                </p>
+                <h3 id="ui-themes">UI Themes</h3>
+                <p>The editor environment supports extensive visual customization.</p>
+                <ul>
+                    <li><strong>Presets:</strong> Default Dark Mode, Light Mode, and OLED Black.</li>
+                    <li><strong>Custom HSL Themes:</strong> Users can define custom base colors, accent colors, and text
+                        contrast ratios which the engine will procedurally generate a theme from.</li>
+                </ul>
 
-                <div class="page-navigation">
-                    <a href="animation.html" class="nav-card">
-                        <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← 3D Animation & Rigging</span>
+                <div class="callout warning">
+                    <div class="callout-title"><svg class="doc-icon" viewBox="0 0 24 24">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                            </path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg> Restart Required</div>
+                    <p>Certain settings, specifically changes to the fundamental Color Space (e.g., swapping from sRGB
+                        to ACEScg) and Shadow Map allocations, require restarting the SM Engine runtime to recompile
+                        shaders.</p>
+                </div>
+
+                <div class="page-navigation nav-card">
+                    <a href="performance.html" class="nav-prev">
+                        <div class="nav-label">Previous</div>
+                        <div class="nav-title">Performance Optimization</div>
                     </a>
-                    <a href="node-editors.html" class="nav-card next">
-                        <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">Visual Node Graphs →</span>
+                    <a href="../index.html" class="nav-next">
+                        <div class="nav-label">Next</div>
+                        <div class="nav-title">Return Home</div>
                     </a>
                 </div>
             </main>
-
             <aside class="toc-sidebar">
-                <div class="toc-title">On This Page</div>
-                <ul id="tocList" class="toc-list"></ul>
+                <div class="toc-container">
+                    <div class="toc-title">On this page</div>
+                    <ul class="toc-list">
+                        <li><a href="#outliner-settings-overview">Overview</a></li>
+                        <li><a href="#outliner-hierarchy">Outliner Scene Hierarchy</a>
+                            <ul>
+                                <li><a href="#hierarchy-features">Core Features</a></li>
+                                <li><a href="#visibility-toggles">Visibility Toggles</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#engine-settings">Engine Settings & Preferences</a>
+                            <ul>
+                                <li><a href="#graphics-performance">Graphics & Performance</a></li>
+                                <li><a href="#keymap-shortcuts">Keymap & Shortcuts</a></li>
+                                <li><a href="#color-management">Color Management</a></li>
+                                <li><a href="#ui-themes">UI Themes</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </aside>
         </div>
     </div>

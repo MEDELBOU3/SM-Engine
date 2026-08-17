@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Animation & Storyboard - SM Engine Documentation</title>
+    <title>Video Sequencer - SM Engine</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,6 +55,7 @@
     </header>
 
     <div class="docs-container">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-group">
                 <div class="sidebar-group-title">
@@ -107,7 +108,7 @@
                 <ul class="sidebar-links">
                     <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
                     <li><a href="graph-editor.html" class="sidebar-link">Graph Editor Curves</a></li>
-                    <li><a href="animation-2d.html" class="sidebar-link active">2D Animation & Storyboard</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
                     <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
                 </ul>
             </div>
@@ -159,7 +160,7 @@
                 </div>
                 <ul class="sidebar-links">
                     <li><a href="video-editing.html" class="sidebar-link">Video Editing</a></li>
-                    <li><a href="video-sequencer.html" class="sidebar-link">Video Sequencer</a></li>
+                    <li><a href="video-sequencer.html" class="sidebar-link active">Video Sequencer</a></li>
                     <li><a href="video-export.html" class="sidebar-link">Video Export & Delivery</a></li>
                     <li><a href="video-effects.html" class="sidebar-link">Video Effects & Color</a></li>
                     <li><a href="audio.html" class="sidebar-link">Audio & MetaSound</a></li>
@@ -181,112 +182,161 @@
             </div>
         </aside>
 
+        <!-- Main Content Area -->
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / Animation & 2D / 2D Animation & Storyboard
+                    <a href="index.html">Docs</a> / Media Production / Video Sequencer
                 </nav>
 
-                <h1>2D Animation (Grease Pencil) & Storyboard</h1>
+                <h1>Video Sequencer</h1>
                 <p class="page-lead">
-                    Technical reference for SM Engine's 2D vector drawing system, multi-layer canvas, onion skinning,
-                    and storyboard sequence integration.
+                    The <strong>Video Sequencer</strong> is SM Engine's track-based editing suite: a multi-lane timeline
+                    for
+                    assembling video, images, audio and text into a finished 1280&times;720 / 30 FPS movie that can be
+                    exported
+                    to <code>.webm</code> / <code>.mp4</code> right from the viewport.
                 </p>
 
-                <h2 id="2d-overview">Overview</h2>
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg></div>
+                    <div class="callout-body">
+                        <strong>Entering sequencer mode</strong> — click the <strong>Video Editor</strong> button in the
+                        toolbar (<code>#toggle-video-editor-btn</code>). The viewport switches to
+                        <code>.video-editing-mode</code>,
+                        the live preview canvas and the sequencer appear at the bottom of the editor, and the engine
+                        enters
+                        playback-render mode (a <code>sm:video-mode</code> event is dispatched).
+                    </div>
+                </div>
+
+                <h2 id="preview">Preview &amp; Project</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/2D-Overview.png"
-                            alt="SM Engine interface preview of 2D Overview">
+                        <img src="../../assets/screenshots/video-secencer.png"
+                            alt="SM Engine interface preview of Main Interface Regions">
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of 2D workspace in SM Engine.
-                    </figcaption>
+                    <figcaption class="doc-caption">Figure: Interactive overview of Preview &amp; Project in SM Engine
+                        workspace.</figcaption>
                 </figure>
 
-                <p>
-                    The <strong>Animation2DManager</strong> provides a Blender Grease Pencil-style 2D vector stroke
-                    system embedded directly in the 3D space or overlay canvas.
-                </p>
+                <ul>
+                    <li><strong>Live preview</strong> — a 2D canvas (<code>#video-editing-canvas</code>) at project
+                        resolution (default <strong>1280&times;720</strong>) renders the composited sequence in real
+                        time.</li>
+                    <li><strong>Project settings</strong> — resolution (e.g. 1920×1080 / 1280×720 / 720×405) and
+                        timeline FPS (default <strong>30</strong>) are configurable from the project settings popup.
+                    </li>
+                    <li><strong>Transport</strong> — the sequencer toolbar shows a playhead timecode
+                        (<code>hh:mm:ss:ff</code>), play/pause and looping controls.</li>
+                </ul>
 
-                <h2 id="brush-tools">2D Vector Drawing Tools</h2>
-                <figure class="doc-figure doc-figure--wide">
-                    <div class="doc-image-frame doc-image-frame--wide">
-                        <img src="../../assets/screenshots/brush-toolbar.png"
-                            alt="SM Engine brush and tool presets toolbar" class="doc-wide-image" loading="lazy"
-                            decoding="async">
+                <h2 id="media-pool">Media Pool</h2>
+                <figure class="doc-figure doc-figure--panel">
+                    <div class="doc-image-frame doc-image-frame--panel">
+                        <img src="../../assets/screenshots/media-pool.png" alt="SM Engine Water Controls panel"
+                            class="doc-panel-image">
+                    </div>
+                    <figcaption class="doc-caption">
+                        Figure: Water system controls available in the SM Engine Inspector panel.
+                    </figcaption>
+                </figure>
+                <p>
+                    The media pool (<code>#media-pool-header</code> / <code>#media-pool-grid</code>) holds imported
+                    assets for
+                    the sequence:
+                </p>
+                <ul>
+                    <li><strong>Import Media</strong> — <code>#import-media-btn</code> opens a file picker accepting
+                        <code>video/*</code>, <code>image/*</code> and <code>audio/*</code>.
+                    </li>
+                    <li><strong>Filters</strong> — All / Video / Image quick-filter buttons.</li>
+                    <li>Drag an asset from the pool onto the timeline to create a <strong>Media</strong> clip.</li>
+                </ul>
+
+                <h2 id="sequencer">Timeline &amp; Clips</h2>
+                <p>
+                    The sequencer (<code>#sequencer-root</code>) contains the toolbar, a time ruler and a stack of lanes
+                    (draggable with the <code>.sequencer-splitter</code>, default live height 260&nbsp;px):
+                </p>
+                <ul>
+                    <li><strong>View controls</strong> — Fit / 25% / 50% / 100% / 200% zoom, plus frame-step navigation.
+                    </li>
+                    <li><strong>Tools</strong> — Select and Cut (razor) tools for editing clips on lanes.</li>
+                    <li><strong>Add clip</strong> — <strong>Marker</strong>, <strong>Text</strong>,
+                        <strong>Solid</strong>
+                        (color background) or <strong>Media</strong> buttons drop new clips at the playhead.
+                    </li>
+                    <li><strong>Snap / Waveforms / Thumbnails</strong> — toggles for magnetic snapping, audio waveform
+                        overlays and video thumbnail previews on clips.</li>
+                    <li><strong>Clips</strong> — drag to move, trim edges, ripple with timecode precision; each clip
+                        stores
+                        <code>in/out</code>, <code>duration</code>, <code>sourceIn/sourceOut</code> and a canvas-space
+                        transform (position + size in project pixels).
+                    </li>
+                </ul>
+
+                <h2 id="inspector">Clip Inspector</h2>
+                <p>
+                    Selecting a clip opens the <strong>Clip Inspector</strong> (hosted in the main inspector panel via
+                    <code>VideoClipInspector.host()</code>) with card sections:
+                </p>
+                <ul>
+                    <li><strong>CLIP</strong> — in/out, duration, source in/out (with timecode fields at project FPS).
+                    </li>
+                    <li><strong>TRANSFORM</strong> — position and size within the project resolution.</li>
+                    <li>Media clips also expose source trimming, loop and volume/audio controls.</li>
+                </ul>
+
+                <h2 id="export">Export &amp; Recording</h2>
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../../assets/screenshots/Export-&-Recording.png"
+                            alt="SM Engine Export and Recording interface">
                     </div>
 
                     <figcaption class="doc-caption">
-                        Figure: SM Engine brush preset toolbar showing the available painting and editing tools.
+                        Figure: Export &amp; Recording workflow in SM Engine, including recording controls, output
+                        settings, format selection, render options, and export management.
                     </figcaption>
                 </figure>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Tool</th>
-                                <th>Function</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Pencil / Ink Pen</strong></td>
-                                <td>Draws pressure-sensitive smooth vector stroke curves with color and width
-                                    parameters.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Eraser Tool</strong></td>
-                                <td>Erases vector strokes either by point collision or whole stroke segment removal.
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Fill Bucket</strong></td>
-                                <td>Fills closed vector stroke boundaries with solid color or gradient fills.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Stroke Selection</strong></td>
-                                <td>Selects, translates, rotates, and scales existing 2D vector stroke shapes.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h2 id="layers-onion-skinning">Layers & Onion Skinning</h2>
-                <figure class="doc-figure">
-                    <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/Layers-and-Onion-Skinning.png"
-                            alt="SM Engine interface preview of Layers & Onion Skinning">
-                    </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of Layers & Onion Skinning in SM Engine
-                        workspace.</figcaption>
-                </figure>
-                <ul>
-                    <li><strong>Multi-Layer Stack:</strong> Organize 2D drawings across Background, Rough Sketch,
-                        Lineart, and Color layers with visibility and opacity controls.</li>
-                    <li><strong>Onion Skinning:</strong> Displays ghosted previews of previous frames (tinted blue/cyan)
-                        and upcoming frames (tinted orange/red) for traditional frame-by-frame animators.</li>
-                    <li><strong>Frame Exposure (Holds):</strong> Extend keyframe exposure duration across multiple
-                        frames (On Ones, On Twos, On Threes).</li>
-                </ul>
-
-                <h2 id="storyboard-integration">Storyboard Sequence System</h2>
                 <p>
-                    The <strong>Storyboard2DManager</strong> sequences 2D animation panels along a narrative shot list
-                    with audio sync, panel captions, camera pan/zoom cuts, and instant MP4/WebM video export.
+                    Export streams the live preview through <code>captureStream()</code> into a
+                    <code>MediaRecorder</code>
+                    (webm, then transcodeable to mp4). During export the engine enters
+                    <code>SMEngineRenderer._isRenderingVideo</code> mode and the viewport renders frame-accurately while
+                    the
+                    sequencer plays through the composition. The finished file downloads when recording stops.
                 </p>
 
+                <h2 id="scripting">Scripting Reference</h2>
+                <pre><code>window.SMVideoEditingManager.toggle();      // enter/exit sequencer mode
+window.SMVideoEditingManager.enter();
+window.SMVideoEditingManager.exit();
+
+// Timeline data: SequencerState (fps, playhead, clips) drives the renderer
+// Clips: { type: 'media'|'text'|'solid'|'marker', in, out, sourceIn, sourceOut,
+//          x, y, w, h (project pixels) }
+</code></pre>
+
+
                 <div class="page-navigation">
-                    <a href="animation.html" class="nav-card">
+                    <a href="video-editing.html" class="nav-card">
                         <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← 3D Animation & Rigging</span>
+                        <span class="nav-card-title">← Video Editing</span>
                     </a>
-                    <a href="node-editors.html" class="nav-card next">
+                    <a href="video-export.html" class="nav-card next">
                         <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">Visual Node Graphs →</span>
+                        <span class="nav-card-title">Video Export & Delivery →</span>
                     </a>
                 </div>
             </main>
 
+            <!-- Table of Contents Right Sidebar -->
             <aside class="toc-sidebar">
                 <div class="toc-title">On This Page</div>
                 <ul id="tocList" class="toc-list"></ul>

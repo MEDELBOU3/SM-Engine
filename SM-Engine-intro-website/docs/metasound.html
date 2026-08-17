@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Render Pipeline & Nanite - SM Engine Documentation</title>
+    <title>MetaSound Audio Editor - SM Engine</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,6 +38,7 @@
     </header>
 
     <div class="docs-container">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
     <div class="sidebar-group">
         <div class="sidebar-group-title">
@@ -68,7 +69,7 @@
             <li><a href="architectural-tools.html" class="sidebar-link">Architectural Tools</a></li>
             <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
             <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
-            <li><a href="rendering.html" class="sidebar-link active">Render Pipeline & Nanite</a></li>
+            <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
         </ul>
     </div>
 
@@ -107,7 +108,7 @@
         <ul class="sidebar-links">
             <li><a href="node-editors.html" class="sidebar-link">Visual Node Graphs</a></li>
             <li><a href="geometry-nodes.html" class="sidebar-link">Geometry Nodes</a></li>
-            <li><a href="metasound.html" class="sidebar-link">MetaSound Audio Editor</a></li>
+            <li><a href="metasound.html" class="sidebar-link active">MetaSound Audio Editor</a></li>
             <li><a href="physics.html" class="sidebar-link">Physics & Dynamics</a></li>
             <li><a href="ragdoll.html" class="sidebar-link">Ragdoll System</a></li>
             <li><a href="scripting.html" class="sidebar-link">JavaScript Scripting API</a></li>
@@ -141,97 +142,119 @@
     </div>
 </aside>
 
+        <!-- Main Content Area -->
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / 3D Creation / Render Pipeline & Nanite
+                    <a href="index.html">Docs</a> / Node Editors & Systems / MetaSound Audio Editor
                 </nav>
 
-                <h1>Render Pipeline & Virtual Geometry</h1>
+                <h1>MetaSound Audio Editor</h1>
                 <p class="page-lead">
-                    Technical documentation for the SM Render Pipeline (PBR), Nanite virtualized geometry engine, post-processing stack, and export formats.
+                    The <strong>MetaSound Engine 2.0</strong> is a visual, node-based procedural audio editor built on the Web
+                    Audio API. Compose synthesized sound effects, loops and cues by connecting oscillators, players, filters and
+                    effects in a canvas graph, then export the result as a reusable cue asset for the timeline and gameplay.
                 </p>
 
-                <h2 id="render-pipeline">SM Render Pipeline Architecture</h2>
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Opening the editor</strong> — open the Node Editor panel and switch to the
+                        <strong>MetaSound</strong> tab (the <code>sound-graph-wrapper</code> sub-editor). A
+                        <strong>Play</strong> / <strong>Stop</strong> toolbar compiles and runs the current graph in real time,
+                        with a live waveform visualizer at the top of the sidebar.
+                    </div>
+                </div>
+
+                <h2 id="layout">Editor Layout</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-placeholder">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <span>Interface Preview: SM Render Pipeline Architecture</span>
+                        <span>Interface Preview: Editor Layout</span>
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of SM Render Pipeline Architecture in SM Engine workspace.</figcaption>
+                    <figcaption class="doc-caption">Figure: Interactive overview of Editor Layout in SM Engine workspace.</figcaption>
                 </figure>
 
-                <p>
-                    The <code>SMRenderPipeline.js</code> architecture employs a multi-pass WebGL2 rendering pipeline:
-                </p>
                 <ul>
-                    <li><strong>G-Buffer Pass:</strong> Writes World Normal, Albedo, Metallic-Roughness, Depth, and Motion Vectors into floating-point framebuffer targets.</li>
-                    <li><strong>Lighting & Shadow Pass:</strong> Computes PBR direct lighting (PCF shadow map filtering for point, spot, and directional lights).</li>
-                    <li><strong>Post-Processing Stack:</strong> Bloom, Screen Space Ambient Occlusion (SSAO), Chromatic Aberration, Vignette, Depth of Field, and Tone Mapping (ACESFilmic / Neutral).</li>
+                    <li><strong>Left sidebar</strong> — transport (Play/Stop), live <code>#audio-visualizer</code> canvas with
+                        STOPPED/PLAYING status, <strong>Asset Browser</strong> (import audio files via
+                        <code>#sound-file-upload</code>, stored as buffer assets) and the <strong>Node Palette</strong>.</li>
+                    <li><strong>Canvas</strong> — infinite dot-grid workspace; drag nodes, drag sockets to draw
+                        SVG connection wires, right-click a node for <strong>Delete</strong>.</li>
+                    <li><strong>Right sidebar</strong> — <strong>Details</strong> property panel for the selected node
+                        (frequency, waveform, gain, delay time…), plus <strong>Create Cue Asset</strong> to bake the graph
+                        into an exportable cue.</li>
+                    <li><strong>Audio Output</strong> — a fixed output node with Left/Right input sockets. Every signal chain
+                        ends here.</li>
                 </ul>
 
-                <h2 id="nanite-system">Nanite Virtual Geometry System</h2>
-                <p>
-                    The <code>NaniteSystem.js</code> module optimizes massive high-poly meshes (up to several million polygons):
-                </p>
-                <ul>
-                    <li><strong>Hierarchical Cluster Grouping:</strong> Hierarchically clusters mesh triangles into localized 128-triangle clusters.</li>
-                    <li><strong>Screen-Space Error LOD:</strong> Dynamically swaps cluster detail levels based on pixel coverage on screen.</li>
-                    <li><strong>Frustum & Occlusion Culling:</strong> Culls clusters outside camera view frustum or behind occlusion depth buffers.</li>
-                </ul>
-
-                <h2 id="export-formats">Export Formats & Asset Pipeline</h2>
+                <h2 id="nodes">Node Palette</h2>
                 <div class="table-wrapper">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Format</th>
-                                <th>File Extension</th>
-                                <th>Supported Content</th>
-                            </tr>
+                            <tr><th>Node</th><th>Type ID</th><th>What it does</th></tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><strong>GLTF / GLB</strong></td>
-                                <td><code>.glb / .gltf</code></td>
-                                <td>Mesh geometry, PBR materials, skinning armatures, keyframe animation tracks, embedded textures.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Wavefront OBJ</strong></td>
-                                <td><code>.obj + .mtl</code></td>
-                                <td>Static mesh geometry, UV coordinates, basic MTL material colors.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Filmbox FBX</strong></td>
-                                <td><code>.fbx</code></td>
-                                <td>3D mesh, skeletal hierarchy, animation clips (interoperable with Maya/Unreal Engine).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>PNG Render</strong></td>
-                                <td><code>.png</code></td>
-                                <td>High-resolution transparent or background image snapshot of the active viewport render.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>WebM / MP4 Video</strong></td>
-                                <td><code>.webm / .mp4</code></td>
-                                <td>Real-time encoded video file of viewport animation playbacks.</td>
-                            </tr>
+                            <tr><td>Wave Player</td><td><code>wavePlayer</code></td><td>Plays an imported audio asset
+                                (buffer source); optional loop.</td></tr>
+                            <tr><td>Synthesizer (Osc)</td><td><code>oscillator</code></td><td>Procedural tone —
+                                waveform (sine/square/sawtooth/triangle) and frequency (default 440&nbsp;Hz).</td></tr>
+                            <tr><td>Mixer / Gain</td><td><code>gain</code></td><td>Volume control with a
+                                <strong>Gain Mod</strong> input socket for automation.</td></tr>
+                            <tr><td>Delay / Echo</td><td><code>delay</code></td><td>Feedback delay line (max 5 s) for echo
+                                and space.</td></tr>
+                            <tr><td>EQ Filter</td><td><code>filter</code></td><td>Biquad low-pass filter (cutoff
+                                frequency).</td></tr>
+                            <tr><td>3D Panner</td><td><code>panner</code></td><td>Spatial panning for 3D-positioned sound.</td></tr>
+                            <tr><td>Audio Output</td><td><code>output</code></td><td>Fixed master node with Left/Right
+                                sockets.</td></tr>
                         </tbody>
                     </table>
                 </div>
 
+                <h2 id="workflow">Workflow</h2>
+                <ol>
+                    <li>Drag a <strong>source node</strong> (Wave Player or Oscillator) onto the canvas.</li>
+                    <li>Optionally chain <strong>Gain → Delay → Filter</strong> nodes to shape the sound.</li>
+                    <li>Click a node's output socket and drag to the next node's input socket to wire the chain; finish at
+                        the <strong>Audio Output</strong> node.</li>
+                    <li>Select any node to tweak parameters in the Details panel.</li>
+                    <li>Hit <strong>Play</strong> — the graph compiles into live Web Audio nodes; wires light up while
+                        audio flows.</li>
+                    <li>Hit <strong>Stop</strong>, then <strong>Create Cue Asset</strong> to save the graph as a cue for
+                        timeline/gameplay use.</li>
+                </ol>
+
+                <h2 id="scripting">Scripting Reference</h2>
+                <pre><code>window.SoundGraph.addNode("oscillator");  // synth / wavePlayer / gain / delay / filter / panner
+window.SoundGraph.playGraph();            // compile + play the whole graph
+window.SoundGraph.stopGraph();            // halt all sources, clear active wiring
+window.SoundGraph.exportCue();            // bake graph into a cue asset
+</code></pre>
+
+                <div class="callout tip">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1z"></path></svg></div>
+                    <div class="callout-body">
+                        <strong>Related systems</strong> — the classic <code>AudioStudio</code> editor
+                        (engine\soundes\sond.js) handles one-shot sound effects and positional audio, and timeline audio
+                        tracks live in <code>js\timeline\core\timeline-events-audio.js</code>. See
+                        <a href="audio.html">Audio &amp; MetaSound</a> for the full sound pipeline.
+                    </div>
+                </div>
+
                 <div class="page-navigation">
-                    <a href="lighting.html" class="nav-card">
+                    <a href="node-editors.html" class="nav-card prev">
                         <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← Lighting & Atmosphere</span>
+                        <span class="nav-card-title">← Visual Node Graphs</span>
                     </a>
-                    <a href="animation.html" class="nav-card next">
-                        <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">3D Animation & Rigging →</span>
+                    <a href="physics.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Step</span>
+                        <span class="nav-card-title">Physics & Dynamics →</span>
                     </a>
                 </div>
             </main>
 
+            <!-- Table of Contents Right Sidebar -->
             <aside class="toc-sidebar">
                 <div class="toc-title">On This Page</div>
                 <ul id="tocList" class="toc-list"></ul>

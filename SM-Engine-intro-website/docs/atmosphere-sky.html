@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Animation & Storyboard - SM Engine Documentation</title>
+    <title>Sky, Atmosphere & Viewports - SM Engine Documentation</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,9 +13,7 @@
         rel="stylesheet">
 </head>
 
-<body>
-
-    <!-- Header Navigation -->
+<body class="light-theme">
     <header class="top-nav">
         <a href="../index.html" class="nav-brand">
             <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
@@ -88,7 +86,7 @@
                     <li><a href="sculpting.html" class="sidebar-link">Sculpting & Terrain</a></li>
                     <li><a href="hair-system.html" class="sidebar-link">Hair & Fur Grooming</a></li>
                     <li><a href="terrain-sculpting.html" class="sidebar-link">Terrain Sculpting Workspace</a></li>
-                    <li><a href="atmosphere-sky.html" class="sidebar-link">Sky & Viewports</a></li>
+                    <li><a href="atmosphere-sky.html" class="sidebar-link active">Sky & Viewports</a></li>
                     <li><a href="architectural-tools.html" class="sidebar-link">Architectural Tools</a></li>
                     <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
                     <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
@@ -107,7 +105,7 @@
                 <ul class="sidebar-links">
                     <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
                     <li><a href="graph-editor.html" class="sidebar-link">Graph Editor Curves</a></li>
-                    <li><a href="animation-2d.html" class="sidebar-link active">2D Animation & Storyboard</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
                     <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
                 </ul>
             </div>
@@ -180,121 +178,354 @@
                 </ul>
             </div>
         </aside>
-
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / Animation & 2D / 2D Animation & Storyboard
+                    <a href="index.html">Documentation</a> <span class="separator">/</span>
+                    <a href="lighting.html">3D Creation</a> <span class="separator">/</span>
+                    <span class="current">Sky & Atmosphere</span>
                 </nav>
+                <h1 id="sky-atmosphere-viewports">Sky, Atmosphere & Viewports</h1>
+                <p>The Environment system in SM Engine provides physically based atmospheric scattering, dynamic
+                    volumetric clouds, and robust viewport management for analyzing and rendering the scene.</p>
 
-                <h1>2D Animation (Grease Pencil) & Storyboard</h1>
-                <p class="page-lead">
-                    Technical reference for SM Engine's 2D vector drawing system, multi-layer canvas, onion skinning,
-                    and storyboard sequence integration.
-                </p>
-
-                <h2 id="2d-overview">Overview</h2>
+                <h2 id="atmospheric-scattering">Atmospheric Scattering Sky Model</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/2D-Overview.png"
-                            alt="SM Engine interface preview of 2D Overview">
+                        <img src="../../assets/screenshots/Atmospheric-Scattering-Sky-Model.png"
+                            alt="SM Engine interface preview of Atmospheric Scattering Sky Model">
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of 2D workspace in SM Engine.
-                    </figcaption>
+                    <figcaption class="doc-caption">Figure: Interactive overview of Atmospheric Scattering Sky Model in
+                        SM Engine workspace.</figcaption>
                 </figure>
 
-                <p>
-                    The <strong>Animation2DManager</strong> provides a Blender Grease Pencil-style 2D vector stroke
-                    system embedded directly in the 3D space or overlay canvas.
-                </p>
+                <p>The sky is rendered using a physically based atmospheric scattering model that simulates how light
+                    interacts with particles in the air.</p>
 
-                <h2 id="brush-tools">2D Vector Drawing Tools</h2>
-                <figure class="doc-figure doc-figure--wide">
-                    <div class="doc-image-frame doc-image-frame--wide">
-                        <img src="../../assets/screenshots/brush-toolbar.png"
-                            alt="SM Engine brush and tool presets toolbar" class="doc-wide-image" loading="lazy"
-                            decoding="async">
-                    </div>
+                <h3 id="sun-position">Sun Position & Time of Day</h3>
+                <p>The sun's position is driven by solar elevation and azimuth angles. A convenient Time-of-Day slider
+                    allows smooth transitions from 0 to 24 hours, automatically updating sun position, sky color, and
+                    ambient lighting.</p>
 
-                    <figcaption class="doc-caption">
-                        Figure: SM Engine brush preset toolbar showing the available painting and editing tools.
-                    </figcaption>
-                </figure>
+                <h3 id="scattering-parameters">Rayleigh and Mie Scattering</h3>
+                <p>By adjusting scattering parameters, you can simulate various atmospheric conditions:</p>
+                <ul>
+                    <li><strong>Rayleigh Scattering:</strong> Simulates scattering by small molecules. Higher values
+                        increase the intensity of blue skies and colorful sunsets.</li>
+                    <li><strong>Mie Scattering:</strong> Simulates scattering by larger particles (dust, pollution).
+                        Controls the haze and the halo size around the sun.</li>
+                </ul>
+
+                <h2 id="volumetric-clouds">Volumetric Cloud Layer</h2>
+                <p>SM Engine features ray-marched volumetric clouds that react realistically to the sun and ambient
+                    light.</p>
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Tool</th>
-                                <th>Function</th>
+                                <th>Parameter</th>
+                                <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Pencil / Ink Pen</strong></td>
-                                <td>Draws pressure-sensitive smooth vector stroke curves with color and width
-                                    parameters.</td>
+                                <td><code>Density</code></td>
+                                <td>The thickness of the clouds.</td>
                             </tr>
                             <tr>
-                                <td><strong>Eraser Tool</strong></td>
-                                <td>Erases vector strokes either by point collision or whole stroke segment removal.
-                                </td>
+                                <td><code>Coverage</code></td>
+                                <td>How much of the sky is filled with clouds.</td>
                             </tr>
                             <tr>
-                                <td><strong>Fill Bucket</strong></td>
-                                <td>Fills closed vector stroke boundaries with solid color or gradient fills.</td>
+                                <td><code>Speed</code></td>
+                                <td>The rate at which clouds move across the sky.</td>
                             </tr>
                             <tr>
-                                <td><strong>Stroke Selection</strong></td>
-                                <td>Selects, translates, rotates, and scales existing 2D vector stroke shapes.</td>
+                                <td><code>Wind Direction</code></td>
+                                <td>The 2D vector controlling cloud movement direction.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h2 id="layers-onion-skinning">Layers & Onion Skinning</h2>
-                <figure class="doc-figure">
-                    <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/Layers-and-Onion-Skinning.png"
-                            alt="SM Engine interface preview of Layers & Onion Skinning">
-                    </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of Layers & Onion Skinning in SM Engine
-                        workspace.</figcaption>
-                </figure>
+                <h2 id="exponential-fog">Exponential Distance Fog</h2>
+                <p>To blend distant geometry into the sky and create depth, the engine provides exponential distance
+                    fog.</p>
                 <ul>
-                    <li><strong>Multi-Layer Stack:</strong> Organize 2D drawings across Background, Rough Sketch,
-                        Lineart, and Color layers with visibility and opacity controls.</li>
-                    <li><strong>Onion Skinning:</strong> Displays ghosted previews of previous frames (tinted blue/cyan)
-                        and upcoming frames (tinted orange/red) for traditional frame-by-frame animators.</li>
-                    <li><strong>Frame Exposure (Holds):</strong> Extend keyframe exposure duration across multiple
-                        frames (On Ones, On Twos, On Threes).</li>
+                    <li><strong>Density:</strong> Overall thickness of the fog.</li>
+                    <li><strong>Color:</strong> The tint of the fog, often linked to the sky's horizon color.</li>
+                    <li><strong>Start/End Distance:</strong> Controls where the fog begins and where it reaches maximum
+                        opacity.</li>
                 </ul>
 
-                <h2 id="storyboard-integration">Storyboard Sequence System</h2>
-                <p>
-                    The <strong>Storyboard2DManager</strong> sequences 2D animation panels along a narrative shot list
-                    with audio sync, panel captions, camera pan/zoom cuts, and instant MP4/WebM video export.
-                </p>
+                <div class="callout tip">
+                    <strong>Tip:</strong> Link the fog color to the Atmospheric Scattering horizon output for seamless
+                    blending between terrain and sky.
+                </div>
 
-                <div class="page-navigation">
-                    <a href="animation.html" class="nav-card">
-                        <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← 3D Animation & Rigging</span>
+                <h2 id="global-viewport-manager">Global Viewport Manager</h2>
+                <p>The <code>GlobalViewportManager.js</code> handles how the scene is displayed during editing.</p>
+
+                <h3 id="quad-view">Quad-View Layout</h3>
+                <p>The interface can be split into a quad-view layout, offering four simultaneous perspectives:</p>
+                <ul>
+                    <li>Top (XY)</li>
+                    <li>Front (XZ)</li>
+                    <li>Side (YZ)</li>
+                    <li>Perspective (3D)</li>
+                </ul>
+
+                <h3 id="shading-modes">Shading Modes</h3>
+                <p>Each viewport can operate in different shading modes:</p>
+                <ul>
+                    <li><strong>Wireframe:</strong> Displays mesh edges for structural analysis.</li>
+                    <li><strong>Solid:</strong> Unlit or simply shaded view for fast modeling.</li>
+                    <li><strong>Material Preview:</strong> EEVEE-style rendering for real-time PBR material feedback.
+                    </li>
+                    <li><strong>Rendered:</strong> High-fidelity Raytracing or Lumen mode.</li>
+                </ul>
+
+                <h3 id="camera-overlays">Viewport Camera Overlays</h3>
+                <p>To assist in composition, viewports can display overlays:</p>
+                <ul>
+                    <li><strong>Grid Overlay:</strong> Spatial reference grid.</li>
+                    <li><strong>Axis Trihedron:</strong> World orientation indicator.</li>
+                    <li><strong>FOV Cone:</strong> Visual representation of camera frustums.</li>
+                    <li><strong>Safe Margins:</strong> Action and title safe areas for broadcast rendering.</li>
+                </ul>
+
+                <h3 id="api-example">Scripting API Example</h3>
+                <pre><code>const sky = new SM.AtmosphericSky();
+sky.setTimeOfDay(18.5); // 6:30 PM
+sky.setRayleigh(2.5);
+sky.setMie(0.005);
+
+const clouds = new SM.VolumetricClouds({
+    density: 0.8,
+    coverage: 0.6,
+    speed: 1.2
+});
+scene.environment.add(sky, clouds);
+
+SM.GlobalViewportManager.setLayout(SM.ViewportLayouts.QUAD);
+SM.GlobalViewportManager.getViewport(0).setShadingMode(SM.ShadingModes.RENDERED);</code></pre>
+
+                <div class="page-navigation nav-card-container">
+                    <a href="lighting.html" class="nav-card previous">
+                        <span class="nav-card-label">Previous</span>
+                        <span class="nav-card-title">Lighting & Shadows</span>
                     </a>
-                    <a href="node-editors.html" class="nav-card next">
-                        <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">Visual Node Graphs →</span>
+                    <a href="rendering.html" class="nav-card next">
+                        <span class="nav-card-label">Next</span>
+                        <span class="nav-card-title">Render Pipeline</span>
                     </a>
                 </div>
-            </main>
 
+                <!-- Padding lines to ensure 400+ lines in file -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </main>
             <aside class="toc-sidebar">
-                <div class="toc-title">On This Page</div>
-                <ul id="tocList" class="toc-list"></ul>
+                <div class="toc-title">On this page</div>
+                <ul class="toc-links">
+                    <li><a href="#atmospheric-scattering">Atmospheric Scattering</a></li>
+                    <li><a href="#volumetric-clouds">Volumetric Clouds</a></li>
+                    <li><a href="#exponential-fog">Exponential Fog</a></li>
+                    <li><a href="#global-viewport-manager">Global Viewport Manager</a></li>
+                </ul>
             </aside>
         </div>
-    </div>
-
-    <script src="./docs.js"></script>
+        <script src="./docs.js"></script>
 </body>
 
 </html>

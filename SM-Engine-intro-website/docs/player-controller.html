@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Render Pipeline & Nanite - SM Engine Documentation</title>
+    <title>Player Controller - SM Engine</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,6 +38,7 @@
     </header>
 
     <div class="docs-container">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
     <div class="sidebar-group">
         <div class="sidebar-group-title">
@@ -68,7 +69,7 @@
             <li><a href="architectural-tools.html" class="sidebar-link">Architectural Tools</a></li>
             <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
             <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
-            <li><a href="rendering.html" class="sidebar-link active">Render Pipeline & Nanite</a></li>
+            <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
         </ul>
     </div>
 
@@ -93,7 +94,7 @@
         <ul class="sidebar-links">
             <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
             <li><a href="gameplay-mode.html" class="sidebar-link">Gameplay & Sample Mode</a></li>
-            <li><a href="player-controller.html" class="sidebar-link">Player Controller</a></li>
+            <li><a href="player-controller.html" class="sidebar-link active">Player Controller</a></li>
             <li><a href="vegetation.html" class="sidebar-link">Vegetation Painting</a></li>
             <li><a href="water-system.html" class="sidebar-link">Water System</a></li>
         </ul>
@@ -141,97 +142,141 @@
     </div>
 </aside>
 
+        <!-- Main Content Area -->
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / 3D Creation / Render Pipeline & Nanite
+                    <a href="index.html">Docs</a> / Environments & Gameplay / Player Controller
                 </nav>
 
-                <h1>Render Pipeline & Virtual Geometry</h1>
+                <h1>Player Controller</h1>
                 <p class="page-lead">
-                    Technical documentation for the SM Render Pipeline (PBR), Nanite virtualized geometry engine, post-processing stack, and export formats.
+                    The player system (<code>SMPlayerSystem</code>) is a full character controller: first/third-person
+                    input, physics-driven movement, ground snapping, procedural camera and animation blending — exposed
+                    globally as <code>window.player</code>.
                 </p>
 
-                <h2 id="render-pipeline">SM Render Pipeline Architecture</h2>
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Where the player exists</strong> — the character is only enabled in the
+                        <strong>Game Development</strong> and <strong>Gameplay Sample</strong> workspaces. In FILM or TERRAIN
+                        workspaces it is hidden, disabled and skipped in physics until you switch back
+                        (<a href="gameplay-mode.html">Gameplay &amp; Sample Mode</a>).
+                    </div>
+                </div>
+
+                <h2 id="architecture">Architecture</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-placeholder">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <span>Interface Preview: SM Render Pipeline Architecture</span>
+                        <span>Interface Preview: Architecture</span>
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of SM Render Pipeline Architecture in SM Engine workspace.</figcaption>
+                    <figcaption class="doc-caption">Figure: Interactive overview of Architecture in SM Engine workspace.</figcaption>
                 </figure>
 
                 <p>
-                    The <code>SMRenderPipeline.js</code> architecture employs a multi-pass WebGL2 rendering pipeline:
+                    <code>engine\player\SMPlayerSystem.js</code> composes a set of sub-systems, each in its own folder:
                 </p>
-                <ul>
-                    <li><strong>G-Buffer Pass:</strong> Writes World Normal, Albedo, Metallic-Roughness, Depth, and Motion Vectors into floating-point framebuffer targets.</li>
-                    <li><strong>Lighting & Shadow Pass:</strong> Computes PBR direct lighting (PCF shadow map filtering for point, spot, and directional lights).</li>
-                    <li><strong>Post-Processing Stack:</strong> Bloom, Screen Space Ambient Occlusion (SSAO), Chromatic Aberration, Vignette, Depth of Field, and Tone Mapping (ACESFilmic / Neutral).</li>
-                </ul>
-
-                <h2 id="nanite-system">Nanite Virtual Geometry System</h2>
-                <p>
-                    The <code>NaniteSystem.js</code> module optimizes massive high-poly meshes (up to several million polygons):
-                </p>
-                <ul>
-                    <li><strong>Hierarchical Cluster Grouping:</strong> Hierarchically clusters mesh triangles into localized 128-triangle clusters.</li>
-                    <li><strong>Screen-Space Error LOD:</strong> Dynamically swaps cluster detail levels based on pixel coverage on screen.</li>
-                    <li><strong>Frustum & Occlusion Culling:</strong> Culls clusters outside camera view frustum or behind occlusion depth buffers.</li>
-                </ul>
-
-                <h2 id="export-formats">Export Formats & Asset Pipeline</h2>
                 <div class="table-wrapper">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Format</th>
-                                <th>File Extension</th>
-                                <th>Supported Content</th>
-                            </tr>
+                            <tr><th>Module</th><th>Path</th><th>Responsibility</th></tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><strong>GLTF / GLB</strong></td>
-                                <td><code>.glb / .gltf</code></td>
-                                <td>Mesh geometry, PBR materials, skinning armatures, keyframe animation tracks, embedded textures.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Wavefront OBJ</strong></td>
-                                <td><code>.obj + .mtl</code></td>
-                                <td>Static mesh geometry, UV coordinates, basic MTL material colors.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Filmbox FBX</strong></td>
-                                <td><code>.fbx</code></td>
-                                <td>3D mesh, skeletal hierarchy, animation clips (interoperable with Maya/Unreal Engine).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>PNG Render</strong></td>
-                                <td><code>.png</code></td>
-                                <td>High-resolution transparent or background image snapshot of the active viewport render.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>WebM / MP4 Video</strong></td>
-                                <td><code>.webm / .mp4</code></td>
-                                <td>Real-time encoded video file of viewport animation playbacks.</td>
-                            </tr>
+                            <tr><td><code>PlayerCharacter</code></td><td>core\PlayerCharacter.js</td><td>GLTF model, visual hierarchy, height, visibility</td></tr>
+                            <tr><td><code>PlayerState</code></td><td>core\PlayerState.js</td><td>speed, velocity, movement state + reset</td></tr>
+                            <tr><td><code>PlayerInputController</code></td><td>input\PlayerInputController.js</td><td>keyboard/mouse input, <code>setEnabled()</code></td></tr>
+                            <tr><td><code>PlayerMovementController</code></td><td>movement\PlayerMovementController.js</td><td>velocity integration, acceleration</td></tr>
+                            <tr><td><code>PlayerGrounding</code></td><td>movement\PlayerGrounding.js</td><td>floor detection, snap to ground</td></tr>
+                            <tr><td><code>PlayerRotationController</code></td><td>movement\PlayerRotationController.js</td><td>character facing direction</td></tr>
+                            <tr><td><code>PlayerCameraController</code></td><td>camera\PlayerCameraController.js</td><td>first/third-person camera follow + <code>activate()/deactivate()</code></td></tr>
+                            <tr><td><code>PlayerAnimationController</code></td><td>animation\PlayerAnimationController.js</td><td>animation actions map, <code>currentKey</code></td></tr>
+                            <tr><td><code>PlayerAnimationStateMachine</code></td><td>animation\PlayerAnimationStateMachine.js</td><td>idle/walk/run/jump transitions</td></tr>
                         </tbody>
                     </table>
                 </div>
 
+                <h2 id="api">Core API</h2>
+                <pre><code>window.player;            // SMPlayerSystem instance (alias window.playerSystem)
+player.ready;             // true after GLTF load + systems constructed
+player.enabled;           // active in the current workspace
+player.character.model;   // the GLTF character (null until loaded)
+player.character.height;  // character height for camera/collision
+player.animation.actions; // Map of animation clip names
+player.animation.currentKey;
+
+player.activate();        // enable input, movement, animation, physics
+player.deactivate();      // disable everything and hide
+
+player.update(delta);     // called every frame by the engine
+player.setWorkspaceMode("GAME_DEV"); // workspace gating
+
+player.on("ready", ({ workspace, model }) =&gt; { ... }); // event emitter
+</code></pre>
+
+                <h2 id="player-mode">Player Mode &amp; Camera</h2>
+                <p>
+                    <strong>Player Mode</strong> switches the editor camera to a third-person follow camera and hands control
+                    to the character. It is toggled from the Player panel in the <strong>Game Development</strong> /
+                    <strong>Gameplay Sample</strong> workspaces.
+                </p>
+                <pre><code>window.setPlayerControlMode(true);   // enter player control (WASD + mouse)
+window.toggleControlMode();           // flip current state
+window.isPlayerControlActive;         // boolean state
+
+// Behind the scenes: a ThirdPersonCamera is created on demand
+window.tpsCamera = new ThirdPersonCamera(window.camera, player.model);
+window.controls.enabled = !desiredState; // orbit controls released when driving
+</code></pre>
+
+                <h2 id="models">Loading Player Models</h2>
+                <p>
+                    The engine ships with a built-in model library (<code>PLAYER_MODEL_LIBRARY</code>, exposed as
+                    <code>window.availablePlayerModels</code>) for the model dropdown in the Player panel. Loading a model
+                    re-initializes the character, rebinds the rig, and if player mode was active it automatically re-activates.
+                </p>
+                <pre><code>window.loadPlayerModelByPath("models/player/cartoon-robot.glb");
+window.loadPlayerModelFromFile(file); // from a local file input
+
+player.init(gltf, window.collidableMeshes || [], window.obstaclesGroup, window.ground);
+</code></pre>
+
+                <h2 id="extras">Integrated Systems</h2>
+                <ul>
+                    <li><strong>Player Graph Editor</strong> — visual node graph for player logic
+                        (<code>window.playerGraphEditor</code>), paused automatically when leaving player mode.</li>
+                    <li><strong>GPS Mini-Map</strong> — <code>window.gpsMiniMap</code> top-down minimap with spawn/platform
+                        points of interest.</li>
+                    <li><strong>UAL2 Runtime</strong> — <code>window.ual2Engine</code> player integration for runtime logic.</li>
+                    <li><strong>Rig System</strong> — <code>rigManager.setupRigForObject()</code> binds animation rigs to the
+                        loaded character.</li>
+                </ul>
+
+                <h2 id="scripting">Scripting Example</h2>
+                <pre><code>// In the Gameplay Sample workspace:
+window.workspaceManager.applyMode('GAMEPLAY_SAMPLE');
+
+player.on('ready', () =&gt; {
+    console.log('Player ready with', player.animation.actions.size, 'animations');
+    player.activate();          // character appears
+    window.setPlayerControlMode(true); // take control
+});
+</code></pre>
+
                 <div class="page-navigation">
-                    <a href="lighting.html" class="nav-card">
+                    <a href="gameplay-mode.html" class="nav-card prev">
                         <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← Lighting & Atmosphere</span>
+                        <span class="nav-card-title">← Gameplay & Sample Mode</span>
                     </a>
-                    <a href="animation.html" class="nav-card next">
-                        <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">3D Animation & Rigging →</span>
+                    <a href="vegetation.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Step</span>
+                        <span class="nav-card-title">Vegetation Painting →</span>
                     </a>
                 </div>
             </main>
 
+            <!-- Table of Contents Right Sidebar -->
             <aside class="toc-sidebar">
                 <div class="toc-title">On This Page</div>
                 <ul id="tocList" class="toc-list"></ul>

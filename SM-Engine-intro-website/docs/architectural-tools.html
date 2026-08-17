@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Render Pipeline & Nanite - SM Engine Documentation</title>
+    <title>Architectural Tools - SM Engine</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,6 +38,7 @@
     </header>
 
     <div class="docs-container">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
     <div class="sidebar-group">
         <div class="sidebar-group-title">
@@ -65,10 +66,10 @@
             <li><a href="hair-system.html" class="sidebar-link">Hair & Fur Grooming</a></li>
             <li><a href="terrain-sculpting.html" class="sidebar-link">Terrain Sculpting Workspace</a></li>
             <li><a href="atmosphere-sky.html" class="sidebar-link">Sky & Viewports</a></li>
-            <li><a href="architectural-tools.html" class="sidebar-link">Architectural Tools</a></li>
+            <li><a href="architectural-tools.html" class="sidebar-link active">Architectural Tools</a></li>
             <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
             <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
-            <li><a href="rendering.html" class="sidebar-link active">Render Pipeline & Nanite</a></li>
+            <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
         </ul>
     </div>
 
@@ -141,97 +142,112 @@
     </div>
 </aside>
 
+        <!-- Main Content Area -->
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / 3D Creation / Render Pipeline & Nanite
+                    <a href="index.html">Docs</a> / 3D Creation / Architectural Tools
                 </nav>
 
-                <h1>Render Pipeline & Virtual Geometry</h1>
+                <h1>Architectural Tools</h1>
                 <p class="page-lead">
-                    Technical documentation for the SM Render Pipeline (PBR), Nanite virtualized geometry engine, post-processing stack, and export formats.
+                    Build buildings in seconds with dedicated architectural tools — walls, doors, windows, roofs, stairs and
+                    booleans. Click points in the viewport and the toolkit generates parametric architecture, registered as
+                    selectable, editable architecture elements.
                 </p>
 
-                <h2 id="render-pipeline">SM Render Pipeline Architecture</h2>
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Opening the toolkit</strong> — open the <strong>Modeling</strong> panel and switch to the
+                        <strong>Architecture</strong> section of the workbench (Mode / Selection / Mesh / Architecture /
+                        Tool Settings tabs). Tool buttons activate the corresponding tool; the same
+                        <code>window.toggleArchTool()</code> API is used programmatically.
+                    </div>
+                </div>
+
+                <h2 id="tools">Architecture Tools</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-placeholder">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <span>Interface Preview: SM Render Pipeline Architecture</span>
+                        <span>Interface Preview: Architecture Tools</span>
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of SM Render Pipeline Architecture in SM Engine workspace.</figcaption>
+                    <figcaption class="doc-caption">Figure: Interactive overview of Architecture Tools in SM Engine workspace.</figcaption>
                 </figure>
 
-                <p>
-                    The <code>SMRenderPipeline.js</code> architecture employs a multi-pass WebGL2 rendering pipeline:
-                </p>
-                <ul>
-                    <li><strong>G-Buffer Pass:</strong> Writes World Normal, Albedo, Metallic-Roughness, Depth, and Motion Vectors into floating-point framebuffer targets.</li>
-                    <li><strong>Lighting & Shadow Pass:</strong> Computes PBR direct lighting (PCF shadow map filtering for point, spot, and directional lights).</li>
-                    <li><strong>Post-Processing Stack:</strong> Bloom, Screen Space Ambient Occlusion (SSAO), Chromatic Aberration, Vignette, Depth of Field, and Tone Mapping (ACESFilmic / Neutral).</li>
-                </ul>
-
-                <h2 id="nanite-system">Nanite Virtual Geometry System</h2>
-                <p>
-                    The <code>NaniteSystem.js</code> module optimizes massive high-poly meshes (up to several million polygons):
-                </p>
-                <ul>
-                    <li><strong>Hierarchical Cluster Grouping:</strong> Hierarchically clusters mesh triangles into localized 128-triangle clusters.</li>
-                    <li><strong>Screen-Space Error LOD:</strong> Dynamically swaps cluster detail levels based on pixel coverage on screen.</li>
-                    <li><strong>Frustum & Occlusion Culling:</strong> Culls clusters outside camera view frustum or behind occlusion depth buffers.</li>
-                </ul>
-
-                <h2 id="export-formats">Export Formats & Asset Pipeline</h2>
                 <div class="table-wrapper">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Format</th>
-                                <th>File Extension</th>
-                                <th>Supported Content</th>
-                            </tr>
+                            <tr><th>Tool</th><th>How it works</th></tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><strong>GLTF / GLB</strong></td>
-                                <td><code>.glb / .gltf</code></td>
-                                <td>Mesh geometry, PBR materials, skinning armatures, keyframe animation tracks, embedded textures.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Wavefront OBJ</strong></td>
-                                <td><code>.obj + .mtl</code></td>
-                                <td>Static mesh geometry, UV coordinates, basic MTL material colors.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Filmbox FBX</strong></td>
-                                <td><code>.fbx</code></td>
-                                <td>3D mesh, skeletal hierarchy, animation clips (interoperable with Maya/Unreal Engine).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>PNG Render</strong></td>
-                                <td><code>.png</code></td>
-                                <td>High-resolution transparent or background image snapshot of the active viewport render.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>WebM / MP4 Video</strong></td>
-                                <td><code>.webm / .mp4</code></td>
-                                <td>Real-time encoded video file of viewport animation playbacks.</td>
-                            </tr>
+                            <tr><td>Wall</td><td>Click point-by-point; a dashed guide previews each segment. Finish with
+                                Enter. Walls auto-join consecutive points and register as <code>archType: 'wall'</code>.</td></tr>
+                            <tr><td>Room</td><td>Draw a closed polygon to extrude a full room shell.</td></tr>
+                            <tr><td>Door</td><td>Click a wall to place a doorway (green placement helper, snaps to wall
+                                surface and cuts the opening).</td></tr>
+                            <tr><td>Window</td><td>Same placement flow with a blue helper, carved into the wall.</td></tr>
+                            <tr><td>Roof</td><td>Pick polygon corners; a hip/sloped roof mesh is generated.</td></tr>
+                            <tr><td>Stair</td><td>Click two points to generate a stair run between levels.</td></tr>
+                            <tr><td>Boolean</td><td>Cut/union/subtract between meshes for openings and merges.</td></tr>
                         </tbody>
                     </table>
                 </div>
 
+                <h2 id="workflow">Workflow</h2>
+                <ol>
+                    <li>Activate a tool (e.g. <strong>Wall</strong>) from the Architecture section.</li>
+                    <li><strong>Click</strong> in the viewport on the grid/floor to drop points; walls preview as you move
+                        the mouse (<code>handleWallPreview</code>).</li>
+                    <li>Press <strong>Enter</strong> to commit the shape, <strong>Escape</strong> or right-click to cancel
+                        the current tool.</li>
+                    <li>Elements are added to <code>window.architecturalElements</code> with
+                        <code>userData.archType</code> tags for scene-tree filtering and bulk operations.</li>
+                    <li>Switch to <strong>Selection</strong> mode to click, marquee-select, or right-click for the context
+                        menu (delete, duplicate, focus).</li>
+                </ol>
+
+                <h2 id="selection">Selection &amp; Editing</h2>
+                <ul>
+                    <li><strong>Element registry</strong> — <code>window.architecturalElements</code> (all)
+                        and <code>window.selectedArchElements</code> (current selection).</li>
+                    <li><strong>Select by type</strong> — <code>selectAllArchElementsByType('wall')</code> highlights every
+                        wall for bulk editing.</li>
+                    <li><strong>Delete</strong> — <code>deleteSelectedArchElements()</code> removes the selection and its
+                        carvings from the scene.</li>
+                    <li><strong>Box selection</strong> — <code>toggleViewBoxSelection()</code> enables marquee selection in
+                        the viewport.</li>
+                    <li><strong>Tools</strong> — while a tool is active, <code>window.activeArchTool</code> holds its id
+                        (<code>'wall' | 'door' | 'window' | 'roof' | …</code>).</li>
+                </ul>
+
+                <h2 id="scripting">Scripting Reference</h2>
+                <pre><code>window.UnifiedModelingSystem.setArchitectureTool('wall');  // activate tool
+window.UnifiedModelingSystem.setSelectionMode(true);        // selection mode
+window.toggleArchTool();                                    // toggle workbench
+
+window.activeArchTool;                      // current tool id (or null)
+window.architecturalElements;               // all registered elements
+window.selectedArchElements;                // current selection
+window.selectAllArchElementsByType('door');
+window.deleteSelectedArchElements();
+window.toggleViewBoxSelection();            // marquee select
+window.registerArchitecturalElement(mesh, 'wall'); // tag a mesh as architecture
+</code></pre>
+
                 <div class="page-navigation">
-                    <a href="lighting.html" class="nav-card">
+                    <a href="terrain-sculpting.html" class="nav-card prev">
                         <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← Lighting & Atmosphere</span>
+                        <span class="nav-card-title">← Terrain Sculpting Workspace</span>
                     </a>
-                    <a href="animation.html" class="nav-card next">
-                        <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">3D Animation & Rigging →</span>
+                    <a href="materials.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Step</span>
+                        <span class="nav-card-title">Materials & Shader Nodes →</span>
                     </a>
                 </div>
             </main>
 
+            <!-- Table of Contents Right Sidebar -->
             <aside class="toc-sidebar">
                 <div class="toc-title">On This Page</div>
                 <ul id="tocList" class="toc-list"></ul>

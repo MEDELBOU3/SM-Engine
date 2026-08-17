@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Animation & Storyboard - SM Engine Documentation</title>
+    <title>Vegetation Painting - SM Engine</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,6 +55,7 @@
     </header>
 
     <div class="docs-container">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-group">
                 <div class="sidebar-group-title">
@@ -107,7 +108,7 @@
                 <ul class="sidebar-links">
                     <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
                     <li><a href="graph-editor.html" class="sidebar-link">Graph Editor Curves</a></li>
-                    <li><a href="animation-2d.html" class="sidebar-link active">2D Animation & Storyboard</a></li>
+                    <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
                     <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
                 </ul>
             </div>
@@ -123,7 +124,7 @@
                     <li><a href="game-dev.html" class="sidebar-link">Game Development & Export</a></li>
                     <li><a href="gameplay-mode.html" class="sidebar-link">Gameplay & Sample Mode</a></li>
                     <li><a href="player-controller.html" class="sidebar-link">Player Controller</a></li>
-                    <li><a href="vegetation.html" class="sidebar-link">Vegetation Painting</a></li>
+                    <li><a href="vegetation.html" class="sidebar-link active">Vegetation Painting</a></li>
                     <li><a href="water-system.html" class="sidebar-link">Water System</a></li>
                 </ul>
             </div>
@@ -181,112 +182,167 @@
             </div>
         </aside>
 
+        <!-- Main Content Area -->
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / Animation & 2D / 2D Animation & Storyboard
+                    <a href="index.html">Docs</a> / Environments & Gameplay / Vegetation Painting
                 </nav>
 
-                <h1>2D Animation (Grease Pencil) & Storyboard</h1>
+                <h1>Vegetation Painting</h1>
                 <p class="page-lead">
-                    Technical reference for SM Engine's 2D vector drawing system, multi-layer canvas, onion skinning,
-                    and storyboard sequence integration.
+                    Populate your terrain with forests and meadows using the <strong>VegetationSystem</strong> — an
+                    instanced painter with brush, fill and path scattering, per-species density limits and shader-driven
+                    wind
+                    sway. Grass and tree presets can be generated procedurally, or you can register any mesh as a
+                    species.
                 </p>
 
-                <h2 id="2d-overview">Overview</h2>
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg></div>
+                    <div class="callout-body">
+                        <strong>Open the painter</strong> — in the <strong>Terrain Sculpting</strong> workspace, click
+                        the
+                        <strong>Vegetation</strong> button (<code>#vegetationPainterBtn</code>) in the inspector
+                        toolbar, or
+                        the matching entry in the secondary sidebar. The vegetation painter is only available in the
+                        <strong>TERRAIN</strong> workspace — in other workspaces the button is hidden and the foliage
+                        group
+                        (<code>SM_Vegetation</code>) is not rendered.
+                    </div>
+                </div>
+
+                <h2 id="workflow">Workflow</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/2D-Overview.png"
-                            alt="SM Engine interface preview of 2D Overview">
+                        <img src="../../assets/screenshots//vegitation-system.png"
+                            alt="SM Engine interface preview of Main Interface Regions">
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of 2D workspace in SM Engine.
-                    </figcaption>
-                </figure>
-
-                <p>
-                    The <strong>Animation2DManager</strong> provides a Blender Grease Pencil-style 2D vector stroke
-                    system embedded directly in the 3D space or overlay canvas.
-                </p>
-
-                <h2 id="brush-tools">2D Vector Drawing Tools</h2>
-                <figure class="doc-figure doc-figure--wide">
-                    <div class="doc-image-frame doc-image-frame--wide">
-                        <img src="../../assets/screenshots/brush-toolbar.png"
-                            alt="SM Engine brush and tool presets toolbar" class="doc-wide-image" loading="lazy"
-                            decoding="async">
-                    </div>
-
                     <figcaption class="doc-caption">
-                        Figure: SM Engine brush preset toolbar showing the available painting and editing tools.
+                        Figure: Vegetation painting workflow showing the foliage brush in the 3D viewport and the
+                        Vegetation Generator controls in the Inspector panel.
                     </figcaption>
                 </figure>
+
+                <ol>
+                    <li>Create your terrain (see <a href="terrain-sculpting.html">Terrain Sculpting Workspace</a>) and
+                        make
+                        sure it is bound to the painter.</li>
+                    <li>Open the <strong>Vegetation Painter</strong> panel — a <code>VegetationSystem</code> is created
+                        for
+                        the current scene/camera.</li>
+                    <li>Add species from the <strong>procedural presets</strong> (grass, trees…) or import your own
+                        foliage
+                        meshes — each species registers with an instance budget (default max 5,000).</li>
+                    <li>Hit <strong>Enable Painting Tools</strong> and choose <strong>Paint</strong>,
+                        <strong>Fill</strong>
+                        or <strong>Erase</strong>.
+                    </li>
+                    <li>Brush over the terrain — instances spawn on the surface normals, align to the slope and sway in
+                        the
+                        wind shader.</li>
+                    <li>The <strong>Foliage Mesh List</strong> shows each species with its current instance count.</li>
+                </ol>
+
+                <h2 id="species">Species &amp; Presets</h2>
+                <p>
+                    <strong>Species</strong> are source meshes registered under an id with a max instance count. They
+                    are
+                    rendered with three.js <code>InstancedMesh</code> for performance. The built-in
+                    <code>VegetationPresets</code> generate procedural low-poly grass and tree geometry on demand, so
+                    you can
+                    dress a landscape without any external assets.
+                </p>
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Tool</th>
-                                <th>Function</th>
+                                <th>Method</th>
+                                <th>API</th>
+                                <th>Use for</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Pencil / Ink Pen</strong></td>
-                                <td>Draws pressure-sensitive smooth vector stroke curves with color and width
-                                    parameters.</td>
+                                <td>Procedural presets</td>
+                                <td><code>window.VegetationPresets.*</code></td>
+                                <td>Quick grass/tree species without assets</td>
                             </tr>
                             <tr>
-                                <td><strong>Eraser Tool</strong></td>
-                                <td>Erases vector strokes either by point collision or whole stroke segment removal.
-                                </td>
+                                <td>From scene mesh</td>
+                                <td><code>registerSpeciesFromObject(id, obj, label)</code></td>
+                                <td>Use existing geometry (imported tree, bush)</td>
                             </tr>
                             <tr>
-                                <td><strong>Fill Bucket</strong></td>
-                                <td>Fills closed vector stroke boundaries with solid color or gradient fills.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Stroke Selection</strong></td>
-                                <td>Selects, translates, rotates, and scales existing 2D vector stroke shapes.</td>
+                                <td>Raw register</td>
+                                <td><code>registerSpecies(id, sourceMesh, maxCount, meta)</code></td>
+                                <td>Low-level control with custom instance budget</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h2 id="layers-onion-skinning">Layers & Onion Skinning</h2>
-                <figure class="doc-figure">
-                    <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/Layers-and-Onion-Skinning.png"
-                            alt="SM Engine interface preview of Layers & Onion Skinning">
-                    </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of Layers & Onion Skinning in SM Engine
-                        workspace.</figcaption>
-                </figure>
+                <h2 id="painting">Painting Modes</h2>
                 <ul>
-                    <li><strong>Multi-Layer Stack:</strong> Organize 2D drawings across Background, Rough Sketch,
-                        Lineart, and Color layers with visibility and opacity controls.</li>
-                    <li><strong>Onion Skinning:</strong> Displays ghosted previews of previous frames (tinted blue/cyan)
-                        and upcoming frames (tinted orange/red) for traditional frame-by-frame animators.</li>
-                    <li><strong>Frame Exposure (Holds):</strong> Extend keyframe exposure duration across multiple
-                        frames (On Ones, On Twos, On Threes).</li>
+                    <li><strong>Paint</strong> — drag across the terrain; <code>paintStroke(hit)</code> instantiates
+                        species
+                        inside the brush radius with slope-aware placement.</li>
+                    <li><strong>Fill</strong> — click or drag a region to cover it with the active species
+                        (<code>fillStroke</code>).</li>
+                    <li><strong>Erase</strong> — removes instances under the brush (<code>eraseStroke</code>).</li>
+                    <li>Blocks/props can also be scattered along an arbitrary path later via
+                        <code>scatterOnPath(pointsArray)</code> (e.g. lining a road or river bank).
+                    </li>
                 </ul>
 
-                <h2 id="storyboard-integration">Storyboard Sequence System</h2>
+                <h2 id="wind">Wind &amp; Rendering</h2>
                 <p>
-                    The <strong>Storyboard2DManager</strong> sequences 2D animation panels along a narrative shot list
-                    with audio sync, panel captions, camera pan/zoom cuts, and instant MP4/WebM video export.
+                    Foliage materials receive a wind vertex shader via <code>injectWindShader(material)</code>; sway
+                    follows
+                    grass-up / mesh-up world axes and is driven by a global time uniform updated each frame with
+                    <code>updateWindUniforms(time)</code>. Per-object transforms are preserved and instanced meshes
+                    inherit
+                    each species' material.
                 </p>
 
+                <h2 id="scripting">Scripting Reference</h2>
+                <pre><code>window.VegetationPanel.open();       // open painter (TERRAIN workspace only)
+window.VegetationPanel.toggle();
+window.VegetationPanel.isOpen();
+window.VegetationPanel.close();
+
+// The live system instance (created by the panel) — window.vegetationSystem
+const sys = window.vegetationSystem;
+sys.setEnabled(true);                       // works only while workspace = TERRAIN
+sys.setMode('paint');                       // 'paint' | 'erase'
+sys.setActiveSpecies('grass');
+sys.setTerrainMeshes(terrain.userData.terrainData.meshes);
+
+sys.registerSpeciesFromObject('oak', myTreeMesh, 'Oak Tree');
+sys.registerSpecies('bush', bushMesh, 2000, { scaleJitter: 0.4 });
+sys.unregisterSpecies('bush');
+
+sys.scatterOnPath([p0, p1, p2]);            // line a riverbank or road
+sys.rebuildInstances('grass');              // re-apply after terrain edits
+</code></pre>
+
                 <div class="page-navigation">
-                    <a href="animation.html" class="nav-card">
+                    <a href="player-controller.html" class="nav-card prev">
                         <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← 3D Animation & Rigging</span>
+                        <span class="nav-card-title">← Player Controller</span>
                     </a>
-                    <a href="node-editors.html" class="nav-card next">
-                        <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">Visual Node Graphs →</span>
+                    <a href="water-system.html" class="nav-card next">
+                        <span class="nav-card-sub">Next Step</span>
+                        <span class="nav-card-title">Water System →</span>
                     </a>
                 </div>
             </main>
 
+            <!-- Table of Contents Right Sidebar -->
             <aside class="toc-sidebar">
                 <div class="toc-title">On This Page</div>
                 <ul id="tocList" class="toc-list"></ul>

@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Render Pipeline & Nanite - SM Engine Documentation</title>
+    <title>Ragdoll System - SM Engine Documentation</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <!-- Header Navigation -->
     <header class="top-nav">
         <a href="../index.html" class="nav-brand">
             <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
@@ -68,7 +66,7 @@
             <li><a href="architectural-tools.html" class="sidebar-link">Architectural Tools</a></li>
             <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
             <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
-            <li><a href="rendering.html" class="sidebar-link active">Render Pipeline & Nanite</a></li>
+            <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
         </ul>
     </div>
 
@@ -109,7 +107,7 @@
             <li><a href="geometry-nodes.html" class="sidebar-link">Geometry Nodes</a></li>
             <li><a href="metasound.html" class="sidebar-link">MetaSound Audio Editor</a></li>
             <li><a href="physics.html" class="sidebar-link">Physics & Dynamics</a></li>
-            <li><a href="ragdoll.html" class="sidebar-link">Ragdoll System</a></li>
+            <li><a href="ragdoll.html" class="sidebar-link active">Ragdoll System</a></li>
             <li><a href="scripting.html" class="sidebar-link">JavaScript Scripting API</a></li>
             <li><a href="assets.html" class="sidebar-link">Asset Management & Save</a></li>
         </ul>
@@ -144,92 +142,109 @@
         <div class="content-wrapper">
             <main class="content">
                 <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / 3D Creation / Render Pipeline & Nanite
+                    <a href="index.html">Docs</a> / Node Editors & Systems / Ragdoll System
                 </nav>
+<h1>Ragdoll System</h1>
+            <p>
+                The <code>RagdollSystem.js</code> integration in SM Engine provides tools to seamlessly bridge skeletal animation with rigid body physics. This allows characters to react procedurally to impacts, explosions, or death states by relinquishing animation control over to the physics simulation.
+            </p>
 
-                <h1>Render Pipeline & Virtual Geometry</h1>
-                <p class="page-lead">
-                    Technical documentation for the SM Render Pipeline (PBR), Nanite virtualized geometry engine, post-processing stack, and export formats.
-                </p>
-
-                <h2 id="render-pipeline">SM Render Pipeline Architecture</h2>
+            <h2 id="how-it-works">How Ragdolls Work with Armatures</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-placeholder">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <span>Interface Preview: SM Render Pipeline Architecture</span>
+                        <span>Interface Preview: How Ragdolls Work with Armatures</span>
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of SM Render Pipeline Architecture in SM Engine workspace.</figcaption>
+                    <figcaption class="doc-caption">Figure: Interactive overview of How Ragdolls Work with Armatures in SM Engine workspace.</figcaption>
                 </figure>
 
-                <p>
-                    The <code>SMRenderPipeline.js</code> architecture employs a multi-pass WebGL2 rendering pipeline:
-                </p>
-                <ul>
-                    <li><strong>G-Buffer Pass:</strong> Writes World Normal, Albedo, Metallic-Roughness, Depth, and Motion Vectors into floating-point framebuffer targets.</li>
-                    <li><strong>Lighting & Shadow Pass:</strong> Computes PBR direct lighting (PCF shadow map filtering for point, spot, and directional lights).</li>
-                    <li><strong>Post-Processing Stack:</strong> Bloom, Screen Space Ambient Occlusion (SSAO), Chromatic Aberration, Vignette, Depth of Field, and Tone Mapping (ACESFilmic / Neutral).</li>
-                </ul>
+            <p>
+                A standard 3D character is driven by an Armature (a hierarchy of bones). When a ragdoll is generated, the engine creates a corresponding hierarchy of Rigid Bodies (capsules, boxes, or spheres) mapped 1:1 with the selected bones. These rigid bodies are connected using specialized physical joints (ConeTwist constraints) that mimic human anatomy limits.
+            </p>
+            <p>
+                When active, the rigid bodies simulate under gravity and collisions. The engine reads the transforms of these simulated bodies and writes them back onto the Armature bones, thereby deforming the mesh procedurally.
+            </p>
 
-                <h2 id="nanite-system">Nanite Virtual Geometry System</h2>
-                <p>
-                    The <code>NaniteSystem.js</code> module optimizes massive high-poly meshes (up to several million polygons):
-                </p>
-                <ul>
-                    <li><strong>Hierarchical Cluster Grouping:</strong> Hierarchically clusters mesh triangles into localized 128-triangle clusters.</li>
-                    <li><strong>Screen-Space Error LOD:</strong> Dynamically swaps cluster detail levels based on pixel coverage on screen.</li>
-                    <li><strong>Frustum & Occlusion Culling:</strong> Culls clusters outside camera view frustum or behind occlusion depth buffers.</li>
-                </ul>
+            <h2 id="setup">Setting up a Ragdoll</h2>
+            <p>You can generate a ragdoll automatically in the editor:</p>
+            <ol>
+                <li>Select your character's Armature in the outliner.</li>
+                <li>Go to the <strong>Physics Properties</strong> panel.</li>
+                <li>Click <strong>Generate Ragdoll</strong>.</li>
+                <li>The engine will automatically analyze bone lengths and volumes to generate bounding capsules.</li>
+                <li>You can manually adjust the shape, radius, and length of these capsules for specific bones (e.g., widening the thorax capsule).</li>
+            </ol>
 
-                <h2 id="export-formats">Export Formats & Asset Pipeline</h2>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Format</th>
-                                <th>File Extension</th>
-                                <th>Supported Content</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>GLTF / GLB</strong></td>
-                                <td><code>.glb / .gltf</code></td>
-                                <td>Mesh geometry, PBR materials, skinning armatures, keyframe animation tracks, embedded textures.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Wavefront OBJ</strong></td>
-                                <td><code>.obj + .mtl</code></td>
-                                <td>Static mesh geometry, UV coordinates, basic MTL material colors.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Filmbox FBX</strong></td>
-                                <td><code>.fbx</code></td>
-                                <td>3D mesh, skeletal hierarchy, animation clips (interoperable with Maya/Unreal Engine).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>PNG Render</strong></td>
-                                <td><code>.png</code></td>
-                                <td>High-resolution transparent or background image snapshot of the active viewport render.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>WebM / MP4 Video</strong></td>
-                                <td><code>.webm / .mp4</code></td>
-                                <td>Real-time encoded video file of viewport animation playbacks.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <h2 id="constraints">Bone Constraints and Limits</h2>
+            <p>To prevent joints from bending backwards (like a broken knee), you must configure the angular limits of the constraints connecting the rigid bodies.</p>
+            <ul>
+                <li><strong>Swing Limit 1 & 2:</strong> Defines the cone of movement. For a knee joint, the swing limit backward should be ~140 degrees, and forward should be 0 degrees.</li>
+                <li><strong>Twist Limit:</strong> Defines rotation along the bone's primary axis. An elbow has very little twist, while a shoulder has high twist tolerance.</li>
+            </ul>
+            <div class="callout callout-note">
+                <strong>Note:</strong> You can visualize these limits in the viewport by enabling <em>Show Constraint Limits</em> in the Physics Debug menu.
+            </div>
 
-                <div class="page-navigation">
-                    <a href="lighting.html" class="nav-card">
-                        <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← Lighting & Atmosphere</span>
-                    </a>
-                    <a href="animation.html" class="nav-card next">
-                        <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">3D Animation & Rigging →</span>
-                    </a>
-                </div>
+            <h2 id="blending">Physics Blend Factor</h2>
+            <p>
+                The Ragdoll system supports a float <strong>Blend Factor (0.0 to 1.0)</strong>. 
+            </p>
+            <ul>
+                <li><code>0.0</code>: 100% Animation. Bones strictly follow keyframes/state machines. Physics bodies are kinematic and simply track the bone positions (useful for hit-detection).</li>
+                <li><code>0.5</code>: Partial blending. Physical impacts will nudge the bones, but the animation continues to play. Great for hit-reactions.</li>
+                <li><code>1.0</code>: 100% Physics. Bones are entirely driven by gravity and collisions (full ragdoll).</li>
+            </ul>
+
+            <h2 id="performance">Performance Considerations</h2>
+            <p>
+                Ragdolls require evaluating multiple rigid bodies and 6DOF constraints per character. Having 50 active ragdolls on screen simultaneously will cause CPU bottlenecking.
+            </p>
+            <div class="callout callout-tip">
+                <strong>Optimization Tip:</strong> When a character dies, activate the ragdoll. Once the ragdoll's velocity drops below a sleep threshold (meaning it has settled on the ground), use a script to freeze the pose, destroy the physics bodies, and bake the final transform. This removes the physics cost entirely.
+            </div>
+
+            <h2 id="scripting">Code Example: Activating Ragdoll on Death</h2>
+            <p>Here is an example using the SM Engine JavaScript Scripting API to handle a character death sequence:</p>
+            
+            <pre><code class="language-javascript">class CharacterController extends SM.Script {
+    start() {
+        this.health = 100;
+        this.ragdoll = this.entity.getComponent(SM.RagdollComponent);
+        this.animator = this.entity.getComponent(SM.AnimatorComponent);
+    }
+
+    takeDamage(amount, impactForce, hitBone) {
+        this.health -= amount;
+
+        if (this.health <= 0) {
+            this.die(impactForce, hitBone);
+        } else {
+            // Apply a small hit reaction by blending physics briefly
+            this.ragdoll.blendFactor = 0.3;
+            setTimeout(() => { this.ragdoll.blendFactor = 0.0; }, 200);
+        }
+    }
+
+    die(force, boneStr) {
+        // Stop all animations
+        this.animator.stop();
+
+        // Switch to full physics driven
+        this.ragdoll.setActive(true);
+        this.ragdoll.blendFactor = 1.0;
+
+        // Apply explosion/gunshot force to the specific bone that was hit
+        if (boneStr && force) {
+            let body = this.ragdoll.getBody(boneStr);
+            if (body) {
+                body.applyImpulse(force);
+            }
+        }
+    }
+}
+</code></pre>
+
+        
             </main>
 
             <aside class="toc-sidebar">

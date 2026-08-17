@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materials & Shader Nodes - SM Engine Documentation</title>
+    <title>Graph Editor & Curve Animation - SM Engine Documentation</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,6 @@
 
 <body>
 
-    <!-- Header Navigation -->
     <header class="top-nav">
         <a href="../index.html" class="nav-brand">
             <img src="../../assets/icons/logo.svg" alt="SM Engine Logo">
@@ -90,7 +89,7 @@
                     <li><a href="terrain-sculpting.html" class="sidebar-link">Terrain Sculpting Workspace</a></li>
                     <li><a href="atmosphere-sky.html" class="sidebar-link">Sky & Viewports</a></li>
                     <li><a href="architectural-tools.html" class="sidebar-link">Architectural Tools</a></li>
-                    <li><a href="materials.html" class="sidebar-link active">Materials & Shader Nodes</a></li>
+                    <li><a href="materials.html" class="sidebar-link">Materials & Shader Nodes</a></li>
                     <li><a href="lighting.html" class="sidebar-link">Lighting & Atmosphere</a></li>
                     <li><a href="rendering.html" class="sidebar-link">Render Pipeline & Nanite</a></li>
                 </ul>
@@ -106,7 +105,7 @@
                 </div>
                 <ul class="sidebar-links">
                     <li><a href="animation.html" class="sidebar-link">3D Animation & Rigging</a></li>
-                    <li><a href="graph-editor.html" class="sidebar-link">Graph Editor Curves</a></li>
+                    <li><a href="graph-editor.html" class="sidebar-link active">Graph Editor Curves</a></li>
                     <li><a href="animation-2d.html" class="sidebar-link">2D Animation & Storyboard</a></li>
                     <li><a href="timeline.html" class="sidebar-link">Timeline System</a></li>
                 </ul>
@@ -183,231 +182,222 @@
 
         <div class="content-wrapper">
             <main class="content">
-                <nav class="breadcrumb">
-                    <a href="index.html">Docs</a> / 3D Creation / Materials & Shader Nodes
-                </nav>
+                <div class="breadcrumb">
+                    <a href="index.html">Docs</a> / <a href="animation.html">Animation & 2D</a> / Graph Editor & Curve
+                    Animation
+                </div>
 
-                <h1>Material Node Editor & Shader Graph</h1>
-                <p class="page-lead">
-                    Complete reference for SM Engine's node-based material authoring system, Principled BSDF shader
-                    model, and GLSL code injection framework.
-                </p>
+                <h1 id="graph-editor-overview">Graph Editor & Curve Animation</h1>
 
-                <h2 id="principled-bsdf">Principled BSDF Node</h2>
+                <p>The Graph Editor is a powerful interface designed to manipulate keyframe interpolation via function
+                    curves (f-curves). Unlike the traditional Dopesheet or Timeline, which displays keyframes as
+                    discrete markers in time, the Graph Editor visualizes the raw values of animated properties plotted
+                    across the temporal axis.</p>
+
+                <div class="callout tip">
+                    <div class="callout-title"><svg class="doc-icon" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg> Pro Tip</div>
+                    <p>Press <code>Shift + Space</code> then <code>G</code> in the viewport to rapidly swap to the Graph
+                        Editor workspace. Double-click on any function curve to isolate its channel.</p>
+                </div>
+
+                <h2 id="timeline-vs-graph">Timeline vs Graph Editor</h2>
+
                 <figure class="doc-figure">
-                    <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/material-editor.png"
-                            alt="SM Engine interface preview of Main Interface Regions">
+                    <div class="doc-gallery-grid">
+                        <div class="doc-image-frame">
+                            <img src="../../assets/screenshots/Timeline-Editor.png"
+                                alt="SM Engine interface preview of Timeline Editor">
+                        </div>
+                        <div class="doc-image-frame">
+                            <img src="../../assets/screenshots/Graph-Editor.png"
+                                alt="SM Engine interface preview of Graph Editor">
+                        </div>
                     </div>
-                    <figcaption class="doc-caption">Figure: Interactive overview of Principled BSDF Node in SM Engine
-                        workspace.</figcaption>
+                    <figcaption class="doc-caption">Figure: Comparison overview of Timeline and Graph Editor workflows
+                        in SM Engine workspace.</figcaption>
                 </figure>
 
-                <p>
-                    The <strong>Principled BSDF</strong> node combines multiple physically-based rendering layers into a
-                    single comprehensive shader node (similar to Disney / Blender Principled BSDF):
-                </p>
+                <p>The fundamental difference between the standard Timeline and the Graph Editor resides in their
+                    respective dimensionality:</p>
+                <ul>
+                    <li><strong>Timeline / Dopesheet:</strong> 1D representation showing <em>when</em> events
+                        (keyframes) occur. Excellent for retiming large blocks of animation across multiple objects.
+                    </li>
+                    <li><strong>Graph Editor:</strong> 2D representation showing <em>when</em> events occur (X-axis) and
+                        <em>what value</em> the property holds (Y-axis). Vital for editing interpolation velocity,
+                        easing, overshoots, and procedural noise modifiers.</li>
+                </ul>
+
+                <h2 id="curve-tangent-types">Curve Tangent Types</h2>
+                
+                <p>Every keyframe within an f-curve possesses interpolation characteristics determining how values
+                    transition between the current keyframe and adjacent ones. SM Engine supports several interpolation
+                    types:</p>
+
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Socket Name</th>
-                                <th>Type</th>
-                                <th>Default</th>
-                                <th>PBR Description</th>
+                                <th>Tangent Type</th>
+                                <th>Internal Enum</th>
+                                <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>BaseColor</strong></td>
-                                <td>Color / vec3</td>
-                                <td><code>#ffffff</code></td>
-                                <td>Surface albedo color or diffuse texture input.</td>
+                                <td><strong>Bezier</strong></td>
+                                <td><code>INTERP_BEZIER</code></td>
+                                <td>Smooth cubic spline curve utilizing editable left and right control handles for
+                                    defining ease-in and ease-out velocities.</td>
                             </tr>
                             <tr>
-                                <td><strong>Metallic</strong></td>
-                                <td>Float (0-1)</td>
-                                <td><code>0.00</code></td>
-                                <td>Blends between dielectric (0) and metallic (1) reflection behavior.</td>
+                                <td><strong>Linear</strong></td>
+                                <td><code>INTERP_LINEAR</code></td>
+                                <td>Constant velocity straight line drawn directly between two keyframes. Used for
+                                    mechanical motion or constant rotation.</td>
                             </tr>
                             <tr>
-                                <td><strong>Roughness</strong></td>
-                                <td>Float (0-1)</td>
-                                <td><code>0.50</code></td>
-                                <td>Controls specular reflection microfacet sharpness.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Opacity</strong></td>
-                                <td>Float (0-1)</td>
-                                <td><code>1.00</code></td>
-                                <td>Alpha transparency level (requires <code>transparent: true</code>).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Emission</strong></td>
-                                <td>Color / vec3</td>
-                                <td><code>#000000</code></td>
-                                <td>Self-illuminating emissive radiance color.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>EmissionStrength</strong></td>
-                                <td>Float</td>
-                                <td><code>0.00</code></td>
-                                <td>Multiplier scale for self-illumination radiance.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Transmission</strong></td>
-                                <td>Float (0-1)</td>
-                                <td><code>0.00</code></td>
-                                <td>Glass transparency refractivity layer.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>IOR</strong></td>
-                                <td>Float (1-2.5)</td>
-                                <td><code>1.50</code></td>
-                                <td>Index of refraction for transparent materials (Water: 1.33, Glass: 1.5, Diamond:
-                                    2.42).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Clearcoat</strong></td>
-                                <td>Float (0-1)</td>
-                                <td><code>0.00</code></td>
-                                <td>Extra glossy specular coating layer (car paint, lacquered wood).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Normal</strong></td>
-                                <td>Vector3</td>
-                                <td><code>null</code></td>
-                                <td>Tangent-space normal map vector input.</td>
+                                <td><strong>Constant (Hold)</strong></td>
+                                <td><code>INTERP_CONSTANT</code></td>
+                                <td>Stepped interpolation where the value is held constant until the precise moment of
+                                    the next keyframe. Ideal for camera cuts, discrete boolean states, or blocking
+                                    animation.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h2 id="node-library-reference">Complete Shader Node Reference</h2>
+                <h2 id="handle-controls">Handle Controls</h2>
+                <p>When operating in Bezier interpolation mode, keyframes expose control handles. The alignment of these
+                    handles drastically affects the resultant curve.</p>
+
+                <ul>
+                    <li><strong>Free:</strong> Left and right handles move completely independently of one another.
+                        Useful for sharp transitions or bounces.</li>
+                    <li><strong>Aligned:</strong> Handles are locked in colinear alignment. Adjusting the angle of one
+                        handle identically affects the opposite handle, ensuring a perfectly smooth transition through
+                        the keyframe. Handle lengths can remain independent.</li>
+                    <li><strong>Vector:</strong> Automatic linear interpolation between adjacent keyframes, but
+                        instantly converts to 'Free' if a handle is manually adjusted.</li>
+                    <li><strong>Auto / Smooth:</strong> Automatically calculates optimal handle lengths and angles to
+                        produce a smooth, non-overshooting curve based on neighboring keyframes. Recommended default.
+                    </li>
+                </ul>
+
+                <div class="callout note">
+                    <div class="callout-title"><svg class="doc-icon" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg> Note on Normalization</div>
+                    <p>Use the View > Normalize curves option (Shortcut: <code>N</code>) when editing properties with
+                        vastly different scales (e.g., Rotation in degrees vs Scale between 0-1) simultaneously.</p>
+                </div>
+
+                <h2 id="extrapolation-modes">Extrapolation Modes</h2>
+                <p>Extrapolation dictates the behavior of the f-curve outside the boundaries of the first and last
+                    recorded keyframes.</p>
+
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Node Name</th>
-                                <th>Category</th>
-                                <th>Outputs</th>
-                                <th>Function</th>
+                                <th>Mode</th>
+                                <th>Effect</th>
+                                <th>Common Use Case</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Float Value</strong></td>
-                                <td>Value</td>
-                                <td><code>float</code></td>
-                                <td>Outputs a single scalar floating point value with slider.</td>
+                                <td><strong>Constant</strong></td>
+                                <td>Holds the final/initial value infinitely.</td>
+                                <td>Standard behavior for objects coming to a complete rest.</td>
                             </tr>
                             <tr>
-                                <td><strong>RGB Color</strong></td>
-                                <td>Value</td>
-                                <td><code>vec3</code></td>
-                                <td>Outputs a hex color picker vec3 (R, G, B).</td>
+                                <td><strong>Linear</strong></td>
+                                <td>Continues the trajectory based on the vector of the final keyframe tangent.</td>
+                                <td>Objects moving at a constant speed out of frame.</td>
                             </tr>
                             <tr>
-                                <td><strong>Texture Sampler</strong></td>
-                                <td>Texture</td>
-                                <td><code>vec3 / float</code></td>
-                                <td>Samples 2D texture maps (Albedo, Roughness, Normal, Metallic, AO).</td>
+                                <td><strong>Repeat (Cycle)</strong></td>
+                                <td>Loops the keyframe sequence infinitely.</td>
+                                <td>Walk cycles, spinning gears, idle breathing animations.</td>
                             </tr>
                             <tr>
-                                <td><strong>UV Map</strong></td>
-                                <td>Input</td>
-                                <td><code>vec2</code></td>
-                                <td>Outputs surface mesh UV texture coordinates (<code>vUv</code>).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Time Input</strong></td>
-                                <td>Input</td>
-                                <td><code>float</code></td>
-                                <td>Outputs global elapsed scene time multiplier for animation.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Math (Add/Sub/Mul/Div)</strong></td>
-                                <td>Math</td>
-                                <td><code>float</code></td>
-                                <td>Performs scalar math operations between two float inputs.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Math (Sin/Cos/Power/Sqrt)</strong></td>
-                                <td>Math</td>
-                                <td><code>float</code></td>
-                                <td>Trigonometric and exponential GLSL mathematical functions.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Mix (Color / Float)</strong></td>
-                                <td>Vector</td>
-                                <td><code>vec3 / float</code></td>
-                                <td>Linear interpolation (<code>mix</code>) between inputs A and B based on Alpha
-                                    factor.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Fresnel</strong></td>
-                                <td>Vector</td>
-                                <td><code>float</code></td>
-                                <td>Calculates Schlick's Fresnel reflection factor based on view angle and IOR.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Panner</strong></td>
-                                <td>UV</td>
-                                <td><code>vec2</code></td>
-                                <td>Animates UV coordinate offsets over time (water flow, scrolling screens).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Tiling & Offset</strong></td>
-                                <td>UV</td>
-                                <td><code>vec2</code></td>
-                                <td>Scales TileX/TileY and Offsets X/Y for UV map coordinates.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Color Ramp</strong></td>
-                                <td>Color</td>
-                                <td><code>vec3</code></td>
-                                <td>Maps a scalar float input onto a multi-stop color gradient.</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Water Waves</strong></td>
-                                <td>Fluid</td>
-                                <td><code>vec3 / float</code></td>
-                                <td>Procedural wave height displacement and normal distortion.</td>
+                                <td><strong>Repeat with Offset</strong></td>
+                                <td>Loops the sequence but offsets the baseline by the delta of the loop.</td>
+                                <td>A character walking forward continuously.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h2 id="glsl-compilation">GLSL Code Generation Engine</h2>
-                <p>
-                    When <strong>Apply to Object</strong> or <strong>Auto-Compile</strong> is active,
-                    <code>MaterialNodeEditor.js</code> performs a topological sort of the graph node order, resolves
-                    variable type coercions (e.g. converting float scalar to <code>vec3(f, f, f)</code> for grayscale
-                    BaseColor input), and injects GLSL code directly into Three.js <code>onBeforeCompile</code> shader
-                    chunks:
+                <h2 id="channels-filtering">Channels & Filtering</h2>
+                <p>Complex scenes often feature hundreds of animated parameters. The Graph Editor left-hand panel
+                    provides robust filtering mechanisms to isolate relevant data.</p>
+                <p>By default, the Graph Editor displays curves for the currently selected object. The channel tree
+                    allows toggling visibility, locking editing capabilities, or muting execution for specific tracks.
                 </p>
-                <pre><code class="language-glsl">// Sample generated GLSL shader injection chunk
-float node_5_0 = 0.5000;
-vec3 node_3_0 = texture2D(uTex_node_3, vUv).rgb * 1.0000;
 
-#include &lt;color_fragment&gt;
-diffuseColor.rgb = node_3_0 * vec3(node_5_0, node_5_0, node_5_0);</code></pre>
+                <pre><code class="language-javascript">
+// Example: Accessing F-Curve data programmatically
+const animGraph = engine.animation.getGraphEditor();
+const selectedObj = engine.selection.getActive();
 
-                <div class="page-navigation">
-                    <a href="sculpting.html" class="nav-card">
-                        <span class="nav-card-sub">Previous</span>
-                        <span class="nav-card-title">← Sculpting & Terrain</span>
+// Retrieve rotation tracks
+const rotX = animGraph.getTrack(selectedObj, 'transform.rotation.x');
+
+// Modify extrapolation
+rotX.setExtrapolation(SM_ENUMS.EXTRAPOLATION_CYCLE);
+
+// Insert a linear keyframe
+rotX.insertKeyframe({
+    time: 2.5, // seconds
+    value: 180.0,
+    interpolation: SM_ENUMS.INTERP_LINEAR
+});
+            </code></pre>
+
+                <h3 id="supported-channels">Supported Transform Channels</h3>
+                <ul>
+                    <li><strong>Location:</strong> X, Y, Z axes</li>
+                    <li><strong>Rotation:</strong> Euler X, Y, Z axes (or Quaternion W, X, Y, Z)</li>
+                    <li><strong>Scale:</strong> X, Y, Z axes</li>
+                    <li><strong>Custom Properties:</strong> Shader node parameters, light intensity, camera focal
+                        length, etc.</li>
+                </ul>
+
+                <div class="page-navigation nav-card">
+                    <a href="timeline.html" class="nav-prev">
+                        <div class="nav-label">Previous</div>
+                        <div class="nav-title">Timeline System</div>
                     </a>
-                    <a href="lighting.html" class="nav-card next">
-                        <span class="nav-card-sub">Next Section</span>
-                        <span class="nav-card-title">Lighting & Atmosphere →</span>
+                    <a href="game-dev.html" class="nav-next">
+                        <div class="nav-label">Next</div>
+                        <div class="nav-title">Game Development</div>
                     </a>
                 </div>
             </main>
-
             <aside class="toc-sidebar">
-                <div class="toc-title">On This Page</div>
-                <ul id="tocList" class="toc-list"></ul>
+                <div class="toc-container">
+                    <div class="toc-title">On this page</div>
+                    <ul class="toc-list">
+                        <li><a href="#graph-editor-overview">Graph Editor Overview</a></li>
+                        <li><a href="#timeline-vs-graph">Timeline vs Graph Editor</a></li>
+                        <li><a href="#curve-tangent-types">Curve Tangent Types</a></li>
+                        <li><a href="#handle-controls">Handle Controls</a></li>
+                        <li><a href="#extrapolation-modes">Extrapolation Modes</a></li>
+                        <li><a href="#channels-filtering">Channels & Filtering</a>
+                            <ul>
+                                <li><a href="#supported-channels">Supported Channels</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </aside>
         </div>
     </div>
