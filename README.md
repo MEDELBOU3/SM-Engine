@@ -17,7 +17,7 @@
   <img src="https://img.shields.io/badge/Engine-Three.js-blue" alt="Three.js">
   <img src="https://img.shields.io/badge/Runtime-Electron-9feaf9" alt="Electron">
   <a href="https://github.com/MEDELBOU3/SM-Engine/releases"><img src="https://img.shields.io/github/v/release/MEDELBOU3/SM-Engine?include_prereleases" alt="Release"></a>
-  <a href="https://github.com/medelbou3/SM-Engine/issues"><img src="https://img.shields.io/github/issues/medelbou3/SM-Engine" alt="Issues"></a>
+  <a href="https://github.com/MEDELBOU3/SM-Engine/issues"><img src="https://img.shields.io/github/issues/MEDELBOU3/SM-Engine" alt="Issues"></a>
 </p>
 
 ---
@@ -32,65 +32,61 @@
 
 ---
 
+## 📚 Documentation
+
+Full, searchable documentation lives in the bundled site at
+[`SM-Engine-intro-website/docs`](SM-Engine-intro-website/docs/index.html), covering
+**modeling**, **sculpting**, **node editing**, **animation**, **physics**, **materials**,
+**lighting**, **terrain & water**, **video editing**, and **audio**.
+
+> Launch `index.html` in a browser, or open the editor and click *Help → Documentation*.
+
+---
+
 ## 🖼️ Visual Showcase
 
 <div align="center">
-  <img src="screenshoots/Screenshot%20(93).png" alt="Main Editor Interface" width="90%">
-    <img src="screenshoots/Screenshot%20(492).png" alt="Main Editor Interface" width="90%">
-  <p><em>Main interface with the powerful Node Editor panel and 3D viewport</em></p>
+  <img src="assets/screenshots/engine_overview_main.png" alt="SM Engine main editor workspace" width="90%">
+  <img src="assets/screenshots/Main-Interface-Regions.png" alt="Editor workspace with sidebar, viewport, and inspector" width="90%">
+  <p><em>Main editor interface with the 3D viewport, scene hierarchy, and node editor panel.</em></p>
 </div>
 
 <div align="center">
-  <img src="screenshoots/Screenshot%20(92).png" alt="Physics Simulation" width="90%">
-  <p><em>The integrated physics engine with real-time object interactions</em></p>
+  <img src="assets/screenshots/Visual-Node-Graphs-System.png" alt="Visual node graph editor" width="90%">
+  <img src="assets/screenshots/Graph-Editor.png" alt="Graph editor for animation curves" width="90%">
+  <p><em>Visual node editor for materials, shaders, and procedural geometry with real-time preview.</em></p>
 </div>
 
 <div align="center">
-  <img src="screenshoots/Screenshot%20(56).png" alt="Brush Modeling Tools" width="90%">
-  <p><em>Brush Modeling panel with density controls and import options</em></p>
+  <img src="assets/screenshots/Sculpting-Brushes-Reference.png" alt="Sculpting brush reference" width="50%">
+  <img src="assets/screenshots/Mesh-Modeling.png" alt="Polygon mesh modeling" width="50%">
+  <p><em>Brush sculpting tools and polygon mesh modeling in real time.</em></p>
 </div>
 
 <div align="center">
-  <img src="screenshoots/sculpting&modeling.png" alt="Brush Modeling Tools" width="90%">
-  <img src="screenshoots/modeling.png" alt="Brush Modeling Tools" width="90%">
-  <img src="screenshoots/Screenshot (494).png" alt="Brush Modeling Tools" width="90%">
-  <p><em>Modeling and sculpting tools in real time</em></p>
+  <img src="assets/screenshots/Lighting-atmospher.png" alt="Lighting and sky atmosphere" width="50%">
+  <img src="assets/screenshots/material-editor.png" alt="Material node editor" width="50%">
+  <p><em>PBR materials and physically-based lighting with sky atmosphere.</em></p>
 </div>
 
 <div align="center">
-  <img src="screenshoots/Screenshot (390).png" alt="code editor" width="90%">
-  <p><em>Create anything you want using html css and js</em></p>
+  <img src="assets/screenshots/Terrain-Carving.png" alt="Terrain sculpting with brushes" width="50%">
+  <img src="assets/screenshots/Water-System-Ocean.png" alt="Real-time water system" width="50%">
+  <p><em>Terrain sculpting, landscape generation, and real-time water rendering.</em></p>
 </div>
 
 <div align="center">
-  <h2>Architecture Tools</h2>
-  <h3>Wall Tools</h3>
-  <img src="screenshoots/wall-preview.png" alt="line preview" width="90%">
-  <img src="screenshoots/confirm-wall-placement1.png" alt="wall added" width="90%">
-  <img src="screenshoots/confirm-wall-placement2.png" alt="wall added-select" width="90%">
-  <h3>Windows and doors tools</h3>
-  <img src="screenshoots/window-placement-preview.png" alt="box preview" width="90%">
-  <img src="screenshoots/Screenshot (334).png" alt="box preview" width="90%">
-  <img src="screenshoots/Screenshot (335).png" alt="box preview" width="90%">
-  <p><em>Architecture Tools Wall to build what you need</em></p>
-  
+  <img src="assets/screenshots/Sound-Editor-Mixer.png" alt="Sound editor mixer" width="50%">
+  <img src="assets/screenshots/Video-Editing-Workflow.png" alt="Video editing timeline" width="50%">
+  <p><em>Sound & music editor and video editing timeline with VFX pipeline.</em></p>
 </div>
 
 <div align="center">
-  <img src="screenshoots/Screenshot%20(91).png" alt="Editor Workspace" width="90%">
-  <p><em>Workspace overview with Scene Hierarchy and Asset Management</em></p>
+  <img src="assets/screenshots/2D-Overview.png" alt="2D animation workspace" width="50%">
+  <img src="assets/screenshots/Timeline-and-Keyframing.png" alt="Timeline and keyframes" width="50%">
+  <p><em>2D animation with onion skinning, layers, and keyframe timeline.</em></p>
 </div>
 
-<div align="center">
-  <img src="screenshoots/Screenshot%20(54).png" alt="3D Viewport" width="90%">
-  <p><em>High-fidelity rendering in the 3D viewport</em></p>
-</div>
-
-<div align="center">
-  <h2>Sound Editor</h2>
-  <img src="screenshoots/Screenshot (496).png" alt="box preview" width="90%">
-  <p><em>Sound and music editor</em></p>
-</div>
 ---
 
 ## 🌟 Core Features
@@ -114,7 +110,7 @@
 - **Constraints System:** Create joints, hinges, springs, and mechanical linkages
 
 ### 🖼️ Advanced Viewport
-- **High-Performance Rendering:**webGL powered visualization with PBR materials
+- **High-Performance Rendering:** WebGL powered visualization with PBR materials
 - **Multiple View Modes:** Orthographic (Top, Front, Side) and Perspective cameras with customizable settings
 - **Real-time Analytics:** Monitor FPS, draw calls, polygon count, and memory usage
 - **Transformation Tools:** Intuitive gizmos for precise object manipulation (Translate, Rotate, Scale)
@@ -132,41 +128,42 @@
 
 SM-Engine is built on modern and reliable technologies:
 
-## 🖥 Language
+### 🖥 Language
 - **JavaScript (ES6+)**
   - Runs natively in the browser
   - Ideal for real-time interactive applications
 
-## 🧱 Graphics API
-- **[Three.js](https://threejs.org/)**  
+### 🧱 Graphics API
+- **[Three.js](https://threejs.org/)**
   - Built on top of WebGL
   - Simplifies 3D rendering, lighting, materials, and cameras
 
-## 🖼 GUI Framework
-- **[dat.GUI](https://github.com/dataarts/dat.gui)** or **[Tweakpane](https://cocopon.github.io/tweakpane/)**
+### 🖼️ GUI Framework
+- **[Tweakpane](https://cocopon.github.io/tweakpane/)** / **[dat.GUI](https://github.com/dataarts/dat.gui)**
   - Lightweight GUI for real-time controls and debugging
 - **Optional (Advanced UI):**
   - **[React.js](https://reactjs.org/)** or **[Vue.js](https://vuejs.org/)** for component-based UIs
 
-## 🎮 Physics Engine
+### 🎮 Physics Engine
 - **[Ammo.js](https://github.com/kripken/ammo.js)**
   - Port of Bullet Physics to JavaScript/WebAssembly
 - **Alternative: [Cannon-es](https://github.com/pmndrs/cannon-es)**
   - Easier to use, great for games and simulations
 
-## 🧳 Asset Processing (3D Models)
+### 🧳 Asset Processing (3D Models)
 - **[Three.js Loaders](https://threejs.org/docs/#examples/en/loaders/GLTFLoader)**
   - Use `GLTFLoader`, `FBXLoader`, `OBJLoader` for importing models
 - **Recommended format: GLTF/GLB**
   - Optimized for web performance
 - **Tools:** Blender, glTF-Pipeline for converting and optimizing assets
 
-## ✨ Shader System
+### ✨ Shader System
 - **Custom GLSL Shaders**
   - Use `ShaderMaterial` or `RawShaderMaterial` in Three.js
 - **Hot Reloading:**
   - Implement with `fetch()` + `ShaderMaterial.needsUpdate = true`
   - Use **Vite** or **Webpack** with file watching for live shader reloading
+
 ---
 
 ## 🧩 Optional Tools for Development
@@ -182,14 +179,11 @@ SM-Engine is built on modern and reliable technologies:
 
 ---
 
-
----
-
 ## 📐 Interface Overview
 
 SM-Engine features a customizable, panel-based interface designed for productivity:
 
-```plaintext
+```
 +---------------------------------------------------------------+
 | Main Toolbar (File, Edit, Assets, Export, View, Help...)      |
 +--------------------------+------------------------------------+
@@ -277,14 +271,14 @@ Get up and running with SM-Engine in just a few steps:
 
 ### Option 1: Using the Installer (Recommended)
 
-1. Download the latest installer from the [Releases Page](https://github.com/medelbou3/SM-Engine/releases)
+1. Download the latest installer from the [Releases Page](https://github.com/MEDELBOU3/SM-Engine/releases)
 2. Run the `SM-Engine-Setup.exe` file
 3. Follow the installation wizard instructions
 4. Launch SM-Engine from the desktop shortcut or Start menu
 
 ### Option 2: Portable Version
 
-1. Download the portable .zip file from the [Releases Page](https://github.com/medelbou3/SM-Engine/releases)
+1. Download the portable .zip file from the [Releases Page](https://github.com/MEDELBOU3/SM-Engine/releases)
 2. Extract all contents to a folder of your choice
 3. Run `SM-Engine.exe` from the extracted folder
 4. Note: .NET Framework 4.8 must be installed on your system
@@ -293,7 +287,7 @@ Get up and running with SM-Engine in just a few steps:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/medelbou3/SM-Engine.git
+   git clone https://github.com/MEDELBOU3/SM-Engine.git
    cd SM-Engine
    ```
 
@@ -318,7 +312,7 @@ Get up and running with SM-Engine in just a few steps:
 
 We welcome contributions to SM-Engine! Here's how you can help:
 
-1. **Report Issues:** Found a bug or have a suggestion? Open an issue on our [Issue Tracker](https://github.com/medelbou3/SM-Engine/issues)
+1. **Report Issues:** Found a bug or have a suggestion? Open an issue on our [Issue Tracker](https://github.com/MEDELBOU3/SM-Engine/issues)
 
 2. **Contribute Code:**
    - Fork the repository
@@ -376,8 +370,8 @@ SM-Engine is distributed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 <p align="center">
-  <a href="https://github.com/medelbou3/SM-Engine">GitHub</a> •
-  <a href="https://github.com/medelbou3/SM-Engine/wiki">Documentation</a> •
-  <a href="https://github.com/medelbou3/SM-Engine/discussions">Community</a> •
-  <a href="https://github.com/medelbou3/SM-Engine/issues">Issues</a>
+  <a href="https://github.com/MEDELBOU3/SM-Engine">GitHub</a> •
+  <a href="SM-Engine-intro-website/docs/index.html">Documentation</a> •
+  <a href="https://github.com/MEDELBOU3/SM-Engine/discussions">Community</a> •
+  <a href="https://github.com/MEDELBOU3/SM-Engine/issues">Issues</a>
 </p>
