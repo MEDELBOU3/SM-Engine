@@ -1898,6 +1898,147 @@ html[data-theme="light"] .home-v2 .mobile-nav { background: rgba(248, 250, 250, 
 
 .hero-support { padding-bottom: .5rem; }
 .hero-support > p { margin: 0; color: var(--text-soft); font-size: clamp(.97rem, 1.2vw, 1.15rem); line-height: 1.75; }
+
+/* Final editorial pass: placed last so legacy dark-theme layers cannot win. */
+html, body { color-scheme: light !important; }
+body:not(.home-v2), body.home-v2 {
+    --paper-final: #f0efe9;
+    --paper-final-deep: #e6e5de;
+    --ink-final: #252727;
+    --muted-final: #666863;
+    --rule-final: rgba(37, 39, 39, .24);
+    --signal-final: #f04416;
+    background: var(--paper-final) !important;
+    color: var(--ink-final) !important;
+    background-image: linear-gradient(rgba(37,39,39,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(37,39,39,.045) 1px, transparent 1px) !important;
+    background-size: 48px 48px !important;
+}
+body:not(.home-v2) .site-shell { background: var(--paper-final) !important; border-color: var(--rule-final) !important; }
+body:not(.home-v2) .site-header-shell,
+body:not(.home-v2) .site-header-bar,
+body:not(.home-v2) .site-header-shell.is-scrolled .site-header-bar,
+body:not(.home-v2) .header-inner {
+    background: rgba(240,239,233,.96) !important;
+    color: var(--ink-final) !important;
+    border-color: var(--rule-final) !important;
+    box-shadow: none !important;
+}
+body:not(.home-v2) .site-header-bar img { filter: grayscale(1) brightness(.25) !important; }
+body:not(.home-v2) .site-header-bar .brand-copy strong,
+body:not(.home-v2) .site-header-bar .brand-copy small,
+body:not(.home-v2) .site-header-bar .top-nav-link,
+body:not(.home-v2) .site-header-bar .header-github,
+body:not(.home-v2) .site-header-bar .text-white,
+body:not(.home-v2) .site-header-bar .text-slate-300,
+body:not(.home-v2) .site-header-bar .text-slate-200,
+body:not(.home-v2) .site-header-bar > nav .top-nav-link,
+body:not(.home-v2) .site-header-bar .desktop-nav .top-nav-link,
+body:not(.home-v2) .site-header-bar .legacy-desktop-nav .top-nav-link { color: var(--ink-final) !important; opacity: 1 !important; }
+body:not(.home-v2) .site-header-bar .brand-copy small { color: var(--muted-final) !important; }
+body:not(.home-v2) .top-nav-link::after { background: var(--signal-final) !important; }
+body:not(.home-v2) .nav-download-link,
+body:not(.home-v2) .btn-primary,
+body:not(.home-v2) .header-download-btn { background: var(--signal-final) !important; color: #fff !important; border-color: var(--signal-final) !important; border-radius: 0 !important; box-shadow: none !important; }
+body:not(.home-v2) .mobile-nav { background: var(--paper-final) !important; border-color: var(--rule-final) !important; }
+body:not(.home-v2) .mobile-nav a { color: var(--ink-final) !important; border-color: var(--rule-final) !important; }
+
+.page-editorial,
+.page-editorial main,
+.page-editorial .page-hero,
+.page-editorial .feature-band,
+.page-editorial .workspace-overview,
+.page-editorial .workspace-list,
+.page-editorial .showcase-filter,
+.page-editorial .showcase-grid,
+.page-editorial .roadmap-shell,
+.page-editorial .roadmap-principles,
+.page-editorial .download-options,
+.page-editorial .requirements-section,
+.page-editorial .demo-section,
+.page-editorial .editorial-cta { color: var(--ink-final) !important; background: transparent !important; border-color: var(--rule-final) !important; }
+.page-editorial .page-kicker,
+.page-editorial .page-kicker > span:first-child,
+.page-editorial .feature-index,
+.page-editorial .feature-index span,
+.page-editorial .workspace-no,
+.page-editorial .roadmap-marker,
+.page-editorial .roadmap-year,
+.page-editorial .download-no,
+.page-editorial .showcase-caption > span { color: var(--muted-final) !important; }
+.page-editorial .page-kicker > span:first-child,
+.page-editorial .roadmap-current .roadmap-marker i,
+.page-editorial .principles-grid strong,
+.page-editorial .download-label { color: var(--signal-final) !important; background-color: transparent; }
+.page-editorial .page-display,
+.page-editorial .page-display em,
+.page-editorial .page-hero-side p,
+.page-editorial .feature-copy h2,
+.page-editorial .feature-copy > p,
+.page-editorial .workspace-copy h2,
+.page-editorial .workspace-copy p,
+.page-editorial .showcase-caption h3,
+.page-editorial .roadmap-copy h2,
+.page-editorial .roadmap-copy > p,
+.page-editorial .section-heading h2,
+.page-editorial .editorial-cta h2,
+.page-editorial .requirements-table td:first-child { color: var(--ink-final) !important; }
+.page-editorial .page-hero-side p,
+.page-editorial .feature-copy > p,
+.page-editorial .workspace-copy p,
+.page-editorial .showcase-caption p,
+.page-editorial .roadmap-copy > p,
+.page-editorial .principles-grid p,
+.page-editorial .interface-regions p,
+.page-editorial .requirements-table td,
+.page-editorial .download-options p { color: var(--muted-final) !important; }
+.page-editorial .feature-band,
+.page-editorial .workspace-list,
+.page-editorial .roadmap-shell,
+.page-editorial .download-options,
+.page-editorial .requirements-table th,
+.page-editorial .requirements-table td,
+.page-editorial .feature-specs,
+.page-editorial .feature-specs > div,
+.page-editorial .interface-regions,
+.page-editorial .principles-grid,
+.page-editorial .showcase-filter,
+.page-editorial .editorial-cta { border-color: var(--rule-final) !important; }
+.page-editorial .feature-visual,
+.page-editorial .workspace-shot,
+.page-editorial .workspace-overview-image,
+.page-editorial .showcase-image,
+.page-editorial .video-frame-container { background: var(--paper-final-deep) !important; border: 1px solid var(--rule-final) !important; box-shadow: none !important; }
+.page-editorial .feature-specs dt,
+.page-editorial .requirements-table th,
+.page-editorial .download-options dt,
+.page-editorial .download-options dd,
+.page-editorial .roadmap-copy li { color: var(--muted-final) !important; }
+.page-editorial .gallery-filter,
+.page-editorial .gallery-filter:hover,
+.page-editorial .gallery-filter.active,
+.page-editorial .editorial-link { color: var(--ink-final) !important; }
+.page-editorial .gallery-filter::after { background: var(--signal-final) !important; }
+.page-editorial .download-primary { background: var(--ink-final) !important; color: var(--paper-final) !important; }
+.page-editorial .download-primary h2,
+.page-editorial .download-primary p,
+.page-editorial .download-primary dt,
+.page-editorial .download-primary dd { color: var(--paper-final) !important; }
+.page-editorial .download-label { background: var(--signal-final) !important; color: #fff !important; }
+.page-editorial .editorial-footer,
+.page-editorial .site-footer-v2 { background: var(--paper-final) !important; color: var(--ink-final) !important; border-color: var(--rule-final) !important; }
+.page-editorial .footer-link,
+.page-editorial .footer-brand p,
+.page-editorial .footer-links a,
+.page-editorial .footer-links span { color: var(--ink-final) !important; }
+.page-editorial .footer-links span { color: var(--signal-final) !important; }
+
+@media (max-width: 800px) {
+    body:not(.home-v2) .site-header-shell { top: 4px; }
+    .page-editorial .page-hero { padding-top: 8rem !important; }
+    .page-editorial .feature-copy h2,
+    .page-editorial .workspace-copy h2,
+    .page-editorial .roadmap-copy h2 { font-size: clamp(2rem, 10vw, 3.5rem) !important; }
+}
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; }
 
 .action-primary {
@@ -2683,3 +2824,57 @@ html[data-theme="light"] body[data-page]:not([data-page="home"]) .site-header-sh
 .workspace-visual { overflow: hidden; }
 .workspace-visual img { width: 100%; height: 100%; }
 .workspace-copy-v2 { overflow-wrap: anywhere; }
+
+/* Last word on the public-site palette. Keep this block last. */
+body:not(.home-v2) {
+    background: #f0efe9 !important;
+    color: #252727 !important;
+    background-image: linear-gradient(rgba(37,39,39,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(37,39,39,.045) 1px, transparent 1px) !important;
+    background-size: 48px 48px !important;
+}
+body:not(.home-v2) .site-shell,
+body:not(.home-v2) .site-header-bar,
+body:not(.home-v2) .header-inner,
+body:not(.home-v2) .site-header-shell.is-scrolled .site-header-bar {
+    background: #f0efe9 !important;
+    color: #252727 !important;
+    border-color: rgba(37,39,39,.24) !important;
+    box-shadow: none !important;
+}
+body:not(.home-v2) .site-header-bar .top-nav-link,
+body:not(.home-v2) .site-header-bar > nav .top-nav-link,
+body:not(.home-v2) .site-header-bar .desktop-nav .top-nav-link,
+body:not(.home-v2) .site-header-bar .legacy-desktop-nav .top-nav-link,
+body:not(.home-v2) .site-header-bar .header-github,
+body:not(.home-v2) .site-header-bar .brand-copy strong { color: #252727 !important; opacity: 1 !important; }
+body:not(.home-v2) .site-header-bar .brand-copy small { color: #666863 !important; }
+body:not(.home-v2) .site-header-bar img { filter: grayscale(1) brightness(.25) !important; }
+body:not(.home-v2) .page-editorial,
+body:not(.home-v2) .page-editorial main,
+body:not(.home-v2) .page-editorial section,
+body:not(.home-v2) .page-editorial .page-hero { background: transparent !important; color: #252727 !important; }
+body:not(.home-v2) .page-editorial h1,
+body:not(.home-v2) .page-editorial h2,
+body:not(.home-v2) .page-editorial h3,
+body:not(.home-v2) .page-editorial dt,
+body:not(.home-v2) .page-editorial td:first-child { color: #252727 !important; }
+body:not(.home-v2) .page-editorial p,
+body:not(.home-v2) .page-editorial dd,
+body:not(.home-v2) .page-editorial td,
+body:not(.home-v2) .page-editorial li { color: #666863 !important; }
+body:not(.home-v2) .page-editorial .page-kicker > span:first-child,
+body:not(.home-v2) .page-editorial .roadmap-current .roadmap-marker i,
+body:not(.home-v2) .page-editorial .download-label { color: #f04416 !important; }
+body:not(.home-v2) .page-editorial .feature-visual,
+body:not(.home-v2) .page-editorial .workspace-shot,
+body:not(.home-v2) .page-editorial .workspace-overview-image,
+body:not(.home-v2) .page-editorial .showcase-image,
+body:not(.home-v2) .page-editorial .video-frame-container { background: #e6e5de !important; border: 1px solid rgba(37,39,39,.24) !important; box-shadow: none !important; }
+body:not(.home-v2) .page-editorial .download-primary { background: #252727 !important; }
+body:not(.home-v2) .page-editorial .download-primary h2,
+body:not(.home-v2) .page-editorial .download-primary p,
+body:not(.home-v2) .page-editorial .download-primary dt,
+body:not(.home-v2) .page-editorial .download-primary dd { color: #f0efe9 !important; }
+body:not(.home-v2) .page-editorial .footer-link,
+body:not(.home-v2) .page-editorial .footer-brand p,
+body:not(.home-v2) .page-editorial .footer-links a { color: #252727 !important; }
