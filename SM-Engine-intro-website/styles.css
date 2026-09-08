@@ -63,6 +63,7 @@ img { max-width: 100%; }
     transition: visibility .2s ease;
 }
 .intro-splash.is-leaving { pointer-events: none; }
+.intro-splash.is-hidden { display: none !important; visibility: hidden; pointer-events: none; }
 .intro-splash-grid {
     position: absolute;
     inset: 7px;
@@ -101,7 +102,6 @@ img { max-width: 100%; }
 .intro-splash-enter:hover span { transform: translate(3px, -3px); }
 .intro-loading { overflow: hidden; }
 .intro-loading > :not(.intro-splash) { visibility: hidden; }
-.intro-splash.is-hidden { visibility: hidden; }
 
 /* Replace heavy floating shadows with precise borders and editorial depth. */
 .product-window, .attention-card, .capability-card, .workspace-stage-v2 { box-shadow: none; }
