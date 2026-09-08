@@ -3026,3 +3026,52 @@ html[data-theme="dark"] .attention-card { background: #1b2022 !important; color:
     .capability-grid-v2 .capability-card:nth-child(4),
     .capability-grid-v2 .capability-card:nth-child(5) { grid-column: auto !important; }
 }
+
+/* Homepage workspace panels: compact editorial compositions, not full-width
+   image slabs. */
+.home-v2 .workspace-stage-v2 {
+    margin-top: 18px !important;
+    border: 1px solid var(--site-rule) !important;
+    border-radius: 0 !important;
+    background: var(--site-panel-soft) !important;
+}
+.home-v2 .workspace-content-v2 {
+    grid-template-columns: minmax(0, 1.18fr) minmax(300px, .82fr) !important;
+    min-height: 430px !important;
+    height: 430px !important;
+}
+.home-v2 .workspace-visual {
+    min-height: 0 !important;
+    height: 100% !important;
+    border: 0 !important;
+    background: var(--site-panel) !important;
+}
+.home-v2 .workspace-visual img {
+    min-height: 0 !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+.home-v2 .workspace-copy-v2 {
+    min-width: 0 !important;
+    padding: clamp(1.5rem, 3vw, 3rem) !important;
+    border-left: 1px solid var(--site-rule) !important;
+    background: var(--site-panel-soft) !important;
+}
+.home-v2 .workspace-copy-v2 h3 { font-size: clamp(1.7rem, 2.7vw, 3rem) !important; }
+.home-v2 .workspace-copy-v2 p { max-width: 28rem; }
+.home-v2 .workspace-copy-v2 ul { margin-block: 1.25rem; }
+
+html[data-theme="light"] .home-v2 .workspace-stage-v2,
+html[data-theme="light"] .home-v2 .workspace-copy-v2 { background: #f7f6f1 !important; }
+html[data-theme="dark"] .home-v2 .workspace-stage-v2,
+html[data-theme="dark"] .home-v2 .workspace-copy-v2 { background: #1b2022 !important; }
+
+@media (max-width: 800px) {
+    .home-v2 .workspace-content-v2 {
+        display: block !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+    .home-v2 .workspace-visual { height: min(58vw, 320px) !important; }
+    .home-v2 .workspace-copy-v2 { border-left: 0 !important; border-top: 1px solid var(--site-rule) !important; }
+}
