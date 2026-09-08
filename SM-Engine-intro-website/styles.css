@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap');
 
 :root {
     --bg-black: #060606;
@@ -48,6 +49,64 @@ button, input, textarea, select { font: inherit; }
 button { color: inherit; }
 img { max-width: 100%; }
 .font-mono, .font-mono-local { font-family: "JetBrains Mono", monospace; }
+
+/* Opening frame: an editorial title card before the product surface appears. */
+.intro-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: #efeee9;
+    color: #202323;
+    transition: visibility .2s ease;
+}
+.intro-splash.is-leaving { pointer-events: none; }
+.intro-splash-grid {
+    position: absolute;
+    inset: 7px;
+    border: 1px solid rgba(32,35,35,.22);
+    background-image: linear-gradient(rgba(32,35,35,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(32,35,35,.07) 1px, transparent 1px);
+    background-size: 52px 52px;
+    mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.4) 70%, transparent 100%);
+}
+.intro-splash-grid::before, .intro-splash-grid::after {
+    content: "";
+    position: absolute;
+    background: #202323;
+}
+.intro-splash-grid::before { width: 1px; height: 100%; left: 25%; opacity: .13; }
+.intro-splash-grid::after { width: 100%; height: 1px; top: 62%; opacity: .13; }
+.intro-splash-corner {
+    position: absolute;
+    z-index: 1;
+    font: 600 .62rem/1 "JetBrains Mono", monospace;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: rgba(32,35,35,.55);
+}
+.intro-splash-corner-top { top: 28px; left: 32px; }
+.intro-splash-corner-bottom { right: 32px; bottom: 28px; }
+.intro-splash-center { position: relative; z-index: 2; display: grid; justify-items: center; width: min(90vw, 720px); text-align: center; }
+.intro-splash-mark { display: grid; place-items: center; width: 84px; height: 84px; margin-bottom: 26px; border: 1px solid rgba(32,35,35,.32); transform: rotate(45deg); }
+.intro-splash-mark img { width: 48px; height: 48px; transform: rotate(-45deg); filter: grayscale(1) brightness(.35); }
+.intro-splash-kicker { margin: 0 0 14px; font: 600 .66rem/1 "JetBrains Mono", monospace; letter-spacing: .18em; text-transform: uppercase; color: #eb4b20; }
+.intro-splash-title { margin: 0; font: 400 clamp(4rem, 10vw, 8rem)/.84 "DM Serif Display", Georgia, serif; letter-spacing: -.055em; }
+.intro-splash-title span { font-style: italic; }
+.intro-splash-rule { width: min(320px, 64vw); height: 1px; margin: 34px 0 20px; background: rgba(32,35,35,.2); overflow: hidden; }
+.intro-splash-rule i { display: block; width: 0; height: 100%; background: #eb4b20; }
+.intro-splash-enter { border: 0; padding: 0; background: transparent; color: #202323; font: 600 .7rem/1 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+.intro-splash-enter span { display: inline-block; margin-left: .55rem; color: #eb4b20; transition: transform .2s ease; }
+.intro-splash-enter:hover span { transform: translate(3px, -3px); }
+.intro-loading { overflow: hidden; }
+.intro-loading > :not(.intro-splash) { visibility: hidden; }
+.intro-splash.is-hidden { visibility: hidden; }
+
+/* Replace heavy floating shadows with precise borders and editorial depth. */
+.product-window, .attention-card, .capability-card, .workspace-stage-v2 { box-shadow: none; }
+.hero-product { filter: none; }
+.brand-mark, .nav-download-link, .action-primary { box-shadow: none; }
 
 /* ---------- Shared navigation ---------- */
 .site-header-shell { transition: background-color .3s ease, border-color .3s ease; }
@@ -183,6 +242,9 @@ img { max-width: 100%; }
     .hero-heading { font-size: clamp(3.2rem, 17vw, 5.4rem); }
     .hero-webgl { opacity: .46; }
     .hero-product { margin-top: 1.5rem; }
+    .intro-splash-corner { font-size: .52rem; }
+    .intro-splash-corner-top { left: 18px; top: 18px; }
+    .intro-splash-corner-bottom { right: 18px; bottom: 18px; }
 }
 
 .menu-button {

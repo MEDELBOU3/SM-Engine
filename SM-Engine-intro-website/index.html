@@ -23,10 +23,22 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link rel="stylesheet" href="./styles.css?v=20260902">
+    <link rel="stylesheet" href="./styles.css?v=20260909">
 </head>
 
-<body data-page="home" class="home-page home-v2">
+<body data-page="home" class="home-page home-v2 intro-loading">
+    <section class="intro-splash" data-intro-splash aria-label="SM Engine introduction">
+        <div class="intro-splash-grid" aria-hidden="true"></div>
+        <div class="intro-splash-corner intro-splash-corner-top">SM / 001</div>
+        <div class="intro-splash-corner intro-splash-corner-bottom">REAL-TIME CREATION SUITE</div>
+        <div class="intro-splash-center">
+            <div class="intro-splash-mark"><img src="./assets/app.svg" alt=""></div>
+            <p class="intro-splash-kicker">A new space for making worlds</p>
+            <h1 class="intro-splash-title"><span>SM</span> Engine</h1>
+            <div class="intro-splash-rule"><i data-intro-progress></i></div>
+            <button class="intro-splash-enter" type="button" data-intro-enter>Enter workspace <span aria-hidden="true">↗</span></button>
+        </div>
+    </section>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
     <div class="pointer-aurora" data-pointer-aurora aria-hidden="true"></div>

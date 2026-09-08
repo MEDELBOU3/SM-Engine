@@ -6,6 +6,35 @@ document.addEventListener("DOMContentLoaded", () => {
         gsap.registerPlugin(ScrollTrigger);
     }
 
+    const introSplash = document.querySelector("[data-intro-splash]");
+    const introEnter = document.querySelector("[data-intro-enter]");
+    const introProgress = document.querySelector("[data-intro-progress]");
+    if (introSplash) {
+        let introClosed = false;
+        const closeIntro = () => {
+            if (introClosed) return;
+            introClosed = true;
+            document.body.classList.remove("intro-loading");
+            introSplash.classList.add("is-leaving");
+            const finish = () => introSplash.classList.add("is-hidden");
+            if (hasGSAP && !reducedMotion) {
+                gsap.to(introSplash, { yPercent: -100, duration: .9, ease: "power4.inOut", onComplete: finish });
+                gsap.fromTo(".hero-animate", { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .8, stagger: .08, delay: .35, ease: "power3.out" });
+            } else {
+                finish();
+            }
+        };
+        if (hasGSAP && !reducedMotion) {
+            gsap.to(introProgress, { width: "100%", duration: 1.25, ease: "power2.inOut" });
+            gsap.fromTo(".intro-splash-mark", { scale: .55, rotation: 20, autoAlpha: 0 }, { scale: 1, rotation: 45, autoAlpha: 1, duration: 1, ease: "power3.out" });
+            gsap.fromTo(".intro-splash-title, .intro-splash-kicker", { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .75, stagger: .08, delay: .3, ease: "power3.out" });
+            gsap.delayedCall(1.65, closeIntro);
+        } else {
+            closeIntro();
+        }
+        introEnter?.addEventListener("click", closeIntro);
+    }
+
     // Shared light / dark theme with persistence across the public website.
     const themeStorageKey = "sm_engine_theme";
     const themeIconMarkup = `
