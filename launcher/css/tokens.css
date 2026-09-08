@@ -1,0 +1,87 @@
+:root {
+    color-scheme: dark;
+
+    /* ── Epic Games Style Surface Hierarchy ────────── */
+    --sm-bg-0: #0b0b0b; /* Deepest sidebar / app background */
+    --sm-bg-1: #101010; /* Main workspace */
+    --sm-bg-2: #141414; /* Topbar / panel headers */
+    --sm-bg-3: #1c1c1c; /* Cards / elevated surfaces */
+    --sm-bg-4: #252525; /* Inputs / hover surfaces */
+    --sm-bg-5: #2f2f2f; /* Active / selected items */
+
+    /* ── Epic-like Borders & Dividers ─────────────── */
+    --sm-line-0: rgba(255, 255, 255, 0.035);
+    --sm-line-1: rgba(255, 255, 255, 0.07);
+    --sm-line-2: rgba(255, 255, 255, 0.12);
+    --sm-line-3: rgba(255, 255, 255, 0.20);
+
+    /* Epic blue focus */
+    --sm-line-accent: rgba(0, 120, 242, 0.55);
+
+    /* ── Typography Hierarchy ─────────────────────── */
+    --sm-text-1: #ffffff; /* Main titles */
+    --sm-text-2: #e7e7e7; /* Main body */
+    --sm-text-3: #a5a5a5; /* Secondary labels */
+    --sm-text-4: #6f6f6f; /* Muted text */
+
+    /* ── Primary Accent — Epic Launcher Blue ──────── */
+    --sm-accent:       #0078f2;
+    --sm-accent-hover: #1689ff;
+    --sm-accent-dark:  #0065cc;
+
+    --sm-accent-soft: rgba(0, 120, 242, 0.12);
+    --sm-accent-glow: rgba(0, 120, 242, 0.22);
+
+    /* ── Status Colors ────────────────────────────── */
+    --sm-green:  #42c77a;
+    --sm-yellow: #f5c451;
+    --sm-red:    #e85c5c;
+    --sm-blue:   #0078f2;
+    --sm-purple: #9b72f2;
+
+    /* ── Epic-like Geometry ───────────────────────── */
+    --sm-radius-xs: 3px;
+    --sm-radius-sm: 4px;
+    --sm-radius-md: 6px;
+    --sm-radius-lg: 8px;
+    --sm-radius-xl: 12px;
+
+    /* ── Shadows — subtle, not Windows-glossy ─────── */
+    --sm-shadow-1:
+        0 4px 14px rgba(0, 0, 0, 0.35);
+
+    --sm-shadow-2:
+        0 10px 32px rgba(0, 0, 0, 0.55);
+
+    --sm-shadow-glow:
+        0 0 18px rgba(0, 120, 242, 0.16);
+
+    /* ── Useful extra Epic-style tokens ───────────── */
+    --sm-hover: rgba(255, 255, 255, 0.055);
+    --sm-active: rgba(255, 255, 255, 0.085);
+
+    --sm-overlay-soft: rgba(0, 0, 0, 0.25);
+    --sm-overlay: rgba(0, 0, 0, 0.55);
+
+    --sm-input-bg: #1b1b1b;
+    --sm-card-bg: #1a1a1a;
+    --sm-sidebar-bg: #111111;
+    --sm-topbar-bg: #121212;
+
+    /* ── Layout Dimensions ────────────────────────── */
+    --sm-sidebar-w:         240px;
+    --sm-sidebar-compact-w: 64px;
+    --sm-topbar-h:          56px;
+    --sm-mobile-nav-h:      62px;
+    --sm-content-max:       1520px;
+
+    /* ── Typography ───────────────────────────────── */
+    font-family:
+        Inter,
+        "Segoe UI Variable Text",
+        "Segoe UI",
+        -apple-system,
+        BlinkMacSystemFont,
+        system-ui,
+        sans-serif;
+}

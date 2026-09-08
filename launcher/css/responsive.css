@@ -1,0 +1,391 @@
+/* ==========================================================================
+   SM Engine — Responsive Layout, Adaptive Breakpoints & Media Queries
+   Design System: Windows 11 Fluent UI & Epic Games Launcher Pro
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. ULTRA-WIDE & LARGE DESKTOPS (min-width: 1500px)
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1500px) {
+    :root {
+        --sm-sidebar-w: 250px;
+    }
+
+    .sm-content {
+        padding-inline: 40px;
+    }
+
+    .sm-project-preview {
+        height: 145px;
+    }
+
+    .sm-home-layout {
+        grid-template-columns: minmax(0, 1.85fr) minmax(320px, 0.85fr);
+        gap: 18px;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   2. MEDIUM DESKTOP & LAPTOPS (max-width: 1180px)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+    :root {
+        --sm-sidebar-w: 210px;
+    }
+
+    .sm-grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sm-grid-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sm-home-layout {
+        grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.8fr);
+        gap: 14px;
+    }
+
+    .sm-profile-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   3. COMPACT DESKTOP / MINI-SIDEBAR RAIL (max-width: 920px)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 920px) {
+    :root {
+        --sm-sidebar-w: var(--sm-sidebar-compact-w, 60px);
+    }
+
+    .sm-brand {
+        justify-content: center;
+        padding-inline: 0;
+    }
+
+    .sm-brand-copy,
+    .sm-nav-label,
+    .sm-nav-group,
+    .sm-engine-mini span,
+    .sm-user-meta,
+    .sm-user-caret {
+        display: none !important;
+    }
+
+    .sm-nav {
+        padding-inline: 6px;
+        align-items: center;
+    }
+
+    .sm-nav-item {
+        justify-content: center;
+        padding: 0;
+        width: 44px;
+        height: 40px;
+        min-height: 40px;
+        border-radius: var(--sm-radius-md, 10px);
+    }
+
+    .sm-nav-item.is-active::before {
+        left: 0;
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+        border-radius: 0 4px 4px 0;
+    }
+
+    .sm-epic-user-profile {
+        justify-content: center;
+        padding: 6px;
+        width: 44px;
+        height: 44px;
+        margin: 0 auto;
+    }
+
+    .sm-engine-mini {
+        justify-content: center;
+        padding-inline: 4px;
+    }
+
+    .sm-home-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sm-hero {
+        min-height: 220px;
+    }
+
+    .sm-diagnostics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sm-account-settings-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   4. TABLETS & NARROW WINDOWS (max-width: 720px)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+    :root {
+        --sm-mobile-nav-h: 58px;
+    }
+
+    .sm-launcher {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1fr) calc(var(--sm-mobile-nav-h) + env(safe-area-inset-bottom, 0px));
+    }
+
+    .sm-sidebar {
+        display: none !important;
+    }
+
+    .sm-workspace {
+        grid-column: 1;
+        grid-row: 1;
+        min-width: 0;
+    }
+
+    /* Mobile Bottom Navigation Dock */
+    .sm-mobile-nav {
+        grid-column: 1;
+        grid-row: 2;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        min-width: 0;
+        height: calc(var(--sm-mobile-nav-h) + env(safe-area-inset-bottom, 0px));
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        border-top: 1px solid var(--sm-line-1, rgba(255, 255, 255, 0.08));
+        background: rgba(11, 14, 20, 0.94);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        z-index: 100;
+        box-sizing: border-box;
+    }
+
+    .sm-mobile-nav .sm-nav-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        min-height: var(--sm-mobile-nav-h);
+        padding: 6px 4px;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        color: var(--sm-text-3, #64748b);
+        transition: color 0.15s ease, transform 0.1s ease;
+    }
+
+    .sm-mobile-nav .sm-nav-item:active {
+        transform: scale(0.94);
+    }
+
+    .sm-mobile-nav .sm-nav-item.is-active {
+        color: var(--sm-text-1, #f8fafc);
+        background: transparent;
+    }
+
+    .sm-mobile-nav .sm-nav-item.is-active .sm-nav-icon {
+        color: var(--sm-accent, #f59e0b);
+    }
+
+    /* Active Top Pill Indicator */
+    .sm-mobile-nav .sm-nav-item.is-active::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 20%;
+        right: 20%;
+        bottom: auto;
+        width: auto;
+        height: 2.5px;
+        border-radius: 0 0 3px 3px;
+        background: var(--sm-accent, #f59e0b);
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.9);
+    }
+
+    .sm-mobile-nav .sm-nav-label {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        line-height: 1;
+    }
+
+    .sm-mobile-nav .sm-nav-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* Topbar adjustments */
+    .sm-topbar {
+        padding-inline: 14px;
+    }
+
+    .sm-topbar-title span,
+    .sm-status {
+        display: none !important;
+    }
+
+    .sm-topbar-actions .sm-btn-ghost {
+        display: none !important;
+    }
+
+    /* Content & Grids reflow */
+    .sm-content {
+        padding: 16px 14px 32px;
+    }
+
+    .sm-grid-2,
+    .sm-grid-3,
+    .sm-grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .sm-profile-stats-grid,
+    .sm-profile-projects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sm-page-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .sm-setting-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .sm-toggle {
+        margin-left: 0;
+    }
+
+    .sm-toolbar {
+        flex-wrap: wrap;
+    }
+
+    .sm-toolbar .sm-field {
+        flex: 1 1 100%;
+        max-width: none;
+    }
+
+    .sm-toolbar-spacer {
+        display: none;
+    }
+
+    .sm-update-banner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .sm-update-banner .sm-btn {
+        width: 100%;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   5. VERY SMALL WINDOWS & PHONES (max-width: 480px)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+    :root {
+        --sm-topbar-h: 54px;
+    }
+
+    .sm-content {
+        padding-inline: 12px;
+    }
+
+    .sm-hero {
+        min-height: auto;
+        padding: 20px 16px;
+    }
+
+    .sm-hero-title {
+        font-size: clamp(24px, 7vw, 30px);
+        letter-spacing: -0.03em;
+    }
+
+    .sm-hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .sm-hero-actions .sm-btn {
+        width: 100%;
+    }
+
+    .sm-card-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+
+    .sm-card-actions .sm-btn {
+        width: 100%;
+    }
+
+    .sm-template-picker {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   6. TOUCH DEVICE ERGONOMICS (Mobile / iPad)
+   -------------------------------------------------------------------------- */
+
+@media (hover: none) and (pointer: coarse) {
+    .sm-nav-item,
+    .sm-btn,
+    .sm-quick-action,
+    .sm-dropdown-item {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Keep touch targets comfortably sized */
+    .sm-btn {
+        min-height: 36px;
+    }
+
+    .sm-input-action-btn {
+        padding: 8px;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   7. REDUCED MOTION & ACCESSIBILITY
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}

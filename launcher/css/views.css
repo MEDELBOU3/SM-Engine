@@ -1,0 +1,1185 @@
+/*
+   SM ENGINE — BLACK / GOLD ROOT THEME
+   ========================================================= */
+
+:root {
+    color-scheme: dark;
+
+    /* Core surfaces */
+    --sm-bg-0: #080808;
+    --sm-bg-1: #0d0d0d;
+    --sm-bg-2: #151515;
+    --sm-bg-3: #1b1b1b;
+    --sm-bg-4: #242424;
+    --sm-bg-5: #2d2d2d;
+
+    /* Explicit shell surfaces */
+    --sm-topbar-bg: #050505;
+    --sm-header-bg: #050505;
+    --sm-sidebar-bg: #0b0b0b;
+
+    /* Compatibility with the other root naming used in the launcher */
+    --bg-app: #0b0b0b;
+    --bg-sidebar: #0d0d0d;
+    --bg-topbar: #050505;
+    --bg-surface: #151515;
+    --bg-surface-2: #1b1b1b;
+    --bg-surface-3: #242424;
+
+    /* Borders */
+    --sm-line-0: rgba(255, 255, 255, 0.035);
+    --sm-line-1: rgba(255, 255, 255, 0.07);
+    --sm-line-2: rgba(255, 255, 255, 0.12);
+    --sm-line-3: rgba(255, 255, 255, 0.20);
+    --sm-line-accent: rgba(245, 158, 11, 0.50);
+
+    --border: #2b2b2b;
+    --border-soft: rgba(255, 255, 255, 0.06);
+
+    /* Text */
+    --sm-text-1: #ffffff;
+    --sm-text-2: #d4d4d4;
+    --sm-text-3: #9b9b9b;
+    --sm-text-4: #707070;
+
+    --text: #ffffff;
+    --text-2: #d0d0d0;
+    --text-3: #858585;
+
+    /* SM Engine gold accent */
+    --sm-accent: #f59e0b;
+    --sm-accent-hover: #fbbf24;
+    --sm-accent-dark: #d97706;
+    --sm-accent-soft: rgba(245, 158, 11, 0.12);
+    --sm-accent-glow: rgba(245, 158, 11, 0.24);
+
+    --accent: #f59e0b;
+    --accent-2: #fbbf24;
+    --accent-soft: rgba(245, 158, 11, 0.13);
+
+    /* Status */
+    --sm-green: #10b981;
+    --sm-yellow: #f59e0b;
+    --sm-red: #ef4444;
+    --sm-purple: #a855f7;
+
+    --success: #52d38a;
+    --warning: #f6c55f;
+    --danger: #ff6b75;
+
+    /* Geometry */
+    --sm-radius-xs: 4px;
+    --sm-radius-sm: 6px;
+    --sm-radius-md: 8px;
+    --sm-radius-lg: 12px;
+    --sm-radius-xl: 16px;
+
+    --radius-sm: 6px;
+    --radius: 9px;
+    --radius-lg: 12px;
+
+    /* Shadows */
+    --sm-shadow-1: 0 4px 16px rgba(0, 0, 0, 0.45);
+    --sm-shadow-2: 0 12px 36px rgba(0, 0, 0, 0.65);
+    --sm-shadow-glow: 0 0 20px rgba(245, 158, 11, 0.18);
+
+    --shadow-lg: 0 18px 60px rgba(0, 0, 0, 0.50);
+
+    /* Layout compatibility */
+    --sm-sidebar-w: 240px;
+    --sm-sidebar-compact-w: 64px;
+    --sm-topbar-h: 56px;
+    --sm-mobile-nav-h: 62px;
+    --sm-content-max: 1520px;
+
+    --sidebar-width: 228px;
+    --topbar-height: 58px;
+
+    font-family:
+        Inter,
+        "Segoe UI Variable Text",
+        "Segoe UI",
+        system-ui,
+        -apple-system,
+        sans-serif;
+}
+
+/* Force the launcher shell bars to consume the black root tokens.
+   These selectors are intentionally lightweight so existing layout rules remain intact. */
+.sm-topbar,
+.sm-app-topbar,
+.sm-main-topbar,
+.sm-header,
+.sm-app-header,
+header.sm-header {
+    background: var(--sm-topbar-bg, #050505);
+}
+
+/* =========================================================
+   STATUS / SYSTEM
+   ========================================================= */
+
+.sm-system-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.sm-system-row {
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+
+    min-height: 38px;
+    padding: 0 12px;
+
+    border: 1px solid var(--sm-line-1);
+    border-radius: var(--sm-radius-sm);
+
+    background: var(--sm-bg-2);
+}
+
+.sm-system-row > span:first-child {
+    color: var(--sm-text-4);
+    font-size: 8.5px;
+}
+
+.sm-system-row strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: var(--sm-text-2);
+
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.sm-system-ready {
+    color: var(--sm-green);
+
+    font-size: 7.5px;
+    font-weight: 750;
+    letter-spacing: .05em;
+}
+
+
+/* =========================================================
+   ENGINE VERSION CARDS
+   ========================================================= */
+
+.sm-engine-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+
+    padding: 14px;
+    background: var(--sm-bg-2);
+    border: 1px solid var(--sm-line-1);
+    border-radius: var(--sm-radius-md);
+}
+
+.sm-engine-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    min-width: 0;
+}
+
+.sm-engine-mark {
+    display: grid;
+    place-items: center;
+
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+
+    border: 1px solid var(--sm-line-2);
+    border-radius: var(--sm-radius-sm);
+
+    background: var(--sm-bg-3);
+    color: var(--sm-text-1);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.sm-engine-copy {
+    min-width: 0;
+}
+
+.sm-engine-copy h3 {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--sm-text-1);
+}
+
+.sm-engine-copy p {
+    margin: 4px 0 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: var(--sm-text-4);
+
+    font-size: 8.5px;
+}
+
+.sm-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+
+    margin-top: 8px;
+}
+
+.sm-tag {
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 20px;
+    padding: 0 7px;
+
+    border: 1px solid var(--sm-line-1);
+    border-radius: 999px;
+
+    background: var(--sm-bg-3);
+
+    color: var(--sm-text-3);
+
+    font-size: 7.5px;
+    font-weight: 650;
+}
+
+.sm-tag-success {
+    border-color: rgba(76, 175, 110, 0.25);
+    background: rgba(76, 175, 110, 0.08);
+    color: #a0e8b8;
+}
+
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+
+.sm-setting-group {
+    overflow: hidden;
+    background: var(--sm-bg-2);
+    border: 1px solid var(--sm-line-1);
+    border-radius: var(--sm-radius-md);
+}
+
+.sm-setting-row {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(200px, 280px);
+
+    align-items: center;
+    gap: 18px;
+
+    min-height: 58px;
+    padding: 12px 14px;
+
+    border-bottom: 1px solid var(--sm-line-1);
+}
+
+.sm-setting-row:last-child {
+    border-bottom: 0;
+}
+
+.sm-setting-label strong,
+.sm-setting-label span {
+    display: block;
+}
+
+.sm-setting-label strong {
+    font-size: 9.5px;
+    font-weight: 650;
+    color: var(--sm-text-1);
+}
+
+.sm-setting-label span {
+    margin-top: 3px;
+
+    color: var(--sm-text-4);
+
+    font-size: 8.2px;
+    line-height: 1.45;
+}
+
+.sm-toggle {
+    position: relative;
+
+    display: inline-flex;
+
+    width: 36px;
+    height: 20px;
+
+    margin-left: auto;
+}
+
+.sm-toggle input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sm-toggle-track {
+    width: 36px;
+    height: 20px;
+
+    border: 1px solid var(--sm-line-2);
+    border-radius: 999px;
+
+    background: var(--sm-bg-0);
+
+    cursor: pointer;
+
+    transition: .15s ease;
+}
+
+.sm-toggle-track::after {
+    content: "";
+
+    position: absolute;
+    top: 3px;
+    left: 3px;
+
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: var(--sm-text-3);
+
+    transition: .15s ease;
+}
+
+.sm-toggle input:checked + .sm-toggle-track {
+    border-color: var(--sm-line-3);
+    background: var(--sm-bg-4);
+}
+
+.sm-toggle input:checked + .sm-toggle-track::after {
+    left: 19px;
+    background: var(--sm-text-1);
+}
+
+
+/* =========================================================
+   DIAGNOSTICS
+   ========================================================= */
+
+.sm-diagnostics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.sm-diagnostic {
+    padding: 13px;
+    background: var(--sm-bg-2);
+    border: 1px solid var(--sm-line-1);
+    border-radius: var(--sm-radius-md);
+}
+
+.sm-diagnostic-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.sm-diagnostic-head strong {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--sm-text-1);
+}
+
+.sm-diagnostic-value {
+    margin: 8px 0 0;
+
+    overflow: auto;
+
+    color: var(--sm-text-2);
+
+    font-family:
+        "JetBrains Mono",
+        Consolas,
+        monospace;
+
+    font-size: 8.6px;
+    line-height: 1.6;
+
+    white-space: pre-wrap;
+}
+
+
+/* =========================================================
+   UPDATE BANNER
+   ========================================================= */
+
+.sm-update-banner {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 13px;
+    background: var(--sm-bg-2);
+    border: 1px solid var(--sm-line-1);
+    border-radius: var(--sm-radius-md);
+}
+
+.sm-update-icon {
+    display: grid;
+    place-items: center;
+
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid var(--sm-line-2);
+    border-radius: var(--sm-radius-sm);
+
+    background: var(--sm-bg-3);
+
+    color: var(--sm-text-1);
+}
+
+.sm-update-copy {
+    min-width: 0;
+    flex: 1;
+}
+
+.sm-update-copy strong,
+.sm-update-copy span {
+    display: block;
+}
+
+.sm-update-copy strong {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--sm-text-1);
+}
+
+.sm-update-copy span {
+    margin-top: 3px;
+
+    color: var(--sm-text-4);
+
+    font-size: 8.3px;
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   EPIC GAMES LAUNCHER STYLING
+   ========================================================= */
+
+/* Epic Top Tabs */
+.sm-epic-tabs {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    height: 100%;
+}
+
+.sm-epic-tab {
+    position: relative;
+    background: transparent;
+    border: none;
+    color: var(--sm-text-3);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 4px;
+    height: 100%;
+    transition: color .18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    letter-spacing: 0.2px;
+}
+
+.sm-epic-tab:hover {
+    color: var(--sm-text-1);
+}
+
+.sm-epic-tab.is-active {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.sm-epic-tab.is-active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 2px;
+    right: 2px;
+    height: 3px;
+    background: #f59e0b;
+    border-radius: 3px 3px 0 0;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.7);
+}
+
+.sm-tab-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    display: inline-block;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
+}
+
+/* Epic Top Right Quick Launch Button (Epic Games Launcher Aesthetic) */
+.sm-topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.sm-epic-quick-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 7px 18px;
+    border-radius: var(--sm-radius-sm);
+    border: 1px solid rgba(245, 158, 11, 0.6);
+    cursor: pointer;
+    transition: all .18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sm-epic-quick-btn.is-installed {
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+    color: #070707;
+    box-shadow:
+        0 2px 10px rgba(245, 158, 11, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.sm-epic-quick-btn.is-installed:hover {
+    background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+    box-shadow:
+        0 4px 18px rgba(245, 158, 11, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+.sm-epic-quick-btn.not-installed {
+    background: linear-gradient(180deg, #252525 0%, #171717 100%);
+    border-color: rgba(245, 158, 11, 0.4);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.sm-epic-quick-btn.not-installed:hover {
+    background: linear-gradient(180deg, #292929 0%, #1d1d1d 100%);
+    border-color: #f59e0b;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 12px rgba(245, 158, 11, 0.2);
+    transform: translateY(-1px);
+}
+
+.sm-epic-quick-btn:active {
+    transform: translateY(1px);
+}
+
+.sm-quick-btn-copy {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.sm-quick-status {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.85;
+}
+
+.sm-quick-name {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.sm-quick-btn-icon {
+    font-size: 11px;
+}
+
+/* Epic Sidebar Brand & Elements */
+.sm-epic-badge {
+    background: #ffffff;
+    color: #000000;
+    font-weight: 900;
+    padding: 4px 6px;
+    border-radius: 3px;
+    line-height: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.sm-epic-badge-top {
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+.sm-epic-badge-sub {
+    font-size: 6.5px;
+    letter-spacing: 0.8px;
+    margin-top: 1px;
+}
+
+.sm-epic-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    margin-left: auto;
+}
+
+.sm-epic-dot.is-pulsing {
+    animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #f59e0b; }
+    100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+.sm-epic-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 6px;
+}
+
+.sm-user-avatar {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    background: #252525;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #c9c9c9;
+}
+
+.sm-user-avatar svg {
+    width: 16px;
+    height: 16px;
+}
+
+.sm-online-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    border: 2px solid #111111;
+}
+
+.sm-user-name {
+    font-size: 12px;
+    color: #e7e7e7;
+    font-weight: 500;
+}
+
+/* Epic Games Library View Layout */
+.sm-epic-library-view {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 24px 32px;
+    color: #ffffff;
+}
+
+.sm-epic-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sm-epic-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sm-epic-section-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.sm-epic-section-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #e7e7e7;
+    margin: 0;
+}
+
+.sm-epic-info-btn,
+.sm-epic-add-btn,
+.sm-epic-refresh-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: #f59e0b;
+    color: #000000;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    transition: transform .15s;
+}
+
+.sm-epic-info-btn:hover,
+.sm-epic-add-btn:hover,
+.sm-epic-refresh-btn:hover {
+    transform: scale(1.1);
+}
+
+.sm-epic-section-divider {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.12);
+}
+
+.sm-epic-header-links {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 11.5px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.sm-epic-link {
+    color: #a5a5a5;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color .2s;
+}
+
+.sm-epic-link:hover {
+    color: #f59e0b;
+}
+
+.sm-epic-stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #888888;
+    font-weight: 600;
+}
+
+/* Brand Logo Image in Sidebar */
+.sm-brand-logo-img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    margin-right: 10px;
+}
+
+.sm-brand-copy {
+    display: flex;
+    flex-direction: column;
+}
+
+.sm-brand-heading {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.sm-brand-tagline {
+    font-size: 10px;
+    color: #f59e0b;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.sm-user-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.sm-user-status {
+    font-size: 9.5px;
+    color: #10b981;
+    font-weight: 500;
+}
+
+/* Epic Angular Engine Version Card with Visual Effects & Overlay */
+.sm-epic-engine-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.sm-epic-engine-card {
+    position: relative;
+    width: 270px;
+    background: #111111;
+    border: 1px solid rgba(245, 158, 11, 0.6);
+    border-radius: 6px;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 16px rgba(245, 158, 11, 0.05);
+    padding: 18px;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.25s, box-shadow 0.25s;
+}
+
+.sm-epic-engine-card:hover {
+    transform: translateY(-4px);
+    border-color: #f59e0b;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.25);
+}
+
+/* Background Cyber Mesh Pattern & Gradient Backdrop */
+.sm-epic-card-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 100% 0%, rgba(245, 158, 11, 0.12) 0%, transparent 60%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 16px 16px, 16px 16px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.sm-epic-card-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.sm-epic-engine-card:hover .sm-epic-card-glow {
+    opacity: 1;
+}
+
+.sm-epic-card-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.sm-epic-logo-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #1f1f1f, #141414);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+.sm-epic-engine-emblem-img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+}
+
+.sm-epic-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sm-epic-version-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.sm-epic-action-group {
+    display: flex;
+    align-items: stretch;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.sm-epic-btn-main {
+    flex: 1;
+    padding: 7px 12px;
+    border: none;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    text-transform: capitalize;
+    background: #f59e0b;
+    color: #070707;
+    transition: filter .15s, background .15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.sm-epic-btn-main:hover {
+    filter: brightness(1.15);
+    background: #fbbf24;
+}
+
+.sm-epic-btn-dropdown {
+    padding: 0 10px;
+    background: #d97706;
+    color: #070707;
+    border: none;
+    border-left: 1px solid rgba(0,0,0,0.25);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+
+.sm-epic-btn-dropdown:hover {
+    background: #0055aa;
+}
+
+/* Dropdown Menu */
+.sm-epic-menu-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    width: 220px;
+    background: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    padding: 6px 0;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    z-index: 100;
+}
+
+.sm-hidden {
+    display: none !important;
+}
+
+.sm-dropdown-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: #c9c9c9;
+    padding: 8px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+
+.sm-dropdown-item:hover {
+    background: #f59e0b;
+    color: #070707;
+}
+
+.sm-dropdown-item.sm-item-danger:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.sm-dropdown-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin: 4px 0;
+}
+
+/* Download Progress Bar */
+.sm-epic-download-status {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.sm-download-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #a5a5a5;
+}
+
+.sm-progress-bar-wrap {
+    width: 100%;
+    height: 6px;
+    background: #202020;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.sm-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    transition: width .2s ease;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+.sm-download-sub {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9.5px;
+    color: #888888;
+}
+
+.sm-btn-link {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 9.5px;
+    padding: 0;
+}
+
+.sm-btn-link:hover {
+    text-decoration: underline;
+}
+
+/* Search bar & Projects Tools */
+.sm-epic-project-tools {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sm-epic-search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #171717;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+.sm-epic-search-input {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 12px;
+    outline: none;
+    width: 160px;
+}
+
+.sm-epic-search-input::placeholder {
+    color: #888888;
+}
+
+.sm-epic-empty-projects {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 48px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(20, 24, 32, 0.6), rgba(15, 19, 26, 0.4));
+    border-radius: 6px;
+    border: 1px dashed rgba(255,255,255,0.1);
+}
+
+.sm-empty-label {
+    color: #888888;
+    font-size: 13.5px;
+    font-weight: 500;
+}
+
+/* SM Vault Content Cards */
+.sm-epic-fab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.sm-epic-fab-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #171717, #111111);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+
+.sm-epic-fab-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+
+.sm-epic-fab-item:hover {
+    border-color: #f59e0b;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 12px rgba(245, 158, 11, 0.15);
+}
+
+.sm-fab-thumb-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.sm-fab-info strong {
+    display: block;
+    font-size: 13px;
+    color: #f3f3f3;
+    font-weight: 600;
+}
+
+.sm-fab-info span {
+    display: block;
+    font-size: 11px;
+    color: #888888;
+    margin-top: 3px;
+}

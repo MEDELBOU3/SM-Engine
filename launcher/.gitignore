@@ -1,0 +1,4 @@
+node_modules/
+dist-win/
+logs/
+.env

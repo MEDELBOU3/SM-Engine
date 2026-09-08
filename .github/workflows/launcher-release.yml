@@ -1,0 +1,43 @@
+name: Build SM Engine Launcher
+
+on:
+  push:
+    tags:
+      - 'launcher-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows Launcher
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: launcher/package-lock.json
+
+      - name: Install launcher dependencies
+        run: npm ci --prefix launcher
+
+      - name: Build launcher installers
+        run: npm run dist:win --prefix launcher
+
+      - name: Publish launcher release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: SM Engine Launcher ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            launcher/dist-win/*.exe
+            launcher/dist-win/*.blockmap
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

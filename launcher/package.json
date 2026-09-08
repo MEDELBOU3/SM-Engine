@@ -1,0 +1,65 @@
+{
+  "name": "sm-engine-launcher",
+  "version": "1.0.0",
+  "description": "Official SM Engine project and version launcher",
+  "main": "electron-main.js",
+  "author": "Mohamed El-Bouanani",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win nsis portable --x64"
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.smengine.launcher",
+    "productName": "SM Engine Launcher",
+    "directories": {
+      "output": "dist-win"
+    },
+    "files": [
+      "electron-main.js",
+      "preload.js",
+      "index.html",
+      "electron/**/*",
+      "css/**/*",
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "assets/icons/logo.ico",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SM Engine Launcher",
+      "installerIcon": "assets/icons/logo.ico",
+      "uninstallerIcon": "assets/icons/logo.ico",
+      "installerHeaderIcon": "assets/icons/logo.ico"
+    }
+  },
+  "dependencies": {
+    "firebase": "^12.18.0"
+  }
+}
