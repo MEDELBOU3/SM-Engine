@@ -2980,3 +2980,49 @@ html[data-theme="light"] .hero-support p,
 html[data-theme="light"] .section-heading-v2 p { color: var(--site-muted) !important; }
 html[data-theme="dark"] .hero-support p,
 html[data-theme="dark"] .section-heading-v2 p { color: #c0c5c0 !important; }
+
+/* Fix the five-card row and keep the theme contract active on every page. */
+.capability-grid-v2 {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+}
+.capability-grid-v2 .capability-card,
+.capability-grid-v2 .capability-card:nth-child(n+4) {
+    grid-column: auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+}
+.capability-grid-v2 .capability-card:nth-child(4) { grid-column: 1 !important; }
+.capability-grid-v2 .capability-card:nth-child(5) { grid-column: 2 !important; }
+
+html[data-theme="light"] body:not(.home-v2) .site-header-bar,
+html[data-theme="light"] body:not(.home-v2) .header-inner,
+html[data-theme="light"] body.home-v2 .site-header-bar,
+html[data-theme="light"] body.home-v2 .header-inner {
+    background: rgba(240,239,233,.96) !important;
+    color: #252727 !important;
+    border-color: rgba(37,39,39,.24) !important;
+}
+html[data-theme="dark"] body:not(.home-v2) .site-header-bar,
+html[data-theme="dark"] body:not(.home-v2) .header-inner,
+html[data-theme="dark"] body.home-v2 .site-header-bar,
+html[data-theme="dark"] body.home-v2 .header-inner {
+    background: rgba(17,20,22,.96) !important;
+    color: #f0efe9 !important;
+    border-color: rgba(240,239,233,.20) !important;
+}
+html[data-theme="light"] body:not(.home-v2) .site-header-bar .top-nav-link,
+html[data-theme="light"] body:not(.home-v2) .site-header-bar .header-github { color: #252727 !important; }
+html[data-theme="dark"] body:not(.home-v2) .site-header-bar .top-nav-link,
+html[data-theme="dark"] body:not(.home-v2) .site-header-bar .header-github { color: #f0efe9 !important; }
+html[data-theme="light"] .capability-grid-v2 .capability-card,
+html[data-theme="light"] .attention-card { background: #f7f6f1 !important; color: #252727 !important; }
+html[data-theme="dark"] .capability-grid-v2 .capability-card,
+html[data-theme="dark"] .attention-card { background: #1b2022 !important; color: #f0efe9 !important; }
+
+@media (max-width: 800px) {
+    .capability-grid-v2 { grid-template-columns: 1fr !important; }
+    .capability-grid-v2 .capability-card:nth-child(4),
+    .capability-grid-v2 .capability-card:nth-child(5) { grid-column: auto !important; }
+}
