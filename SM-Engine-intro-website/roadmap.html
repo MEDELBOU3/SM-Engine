@@ -1,78 +1,267 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SM Engine | Roadmap</title>
-    <meta name="description" content="A roadmap page for SM Engine covering launch polish, feature expansion, and future product development.">
-    <script>
-        tailwind = { config: { theme: { extend: { colors: { cream: "#f9f7f4", beige: "#f5f3f0", light: "#ffffff", dark: "#1a1a1a", muted: "#6b6b6b", accent: "#2d2d2d", gold: "#c4a66d" }, fontFamily: { sans: ["InterLocal", "sans-serif"], mono: ["JetBrainsMonoLocal", "monospace"] } } } } };
-    </script>
+    <script>(()=>{const t=localStorage.getItem("sm_engine_theme")||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");document.documentElement.dataset.theme=t;document.documentElement.classList.toggle("dark",t==="dark")})();</script>
+    <title>SM Engine | Product Roadmap &amp; Milestones</title>
+    <meta name="description"
+        content="Explore the development roadmap of SM Engine: Core launch, advanced node graphs, WebGPU pipelines, and upcoming ecosystem expansions.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../node_modules/gsap/dist/gsap.min.js"></script>
-    <link rel="stylesheet" href="./styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        black: '#050505',
+                        dark: '#0a0a0a',
+                        surface: '#111111',
+                        border: 'rgba(255, 255, 255, 0.08)'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="./styles.css?v=20260902">
 </head>
-<body data-page="roadmap" class="bg-white text-slate-900">
-    <div class="site-shell min-h-screen">
-        <header class="site-header-shell fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8" data-site-header>
-            <div class="mx-auto max-w-7xl">
-                <div class="site-header-bar sm-card-strong  px-4 py-3 sm:px-5" data-header-bar>
-                    <div class="flex items-center justify-between gap-4">
-                        <a href="./index.html" class="flex min-w-0 items-center gap-3">
-                            <img src="../assets/icons/logo.svg" alt="SM Engine logo" class="h-11 w-11 shrink-0 object-contain">
-                            <div class="min-w-0"><div class="truncate text-sm font-semibold tracking-wide text-slate-50">SM Engine</div><div class="header-brand-subtitle truncate text-xs text-slate-400">Product roadmap</div></div>
-                        </a>
-                        <button type="button" class="inline-flex h-10 w-10 items-center justify-center  border border-white/10 bg-white/5 text-slate-100 md:hidden" data-menu-button aria-expanded="false" aria-label="Toggle navigation"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-                        <nav class="header-desktop-nav hidden items-center gap-1 md:flex">
-                            <a class="top-nav-link  px-4 py-2 text-sm" data-nav="home" href="./index.html">Home</a>
-                            <div class="nav-dropdown relative" data-dropdown><button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="features" aria-expanded="false">Features<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button><div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./features.html"><div class="text-sm font-semibold text-slate-50">Editor Capabilities</div><p class="mt-1 text-xs leading-6 text-slate-400">Modeling, sculpting, animation, nodes, physics, and assets.</p></a><a class="dropdown-link" href="./features.html"><div class="text-sm font-semibold text-slate-50">Media Workflows</div><p class="mt-1 text-xs leading-6 text-slate-400">Timeline systems, rendering views, media tools, and production-oriented interfaces.</p></a></div></div></div>
-                            <div class="nav-dropdown relative" data-dropdown><button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="workspaces" aria-expanded="false">Workspaces<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button><div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./workspaces.html"><div class="text-sm font-semibold text-slate-50">Game Dev</div><p class="mt-1 text-xs leading-6 text-slate-400">Player systems, atmosphere, lighting, collisions, and runtime-style iteration.</p></a><a class="dropdown-link" href="./workspaces.html"><div class="text-sm font-semibold text-slate-50">Modeling + Nodes</div><p class="mt-1 text-xs leading-6 text-slate-400">Creation tools, sculpting, material graphs, assets, and focused editor modes.</p></a></div></div></div>
-                            <div class="nav-dropdown relative" data-dropdown><button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="showcase roadmap" aria-expanded="false">Explore<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button><div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./showcase.html"><div class="text-sm font-semibold text-slate-50">Showcase</div><p class="mt-1 text-xs leading-6 text-slate-400">Polished screenshot storytelling and product gallery scenes.</p></a><a class="dropdown-link" href="./roadmap.html"><div class="text-sm font-semibold text-slate-50">Roadmap</div><p class="mt-1 text-xs leading-6 text-slate-400">Launch phases, future plans, and what gets developed next.</p></a></div></div></div>
-                            <div class="nav-dropdown relative" data-dropdown><button class="top-nav-link top-nav-trigger  px-4 py-2 text-sm" data-dropdown-trigger data-nav="download" aria-expanded="false">Download<svg class="nav-chevron h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button><div class="dropdown-panel sm-card-strong  p-3"><div class="grid gap-2 sm:grid-cols-2"><a class="dropdown-link" href="./download.html"><div class="text-sm font-semibold text-slate-50">Installer</div><p class="mt-1 text-xs leading-6 text-slate-400">Recommended Windows setup flow with direct download access.</p></a><a class="dropdown-link" href="./download.html#media"><div class="text-sm font-semibold text-slate-50">Media Slots</div><p class="mt-1 text-xs leading-6 text-slate-400">Trailer placeholders, demo sections, and launch-ready presentation blocks.</p></a></div></div></div>
-                        </nav>
-                        <div class="header-actions hidden lg:flex">
-                            <a href="../dist/SM%20Engine%20Setup%201.0.0.exe" download class="header-download-btn  bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">Download App</a>
+
+<body data-page="roadmap" class="bg-[#050505] text-[#ffffff] selection:bg-white selection:text-black">
+    <div class="site-shell min-h-screen flex flex-col justify-between relative z-10">
+        <!-- Site Header Navigation -->
+        <header class="site-header-shell" data-site-header>
+            <div class="header-frame">
+                <div class="site-header-bar header-inner" data-header-bar>
+                    <!-- Brand -->
+                    <a href="./index.html" class="flex items-center gap-3">
+                        <img src="./assets/app.svg" alt="SM Engine logo"
+                            class="h-8 w-8 object-contain">
+                        <div>
+                            <span class="font-semibold text-sm tracking-tight text-white block">SM Engine</span>
+                            <span class="text-[11px] text-[#888888] font-mono block leading-none">Roadmap</span>
                         </div>
-                    </div>
-                    <nav class="mt-3 hidden flex-col gap-2 border-t border-white/10 pt-3 md:hidden" data-mobile-menu>
-                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="home" href="./index.html">Home</a>
-                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="features" href="./features.html">Features</a>
-                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="workspaces" href="./workspaces.html">Workspaces</a>
-                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="showcase" href="./showcase.html">Showcase</a>
-                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="roadmap" href="./roadmap.html">Roadmap</a>
-                        <a class="top-nav-link  px-4 py-3 text-sm" data-nav="download" href="./download.html">Download</a>
+                    </a>
+
+                    <!-- Mobile Menu Button -->
+                    <button type="button"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded border border-white/10 bg-white/5 text-slate-200 md:hidden"
+                        data-menu-button aria-expanded="false" aria-label="Toggle navigation">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
+                        </svg>
+                    </button>
+
+                    <!-- Desktop Nav -->
+                    <nav class="desktop-nav" aria-label="Primary navigation">
+                        <a class="top-nav-link" data-nav="home" href="./index.html">Home</a>
+                        <a class="top-nav-link" data-nav="features" href="./features.html">Features</a>
+                        <a class="top-nav-link" data-nav="workspaces" href="./workspaces.html">Workspaces</a>
+                        <a class="top-nav-link" data-nav="showcase roadmap" href="./showcase.html">Showcase</a>
+                        <a class="top-nav-link" href="./docs/index.html">Docs</a>
                     </nav>
+                    <nav class="legacy-desktop-nav hidden md:flex items-center gap-1" aria-hidden="true">
+                        <a class="top-nav-link" data-nav="home" href="./index.html">Home</a>
+
+                        <!-- Features Dropdown -->
+                        <div class="nav-dropdown relative" data-dropdown>
+                            <button class="top-nav-link top-nav-trigger" data-dropdown-trigger data-nav="features" aria-expanded="false">
+                                Features
+                                <svg class="nav-chevron h-3 w-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div class="dropdown-panel">
+                                <div class="grid gap-1 sm:grid-cols-2">
+                                    <a class="dropdown-link" href="./features.html">
+                                        <div class="text-xs font-semibold text-white">Editor Toolset</div>
+                                        <p class="mt-0.5 text-[11px] text-slate-400">3D modeling, node shaders, animation, and physics.</p>
+                                    </a>
+                                    <a class="dropdown-link" href="./features.html#media">
+                                        <div class="text-xs font-semibold text-white">Media Pipelines</div>
+                                        <p class="mt-0.5 text-[11px] text-slate-400">Video sequencer, sound mixer, and export workflows.</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Workspaces Dropdown -->
+                        <div class="nav-dropdown relative" data-dropdown>
+                            <button class="top-nav-link top-nav-trigger" data-dropdown-trigger data-nav="workspaces" aria-expanded="false">
+                                Workspaces
+                                <svg class="nav-chevron h-3 w-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div class="dropdown-panel">
+                                <div class="grid gap-1 sm:grid-cols-2">
+                                    <a class="dropdown-link" href="./workspaces.html">
+                                        <div class="text-xs font-semibold text-white">Game Development</div>
+                                        <p class="mt-0.5 text-[11px] text-slate-400">Atmosphere, collisions, lighting, and runtime.</p>
+                                    </a>
+                                    <a class="dropdown-link" href="./workspaces.html#modeling">
+                                        <div class="text-xs font-semibold text-white">Modeling &amp; Graphs</div>
+                                        <p class="mt-0.5 text-[11px] text-slate-400">Polygon topology, material graph composer, terrain.</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Explore Dropdown -->
+                        <div class="nav-dropdown relative" data-dropdown>
+                            <button class="top-nav-link top-nav-trigger" data-dropdown-trigger data-nav="showcase roadmap" aria-expanded="false">
+                                Explore
+                                <svg class="nav-chevron h-3 w-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div class="dropdown-panel">
+                                <div class="grid gap-1 sm:grid-cols-2">
+                                    <a class="dropdown-link" href="./showcase.html">
+                                        <div class="text-xs font-semibold text-white">Showcase Gallery</div>
+                                        <p class="mt-0.5 text-[11px] text-slate-400">High-resolution editor scenes and views.</p>
+                                    </a>
+                                    <a class="dropdown-link" href="./roadmap.html">
+                                        <div class="text-xs font-semibold text-white">Roadmap</div>
+                                        <p class="mt-0.5 text-[11px] text-slate-400">Release milestones and upcoming features.</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a class="top-nav-link" data-nav="download" href="./download.html">Download</a>
+                    </nav>
+
+                    <!-- Header Action -->
+                    <div class="hidden lg:flex items-center gap-3">
+                        <a href="./download.html" class="btn-primary text-xs py-1.5 px-3.5">
+                            Get Engine
+                        </a>
+                    </div>
                 </div>
+
+                <!-- Mobile Menu -->
+                <nav class="mt-1 hidden rounded border border-white/10 bg-[#0c0c0c] p-3 flex-col gap-1 md:hidden" data-mobile-menu>
+                    <a class="top-nav-link" data-nav="home" href="./index.html">Home</a>
+                    <a class="top-nav-link" data-nav="features" href="./features.html">Features</a>
+                    <a class="top-nav-link" data-nav="workspaces" href="./workspaces.html">Workspaces</a>
+                    <a class="top-nav-link" data-nav="showcase" href="./showcase.html">Showcase</a>
+                    <a class="top-nav-link" href="./docs/index.html">Docs</a>
+                    <a class="top-nav-link" data-nav="roadmap" href="./roadmap.html">Roadmap</a>
+                    <a class="top-nav-link" data-nav="download" href="./download.html">Download</a>
+                </nav>
             </div>
         </header>
-
-        <main class="mx-auto max-w-7xl px-4 pb-20 pt-32 sm:px-6 md:pt-36 lg:px-8">
-            <section class="reveal">
-                <p class="font-mono-local text-xs uppercase tracking-[0.24em] text-cyan-200">Roadmap</p>
-                <h1 class="mt-4 max-w-4xl text-4xl font-semibold tracking-[-0.05em] text-slate-50 sm:text-6xl">A place to explain what gets developed next.</h1>
-                <p class="mt-6 max-w-3xl text-base leading-8 text-slate-300">This gives the product site forward motion. Instead of only showing what exists, it shows what is being improved, what is being packaged, and what future releases can deliver.</p>
+        <main class="flex-grow page-editorial">
+            <section class="page-hero page-hero-wide">
+                <div class="page-kicker reveal"><span>04</span> What comes next</div>
+                <div class="page-hero-grid">
+                    <h1 class="page-display reveal">The foundation is here.<br><em>Now widen the frame.</em></h1>
+                    <div class="page-hero-side reveal"><p>This is the product direction beyond the current desktop release: faster world building, broader runtimes and an ecosystem other creators can extend.</p><span class="page-meta">Release phases · platform bets · community surface</span></div>
+                </div>
             </section>
-            <section class="grid gap-4 py-10 lg:grid-cols-3">
-                <article class="reveal sm-card  p-6"><div class="font-mono-local text-xs uppercase tracking-[0.2em] text-cyan-200">Phase 01</div><h2 class="mt-3 text-2xl font-semibold">Launch polish</h2><ul class="mt-4 space-y-3 text-sm leading-7 text-slate-300"><li>Stabilize installer and portable release flow</li><li>Improve screenshots, trailer, and product messaging</li><li>Refine site content for first-time users</li></ul></article>
-                <article class="reveal sm-card  p-6"><div class="font-mono-local text-xs uppercase tracking-[0.2em] text-amber-200">Phase 02</div><h2 class="mt-3 text-2xl font-semibold">Workflow expansion</h2><ul class="mt-4 space-y-3 text-sm leading-7 text-slate-300"><li>More feature demos for nodes, sculpting, and animation</li><li>Workspace-specific galleries and tutorial media</li><li>Public release notes and version summaries</li></ul></article>
-                <article class="reveal sm-card  p-6"><div class="font-mono-local text-xs uppercase tracking-[0.2em] text-cyan-200">Phase 03</div><h2 class="mt-3 text-2xl font-semibold">Product maturity</h2><ul class="mt-4 space-y-3 text-sm leading-7 text-slate-300"><li>Docs or onboarding pages for new users</li><li>Media kit and community showcase pages</li><li>Broader platform and release packaging strategy</li></ul></article>
+
+            <section class="roadmap-shell">
+                <article class="roadmap-phase reveal roadmap-current">
+                    <div class="roadmap-marker"><span>01</span><i></i></div>
+                    <div class="roadmap-copy"><div class="roadmap-status">Current foundation</div><h2>Core Launch &amp; Desktop Architecture</h2><p>Establish the desktop runtime with polygon modeling, real-time node graphs, atmospheric scattering, timeline animation and one-click Windows installers.</p><ul><li>Desktop editor foundation</li><li>Modeling and shader workflows</li><li>Atmosphere, animation and media tools</li><li>Windows distribution pipeline</li></ul></div>
+                    <div class="roadmap-year">NOW</div>
+                </article>
+                <article class="roadmap-phase reveal">
+                    <div class="roadmap-marker"><span>02</span><i></i></div>
+                    <div class="roadmap-copy"><div class="roadmap-status">Rendering evolution</div><h2>WebGPU Compute &amp; Voxel Meshing</h2><p>Move heavier workloads toward WebGPU compute while extending world construction and character systems.</p><ul><li>WebGPU compute pipelines</li><li>Dynamic voxel dual-contouring</li><li>Cave and volumetric terrain workflows</li><li>Enhanced humanoid inverse kinematics</li></ul></div>
+                    <div class="roadmap-year">NEXT</div>
+                </article>
+                <article class="roadmap-phase reveal">
+                    <div class="roadmap-marker"><span>03</span><i></i></div>
+                    <div class="roadmap-copy"><div class="roadmap-status">Runtime expansion</div><h2>Multiplayer &amp; Networked Physics</h2><p>Introduce network-aware gameplay systems and broaden standalone runtime packaging beyond Windows.</p><ul><li>Networking nodes</li><li>Client prediction and server ticks</li><li>Networked physics synchronization</li><li>Linux and macOS packaging direction</li></ul></div>
+                    <div class="roadmap-year">LATER</div>
+                </article>
+                <article class="roadmap-phase reveal">
+                    <div class="roadmap-marker"><span>04</span><i></i></div>
+                    <div class="roadmap-copy"><div class="roadmap-status">Open ecosystem</div><h2>Plugin SDK &amp; Community Marketplace</h2><p>Open the engine to external tools, shared content and broader community-driven workflows.</p><ul><li>C++ and TypeScript plugin APIs</li><li>Asset and extension marketplace</li><li>Community brushes and shader packs</li><li>Project synchronization direction</li></ul></div>
+                    <div class="roadmap-year">VISION</div>
+                </article>
+            </section>
+
+            <section class="roadmap-principles reveal">
+                <div class="page-kicker"><span>Principles</span> What stays constant</div>
+                <div class="principles-grid"><div><strong>01</strong><h3>Local first</h3><p>Keep core creation workflows responsive and desktop-centered.</p></div><div><strong>02</strong><h3>Visual control</h3><p>Expose powerful systems without hiding the underlying structure.</p></div><div><strong>03</strong><h3>Composable systems</h3><p>Design tools so modeling, simulation, animation and runtime can connect cleanly.</p></div></div>
             </section>
         </main>
 
-        <footer class="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
-            <div class="editorial-footer sm-card-strong  px-5 py-6 sm:px-8 sm:py-8">
-                <div class="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[0.82fr_0.95fr_1.05fr]">
-                    <div class="space-y-5"><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-400">Contact</div><div class="space-y-2 text-lg font-medium"><a class="footer-link block" href="https://github.com/MEDELBOU3/SM-Engine-V4.0.0" target="_blank" rel="noreferrer">GitHub Repository</a><a class="footer-link block" href="../dist/SM%20Engine%20Setup%201.0.0.exe" download>Download Setup</a><a class="footer-link block" href="../dist/SM%20Engine%201.0.0.exe" download>Portable Build</a></div></div>
-                    <div class="grid gap-6 sm:grid-cols-2"><div><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-400">Navigation</div><div class="mt-4 space-y-2 text-lg"><a class="footer-link block" href="./features.html">Features</a><a class="footer-link block" href="./workspaces.html">Workspaces</a><a class="footer-link block" href="./download.html">Download</a></div></div><div><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-400">Explore</div><div class="mt-4 space-y-2 text-lg"><a class="footer-link block" href="./showcase.html">Showcase</a><a class="footer-link block" href="./roadmap.html">Roadmap</a><span class="block text-slate-500">Docs (Coming Soon)</span></div></div></div>
-                    <div class="space-y-5"><div class="font-mono-local text-xs uppercase tracking-[0.22em] text-slate-400">Studio Note</div><p class="max-w-md text-lg leading-[1.25] text-slate-100">SM Engine brings together 3D creation, game-dev systems, material nodes, animation, assets, and media workflows inside one growing desktop editor. This site is becoming the public home for that direction.</p></div>
+        <!-- FOOTER -->
+        <footer class="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 w-full mt-10">
+            <div class="editorial-footer p-6 sm:p-8">
+                <div class="grid gap-8 border-b border-white/10 pb-8 lg:grid-cols-[1fr_1fr_1.2fr]">
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2.5">
+                            <img src="./assets/icons/logo.png" onerror="this.onerror=null; this.src='./assets/icons/logo.png'" alt="SM Engine logo" class="h-6 w-6 object-contain">
+                            <span class="text-base font-bold text-white">SM Engine</span>
+                        </div>
+                        <p class="text-xs text-[#777777] max-w-xs leading-relaxed">
+                            Creative desktop editor combining 3D modeling, node shaders, animation, physical atmospheres, and media production.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <div class="font-mono text-[#555555] uppercase tracking-widest mb-2.5">Navigation</div>
+                            <ul class="space-y-1.5">
+                                <li><a class="footer-link" href="./index.html">Home</a></li>
+                                <li><a class="footer-link" href="./features.html">Features</a></li>
+                                <li><a class="footer-link" href="./workspaces.html">Workspaces</a></li>
+                                <li><a class="footer-link" href="./showcase.html">Showcase</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="font-mono text-[#555555] uppercase tracking-widest mb-2.5">Resources</div>
+                            <ul class="space-y-1.5">
+                                <li><a class="footer-link" href="./download.html">Download</a></li>
+                                <li><a class="footer-link" href="./roadmap.html">Roadmap</a></li>
+                                <li><a class="footer-link" href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">GitHub</a></li>
+                                <li><a class="footer-link text-white" href="./docs/index.html">Documentation &rarr;</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="font-mono text-xs text-[#555555] uppercase tracking-widest">Architecture Note</div>
+                        <p class="text-xs text-[#777777] leading-relaxed">
+                            Built with native desktop runtime and accelerated graphics pipelines for local performance without cloud dependency.
+                        </p>
+                    </div>
                 </div>
-                <div class="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-                    <div class="grid gap-4 lg:grid-cols-[1fr_240px] lg:items-end"><div class="footer-wordmark text-[5rem] font-semibold sm:text-[7.5rem] lg:text-[10.5rem]" data-footer-word>SM Engine</div><div class="footer-thumb h-40 w-full lg:h-52"><img src="../screenshoots/Screenshot%20(493).png" alt="SM Engine footer preview"></div></div>
-                    <div class="grid gap-6 sm:grid-cols-2 lg:justify-self-end"><div class="space-y-2 text-lg"><a class="footer-link block" href="#">Terms &amp; Conditions</a><a class="footer-link block" href="#">Privacy Policy</a><a class="footer-link block" href="#">Cookies Policy</a></div><div class="flex flex-col items-start gap-3 lg:items-end lg:text-right"><div class="text-lg font-medium text-white">&copy; <span data-year></span> SM Engine. All rights reserved.</div><div class=" border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200">Preferences</div></div></div>
+
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#555555]">
+                    <div class="footer-wordmark font-bold select-none">
+                        SM ENGINE
+                    </div>
+                    <div>&copy; <span data-year></span> SM Engine. All rights reserved.</div>
                 </div>
             </div>
         </footer>
     </div>
+
+    <!-- Scripts -->
     <script src="./script.js"></script>
 </body>
+
 </html>
