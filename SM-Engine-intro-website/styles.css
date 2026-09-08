@@ -12,6 +12,9 @@
     --text-3: rgba(255,255,255,.36);
     --amber: #f0a11e;
     --amber-dark: #161007;
+    --electric: #8de4d6;
+    --violet: #9a8cff;
+    --ink: #07090d;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -20,14 +23,25 @@ body {
     margin: 0;
     min-width: 320px;
     overflow-x: hidden;
-    background: var(--bg-black);
+    background: var(--ink);
     color: var(--text);
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     line-height: 1.55;
-    letter-spacing: -.012em;
+    letter-spacing: 0;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
+
+/* New product language: graphite, mineral green, and a quiet orbital grid. */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    background: radial-gradient(circle at 78% 8%, rgba(141,228,214,.10), transparent 30%), radial-gradient(circle at 10% 72%, rgba(154,140,255,.07), transparent 28%), #07090d;
+}
+body[data-page="home"] { background: transparent; }
 body[data-page="home"] { font-family: "Plus Jakarta Sans", "Inter", sans-serif; }
 a { color: inherit; text-decoration: none; }
 button, input, textarea, select { font: inherit; }
@@ -38,12 +52,17 @@ img { max-width: 100%; }
 /* ---------- Shared navigation ---------- */
 .site-header-shell { transition: background-color .3s ease, border-color .3s ease; }
 .site-header-bar {
-    background: rgba(6,6,6,.76);
+    background: rgba(7,9,13,.72);
     -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
     border-bottom: 1px solid transparent;
     transition: background-color .25s ease, border-color .25s ease, padding .25s ease;
 }
+
+.site-header-bar.header-inner { max-width: 1380px; margin-inline: auto; }
+.brand-mark { border: 1px solid rgba(141,228,214,.28); box-shadow: 0 0 24px rgba(141,228,214,.12); }
+.brand-copy strong { letter-spacing: .02em; }
+.nav-download-link { background: var(--electric); box-shadow: 0 0 26px rgba(141,228,214,.16); }
 .site-header-shell.is-scrolled .site-header-bar {
     background: rgba(6,6,6,.94);
     border-color: var(--line-soft);
@@ -125,6 +144,46 @@ img { max-width: 100%; }
     transition: background .2s ease, transform .2s ease;
 }
 .nav-download-link:hover { background: #fff; transform: translateY(-1px); }
+
+.hero-v2 { position: relative; isolation: isolate; overflow: hidden; background: linear-gradient(135deg, rgba(8,11,17,.98), rgba(8,12,16,.82)); }
+.hero-v2::after { content: ""; position: absolute; inset: auto 0 0; height: 24%; background: linear-gradient(transparent, var(--ink)); pointer-events: none; z-index: -1; }
+.hero-webgl { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .72; pointer-events: none; mix-blend-mode: screen; z-index: -1; }
+.hero-grid-lines { opacity: .22; mask-image: linear-gradient(to bottom, #000, transparent 88%); }
+.hero-heading { max-width: 850px; font-size: clamp(4rem, 9vw, 9.5rem); line-height: .86; letter-spacing: -.045em; text-wrap: balance; }
+.hero-heading span { color: var(--electric); }
+.hero-eyebrow { color: rgba(255,255,255,.66); }
+.live-dot { background: var(--electric); box-shadow: 0 0 16px var(--electric); }
+.hero-support p { max-width: 33rem; color: rgba(255,255,255,.66); }
+.action-primary { background: var(--electric); color: #07100f; box-shadow: 0 12px 36px rgba(141,228,214,.16); }
+.action-primary:hover { background: #d4fff8; }
+.hero-product { filter: drop-shadow(0 30px 60px rgba(0,0,0,.42)); }
+.product-window { border-color: rgba(141,228,214,.24); background: rgba(12,18,23,.82); box-shadow: 0 0 0 1px rgba(255,255,255,.03), 0 30px 90px rgba(0,0,0,.45); }
+.product-window-bar, .product-window-footer { color: rgba(255,255,255,.52); }
+.render-status i { background: var(--electric); box-shadow: 0 0 10px var(--electric); }
+.floating-signal { border-color: rgba(141,228,214,.26); background: rgba(8,14,17,.84); }
+.floating-signal svg { stroke: var(--electric); }
+.hero-proof { border-color: rgba(141,228,214,.2); }
+.hero-proof strong { color: var(--electric); }
+
+.section-shell { max-width: 1380px; }
+.section-label { color: var(--electric); }
+.section-heading-v2 h2 span { color: var(--violet); }
+.attention-card, .capability-card, .workspace-stage-v2 { border-color: rgba(255,255,255,.10); background: rgba(13,16,22,.78); box-shadow: 0 18px 50px rgba(0,0,0,.14); }
+.attention-card:hover, .capability-card:hover { border-color: rgba(141,228,214,.45); transform: translateY(-5px); }
+.image-tag, .card-outcome, .workspace-kicker { color: var(--electric); }
+.workspace-tabs-v2 { border-bottom-color: rgba(141,228,214,.22); }
+.tab-btn.active { color: var(--electric); border-color: var(--electric); }
+.inline-link, .capability-arrow { color: var(--electric); }
+.final-cta { background: linear-gradient(115deg, #0c1418, #121025 72%, #15132d); }
+.final-cta h2 { letter-spacing: -.04em; }
+.orbit { border-color: rgba(141,228,214,.28); }
+.orbit-logo { background: var(--electric); }
+
+@media (max-width: 720px) {
+    .hero-heading { font-size: clamp(3.2rem, 17vw, 5.4rem); }
+    .hero-webgl { opacity: .46; }
+    .hero-product { margin-top: 1.5rem; }
+}
 
 .menu-button {
     position: relative;

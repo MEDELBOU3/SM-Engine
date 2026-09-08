@@ -472,4 +472,75 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+
+    // A small procedural field gives the homepage a living technical backdrop.
+    // It stays decorative, lightweight, and disappears for reduced-motion users.
+    const heroCanvas = document.querySelector("[data-hero-webgl]");
+    if (heroCanvas && typeof THREE !== "undefined" && !reducedMotion) {
+        const renderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true, antialias: true });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+        const group = new THREE.Group();
+        const pointCount = 900;
+        const positions = new Float32Array(pointCount * 3);
+        const colors = new Float32Array(pointCount * 3);
+        const mint = new THREE.Color("#8de4d6");
+        const violet = new THREE.Color("#9a8cff");
+
+        for (let index = 0; index < pointCount; index += 1) {
+            const radius = 4 + Math.random() * 7;
+            const angle = Math.random() * Math.PI * 2;
+            const height = (Math.random() - 0.5) * 5;
+            const offset = index * 3;
+            positions[offset] = Math.cos(angle) * radius;
+            positions[offset + 1] = height + Math.sin(angle * 3) * 0.35;
+            positions[offset + 2] = Math.sin(angle) * radius - 5;
+            const color = index % 3 === 0 ? violet : mint;
+            colors[offset] = color.r;
+            colors[offset + 1] = color.g;
+            colors[offset + 2] = color.b;
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+        const material = new THREE.PointsMaterial({ size: 0.035, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+        group.add(new THREE.Points(geometry, material));
+
+        const ringMaterial = new THREE.MeshBasicMaterial({ color: mint, wireframe: true, transparent: true, opacity: 0.12 });
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(4.2, 0.012, 8, 128), ringMaterial);
+        ring.rotation.x = Math.PI * 0.62;
+        ring.position.set(2.2, 0.3, -4);
+        group.add(ring);
+        scene.add(group);
+        camera.position.set(0, 0, 8);
+
+        const resize = () => {
+            const width = heroCanvas.clientWidth || window.innerWidth;
+            const height = heroCanvas.clientHeight || window.innerHeight;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            renderer.setSize(width, height, false);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        };
+
+        let pointerX = 0;
+        let pointerY = 0;
+        window.addEventListener("pointermove", (event) => {
+            pointerX = (event.clientX / window.innerWidth - 0.5) * 0.18;
+            pointerY = (event.clientY / window.innerHeight - 0.5) * 0.12;
+        }, { passive: true });
+        window.addEventListener("resize", resize, { passive: true });
+        resize();
+
+        const animate = (time) => {
+            group.rotation.y += 0.00022;
+            group.rotation.x += (pointerY - group.rotation.x) * 0.006;
+            group.rotation.z += (pointerX - group.rotation.z) * 0.006;
+            ring.rotation.z = time * 0.00012;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        };
+        requestAnimationFrame(animate);
+    }
 });
