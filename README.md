@@ -32,6 +32,17 @@ The long-term goal is not to imitate one existing DCC or game engine feature-for
 
 ---
 
+## Architecture at a Glance
+
+A layered view of SM Engine — from desktop shell down to build/export. Every layer maps to a real directory in the repository.
+
+<div align="center">
+  <img src="workflow-engine.png" alt="SM Engine master architecture diagram — 11 layers from desktop shell to build export" width="95%">
+  <p><em>Master architecture: Shell → Editor → Surface → Creation → Animation → Graphs → Runtime → Performance → Media → Build → Plugins.</em></p>
+</div>
+
+---
+
 ## Official Trailer & Tutorial
 
 <div align="center">
