@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licenses — SM Engine</title>
+    <meta name="description"
+        content="License information for SM Engine: MIT license for the engine and third-party notices.">
+    <meta name="theme-color" content="#0a0a0b">
+    <link rel="icon" href="../assets/app.svg" type="image/svg+xml">
+    <script>(() => { try { document.documentElement.dataset.theme = localStorage.getItem("sm_cine_theme") || "dark"; } catch (e) { document.documentElement.dataset.theme = "dark"; } })();</script>
+    <link rel="stylesheet" href="../cinematic.css?v=16">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script defer src="../cinematic.js?v=8"></script>
+</head>
+
+<body>
+
+    <div class="hud" aria-hidden="false">
+        <button class="hud-menu" type="button" data-menu-open
+            aria-label="Open menu"><span>menu</span><i></i><i></i></button>
+        <div class="hud-fps"><b data-fps>0</b><span>scroll fps</span><canvas class="fps-graph" data-fps-graph
+                width="240" height="60" aria-hidden="true"></canvas></div>
+        <button class="hud-theme" type="button" data-theme-toggle aria-label="Switch theme">theme: <b
+                data-theme-label>dark</b></button>
+        <div class="hud-gear">gear <b data-gear>00</b> (06)</div>
+        <nav class="hud-nav" aria-label="Story chapters">
+            <a href="../index.html#brief">brief</a>
+            <a href="../craft.html">craft</a>
+            <a href="../workspaces.html">workspaces</a>
+            <a href="../realtime.html">real-time</a>
+            <a href="../core.html">core</a>
+            <a href="../download.html">download</a>
+        </nav>
+    </div>
+
+    <a class="brand-float" data-brand href="../index.html" aria-label="SM Engine home"><img src="../assets/icons/logo.png"
+            alt="SM Engine logo"></a>
+
+    <div class="progress" data-progress aria-hidden="true"></div>
+
+    <div class="menu-overlay" data-menu aria-hidden="true" role="dialog" aria-label="Site menu">
+        <div class="menu-panel">
+            <div class="menu-top">
+                <a href="../index.html" data-menu-link aria-label="SM Engine home"><img src="../assets/icons/logo.png"
+                        alt="SM Engine logo" style="height:30px;width:auto;display:block"></a>
+                <div class="menu-top-btns">
+                    <button type="button" data-theme-toggle aria-label="Switch theme">theme: <b
+                            data-theme-label>dark</b></button>
+                    <button type="button" data-menu-close aria-label="Close menu">close <b>×</b></button>
+                </div>
+            </div>
+            <nav class="menu-nav" aria-label="Menu chapters">
+                <a class="menu-link" href="../index.html#brief" data-menu-link
+                    data-img="../assets/screenshots/engine_overview_main.png"><span class="menu-idx">00</span><span
+                        class="menu-mask"><span class="menu-link-inner">Brief</span></span><small>what this machine
+                        is</small></a>
+                <a class="menu-link" href="../craft.html" data-menu-link
+                    data-img="./assets/screenshots/engine_overview_main_.png"><span class="menu-idx">02</span><span
+                        class="menu-mask"><span class="menu-link-inner">Design × systems</span></span><small>interface
+                        craft</small></a>
+                <a class="menu-link" href="../workspaces.html" data-menu-link
+                    data-img="./assets/screenshots/material-editor.png"><span class="menu-idx">03</span><span
+                        class="menu-mask"><span class="menu-link-inner">Workspaces</span></span><small>six
+                        decisions</small></a>
+                <a class="menu-link" href="../download.html" data-menu-link
+                    data-img="./assets/screenshots/Video-Editing-Workflow.png"><span class="menu-idx">06</span><span
+                        class="menu-mask"><span class="menu-link-inner">Open</span></span><small>download</small></a>
+            </nav>
+            <div class="menu-meta">
+                <a class="menu-docs" href="../docs/index.html" data-menu-link><strong>Documentation</strong><span>guides
+                        · controls · reference →</span></a>
+                <a href="https://github.com/MEDELBOU3/SM-Engine/releases/latest" target="_blank" rel="noreferrer"
+                    data-menu-link>Get engine ↓</a>
+                <a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer" data-menu-link>GitHub
+                    ↗</a>
+            </div>
+            <div class="menu-preview" aria-hidden="true"><img src="../assets/screenshots/engine_overview_main.png" alt=""
+                    data-menu-preview></div>
+        </div>
+    </div>
+
+    <main class="story" id="top">
+
+        <header class="chapter chapter-narrow">
+            <div class="gear-tag"><b>legal</b> licenses</div>
+            <h1 class="display" data-lines>Open by <em>license.</em></h1>
+            <p class="lede">SM Engine is <strong>MIT-licensed open source</strong> — use it, modify it, ship with it. This page collects the engine license and notices for third-party pieces used on this site.</p>
+            <p class="lede">Last updated: 13 September 2026. Helpful tip: the authoritative license text is always in the repository's <code>LICENSE</code> file.</p>
+        </header>
+
+        <section class="chapter">
+            <div class="gear-tag"><b>01</b> the engine</div>
+            <h2 class="display" data-lines>MIT <em>license.</em></h2>
+            <div class="spec-split">
+                <div>
+                    <h3 class="spec-name">SM Engine<small>mit</small></h3>
+                    <dl class="spec-table">
+                        <div><dt>Allows</dt><dd>Use, copy, modify, merge, publish and sell</dd></div>
+                        <div><dt>Requires</dt><dd>Keep copyright + permission notice</dd></div>
+                        <div><dt>Warranty</dt><dd>None — provided “as is”</dd></div>
+                        <div><dt>Source</dt><dd>Full text in repo LICENSE</dd></div>
+                    </dl>
+                </div>
+                <div class="spec-copy">
+                    <p><strong>Keep the notice intact</strong> in redistributions as the license requires. Download the full text with any release from <a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">GitHub → SM-Engine → LICENSE</a>.</p>
+                    <p>Screenshots and artwork here are captures of the real editor and share the same project terms unless a caption says otherwise.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="chapter">
+            <div class="gear-tag"><b>02</b> third parties</div>
+            <h2 class="display" data-lines>Standing on <em>shoulders.</em></h2>
+            <div class="spec-split">
+                <div>
+                    <h3 class="spec-name">Notices<small>site stack</small></h3>
+                    <dl class="spec-table">
+                        <div><dt>Motion</dt><dd>GSAP + ScrollTrigger via CDN (GreenSock license)</dd></div>
+                        <div><dt>Fonts</dt><dd>Google Fonts — Inter, JetBrains Mono (OFL)</dd></div>
+                        <div><dt>Media</dt><dd>YouTube / Vimeo embeds under their terms</dd></div>
+                        <div><dt>Hosting</dt><dd>GitHub Pages / releases under GitHub terms</dd></div>
+                    </dl>
+                </div>
+                <div class="spec-copy">
+                    <p>Each third-party component remains under <strong>its own license or terms.</strong> Check the linked project for details. If you spot a missing or incorrect notice, <a href="https://github.com/MEDELBOU3/SM-Engine/issues" target="_blank" rel="noreferrer">open a GitHub issue</a> and it will be corrected.</p>
+                    <p>Helpful: for a full list of runtime dependencies, see <code>package.json</code> in the repository.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="page-foot">
+            <nav class="page-foot-nav" aria-label="Legal pages">
+                <a href="./cookies.html"><small>← prev</small>Cookies</a>
+                <a href="./privacy.html" style="text-align:right"><small>next ↺</small>Privacy</a>
+            </nav>
+            <div class="page-foot-meta"><span>© <span data-year></span> sm engine</span><span><a href="../docs/index.html">docs</a><a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">github</a></span></div>
+        </footer>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <div class="site-footer-grid" style="grid-template-columns:1.35fr 0.9fr 0.9fr 0.9fr;gap:24px">
+                <div class="site-footer-brand">
+                    <a href="../index.html" aria-label="SM Engine home"><img src="../assets/icons/logo.png" alt="SM Engine logo"></a>
+                    <strong>SM Engine</strong>
+                    <p>Open-source real-time creation suite — model, connect, stage worlds, direct motion and ship, all in one flow.</p>
+                    <a class="btn-solid" href="https://github.com/MEDELBOU3/SM-Engine/releases/latest" target="_blank" rel="noreferrer">Get engine ↗</a>
+                </div>
+                <nav class="site-footer-col" aria-label="Story">
+                    <h4>story</h4>
+                    <ul>
+                        <li><a href="../index.html#brief">Brief</a></li>
+                        <li><a href="../craft.html">Design × systems</a></li>
+                        <li><a href="../workspaces.html">Workspaces</a></li>
+                        <li><a href="../download.html">Open / download</a></li>
+                    </ul>
+                </nav>
+                <nav class="site-footer-col" aria-label="Resources">
+                    <h4>resources</h4>
+                    <ul>
+                        <li><a href="../docs/index.html">Documentation</a></li>
+                        <li><a href="../features.html">Features</a></li>
+                        <li><a href="../showcase.html">Showcase</a></li>
+                        <li><a href="../roadmap.html">Roadmap</a></li>
+                    </ul>
+                </nav>
+                <nav class="site-footer-col" aria-label="Legal">
+                    <h4>legal</h4>
+                    <ul>
+                        <li><a href="./privacy.html">Privacy</a></li>
+                        <li><a href="./terms.html">Terms</a></li>
+                        <li><a href="./cookies.html">Cookies</a></li>
+                        <li><a href="./licenses.html">Licenses</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="site-footer-word footer-wordmark" aria-hidden="true">SM Engine</div>
+            <div class="site-footer-base">
+                <span>© <span data-year></span> sm engine · mit license</span>
+                <button class="to-top" type="button" data-to-top>top ↑</button>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

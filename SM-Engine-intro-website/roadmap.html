@@ -1,175 +1,106 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark" class="dark">
+﻿<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>(()=>{const t=localStorage.getItem("sm_engine_theme")||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");document.documentElement.dataset.theme=t;document.documentElement.classList.toggle("dark",t==="dark")})();</script>
     <title>SM Engine | Product Roadmap &amp; Milestones</title>
     <meta name="description"
         content="Explore the development roadmap of SM Engine: Core launch, advanced node graphs, WebGPU pipelines, and upcoming ecosystem expansions.">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-    <!-- Tailwind CDN -->
+    <meta name="theme-color" content="#0a0a0b">
+    <link rel="icon" href="./assets/app.svg" type="image/svg+xml">
+    <script>(() => { try { document.documentElement.dataset.theme = localStorage.getItem("sm_cine_theme") || "dark"; } catch (e) { document.documentElement.dataset.theme = "dark"; } })();</script>
+    <link rel="stylesheet" href="./cinematic.css?v=16">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        black: '#050505',
-                        dark: '#0a0a0a',
-                        surface: '#111111',
-                        border: 'rgba(255, 255, 255, 0.08)'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace']
-                    }
-                }
-            }
-        };
-    </script>
-
-    <!-- GSAP & ScrollTrigger -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
-    <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="./styles.css?v=20260911-gsap">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script defer src="./cinematic.js?v=8"></script>
 </head>
 
-<body data-page="roadmap" class="bg-[#050505] text-[#ffffff] selection:bg-white selection:text-black">
-    <div class="site-shell min-h-screen flex flex-col justify-between relative z-10">
-        <!-- Site Header Navigation -->
-        <header class="site-header-shell" data-site-header>
-            <div class="header-frame">
-                <div class="site-header-bar header-inner" data-header-bar>
-                    <!-- Brand -->
-                    <a href="./index.html" class="flex items-center gap-3">
-                        <img src="./assets/app.svg" alt="SM Engine logo"
-                            class="h-8 w-8 object-contain">
-                        <div>
-                            <span class="font-semibold text-sm tracking-tight text-white block">SM Engine</span>
-                            <span class="text-[11px] text-[#888888] font-mono block leading-none">Roadmap</span>
-                        </div>
-                    </a>
+<body>
 
-                    <!-- Mobile Menu Button -->
-                    <button type="button"
-                        class="inline-flex h-9 w-9 items-center justify-center rounded border border-white/10 bg-white/5 text-slate-200 md:hidden"
-                        data-menu-button aria-expanded="false" aria-label="Toggle navigation">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
-                        </svg>
-                    </button>
+    <!-- Fixed instrument cluster -->
+    <div class="hud" aria-hidden="false">
+        <button class="hud-menu" type="button" data-menu-open
+            aria-label="Open menu"><span>menu</span><i></i><i></i></button>
+        <div class="hud-fps"><b data-fps>0</b><span>scroll fps</span><canvas class="fps-graph" data-fps-graph
+                width="240" height="60" aria-hidden="true"></canvas></div>
+        <button class="hud-theme" type="button" data-theme-toggle aria-label="Switch theme">theme: <b
+                data-theme-label>dark</b></button>
+        <div class="hud-gear">gear <b data-gear>00</b> (06)</div>
+        <nav class="hud-nav" aria-label="Story chapters">
+            <a href="./index.html#brief" class="active">brief</a>
+            <a href="./craft.html">craft</a>
+            <a href="./workspaces.html">workspaces</a>
+            <a href="./realtime.html">real-time</a>
+            <a href="./core.html">core</a>
+            <a href="./download.html">download</a>
+        </nav>
+    </div>
 
-                    <!-- Desktop Nav -->
-                    <nav class="desktop-nav" aria-label="Primary navigation">
-                        <a class="top-nav-link" data-nav="home" href="./index.html">Home</a>
-                        <a class="top-nav-link" data-nav="features" href="./features.html">Features</a>
-                        <a class="top-nav-link" data-nav="workspaces" href="./workspaces.html">Workspaces</a>
-                        <a class="top-nav-link" data-nav="showcase roadmap" href="./showcase.html">Showcase</a>
-                        <a class="top-nav-link" href="./docs/index.html">Docs</a>
-                    </nav>
-                    <nav class="legacy-desktop-nav hidden md:flex items-center gap-1" aria-hidden="true">
-                        <a class="top-nav-link" data-nav="home" href="./index.html">Home</a>
+    <a class="brand-float" data-brand href="./index.html" aria-label="SM Engine home"><img src="./assets/icons/logo.png"
+            alt="SM Engine logo"></a>
 
-                        <!-- Features Dropdown -->
-                        <div class="nav-dropdown relative" data-dropdown>
-                            <button class="top-nav-link top-nav-trigger" data-dropdown-trigger data-nav="features" aria-expanded="false">
-                                Features
-                                <svg class="nav-chevron h-3 w-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div class="dropdown-panel">
-                                <div class="grid gap-1 sm:grid-cols-2">
-                                    <a class="dropdown-link" href="./features.html">
-                                        <div class="text-xs font-semibold text-white">Editor Toolset</div>
-                                        <p class="mt-0.5 text-[11px] text-slate-400">3D modeling, node shaders, animation, and physics.</p>
-                                    </a>
-                                    <a class="dropdown-link" href="./features.html#media">
-                                        <div class="text-xs font-semibold text-white">Media Pipelines</div>
-                                        <p class="mt-0.5 text-[11px] text-slate-400">Video sequencer, sound mixer, and export workflows.</p>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+    <div class="progress" data-progress aria-hidden="true"></div>
 
-                        <!-- Workspaces Dropdown -->
-                        <div class="nav-dropdown relative" data-dropdown>
-                            <button class="top-nav-link top-nav-trigger" data-dropdown-trigger data-nav="workspaces" aria-expanded="false">
-                                Workspaces
-                                <svg class="nav-chevron h-3 w-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div class="dropdown-panel">
-                                <div class="grid gap-1 sm:grid-cols-2">
-                                    <a class="dropdown-link" href="./workspaces.html">
-                                        <div class="text-xs font-semibold text-white">Game Development</div>
-                                        <p class="mt-0.5 text-[11px] text-slate-400">Atmosphere, collisions, lighting, and runtime.</p>
-                                    </a>
-                                    <a class="dropdown-link" href="./workspaces.html#modeling">
-                                        <div class="text-xs font-semibold text-white">Modeling &amp; Graphs</div>
-                                        <p class="mt-0.5 text-[11px] text-slate-400">Polygon topology, material graph composer, terrain.</p>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Explore Dropdown -->
-                        <div class="nav-dropdown relative" data-dropdown>
-                            <button class="top-nav-link top-nav-trigger" data-dropdown-trigger data-nav="showcase roadmap" aria-expanded="false">
-                                Explore
-                                <svg class="nav-chevron h-3 w-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div class="dropdown-panel">
-                                <div class="grid gap-1 sm:grid-cols-2">
-                                    <a class="dropdown-link" href="./showcase.html">
-                                        <div class="text-xs font-semibold text-white">Showcase Gallery</div>
-                                        <p class="mt-0.5 text-[11px] text-slate-400">High-resolution editor scenes and views.</p>
-                                    </a>
-                                    <a class="dropdown-link" href="./roadmap.html">
-                                        <div class="text-xs font-semibold text-white">Roadmap</div>
-                                        <p class="mt-0.5 text-[11px] text-slate-400">Release milestones and upcoming features.</p>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <a class="top-nav-link" data-nav="download" href="./download.html">Download</a>
-                    </nav>
-
-                    <!-- Header Action -->
-                    <div class="hidden lg:flex items-center gap-3">
-                        <a href="./download.html" class="btn-primary text-xs py-1.5 px-3.5">
-                            Get Engine
-                        </a>
-                    </div>
+    <!-- Fullscreen menu overlay -->
+    <div class="menu-overlay" data-menu aria-hidden="true" role="dialog" aria-label="Site menu">
+        <div class="menu-panel">
+            <div class="menu-top">
+                <a href="./index.html" data-menu-link aria-label="SM Engine home"><img src="./assets/icons/logo.png"
+                        alt="SM Engine logo" style="height:30px;width:auto;display:block"></a>
+                <div class="menu-top-btns">
+                    <button type="button" data-theme-toggle aria-label="Switch theme">theme: <b
+                            data-theme-label>dark</b></button>
+                    <button type="button" data-menu-close aria-label="Close menu">close <b>×</b></button>
                 </div>
-
-                <!-- Mobile Menu -->
-                <nav class="mt-1 hidden rounded border border-white/10 bg-[#0c0c0c] p-3 flex-col gap-1 md:hidden" data-mobile-menu>
-                    <a class="top-nav-link" data-nav="home" href="./index.html">Home</a>
-                    <a class="top-nav-link" data-nav="features" href="./features.html">Features</a>
-                    <a class="top-nav-link" data-nav="workspaces" href="./workspaces.html">Workspaces</a>
-                    <a class="top-nav-link" data-nav="showcase" href="./showcase.html">Showcase</a>
-                    <a class="top-nav-link" href="./docs/index.html">Docs</a>
-                    <a class="top-nav-link" data-nav="roadmap" href="./roadmap.html">Roadmap</a>
-                    <a class="top-nav-link" data-nav="download" href="./download.html">Download</a>
-                </nav>
             </div>
-        </header>
-        <main class="flex-grow page-editorial">
+            <nav class="menu-nav" aria-label="Menu chapters">
+                <a class="menu-link" href="./index.html#brief" data-menu-link
+                    data-img="./assets/screenshots/engine_overview_main.png"><span class="menu-idx">00</span><span
+                        class="menu-mask"><span class="menu-link-inner">Brief</span></span><small>what this machine
+                        is</small></a>
+                <a class="menu-link" href="./index.html#one-place" data-menu-link
+                    data-img="./assets/screenshots/engine_overview_main.png"><span class="menu-idx">01</span><span
+                        class="menu-mask"><span class="menu-link-inner">One place</span></span><small>unified
+                        workspace</small></a>
+                <a class="menu-link" href="./craft.html" data-menu-link
+                    data-img="./assets/screenshots/engine_overview_main_.png"><span class="menu-idx">02</span><span
+                        class="menu-mask"><span class="menu-link-inner">Design × systems</span></span><small>interface
+                        craft</small></a>
+                <a class="menu-link" href="./workspaces.html" data-menu-link
+                    data-img="./assets/screenshots/material-editor.png"><span class="menu-idx">03</span><span
+                        class="menu-mask"><span class="menu-link-inner">Workspaces</span></span><small>six
+                        decisions</small></a>
+                <a class="menu-link" href="./realtime.html" data-menu-link
+                    data-img="./assets/screenshots/Timeline-Editor.png"><span class="menu-idx">04</span><span
+                        class="menu-mask"><span class="menu-link-inner">Real-time</span></span><small>zero
+                        delay</small></a>
+                <a class="menu-link" href="./core.html" data-menu-link
+                    data-img="./assets/screenshots/Graph-Editor.png"><span class="menu-idx">05</span><span
+                        class="menu-mask"><span class="menu-link-inner">Core</span></span><small>under the
+                        surface</small></a>
+                <a class="menu-link" href="./download.html" data-menu-link
+                    data-img="./assets/screenshots/Video-Editing-Workflow.png"><span class="menu-idx">06</span><span
+                        class="menu-mask"><span class="menu-link-inner">Open</span></span><small>download</small></a>
+                <a class="menu-link" href="./download.html#fin" data-menu-link><span class="menu-idx">fn</span><span
+                        class="menu-mask"><span class="menu-link-inner">Fin.</span></span><small>credits</small></a>
+            </nav>
+            <div class="menu-meta">
+                <a class="menu-docs" href="./docs/index.html" data-menu-link><strong>Documentation</strong><span>guides
+                        · controls · reference →</span></a>
+                <a href="https://github.com/MEDELBOU3/SM-Engine/releases/latest" target="_blank" rel="noreferrer"
+                    data-menu-link>Get engine ↓</a>
+                <a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer" data-menu-link>GitHub
+                    ↗</a>
+            </div>
+            <div class="menu-preview" aria-hidden="true"><img src="./assets/screenshots/engine_overview_main.png" alt=""
+                    data-menu-preview></div>
+        </div>
+    </div>
+
+    <main class="flex-grow page-editorial" style="padding-top:24px">
             <section class="page-hero page-hero-wide">
                 <div class="page-kicker reveal"><span>04</span> What comes next</div>
                 <div class="page-hero-grid">
@@ -207,61 +138,56 @@
             </section>
         </main>
 
-        <!-- FOOTER -->
-        <footer class="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 w-full mt-10">
-            <div class="editorial-footer p-6 sm:p-8">
-                <div class="grid gap-8 border-b border-white/10 pb-8 lg:grid-cols-[1fr_1fr_1.2fr]">
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2.5">
-                            <img src="./assets/icons/logo.png" onerror="this.onerror=null; this.src='./assets/icons/logo.png'" alt="SM Engine logo" class="h-6 w-6 object-contain">
-                            <span class="text-base font-bold text-white">SM Engine</span>
-                        </div>
-                        <p class="text-xs text-[#777777] max-w-xs leading-relaxed">
-                            Creative desktop editor combining 3D modeling, node shaders, animation, physical atmospheres, and media production.
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 text-xs">
-                        <div>
-                            <div class="font-mono text-[#555555] uppercase tracking-widest mb-2.5">Navigation</div>
-                            <ul class="space-y-1.5">
-                                <li><a class="footer-link" href="./index.html">Home</a></li>
-                                <li><a class="footer-link" href="./features.html">Features</a></li>
-                                <li><a class="footer-link" href="./workspaces.html">Workspaces</a></li>
-                                <li><a class="footer-link" href="./showcase.html">Showcase</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <div class="font-mono text-[#555555] uppercase tracking-widest mb-2.5">Resources</div>
-                            <ul class="space-y-1.5">
-                                <li><a class="footer-link" href="./download.html">Download</a></li>
-                                <li><a class="footer-link" href="./roadmap.html">Roadmap</a></li>
-                                <li><a class="footer-link" href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">GitHub</a></li>
-                                <li><a class="footer-link text-white" href="./docs/index.html">Documentation &rarr;</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <div class="font-mono text-xs text-[#555555] uppercase tracking-widest">Architecture Note</div>
-                        <p class="text-xs text-[#777777] leading-relaxed">
-                            Built with native desktop runtime and accelerated graphics pipelines for local performance without cloud dependency.
-                        </p>
-                    </div>
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <div class="site-footer-grid" style="grid-template-columns:1.35fr 0.9fr 0.9fr 0.9fr;gap:24px">
+                <div class="site-footer-brand">
+                    <a href="./index.html" aria-label="SM Engine home"><img src="./assets/icons/logo.png" alt="SM Engine logo"></a>
+                    <strong>SM Engine</strong>
+                    <p>Open-source real-time creation suite — model, connect, stage worlds, direct motion and ship, all in one flow.</p>
+                    <a class="btn-solid" href="https://github.com/MEDELBOU3/SM-Engine/releases/latest" target="_blank" rel="noreferrer">Get engine ↗</a>
                 </div>
-
-                <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#555555]">
-                    <div class="footer-wordmark font-bold select-none">
-                        SM ENGINE
-                    </div>
-                    <div>&copy; <span data-year></span> SM Engine. All rights reserved.</div>
-                </div>
+                <nav class="site-footer-col" aria-label="Story">
+                    <h4>story</h4>
+                    <ul>
+                        <li><a href="./index.html#brief">Brief</a></li>
+                        <li><a href="./index.html#one-place">One place</a></li>
+                        <li><a href="./craft.html">Design × systems</a></li>
+                        <li><a href="./workspaces.html">Workspaces</a></li>
+                        <li><a href="./realtime.html">Real-time</a></li>
+                        <li><a href="./core.html">Core</a></li>
+                        <li><a href="./download.html">Open / download</a></li>
+                    </ul>
+                </nav>
+                <nav class="site-footer-col" aria-label="Resources">
+                    <h4>resources</h4>
+                    <ul>
+                        <li><a href="./docs/index.html">Documentation</a></li>
+                        <li><a href="./features.html">Features</a></li>
+                        <li><a href="./showcase.html">Showcase</a></li>
+                        <li><a href="./roadmap.html">Roadmap</a></li>
+                        <li><a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">GitHub
+                                ↗</a></li>
+                    </ul>
+                </nav>
+                <nav class="site-footer-col" aria-label="Legal">
+                    <h4>legal</h4>
+                    <ul>
+                        <li><a href="./legal/privacy.html">Privacy</a></li>
+                        <li><a href="./legal/terms.html">Terms</a></li>
+                        <li><a href="./legal/cookies.html">Cookies</a></li>
+                        <li><a href="./legal/licenses.html">Licenses</a></li>
+                    </ul>
+                </nav>
             </div>
-        </footer>
-    </div>
+            <div class="site-footer-word footer-wordmark" aria-hidden="true">SM Engine</div>
+            <div class="site-footer-base">
+                <span>© <span data-year></span> sm engine · mit license</span>
+                <button class="to-top" type="button" data-to-top>top ↑</button>
+            </div>
+        </div>
+    </footer>
 
-    <!-- Scripts -->
-    <script src="./script.js?v=20260911-gsap"></script>
 </body>
 
 </html>
