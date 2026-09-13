@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launcher Installation - SM Engine Docs</title>
+    <link rel="stylesheet" href="../docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="top-nav">
+        <a href="../../index.html" class="nav-brand">
+            <img src="../../../assets/icons/logo.png" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../../index.html">Main Site</a></li>
+                <li><a href="../../features.html">Features</a></li>
+                <li><a href="../index.html" class="active">Documentation</a></li>
+                <li><a href="../../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Launcher
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Overview</a></li>
+                    <li><a href="installation.html" class="sidebar-link active">Installation & Setup</a></li>
+                    <li><a href="projects.html" class="sidebar-link">Projects</a></li>
+                    <li><a href="engine-versions.html" class="sidebar-link">Engine Versions</a></li>
+                    <li><a href="marketplace.html" class="sidebar-link">Marketplace & Library</a></li>
+                    <li><a href="troubleshooting.html" class="sidebar-link">Troubleshooting</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="../index.html">Docs</a> / Launcher / Installation
+                </nav>
+
+                <h1>Installation & Setup</h1>
+                <p class="page-lead">
+                    Install the SM Engine Launcher on Windows, choose your distribution format, and verify the backend connection.
+                </p>
+
+                <h2 id="requirements">Requirements</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>OS</td>
+                                <td>Windows 10/11 x64</td>
+                            </tr>
+                            <tr>
+                                <td>Runtime</td>
+                                <td>Electron 31 (bundled) — no separate install</td>
+                            </tr>
+                            <tr>
+                                <td>Network</td>
+                                <td>Required for engine downloads and BlendSwap marketplace</td>
+                            </tr>
+                            <tr>
+                                <td>Source</td>
+                                <td><code>launcher/package.json</code> — <code>productName: SM Engine Launcher</code>, <code>appId: com.smengine.launcher</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="formats">Distribution formats</h2>
+                <p>The launcher is built via <code>electron-builder</code> (<code>launcher/package.json → build</code>):</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Target</th>
+                                <th>Artifact</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>NSIS Installer</td>
+                                <td><code>SM-Engine-Launcher-Setup-1.0.2-x64.exe</code></td>
+                                <td>Allows custom install directory, desktop/start-menu shortcuts, and run-after-finish.</td>
+                            </tr>
+                            <tr>
+                                <td>Portable</td>
+                                <td><code>SM-Engine-Launcher-Portable-1.0.2-x64.exe</code></td>
+                                <td>Single executable, no install — run from any folder.</td>
+                            </tr>
+                            <tr>
+                                <td>Zip</td>
+                                <td><code>SM-Engine-Launcher-1.0.2-x64.zip</code></td>
+                                <td>Manual extract and run.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Scripts</strong>
+                        <code>npm start</code> runs Electron directly, <code>npm run pack</code> builds a directory, <code>npm run dist</code> and <code>npm run dist:win</code> produce the distributables.
+                    </div>
+                </div>
+
+                <h2 id="first-run">First run checklist</h2>
+                <ol>
+                    <li>Launch the app — the window is 1360×820, with a sandboxed renderer and context isolation (<code>electron-main.js → webPreferences</code>).</li>
+                    <li>Check <strong>Diagnostics</strong> for launcher version, Electron/Chrome versions, and system info.</li>
+                    <li>Go to <strong>Engine Versions</strong> and confirm at least one engine build is detected or installed.</li>
+                    <li>Create a test project to verify <code>ProjectService</code> and <code>ProjectManager</code> can write to your chosen folder.</li>
+                </ol>
+
+                <h2 id="verify">Verify the installation</h2>
+                <p>Open the launcher and check the <strong>Engine</strong> status in the top bar. If it shows <em>Ready</em> and the version matches <code>SM Engine 1.0.1</code>, the backend (<code>EngineLauncherService</code>) is connected.</p>
+
+                <div class="page-navigation">
+                    <a href="index.html" class="nav-card prev">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Overview</span>
+                    </a>
+                    <a href="projects.html" class="nav-card next">
+                        <span class="nav-card-sub">Next</span>
+                        <span class="nav-card-title">Projects →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../docs.js"></script>
+</body>
+
+</html>

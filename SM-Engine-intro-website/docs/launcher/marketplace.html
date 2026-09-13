@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace & Library - SM Engine Docs</title>
+    <link rel="stylesheet" href="../docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="top-nav">
+        <a href="../../index.html" class="nav-brand">
+            <img src="../../../assets/icons/logo.png" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../../index.html">Main Site</a></li>
+                <li><a href="../../features.html">Features</a></li>
+                <li><a href="../index.html" class="active">Documentation</a></li>
+                <li><a href="../../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Launcher
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Overview</a></li>
+                    <li><a href="installation.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="projects.html" class="sidebar-link">Projects</a></li>
+                    <li><a href="engine-versions.html" class="sidebar-link">Engine Versions</a></li>
+                    <li><a href="marketplace.html" class="sidebar-link active">Marketplace & Library</a></li>
+                    <li><a href="troubleshooting.html" class="sidebar-link">Troubleshooting</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="../index.html">Docs</a> / Launcher / Marketplace
+                </nav>
+
+                <h1>Marketplace & Library</h1>
+                <p class="page-lead">
+                    Browse BlendSwap and manage your local asset library without leaving the launcher. The marketplace is powered by <code>BlendSwapMainService</code> and the library by <code>AssetLibraryManager</code>.
+                </p>
+
+                <h2 id="marketplace">BlendSwap Marketplace</h2>
+                <p>The <strong>Marketplace</strong> view is created by <code>MarketplaceView</code> and backed by <code>MarketplaceManager</code>. The main process creates the service via <code>createBlendSwapMarketplaceService({ app, ipcMain, projectManager, getWindow, rootDir })</code> and registers its IPC handlers via <code>blendSwapMarketplace.register()</code>.</p>
+                <p>From the UI you can search BlendSwap, preview assets, and download them. Downloads are stored locally and then appear in your <strong>Library</strong> for use in any project.</p>
+
+                <h2 id="library">Asset Library</h2>
+                <p>The <strong>Library</strong> view is driven by <code>LibraryView</code> and <code>AssetLibraryManager</code>. On startup, the launcher calls <code>assetLibraryManager.load()</code> to index your local library. Assets are associated with projects via <code>ProjectManager</code>, so the same asset can be reused across multiple projects.</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>File</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Marketplace UI</td>
+                                <td><code>src/ui/views/MarketplaceView.js</code></td>
+                                <td>Search and download from BlendSwap.</td>
+                            </tr>
+                            <tr>
+                                <td>Library UI</td>
+                                <td><code>src/ui/views/LibraryView.js</code></td>
+                                <td>Manage downloaded assets locally.</td>
+                            </tr>
+                            <tr>
+                                <td>Marketplace Manager</td>
+                                <td><code>src/managers/MarketplaceManager.js</code></td>
+                                <td>Coordinates marketplace state in the renderer.</td>
+                            </tr>
+                            <tr>
+                                <td>Library Manager</td>
+                                <td><code>src/managers/AssetLibraryManager.js</code></td>
+                                <td>Indexes and serves local assets.</td>
+                            </tr>
+                            <tr>
+                                <td>Main Service</td>
+                                <td><code>electron/BlendSwapMainService.js</code></td>
+                                <td>Handles downloads and file placement in the main process.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="flow">Typical flow</h2>
+                <ol>
+                    <li>Open <strong>Marketplace</strong>, search for an asset, and download it.</li>
+                    <li>Open <strong>Library</strong> to see the downloaded asset and its files.</li>
+                    <li>Launch a project and import the asset via the engine's asset pipeline.</li>
+                </ol>
+
+                <div class="page-navigation">
+                    <a href="engine-versions.html" class="nav-card prev">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Engine Versions</span>
+                    </a>
+                    <a href="troubleshooting.html" class="nav-card next">
+                        <span class="nav-card-sub">Next</span>
+                        <span class="nav-card-title">Troubleshooting →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../docs.js"></script>
+</body>
+
+</html>

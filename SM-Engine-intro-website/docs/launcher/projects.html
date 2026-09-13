@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launcher Projects - SM Engine Docs</title>
+    <link rel="stylesheet" href="../docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="top-nav">
+        <a href="../../index.html" class="nav-brand">
+            <img src="../../../assets/icons/logo.png" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../../index.html">Main Site</a></li>
+                <li><a href="../../features.html">Features</a></li>
+                <li><a href="../index.html" class="active">Documentation</a></li>
+                <li><a href="../../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Launcher
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Overview</a></li>
+                    <li><a href="installation.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="projects.html" class="sidebar-link active">Projects</a></li>
+                    <li><a href="engine-versions.html" class="sidebar-link">Engine Versions</a></li>
+                    <li><a href="marketplace.html" class="sidebar-link">Marketplace & Library</a></li>
+                    <li><a href="troubleshooting.html" class="sidebar-link">Troubleshooting</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="../index.html">Docs</a> / Launcher / Projects
+                </nav>
+
+                <h1>Projects</h1>
+                <p class="page-lead">
+                    Create, import, and launch SM Engine projects from the launcher. All project state is local and managed by <code>ProjectManager</code> and <code>ProjectService</code>.
+                </p>
+
+                <h2 id="create">Create a new project</h2>
+                <p>Click <strong>New Project</strong> and choose a template. The launcher calls <code>project:create</code> (main process) which delegates to <code>ProjectService.createProject()</code>:</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Template</th>
+                                <th>Category</th>
+                                <th>What you get</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Empty Project</td>
+                                <td>General</td>
+                                <td>Minimal scene with a clean project structure.</td>
+                            </tr>
+                            <tr>
+                                <td>First Person</td>
+                                <td>Game</td>
+                                <td>Starter layout for first-person gameplay.</td>
+                            </tr>
+                            <tr>
+                                <td>Third Person</td>
+                                <td>Game</td>
+                                <td>Character, camera and movement starter.</td>
+                            </tr>
+                            <tr>
+                                <td>Film / Cinematic</td>
+                                <td>Film</td>
+                                <td>Cinematic-oriented project and sequencing workflow.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>The service creates the folder, writes the project manifest, and registers it via <code>ProjectManager.add()</code>. The new project appears immediately in <strong>Projects</strong> and is tracked for analytics.</p>
+
+                <h2 id="import">Add an existing project</h2>
+                <p>Use <strong>Open Project</strong> and select a folder. The launcher runs <code>project:addExisting</code> → <code>ProjectService.inspectProject(path)</code> to read the manifest and then registers it. If the folder is not a valid SM Engine project, the launcher shows an error instead of adding it.</p>
+
+                <h2 id="launch">Launch a project</h2>
+                <p>Click <strong>Launch</strong> on a project card. The renderer sends <code>project:launch</code> with <code>projectId</code>, <code>gpuMode</code> and <code>safeMode</code>. The main process looks up the project, calls <code>EngineLauncherService.launch({ projectPath, gpuMode, safeMode })</code>, and updates the project's <code>lastOpenedAt</code> via <code>ProjectManager.touch()</code>.</p>
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Safe Mode</strong>
+                        Launch with <code>safeMode: true</code> to start the engine with a minimal configuration — useful when a project has faulty plugins or settings.
+                    </div>
+                </div>
+
+                <h2 id="manage">Manage the list</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>IPC</th>
+                                <th>Effect</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>List</td>
+                                <td><code>project:list</code></td>
+                                <td>Returns all projects from <code>ProjectManager.list()</code>.</td>
+                            </tr>
+                            <tr>
+                                <td>Remove</td>
+                                <td><code>project:remove</code></td>
+                                <td>Removes the project from the launcher list only — project files on disk are not deleted.</td>
+                            </tr>
+                            <tr>
+                                <td>Search</td>
+                                <td>Renderer only</td>
+                                <td>Filters the current view via <code>searchQuery</code> in the UI.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="page-navigation">
+                    <a href="installation.html" class="nav-card prev">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Installation</span>
+                    </a>
+                    <a href="engine-versions.html" class="nav-card next">
+                        <span class="nav-card-sub">Next</span>
+                        <span class="nav-card-title">Engine Versions →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../docs.js"></script>
+</body>
+
+</html>

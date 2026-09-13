@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launcher Troubleshooting - SM Engine Docs</title>
+    <link rel="stylesheet" href="../docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="top-nav">
+        <a href="../../index.html" class="nav-brand">
+            <img src="../../../assets/icons/logo.png" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../../index.html">Main Site</a></li>
+                <li><a href="../../features.html">Features</a></li>
+                <li><a href="../index.html" class="active">Documentation</a></li>
+                <li><a href="../../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Launcher
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Overview</a></li>
+                    <li><a href="installation.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="projects.html" class="sidebar-link">Projects</a></li>
+                    <li><a href="engine-versions.html" class="sidebar-link">Engine Versions</a></li>
+                    <li><a href="marketplace.html" class="sidebar-link">Marketplace & Library</a></li>
+                    <li><a href="troubleshooting.html" class="sidebar-link active">Troubleshooting</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="../index.html">Docs</a> / Launcher / Troubleshooting
+                </nav>
+
+                <h1>Troubleshooting</h1>
+                <p class="page-lead">
+                    Diagnose common launcher issues using the built-in diagnostics, logs, and the secure IPC shell.
+                </p>
+
+                <h2 id="diagnostics">Diagnostics view</h2>
+                <p>Open <strong>Diagnostics</strong> in the launcher. It calls <code>launcher:getDiagnostics</code> and shows:</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Section</th>
+                                <th>Source</th>
+                                <th>What it tells you</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Launcher</td>
+                                <td><code>app.getVersion()</code>, <code>process.versions</code></td>
+                                <td>Launcher version, Electron and Chrome versions.</td>
+                            </tr>
+                            <tr>
+                                <td>System</td>
+                                <td><code>os</code> module</td>
+                                <td>Platform, arch, CPU, memory, and OS release.</td>
+                            </tr>
+                            <tr>
+                                <td>Engine</td>
+                                <td><code>EngineLauncherService.detectInstallation()</code></td>
+                                <td>Whether an engine build is found and where.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>Use <strong>Copy Diagnostics</strong> to copy a summary to the clipboard for bug reports.</p>
+
+                <h2 id="common">Common issues</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Symptom</th>
+                                <th>Check</th>
+                                <th>Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Engine does not launch</td>
+                                <td>Engine path in <code>SettingsManager</code></td>
+                                <td>Verify the path in <strong>Settings</strong> or set <code>SM_ENGINE_DEV_PATH</code>.</td>
+                            </tr>
+                            <tr>
+                                <td>Project fails to open</td>
+                                <td>Project folder and manifest</td>
+                                <td>Use <strong>Add Existing Project</strong> to re-inspect the folder.</td>
+                            </tr>
+                            <tr>
+                                <td>Download stalls</td>
+                                <td>Network and <code>UpdateService</code> logs</td>
+                                <td>Cancel and retry, or check GitHub access to <code>MEDELBOU3/SM-Engine</code>.</td>
+                            </tr>
+                            <tr>
+                                <td>“No app associated” for links</td>
+                                <td>URL handling</td>
+                                <td>The launcher now routes <code>https://</code> via <code>shell.openExternal</code> — update to the latest build if you see this.</td>
+                            </tr>
+                            <tr>
+                                <td>Window does not show</td>
+                                <td>Electron window state</td>
+                                <td>Delete the launcher's settings file (via <code>SettingsManager</code> path) and restart.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="logs">Logs and support</h2>
+                <p>Run the launcher from a terminal with <code>npm start</code> to see main-process logs. The renderer logs appear in the DevTools console (enable via <strong>Settings → DevTools</strong> if needed). For persistent issues, copy diagnostics and open an issue on <a href="https://github.com/MEDELBOU3/SM-Engine/issues" target="_blank" rel="noreferrer">GitHub SM-Engine</a>.</p>
+
+                <div class="page-navigation">
+                    <a href="marketplace.html" class="nav-card prev">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Marketplace</span>
+                    </a>
+                    <a href="../index.html" class="nav-card next">
+                        <span class="nav-card-sub">Next</span>
+                        <span class="nav-card-title">Docs Overview →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../docs.js"></script>
+</body>
+
+</html>

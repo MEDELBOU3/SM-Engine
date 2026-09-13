@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engine Versions - SM Engine Docs</title>
+    <link rel="stylesheet" href="../docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="top-nav">
+        <a href="../../index.html" class="nav-brand">
+            <img src="../../../assets/icons/logo.png" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../../index.html">Main Site</a></li>
+                <li><a href="../../features.html">Features</a></li>
+                <li><a href="../index.html" class="active">Documentation</a></li>
+                <li><a href="../../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Launcher
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link">Overview</a></li>
+                    <li><a href="installation.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="projects.html" class="sidebar-link">Projects</a></li>
+                    <li><a href="engine-versions.html" class="sidebar-link active">Engine Versions</a></li>
+                    <li><a href="marketplace.html" class="sidebar-link">Marketplace & Library</a></li>
+                    <li><a href="troubleshooting.html" class="sidebar-link">Troubleshooting</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="../index.html">Docs</a> / Launcher / Engine Versions
+                </nav>
+
+                <h1>Engine Versions</h1>
+                <p class="page-lead">
+                    Install, switch, and maintain multiple SM Engine builds. The launcher keeps one active version and tracks the rest via <code>EngineVersionManager</code> and <code>UpdateService</code>.
+                </p>
+
+                <h2 id="list">List installed versions</h2>
+                <p>The <strong>Engine Versions</strong> view calls <code>engine:listVersions</code> → <code>EngineVersionManager.listAllVersions()</code>. Each entry shows version, channel, path, and whether it is the current active build. The sidebar and top bar update automatically when the list changes.</p>
+
+                <h2 id="install">Install a new version</h2>
+                <p>Click <strong>Install</strong> on a release card. The renderer sends <code>engine:installVersion</code> with version and download URL. The main process delegates to <code>UpdateService.installVersion(version, url, onProgress)</code>, which streams the download and forwards progress events (<code>engine:downloadProgress</code>) to the UI. On success, the launcher fires <code>engine:installed</code> and logs an analytics event.</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>IPC</th>
+                                <th>Main Handler</th>
+                                <th>UI Effect</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>engine:installVersion</code></td>
+                                <td><code>UpdateService.installVersion</code></td>
+                                <td>Shows progress, then refreshes the version list.</td>
+                            </tr>
+                            <tr>
+                                <td><code>engine:cancelDownload</code></td>
+                                <td><code>UpdateService.cancelDownload</code></td>
+                                <td>Stops the in-progress download.</td>
+                            </tr>
+                            <tr>
+                                <td><code>engine:uninstallVersion</code></td>
+                                <td><code>UpdateService.uninstallVersion</code></td>
+                                <td>Removes the build from disk and the list.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="active">Set the active version</h2>
+                <p>Click <strong>Set as Active</strong> on any installed build. This sends <code>engine:setActive</code> → <code>EngineVersionManager.setActiveVersion(path)</code>, which updates the stored setting and the version shown in the top bar. New projects use the active version by default.</p>
+
+                <h2 id="custom">Add a custom engine</h2>
+                <p>Choose <strong>Add Custom Engine</strong> and select a folder. The launcher runs <code>engine:addCustom</code> → <code>EngineVersionManager._inspectEngineDirectory(path, true, 'Custom')</code> to validate the directory, then marks it as active. This is useful for local development builds via <code>SM_ENGINE_DEV_PATH</code>.</p>
+
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Tip</strong>
+                        The launcher also exposes <code>engine:addCustom</code> via a folder picker — the same flow used for <code>Add Existing Project</code>, but for engine directories.
+                    </div>
+                </div>
+
+                <div class="page-navigation">
+                    <a href="projects.html" class="nav-card prev">
+                        <span class="nav-card-sub">Previous</span>
+                        <span class="nav-card-title">← Projects</span>
+                    </a>
+                    <a href="marketplace.html" class="nav-card next">
+                        <span class="nav-card-sub">Next</span>
+                        <span class="nav-card-title">Marketplace →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../docs.js"></script>
+</body>
+
+</html>

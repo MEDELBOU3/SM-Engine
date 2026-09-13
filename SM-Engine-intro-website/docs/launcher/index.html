@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launcher Overview - SM Engine Docs</title>
+    <link rel="stylesheet" href="../docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="top-nav">
+        <a href="../../index.html" class="nav-brand">
+            <img src="../../../assets/icons/logo.png" alt="SM Engine Logo">
+            <span class="brand-title">SM Engine</span>
+            <span class="brand-badge">Docs v1.0</span>
+        </a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="../../index.html">Main Site</a></li>
+                <li><a href="../../features.html">Features</a></li>
+                <li><a href="../index.html" class="active">Documentation</a></li>
+                <li><a href="../../download.html">Download</a></li>
+            </ul>
+        </div>
+        <div class="nav-actions">
+            <div class="search-container">
+                <svg class="doc-icon sm search-icon-inside" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" id="searchInput" class="search-input" placeholder="Search documentation...">
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Theme">
+                <svg class="doc-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"></circle>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">
+                    <svg class="doc-icon sm" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    Launcher
+                </div>
+                <ul class="sidebar-links">
+                    <li><a href="index.html" class="sidebar-link active">Overview</a></li>
+                    <li><a href="installation.html" class="sidebar-link">Installation & Setup</a></li>
+                    <li><a href="projects.html" class="sidebar-link">Projects</a></li>
+                    <li><a href="engine-versions.html" class="sidebar-link">Engine Versions</a></li>
+                    <li><a href="marketplace.html" class="sidebar-link">Marketplace & Library</a></li>
+                    <li><a href="troubleshooting.html" class="sidebar-link">Troubleshooting</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-group">
+                <div class="sidebar-group-title">Related</div>
+                <ul class="sidebar-links">
+                    <li><a href="../getting-started.html" class="sidebar-link">Getting Started</a></li>
+                    <li><a href="../workspaces.html" class="sidebar-link">Workspaces</a></li>
+                    <li><a href="../../download.html" class="sidebar-link">Download Launcher</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <main class="content">
+                <nav class="breadcrumb">
+                    <a href="../index.html">Docs</a> / Launcher / Overview
+                </nav>
+
+                <h1>SM Engine Launcher</h1>
+                <p class="page-lead">
+                    The official desktop hub for SM Engine — create projects, manage engine builds, browse the BlendSwap marketplace and launch the editor in one place.
+                </p>
+
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../../../assets/screenshots/launcher-overview.png" alt="SM Engine Launcher overview with sidebar, project list and engine version panel" onerror="this.style.display='none'">
+                    </div>
+                    <figcaption class="doc-caption">Figure: Launcher home — engine status, projects and marketplace entry points.</figcaption>
+                </figure>
+
+                <div class="callout note">
+                    <div class="callout-icon"><svg class="doc-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
+                    <div class="callout-body">
+                        <strong>Electron-based, local-first</strong>
+                        The launcher is a standalone Electron app (<code>launcher/electron-main.js</code>) that runs entirely on your machine. No cloud project storage — everything stays in your chosen folders.
+                    </div>
+                </div>
+
+                <h2 id="what-it-does">What it does</h2>
+                <div class="card-grid">
+                    <div class="doc-card">
+                        <div class="doc-card-header"><span class="doc-card-title">Projects</span></div>
+                        <p class="doc-card-desc">Create from 4 templates (Empty, FPS, Third-Person, Film), add existing folders, launch with GPU mode or safe mode, and track recent projects.</p>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-card-header"><span class="doc-card-title">Engine Versions</span></div>
+                        <p class="doc-card-desc">List installed builds, install new releases from GitHub, set the active version, add a custom engine directory, and uninstall.</p>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-card-header"><span class="doc-card-title">Marketplace & Library</span></div>
+                        <p class="doc-card-desc">Browse BlendSwap directly inside the launcher, download assets, and manage them in your local library.</p>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-card-header"><span class="doc-card-title">Diagnostics & Analytics</span></div>
+                        <p class="doc-card-desc">View system info, copy diagnostics, and review usage analytics and performance events.</p>
+                    </div>
+                </div>
+
+                <h2 id="architecture">Architecture at a glance</h2>
+                <p>The launcher is split into a secure Electron main process and a sandboxed renderer:</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>Key Files</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>electron-main.js</code></td>
+                                <td>Main process</td>
+                                <td>Creates the window, initializes services, and exposes IPC handlers.</td>
+                            </tr>
+                            <tr>
+                                <td><code>preload.js</code></td>
+                                <td>Bridge</td>
+                                <td>Context-isolated API (<code>window.launcherAPI</code>) for the renderer.</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/LauncherApp.js</code></td>
+                                <td>Renderer app</td>
+                                <td>Router, state, and view orchestration.</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/managers/</code> &amp; <code>src/services/</code></td>
+                                <td>Services</td>
+                                <td>Projects, engine versions, updates, settings, analytics, and marketplace.</td>
+                            </tr>
+                            <tr>
+                                <td><code>src/ui/views/</code></td>
+                                <td>Views</td>
+                                <td>Home, Projects, Engine Versions, Marketplace, Library, and more.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="quick-start">Quick start</h2>
+                <ol>
+                    <li>Install the launcher via <code>SM-Engine-Launcher-Setup-1.0.2-x64.exe</code> (or portable/zip).</li>
+                    <li>Open <strong>Engine Versions</strong> and ensure at least one build is active.</li>
+                    <li>Create a project from a template or add an existing folder.</li>
+                    <li>Launch the engine — optionally with <em>Safe Mode</em> or a specific GPU mode.</li>
+                </ol>
+
+                <div class="page-navigation">
+                    <div></div>
+                    <a href="installation.html" class="nav-card next">
+                        <span class="nav-card-sub">Next</span>
+                        <span class="nav-card-title">Installation & Setup →</span>
+                    </a>
+                </div>
+            </main>
+
+            <aside class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul id="tocList" class="toc-list"></ul>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../docs.js"></script>
+</body>
+
+</html>
