@@ -55,34 +55,47 @@ document.addEventListener("DOMContentLoaded", () => {
         <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 14.5A8.5 8.5 0 0 1 9.5 3.6 8.5 8.5 0 1 0 20.4 14.5Z"></path></svg>
     `;
 
-    if (!document.querySelector("[data-theme-toggle]")) {
-        const headerAction = document.querySelector("[data-header-bar] .btn-primary")?.parentElement;
-        if (headerAction) {
-            const themeButton = document.createElement("button");
-            themeButton.type = "button";
-            themeButton.className = "theme-toggle";
-            themeButton.dataset.themeToggle = "";
-            themeButton.setAttribute("aria-label", "Switch color theme");
-            themeButton.innerHTML = themeIconMarkup;
-            headerAction.prepend(themeButton);
+    // Theme toggle lives directly in the header bar so it stays visible on
+    // desktop AND mobile (the header action cluster hides below 900px).
+    const headerBar = document.querySelector("[data-header-bar]");
+    if (headerBar && !headerBar.querySelector("[data-theme-toggle]")) {
+        const themeButton = document.createElement("button");
+        themeButton.type = "button";
+        themeButton.className = "theme-toggle header-theme-toggle";
+        themeButton.dataset.themeToggle = "";
+        themeButton.setAttribute("aria-label", "Switch color theme");
+        themeButton.innerHTML = themeIconMarkup;
+        const menuButton = headerBar.querySelector("[data-menu-button]");
+        const actionCluster = headerBar.querySelector(".header-actions, div:last-child");
+        if (menuButton) {
+            headerBar.insertBefore(themeButton, menuButton);
+        } else if (actionCluster) {
+            actionCluster.prepend(themeButton);
+        } else {
+            headerBar.appendChild(themeButton);
         }
+    }
 
-        const mobileMenuForTheme = document.querySelector("[data-mobile-menu]");
-        if (mobileMenuForTheme) {
-            const mobileThemeButton = document.createElement("button");
-            mobileThemeButton.type = "button";
-            mobileThemeButton.className = "mobile-theme-switch";
-            mobileThemeButton.dataset.themeToggle = "";
-            mobileThemeButton.innerHTML = `<span>Appearance</span><strong data-theme-label>Dark mode</strong>`;
-            mobileMenuForTheme.appendChild(mobileThemeButton);
-        }
+    const mobileMenuForTheme = document.querySelector("[data-mobile-menu]");
+    if (mobileMenuForTheme && !mobileMenuForTheme.querySelector("[data-theme-toggle]")) {
+        const mobileThemeButton = document.createElement("button");
+        mobileThemeButton.type = "button";
+        mobileThemeButton.className = "mobile-theme-switch";
+        mobileThemeButton.dataset.themeToggle = "";
+        mobileThemeButton.innerHTML = `<span>Appearance</span><strong data-theme-label>Dark mode</strong>`;
+        mobileMenuForTheme.appendChild(mobileThemeButton);
     }
 
     function applyTheme(theme, persist = true) {
         const nextTheme = theme === "light" ? "light" : "dark";
         document.documentElement.dataset.theme = nextTheme;
         document.documentElement.classList.toggle("dark", nextTheme === "dark");
-        if (persist) localStorage.setItem(themeStorageKey, nextTheme);
+        try {
+            document.documentElement.style.colorScheme = nextTheme;
+        } catch (_error) { /* older browsers ignore colorScheme */ }
+        if (persist) {
+            try { localStorage.setItem(themeStorageKey, nextTheme); } catch (_error) { /* private mode */ }
+        }
 
         const label = nextTheme === "dark" ? "Dark mode" : "Light mode";
         const action = nextTheme === "dark" ? "Switch to light mode" : "Switch to dark mode";
@@ -93,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const themeColor = document.querySelector('meta[name="theme-color"]');
-        if (themeColor) themeColor.setAttribute("content", nextTheme === "dark" ? "#070b10" : "#f1f4f5");
+        if (themeColor) themeColor.setAttribute("content", nextTheme === "dark" ? "#111416" : "#f0efe9");
     }
 
     const storedTheme = localStorage.getItem(themeStorageKey);
@@ -515,74 +528,191 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // A small procedural field gives the homepage a living technical backdrop.
-    // It stays decorative, lightweight, and disappears for reduced-motion users.
-    const heroCanvas = document.querySelector("[data-hero-webgl]");
-    if (heroCanvas && typeof THREE !== "undefined" && !reducedMotion) {
-        const renderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true, antialias: true });
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-        const group = new THREE.Group();
-        const pointCount = 900;
-        const positions = new Float32Array(pointCount * 3);
-        const colors = new Float32Array(pointCount * 3);
-        const mint = new THREE.Color("#8de4d6");
-        const violet = new THREE.Color("#9a8cff");
+    // ---------- Commercial motion suite: product-site GSAP language ----------
+    // Masked line reveals, choreographed hero entrance, scroll parallax,
+    // animated counters, infinite marquee + hide-on-scroll header.
+    // Everything is gated behind GSAP + no-preference for reduced motion.
+    if (hasGSAP && !reducedMotion) {
+        const motionOK = typeof ScrollTrigger !== "undefined";
 
-        for (let index = 0; index < pointCount; index += 1) {
-            const radius = 4 + Math.random() * 7;
-            const angle = Math.random() * Math.PI * 2;
-            const height = (Math.random() - 0.5) * 5;
-            const offset = index * 3;
-            positions[offset] = Math.cos(angle) * radius;
-            positions[offset + 1] = height + Math.sin(angle * 3) * 0.35;
-            positions[offset + 2] = Math.sin(angle) * radius - 5;
-            const color = index % 3 === 0 ? violet : mint;
-            colors[offset] = color.r;
-            colors[offset + 1] = color.g;
-            colors[offset + 2] = color.b;
+        // Split <br> headings into overflow-masked lines for cinematic rises.
+        const splitLines = (el) => {
+            if (!el || el.dataset.split === "lined") {
+                return Array.from(el.querySelectorAll(":scope > .mask-line > .mask-inner"));
+            }
+            const parts = el.innerHTML.split(/<br\s*\/?>/i);
+            el.innerHTML = parts
+                .map((part) => `<span class="mask-line"><span class="mask-inner">${part}</span></span>`)
+                .join("");
+            el.dataset.split = "lined";
+            return Array.from(el.querySelectorAll(":scope > .mask-line > .mask-inner"));
+        };
+
+        // ----- Hero entrance: plays once the intro splash leaves -----
+        const playHeroEntrance = () => {
+            if (playHeroEntrance.done) return;
+            playHeroEntrance.done = true;
+            const heading = document.querySelector(".hero-heading");
+            const inners = heading ? splitLines(heading) : [];
+            const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+            tl.fromTo(".hero-eyebrow", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.8 }, 0);
+            if (inners.length) {
+                tl.fromTo(inners, { yPercent: 118 }, { yPercent: 0, duration: 1.15, stagger: 0.1 }, 0.08);
+            }
+            tl.fromTo(".hero-support", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.45)
+                .fromTo(".hero-product",
+                    { autoAlpha: 0, y: 60, clipPath: "inset(10% 5% 10% 5%)" },
+                    { autoAlpha: 1, y: 0, clipPath: "inset(0% 0% 0% 0%)", duration: 1.2 }, 0.5)
+                .fromTo(".hero-proof > div",
+                    { autoAlpha: 0, y: 22 },
+                    { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.09 }, 0.75)
+                .fromTo(".floating-signal",
+                    { autoAlpha: 0, scale: 0.6 },
+                    { autoAlpha: 1, scale: 1, duration: 0.9, ease: "back.out(1.6)", stagger: 0.12,
+                      onComplete: () => gsap.set(".floating-signal", { clearProps: "transform,opacity,visibility" }) }, 0.95);
+        };
+        playHeroEntrance.done = false;
+
+        const splash = document.querySelector("[data-intro-splash]");
+        if (document.querySelector(".hero-heading")) {
+            if (splash) {
+                const splashObserver = new MutationObserver(() => {
+                    if (splash.classList.contains("is-hidden")) {
+                        splashObserver.disconnect();
+                        window.setTimeout(playHeroEntrance, 120);
+                    }
+                });
+                splashObserver.observe(splash, { attributes: true, attributeFilter: ["class"] });
+                window.setTimeout(playHeroEntrance, 4000);
+            } else {
+                window.setTimeout(playHeroEntrance, 200);
+            }
         }
 
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-        const material = new THREE.PointsMaterial({ size: 0.035, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
-        group.add(new THREE.Points(geometry, material));
+        if (!motionOK) return;
 
-        const ringMaterial = new THREE.MeshBasicMaterial({ color: mint, wireframe: true, transparent: true, opacity: 0.12 });
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(4.2, 0.012, 8, 128), ringMaterial);
-        ring.rotation.x = Math.PI * 0.62;
-        ring.position.set(2.2, 0.3, -4);
-        group.add(ring);
-        scene.add(group);
-        camera.position.set(0, 0, 8);
+        // ----- Scroll parallax: hero layers drift at different speeds -----
+        const heroSection = document.querySelector(".hero-v2");
+        if (heroSection) {
+            gsap.to(".hero-copy-v2", {
+                y: -70, ease: "none",
+                scrollTrigger: { trigger: heroSection, start: "top top", end: "bottom top", scrub: true }
+            });
+            gsap.to(".hero-product", {
+                y: 60, ease: "none",
+                scrollTrigger: { trigger: heroSection, start: "top top", end: "bottom top", scrub: true }
+            });
+            gsap.fromTo(".hero-product .product-window", { rotationX: 0 }, {
+                rotationX: 5, transformPerspective: 1200, ease: "none",
+                scrollTrigger: { trigger: heroSection, start: "top top", end: "bottom top", scrub: true }
+            });
+        }
 
-        const resize = () => {
-            const width = heroCanvas.clientWidth || window.innerWidth;
-            const height = heroCanvas.clientHeight || window.innerHeight;
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-            renderer.setSize(width, height, false);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-        };
+        // ----- Cinematic line reveals for section + page headings -----
+        document.querySelectorAll(
+            ".section-heading-v2 h2, .final-copy h2, .showcase-title-v2, " +
+            ".showcase-next-v2 h2, .page-editorial .page-display"
+        ).forEach((heading) => {
+            const inners = splitLines(heading);
+            if (!inners.length) return;
+            gsap.set(inners, { yPercent: 118 });
+            ScrollTrigger.create({
+                trigger: heading, start: "top 88%", once: true,
+                onEnter: () => gsap.to(inners, { yPercent: 0, duration: 1.05, ease: "expo.out", stagger: 0.09 })
+            });
+        });
 
-        let pointerX = 0;
-        let pointerY = 0;
-        window.addEventListener("pointermove", (event) => {
-            pointerX = (event.clientX / window.innerWidth - 0.5) * 0.18;
-            pointerY = (event.clientY / window.innerHeight - 0.5) * 0.12;
-        }, { passive: true });
-        window.addEventListener("resize", resize, { passive: true });
-        resize();
+        // ----- Section headings drift gently against the scroll -----
+        document.querySelectorAll(".section-heading-v2").forEach((block) => {
+            const title = block.querySelector("h2");
+            if (!title) return;
+            gsap.to(title, {
+                y: -28, ease: "none",
+                scrollTrigger: { trigger: block, start: "top bottom", end: "bottom top", scrub: true }
+            });
+        });
 
-        const animate = (time) => {
-            group.rotation.y += 0.00022;
-            group.rotation.x += (pointerY - group.rotation.x) * 0.006;
-            group.rotation.z += (pointerX - group.rotation.z) * 0.006;
-            ring.rotation.z = time * 0.00012;
-            renderer.render(scene, camera);
-            requestAnimationFrame(animate);
-        };
-        requestAnimationFrame(animate);
+        // ----- Media frames unveil with a clip-path wipe on entry -----
+        const mediaFrames = gsap.utils.toArray(
+            ".attention-media, .capability-media, .workspace-visual, " +
+            ".showcase-image, .showcase-feature-image, .feature-visual, " +
+            ".workspace-shot, .workspace-overview-image"
+        );
+        mediaFrames.forEach((frame) => {
+            gsap.fromTo(frame,
+                { clipPath: "inset(10% 6% 10% 6%)", y: 34 },
+                { clipPath: "inset(0% 0% 0% 0%)", y: 0, duration: 1.1, ease: "expo.out",
+                  scrollTrigger: { trigger: frame, start: "top 88%", once: true } });
+        });
+
+        // ----- Animated counters in the hero proof strip -----
+        document.querySelectorAll(".hero-proof strong").forEach((el) => {
+            const match = el.textContent.trim().match(/^(\d+(?:\.\d+)?)(\+?)/);
+            if (!match) return;
+            const target = parseFloat(match[1]);
+            const suffix = match[2] || "";
+            const state = { value: 0 };
+            ScrollTrigger.create({
+                trigger: el, start: "top 94%", once: true,
+                onEnter: () => gsap.to(state, {
+                    value: target, duration: 1.8, ease: "power2.out",
+                    onUpdate: () => { el.textContent = Math.round(state.value) + suffix; }
+                })
+            });
+        });
+
+        // ----- Infinite capability ticker with scroll-velocity boost -----
+        const marqueeTrack = document.querySelector("[data-marquee-track]");
+        if (marqueeTrack) {
+            const loop = gsap.to(marqueeTrack, { xPercent: -50, ease: "none", duration: 24, repeat: -1 });
+            const ticker = marqueeTrack.closest(".ticker");
+            if (ticker) {
+                ticker.addEventListener("mouseenter", () => loop.pause());
+                ticker.addEventListener("mouseleave", () => loop.play());
+            }
+            let boostCall = null;
+            ScrollTrigger.create({
+                onUpdate: (self) => {
+                    const boost = 1 + Math.min(3, Math.abs(self.getVelocity()) / 2800);
+                    loop.timeScale(boost);
+                    if (boostCall) boostCall.kill();
+                    boostCall = gsap.delayedCall(0.25, () => loop.timeScale(1));
+                }
+            });
+        }
+
+        // ----- Footer wordmark drifts on scroll -----
+        const wordmark = document.querySelector(".footer-wordmark");
+        if (wordmark) {
+            gsap.fromTo(wordmark, { xPercent: -4 }, {
+                xPercent: 4, ease: "none",
+                scrollTrigger: { trigger: wordmark, start: "top bottom", end: "bottom top", scrub: true }
+            });
+        }
+
+        // ----- Hide-on-scroll header, reveal on scroll up -----
+        const shell = document.querySelector("[data-site-header]");
+        if (shell) {
+            let lastY = window.scrollY;
+            let ticking = false;
+            const onScrollDir = () => {
+                ticking = false;
+                const y = window.scrollY;
+                const menuOpen = document.querySelector("[data-mobile-menu]:not(.hidden)");
+                const dropOpen = document.querySelector("[data-dropdown].open");
+                if (menuOpen || dropOpen || y < 320) {
+                    shell.classList.remove("header-hidden");
+                } else if (y > lastY + 6) {
+                    shell.classList.add("header-hidden");
+                } else if (y < lastY - 6) {
+                    shell.classList.remove("header-hidden");
+                }
+                lastY = y;
+            };
+            window.addEventListener("scroll", () => {
+                if (!ticking) { ticking = true; requestAnimationFrame(onScrollDir); }
+            }, { passive: true });
+        }
     }
+
 });

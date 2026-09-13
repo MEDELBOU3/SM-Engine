@@ -8,6 +8,77 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Image frame wrapper (image only, no caption inside) --- */
+        .doc-image-frame {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            background: var(--surface-2, #161616);
+            border: 1px solid var(--border, #2a2a2a);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            overflow: hidden;
+        }
+        .doc-image-frame:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+            border-color: var(--border-strong, #3a3a3a);
+        }
+        .doc-image-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            background: var(--surface-3, #0f0f0f);
+            cursor: zoom-in;
+        }
+        html[data-theme="light"] .doc-image-frame {
+            background: #f8f8f8;
+            border-color: #e2e2e2;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        html[data-theme="light"] .doc-image-frame img { background: #ffffff; }
+
+        /* --- Lightbox --------------------------------------------- */
+        .doc-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: zoom-out;
+            padding: 4vh 4vw;
+        }
+        .doc-lightbox.open { display: flex; }
+        .doc-lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+        }
+        .doc-lightbox .doc-lightbox-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-size: 1.75rem;
+            color: #fff;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.75;
+            transition: opacity 0.15s ease;
+        }
+        .doc-lightbox .doc-lightbox-close:hover { opacity: 1; }
+    </style>
 </head>
 <body>
 
@@ -161,6 +232,23 @@
                     <figcaption class="doc-caption">Figure: Interactive overview of Global API Reference in SM Engine workspace.</figcaption>
                 </figure>
 
+                <!-- Figure 1 — Scripting Global API (Class Diagram) -->
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/uml-graphs/scripting-global-api-uml.png"
+                             alt="UML class diagram of the JavaScript Scripting API: Window global namespace composing Scene, Camera, Renderer, Object3D, HistoryManager, Viewport2DManager and EventBus, plus Mesh, Command, Script and ScriptRunner"
+                             loading="lazy"
+                             width="1400" height="900">
+                    </div>
+                    <figcaption class="doc-caption">
+                        <strong>Figure 1 — Global API architecture.</strong>
+                        The <code>Window</code> namespace exposes <code>scene</code>, <code>camera</code>,
+                        <code>renderer</code>, <code>selectedObject</code>, <code>historyManager</code>,
+                        <code>v2dManager</code> and the <code>eventBus</code>. Scripts reach the whole engine
+                        through these globals — from the scene graph to the undo stack. Click to enlarge.
+                    </figcaption>
+                </figure>
+
                 <div class="table-wrapper">
                     <table>
                         <thead>
@@ -205,6 +293,22 @@
                     </table>
                 </div>
 
+                <!-- Figure 2 — Script Lifecycle (State Diagram) -->
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/uml-graphs/scripting-script-lifecycle-uml.png"
+                             alt="UML state diagram of the JavaScript script lifecycle: Loaded → Compiled → Initialized → Started → Idle, with Updating and HandlingEvent sub-states, and a Destroyed final state"
+                             loading="lazy"
+                             width="1400" height="700">
+                    </div>
+                    <figcaption class="doc-caption">
+                        <strong>Figure 2 — Script lifecycle state machine.</strong>
+                        A user script passes through <em>Loaded</em>, <em>Compiled</em>, <em>Initialized</em>,
+                        and <em>Started</em>, then loops through <em>Idle</em> ⇄ <em>Updating</em> /
+                        <em>HandlingEvent</em> every frame until the entity is destroyed. Click to enlarge.
+                    </figcaption>
+                </figure>
+
                 <h2 id="code-examples">Scripting Code Examples</h2>
 
                 <h3>1. Rotating an Object Every Frame</h3>
@@ -233,6 +337,22 @@ for (let x = -5; x <= 5; x += 2) {
 }
 updateHierarchy();</code></pre>
 
+                <!-- Figure 3 — Event Flow (Sequence Diagram) -->
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/uml-graphs/scripting-event-flow-uml.png"
+                             alt="UML sequence diagram of the scripting event flow: engine emits engine:update, eventBus dispatches to ScriptRunner, script update reads selectedObject or spawns meshes and records commands to the HistoryManager"
+                             loading="lazy"
+                             width="1400" height="900">
+                    </div>
+                    <figcaption class="doc-caption">
+                        <strong>Figure 3 — Event flow: <code>engine:update</code>.</strong>
+                        The engine emits <code>engine:update</code> every frame; the <code>EventBus</code>
+                        dispatches it to registered scripts, which read or mutate the scene and record
+                        changes into the <code>HistoryManager</code> for undo/redo. Click to enlarge.
+                    </figcaption>
+                </figure>
+
                 <div class="page-navigation">
                     <a href="game-dev.html" class="nav-card">
                         <span class="nav-card-sub">Previous</span>
@@ -253,5 +373,59 @@ updateHierarchy();</code></pre>
     </div>
 
     <script src="./docs.js"></script>
+
+    <!-- Lightbox -->
+    <script>
+    (function () {
+        var imgs = document.querySelectorAll('.doc-image-frame img');
+        if (!imgs.length) return;
+
+        var overlay = document.createElement('div');
+        overlay.className = 'doc-lightbox';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', 'Enlarged diagram view');
+        overlay.innerHTML =
+            '<button class="doc-lightbox-close" aria-label="Close">&times;</button>' +
+            '<img alt="">';
+        document.body.appendChild(overlay);
+
+        var overlayImg = overlay.querySelector('img');
+        var closeBtn   = overlay.querySelector('.doc-lightbox-close');
+
+        function open(src, alt) {
+            overlayImg.src = src;
+            overlayImg.alt = alt || '';
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function close() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+            overlayImg.src = '';
+        }
+
+        imgs.forEach(function (img) {
+            img.addEventListener('click', function () {
+                open(img.currentSrc || img.src, img.alt);
+            });
+            img.setAttribute('tabindex', '0');
+            img.setAttribute('role', 'button');
+            img.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    open(img.currentSrc || img.src, img.alt);
+                }
+            });
+        });
+
+        closeBtn.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+        overlay.addEventListener('click', close);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+        });
+    })();
+    </script>
 </body>
 </html>
+

@@ -8,6 +8,77 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Image frame wrapper (image only, no caption inside) --- */
+        .doc-image-frame {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            background: var(--surface-2, #161616);
+            border: 1px solid var(--border, #2a2a2a);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            overflow: hidden;
+        }
+        .doc-image-frame:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+            border-color: var(--border-strong, #3a3a3a);
+        }
+        .doc-image-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            background: var(--surface-3, #0f0f0f);
+            cursor: zoom-in;
+        }
+        html[data-theme="light"] .doc-image-frame {
+            background: #f8f8f8;
+            border-color: #e2e2e2;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        html[data-theme="light"] .doc-image-frame img { background: #ffffff; }
+
+        /* --- Lightbox --------------------------------------------- */
+        .doc-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: zoom-out;
+            padding: 4vh 4vw;
+        }
+        .doc-lightbox.open { display: flex; }
+        .doc-lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+        }
+        .doc-lightbox .doc-lightbox-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-size: 1.75rem;
+            color: #fff;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.75;
+            transition: opacity 0.15s ease;
+        }
+        .doc-lightbox .doc-lightbox-close:hover { opacity: 1; }
+    </style>
 </head>
 <body>
     <header class="top-nav">
@@ -149,11 +220,27 @@
                 SM Engine features a robust, multithreaded rigid body and soft body physics system powered by the underlying <code>PhysicsSystem.js</code> integration. Whether you are building gameplay interactions, simulated destruction, or realistic vehicles, the physics engine provides the tools you need.
             </p>
 
+            <!-- Figure 1 — Physics Architecture -->
+            <figure class="doc-figure">
+                <div class="doc-image-frame">
+                    <img src="../assets/screenshots/uml-graphs/physics-architecture-uml.png"
+                         alt="UML class diagram of the Physics system: PhysicsSystem facade composing World, RigidBody subclasses (DynamicBody, StaticBody, KinematicBody, SoftBody), PhysicsMaterial with presets, CollisionGroup bitmask enum, Zone subclasses (Wind, Liquid, Attractor, ForceField, Vortex), and Constraint subclasses (Hinge, BallSocket, Slider, ConeTwist, Generic6DOF)"
+                         loading="lazy"
+                         width="1400" height="1000">
+                </div>
+                <figcaption class="doc-caption">
+                    <strong>Figure 1 — Physics architecture.</strong>
+                    The <code>PhysicsSystem</code> facade owns a <code>World</code> that contains
+                    <code>RigidBody</code> subclasses, <code>Zone</code> volumes, and
+                    <code>Constraint</code> joints. Materials and collision groups are attached per-body
+                    via bitmasking. Click to enlarge.
+                </figcaption>
+            </figure>
+
             <h2 id="body-types">Physics Body Types</h2>
                 <figure class="doc-figure">
-                    <div class="doc-image-placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <span>Interface Preview: Physics Body Types</span>
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/physic-demo.png" alt="">
                     </div>
                     <figcaption class="doc-caption">Figure: Interactive overview of Physics Body Types in SM Engine workspace.</figcaption>
                 </figure>
@@ -164,6 +251,23 @@
                 <li><strong>Static:</strong> Immobile objects that do not move but act as collision boundaries for dynamic bodies. They have infinite mass. (e.g., Floors, walls, terrain).</li>
                 <li><strong>Kinematic:</strong> Objects that act like static bodies to other objects, but can be moved via script or animation. They push dynamic bodies out of the way but are unaffected by gravity or forces. (e.g., Moving platforms, animated character controllers).</li>
             </ul>
+
+            <!-- Figure 2 — Body Types State Machine -->
+            <figure class="doc-figure">
+                <div class="doc-image-frame">
+                    <img src="../assets/screenshots/uml-graphs/physics-body-types-uml.png"
+                         alt="UML state diagram of the three physics body types: Dynamic (with Active/Sleeping states), Static (Immobile), Kinematic (ScriptDriven), and their interaction rules"
+                         loading="lazy"
+                         width="1400" height="900">
+                </div>
+                <figcaption class="doc-caption">
+                    <strong>Figure 2 — Body types &amp; interaction rules.</strong>
+                    <code>Dynamic</code> bodies respond to forces and can auto-sleep when idle;
+                    <code>Static</code> bodies have infinite mass and never move;
+                    <code>Kinematic</code> bodies are script-driven and push dynamics without being
+                    affected by gravity. Click to enlarge.
+                </figcaption>
+            </figure>
 
             <h2 id="world-settings">Physics World Settings</h2>
             <p>The global physics simulation parameters can be accessed via the <strong>Project Settings > Physics</strong> menu.</p>
@@ -187,6 +291,22 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Figure 3 — Simulation Loop -->
+            <figure class="doc-figure">
+                <div class="doc-image-frame">
+                    <img src="../assets/screenshots/uml-graphs/physics-simulation-loop-uml.png"
+                         alt="UML flowchart of the physics simulation loop: clamp delta → accumulate time → check fixed timestep → sub-step through broadphase, narrowphase, solver, integrate, zones, CCD, sleep → max sub steps guard"
+                         loading="lazy"
+                         width="1400" height="900">
+                </div>
+                <figcaption class="doc-caption">
+                    <strong>Figure 3 — Per-frame simulation loop.</strong>
+                    The engine accumulates frame time and runs fixed sub-steps (capped by
+                    <code>maxSubSteps = 8</code>) through broadphase → narrowphase → solver →
+                    integrate → zones → CCD → sleep. Click to enlarge.
+                </figcaption>
+            </figure>
 
             <h2 id="material-presets">Physics Material Presets</h2>
             <p>The physical behavior of an object's surface is defined by its Physics Material. The engine provides several highly-tuned presets built directly into the codebase.</p>
@@ -233,7 +353,7 @@
             </ul>
 
             <h2 id="advanced-features">Advanced Physics Features</h2>
-            
+
             <h3 id="zones-forces">Spatial Forces & Zones</h3>
             <p>SM Engine includes specialized volume objects that apply continuous forces to dynamic bodies that enter them:</p>
             <ul>
@@ -270,7 +390,6 @@
                 <strong>See Also:</strong> Looking to apply physics to animated characters? Check out the <a href="ragdoll.html">Ragdoll System documentation</a>. Looking for trigger volumes? See the <a href="zones.html">Zones System documentation</a>.
             </div>
 
-        
             </main>
 
             <aside class="toc-sidebar">
@@ -281,5 +400,59 @@
     </div>
 
     <script src="./docs.js"></script>
+
+    <!-- Lightbox -->
+    <script>
+    (function () {
+        var imgs = document.querySelectorAll('.doc-image-frame img');
+        if (!imgs.length) return;
+
+        var overlay = document.createElement('div');
+        overlay.className = 'doc-lightbox';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', 'Enlarged diagram view');
+        overlay.innerHTML =
+            '<button class="doc-lightbox-close" aria-label="Close">&times;</button>' +
+            '<img alt="">';
+        document.body.appendChild(overlay);
+
+        var overlayImg = overlay.querySelector('img');
+        var closeBtn   = overlay.querySelector('.doc-lightbox-close');
+
+        function open(src, alt) {
+            overlayImg.src = src;
+            overlayImg.alt = alt || '';
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function close() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+            overlayImg.src = '';
+        }
+
+        imgs.forEach(function (img) {
+            img.addEventListener('click', function () {
+                open(img.currentSrc || img.src, img.alt);
+            });
+            img.setAttribute('tabindex', '0');
+            img.setAttribute('role', 'button');
+            img.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    open(img.currentSrc || img.src, img.alt);
+                }
+            });
+        });
+
+        closeBtn.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+        overlay.addEventListener('click', close);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+        });
+    })();
+    </script>
 </body>
 </html>
+

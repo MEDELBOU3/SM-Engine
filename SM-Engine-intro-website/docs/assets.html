@@ -4,13 +4,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Management & Persistence - SM Engine Documentation</title>
+    <title>Asset Management &amp; Persistence - SM Engine Documentation</title>
     <link rel="stylesheet" href="./docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
         rel="stylesheet">
+
+    <style>
+        /* --- Image frame wrapper (image only, no caption inside) --- */
+        .doc-image-frame {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 4px;
+            background: var(--surface-2, #161616);
+            border: 1px solid var(--border, #2a2a2a);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            overflow: hidden;
+        }
+        .doc-image-frame:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+            border-color: var(--border-strong, #3a3a3a);
+        }
+        .doc-image-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            background: var(--surface-3, #0f0f0f);
+            cursor: zoom-in;
+        }
+        html[data-theme="light"] .doc-image-frame {
+            background: #f8f8f8;
+            border-color: #e2e2e2;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        html[data-theme="light"] .doc-image-frame img { background: #ffffff; }
+
+        /* --- Lightbox --------------------------------------------- */
+        .doc-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: zoom-out;
+            padding: 4vh 4vw;
+        }
+        .doc-lightbox.open { display: flex; }
+        .doc-lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+        }
+        .doc-lightbox .doc-lightbox-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-size: 1.75rem;
+            color: #fff;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.75;
+            transition: opacity 0.15s ease;
+        }
+        .doc-lightbox .doc-lightbox-close:hover { opacity: 1; }
+    </style>
 </head>
 
 <body>
@@ -187,16 +258,16 @@
                     <a href="index.html">Docs</a> / Node Editors & Systems / Asset Management
                 </nav>
 
-                <h1>Asset Management & Scene Persistence</h1>
+                <h1>Asset Management &amp; Scene Persistence</h1>
                 <p class="page-lead">
                     Technical guide to SM Engine's Asset Panel, GLTF model importing, built-in model library, and scene
                     JSON serialization.
                 </p>
 
-                <h2 id="asset-manager">Asset Panel & Library</h2>
+                <h2 id="asset-manager">Asset Panel &amp; Library</h2>
                 <figure class="doc-figure">
                     <div class="doc-image-frame">
-                        <img src="../../assets/screenshots/assets-panel.png"
+                        <img src="../assets/screenshots/assets-panel.png"
                             alt="SM Engine Assets Browser and Content Browser interface">
                     </div>
 
@@ -217,7 +288,24 @@
                     <li><strong>Vegetation Models:</strong> Trees, Palms, Grass tufts, Rocks, Boulders.</li>
                 </ul>
 
-                <h2 id="scene-serialization">Scene Serialization & JSON Save/Load</h2>
+                <!-- Figure 1 — Asset Architecture (Component Diagram) -->
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/uml-graphs/assets-architecture-component-uml.png"
+                             alt="UML component diagram of the Asset system: AssetPanel (search, sidebar, grid, preview), BuiltinLibrary, ImporterService, ScenePersistenceManager, Serializer, ProjectFile and SceneGraph"
+                             loading="lazy"
+                             width="1400" height="900">
+                    </div>
+                    <figcaption class="doc-caption">
+                        <strong>Figure 1 — Asset system architecture (component view).</strong>
+                        The <code>AssetPanel</code> loads from <code>BuiltinLibrary</code> or receives drops
+                        through the <code>ImporterService</code>, which injects into the <code>SceneGraph</code>.
+                        Saving routes through the <code>ScenePersistenceManager</code> → <code>Serializer</code>
+                        → <code>ProjectFile</code> pipeline. Click to enlarge.
+                    </figcaption>
+                </figure>
+
+                <h2 id="scene-serialization">Scene Serialization &amp; JSON Save/Load</h2>
                 <p>
                     The <code>ScenePersistenceManager.js</code> serializes complete 3D scene states into a clean
                     human-readable <code>.smproj</code> JSON schema:
@@ -236,6 +324,23 @@
     }
   ]
 }</code></pre>
+
+                <!-- Figure 2 — .smproj Schema Tree -->
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/uml-graphs/assets-smproj-schema-uml.png"
+                             alt="JSON schema tree diagram of the .smproj project file: version, metadata (title, created), environment (skyTime, fogDensity), and objects array with uuid, name, type, transform and material fields"
+                             loading="lazy"
+                             width="1400" height="900">
+                    </div>
+                    <figcaption class="doc-caption">
+                        <strong>Figure 2 — <code>.smproj</code> file schema.</strong>
+                        Each project file contains a <code>version</code> string, a <code>metadata</code> block,
+                        an <code>environment</code> block (sky &amp; fog settings), and an <code>objects[]</code>
+                        array where each entry stores its own <code>transform</code> and <code>material</code>.
+                        Click to enlarge.
+                    </figcaption>
+                </figure>
 
                 <div class="page-navigation">
                     <a href="scripting.html" class="nav-card">
@@ -257,6 +362,60 @@
     </div>
 
     <script src="./docs.js"></script>
+
+    <!-- Lightbox -->
+    <script>
+    (function () {
+        var imgs = document.querySelectorAll('.doc-image-frame img');
+        if (!imgs.length) return;
+
+        var overlay = document.createElement('div');
+        overlay.className = 'doc-lightbox';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', 'Enlarged diagram view');
+        overlay.innerHTML =
+            '<button class="doc-lightbox-close" aria-label="Close">&times;</button>' +
+            '<img alt="">';
+        document.body.appendChild(overlay);
+
+        var overlayImg = overlay.querySelector('img');
+        var closeBtn   = overlay.querySelector('.doc-lightbox-close');
+
+        function open(src, alt) {
+            overlayImg.src = src;
+            overlayImg.alt = alt || '';
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function close() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+            overlayImg.src = '';
+        }
+
+        imgs.forEach(function (img) {
+            img.addEventListener('click', function () {
+                open(img.currentSrc || img.src, img.alt);
+            });
+            img.setAttribute('tabindex', '0');
+            img.setAttribute('role', 'button');
+            img.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    open(img.currentSrc || img.src, img.alt);
+                }
+            });
+        });
+
+        closeBtn.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+        overlay.addEventListener('click', close);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+        });
+    })();
+    </script>
 </body>
 
 </html>
+

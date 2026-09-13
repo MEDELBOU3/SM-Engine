@@ -1,70 +1,118 @@
 /* ==========================================================================
-   SM Engine Documentation Stylesheet - 2026 Modern Creative Edition
-   Theme: High-End Dark Studio, Crisp Typography, Floating TOC, Lightbox & Mobile Drawer
+   SM Engine Documentation Stylesheet — SideFX / Houdini Edition
+   Theme: Precision Industrial Dark · Content-First · Technical Node Hierarchy
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* ─── 1. Design Tokens (SideFX Houdini Palette) ───────────────────────── */
 :root {
-    /* Dark Theme (Default) */
-    --bg-primary: #070709;
-    --bg-secondary: #0c0c10;
-    --bg-tertiary: #111116;
-    --bg-card: rgba(255, 255, 255, 0.03);
-    --bg-card-hover: rgba(255, 255, 255, 0.06);
-    
-    --text-primary: #ffffff;
-    --text-secondary: #9da3af;
-    --text-muted: #5e6472;
-    
-    --accent-color: #54c9f7;
-    --accent-hover: #8bdcff;
-    --accent-glow: rgba(84, 201, 247, 0.15);
-    --accent-subtle: rgba(84, 201, 247, 0.08);
-    
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-light: rgba(255, 255, 255, 0.14);
-    
-    --code-bg: #09090d;
-    --code-text: #e2e8f0;
-    --code-header-bg: #0f0f15;
-    
-    --scrollbar-track: #070709;
-    --scrollbar-thumb: #1e1e26;
-    --scrollbar-thumb-hover: #33333f;
-    --shadow-color: rgba(0, 0, 0, 0.7);
-    --table-header-bg: rgba(84, 201, 247, 0.06);
-    --sidebar-width: 290px;
-    --toc-width: 230px;
-    --header-height: 60px;
+    /* Dark Theme (Default) — Houdini Industrial Slate */
+    --bg-primary: #18181a;
+    --bg-secondary: #212124;
+    --bg-tertiary: #2a2a2e;
+    --bg-card: #242428;
+    --bg-card-hover: #2e2e33;
+    --bg-elevated: #2f2f35;
+
+    /* Text Hierarchy */
+    --text-primary: #e6e6e8;
+    --text-secondary: #a3a3a8;
+    --text-muted: #717178;
+    --text-faint: #4e4e54;
+
+    /* Official SideFX Copper / Industrial Orange Accent */
+    --accent-color: #ff7a00;
+    --accent-hover: #ff9429;
+    --accent-glow: rgba(255, 122, 0, 0.16);
+    --accent-subtle: rgba(255, 122, 0, 0.09);
+    --accent-border: rgba(255, 122, 0, 0.32);
+
+    /* Houdini Precision Blue (Alternative Node Tone) */
+    --blue-accent: #388bfd;
+    --blue-subtle: rgba(56, 139, 253, 0.1);
+
+    /* Hairline Studio Borders */
+    --border-color: #323236;
+    --border-light: #3e3e44;
+    --border-strong: #4d4d54;
+
+    /* Code & Terminal Systems */
+    --code-bg: #141416;
+    --code-text: #e1e1e6;
+    --code-header-bg: #1d1d20;
+
+    /* Scrollbars */
+    --scrollbar-track: #18181a;
+    --scrollbar-thumb: #35353a;
+    --scrollbar-thumb-hover: #45454c;
+
+    /* Precision Elevation */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+    --shadow-md: 0 3px 10px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.65);
+    --shadow-xl: 0 16px 42px rgba(0, 0, 0, 0.75);
+
+    --table-header-bg: #26262a;
+
+    --sidebar-width: 260px;
+    --toc-width: 220px;
+    --header-height: 48px;
+    --content-max: 920px;
+
+    --radius-xs: 2px;
+    --radius-sm: 3px;
+    --radius-md: 4px;
+    --radius-lg: 6px;
+
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast: 0.12s;
+    --dur-base: 0.2s;
 }
 
 [data-theme="light"] {
-    --bg-primary: #f8fafc;
-    --bg-secondary: #ffffff;
-    --bg-tertiary: #f1f5f9;
-    --bg-card: rgba(0, 0, 0, 0.02);
-    --bg-card-hover: rgba(0, 0, 0, 0.05);
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
-    --accent-color: #047ca8;
-    --accent-hover: #00668d;
-    --accent-glow: rgba(4, 124, 168, 0.15);
-    --accent-subtle: rgba(4, 124, 168, 0.08);
-    --border-color: #e2e8f0;
-    --border-light: #cbd5e1;
-    --code-bg: #f1f5f9;
-    --code-text: #0f172a;
-    --code-header-bg: #e2e8f0;
-    --scrollbar-track: #f8fafc;
-    --scrollbar-thumb: #cbd5e1;
-    --scrollbar-thumb-hover: #94a3b8;
-    --shadow-color: rgba(0, 0, 0, 0.06);
-    --table-header-bg: rgba(4, 124, 168, 0.06);
+    --bg-primary: #ffffff;
+    --bg-secondary: #f6f6f8;
+    --bg-tertiary: #eeeeF2;
+    --bg-card: #f9f9fb;
+    --bg-card-hover: #ececf0;
+    --bg-elevated: #ffffff;
+
+    --text-primary: #18181b;
+    --text-secondary: #52525b;
+    --text-muted: #878792;
+    --text-faint: #b4b4be;
+
+    --accent-color: #ea580c;
+    --accent-hover: #c2410c;
+    --accent-glow: rgba(234, 88, 12, 0.14);
+    --accent-subtle: rgba(234, 88, 12, 0.08);
+    --accent-border: rgba(234, 88, 12, 0.3);
+
+    --blue-accent: #0284c7;
+    --blue-subtle: rgba(2, 132, 199, 0.08);
+
+    --border-color: #e4e4e7;
+    --border-light: #d4d4d8;
+    --border-strong: #a1a1aa;
+
+    --code-bg: #f4f4f6;
+    --code-text: #18181b;
+    --code-header-bg: #e8e8ec;
+
+    --scrollbar-track: #ffffff;
+    --scrollbar-thumb: #d4d4d8;
+    --scrollbar-thumb-hover: #a1a1aa;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.12);
+
+    --table-header-bg: #ececf0;
 }
 
-/* ─── Base Reset ───────────────────────────────────────────────────────── */
+/* ─── 2. Base Reset & Font Architecture ───────────────────────────────── */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -75,65 +123,66 @@ html {
     scroll-behavior: smooth;
     background-color: var(--bg-primary);
     color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
 }
 
+[data-theme="light"] { color-scheme: light; }
+
 body {
-    font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    line-height: 1.65;
-    letter-spacing: -0.015em;
+    line-height: 1.6;
+    font-size: 13.5px;
+    letter-spacing: -0.006em;
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--dur-base) var(--ease),
+                color var(--dur-base) var(--ease);
 }
 
-/* ─── Reading Progress Bar ─────────────────────────────────────────────── */
+*:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+}
+
+/* ─── 3. Global Indicators & Scrollers ────────────────────────────────── */
 .doc-reading-bar {
     position: fixed;
     top: 0;
     left: 0;
-    height: 2.5px;
-    background: linear-gradient(90deg, var(--accent-color), #fbbf24);
+    height: 2px;
+    background: var(--accent-color);
     width: 0%;
     z-index: 1000;
-    transition: width 0.1s ease;
+    box-shadow: 0 0 8px var(--accent-glow);
+    transition: width 0.08s linear;
 }
 
-/* ─── Scrollbar ────────────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--scrollbar-track);
-}
-
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
 ::-webkit-scrollbar-thumb {
     background: var(--scrollbar-thumb);
-    border-radius: 3px;
+    border-radius: var(--radius-xs);
 }
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--scrollbar-thumb-hover);
-}
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-/* ─── SVG Icons ────────────────────────────────────────────────────────── */
 .doc-icon {
-    width: 17px;
-    height: 17px;
+    width: 15px;
+    height: 15px;
     fill: none;
     stroke: currentColor;
-    stroke-width: 2;
+    stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
     display: inline-block;
@@ -141,190 +190,204 @@ body {
     flex-shrink: 0;
 }
 
-.doc-icon.sm { width: 14px; height: 14px; }
-.doc-icon.lg { width: 22px; height: 22px; }
+.doc-icon.sm { width: 12px; height: 12px; }
+.doc-icon.lg { width: 18px; height: 18px; }
 
-/* ─── Top Header Navigation ────────────────────────────────────────────── */
+/* ─── 4. Top Header Navigation (Fixed Centering) ──────────────────────── */
 .top-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1.5rem;
-    background: rgba(12, 12, 16, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    padding: 0 1rem;
+    background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     z-index: 100;
     height: var(--header-height);
     flex-shrink: 0;
-}
-
-[data-theme="light"] .top-nav {
-    background: rgba(255, 255, 255, 0.9);
+    position: relative;
 }
 
 .nav-brand {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.55rem;
     text-decoration: none;
     color: var(--text-primary);
+    height: 100%;
 }
 
 .nav-brand img {
-    height: 30px;
-    width: 30px;
+    height: 22px;
+    width: 22px;
     object-fit: contain;
+    border-radius: var(--radius-xs);
 }
 
 .brand-title {
-    font-size: 1.05rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
     color: var(--text-primary);
+    letter-spacing: -0.015em;
 }
 
 .brand-badge {
-    font-size: 0.68rem;
-    background-color: var(--accent-subtle);
+    font-size: 0.62rem;
+    background: var(--accent-subtle);
     color: var(--accent-color);
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--accent-border);
     font-family: "JetBrains Mono", monospace;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
 }
 
+/* Center Container: Centered vertically & horizontally without sticking */
 .nav-center {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    justify-content: center;
+    height: 100%;
+    margin: 0 auto;
 }
 
 .nav-links {
     display: flex;
-    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
     list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.nav-links li {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
 .nav-links a {
     color: var(--text-secondary);
     text-decoration: none;
-    font-size: 0.84rem;
+    font-size: 0.79rem;
     font-weight: 500;
-    padding: 0.35rem 0.65rem;
-    border-radius: 4px;
-    transition: all 0.18s ease;
-    display: flex;
+    padding: 0 0.65rem;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    transition: all var(--dur-fast) var(--ease);
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
+    line-height: 1;
 }
 
 .nav-links a:hover {
     color: var(--text-primary);
-    background: var(--bg-card-hover);
+    background: var(--bg-tertiary);
 }
 
 .nav-links a.active {
     color: var(--accent-color);
     background: var(--accent-subtle);
-    border: 1px solid rgba(245, 158, 11, 0.25);
+    border: 1px solid var(--accent-border);
     font-weight: 600;
 }
 
 .nav-actions {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.5rem;
+    height: 100%;
 }
 
-/* Header Search Box */
+/* ─── 5. Search Box (Houdini Quick Jump Look) ─────────────────────────── */
 .search-container {
     position: relative;
-    width: 260px;
+    width: 210px;
+    display: flex;
+    align-items: center;
 }
 
 .search-input {
     width: 100%;
-    background-color: var(--bg-tertiary);
+    background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    padding: 0.45rem 2.2rem 0.45rem 2.2rem;
-    border-radius: 5px;
-    font-size: 0.82rem;
+    padding: 0.35rem 0.7rem 0.35rem 1.95rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.76rem;
     font-family: inherit;
     outline: none;
-    transition: all 0.2s ease;
+    transition: border-color var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease);
 }
+
+.search-input::placeholder { color: var(--text-muted); }
 
 .search-input:focus {
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-    background-color: var(--bg-secondary);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+    background: var(--bg-primary);
 }
 
 .search-icon-inside {
     position: absolute;
-    left: 0.65rem;
+    left: 0.6rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
     pointer-events: none;
+    width: 12px;
+    height: 12px;
 }
 
 .search-kbd {
     position: absolute;
-    right: 0.5rem;
+    right: 0.45rem;
     top: 50%;
     transform: translateY(-50%);
     font-family: "JetBrains Mono", monospace;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 3px;
-    padding: 0.1rem 0.35rem;
+    border-radius: var(--radius-xs);
+    padding: 0.05rem 0.3rem;
     color: var(--text-muted);
     pointer-events: none;
 }
 
-/* Theme Toggle Button */
-.theme-toggle-btn {
+/* ─── 6. Action Toggles ───────────────────────────────────────────────── */
+.theme-toggle-btn,
+.mobile-sidebar-toggle {
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
-    width: 34px;
-    height: 34px;
-    border-radius: 5px;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all var(--dur-fast) var(--ease);
 }
 
-.theme-toggle-btn:hover {
+.theme-toggle-btn:hover,
+.mobile-sidebar-toggle:hover {
     color: var(--accent-color);
-    border-color: var(--accent-color);
+    border-color: var(--accent-border);
     background: var(--bg-card-hover);
 }
 
-/* Mobile Sidebar Toggle Button */
-.mobile-sidebar-toggle {
-    display: none;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    width: 34px;
-    height: 34px;
-    border-radius: 5px;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-}
+.mobile-sidebar-toggle { display: none; }
 
-/* ─── Docs Layout ──────────────────────────────────────────────────────── */
+/* ─── 7. Main Structural Layout ───────────────────────────────────────── */
 .docs-container {
     display: flex;
     flex: 1;
@@ -332,29 +395,30 @@ body {
     position: relative;
 }
 
-/* ─── Left Sidebar Navigation ─────────────────────────────────────────── */
+/* ─── 8. Left Sidebar (Houdini Node Hierarchy) ────────────────────────── */
 .sidebar {
     width: var(--sidebar-width);
-    background-color: var(--bg-secondary);
+    background: var(--bg-secondary);
     border-right: 1px solid var(--border-color);
-    padding: 1.25rem 0.85rem 3rem 0.85rem;
+    padding: 0.65rem 0 2.5rem 0;
     overflow-y: auto;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0.5rem;
     position: relative;
     z-index: 20;
 }
 
-/* Sidebar Quick Filter Box */
 .sidebar-filter-wrapper {
     position: sticky;
     top: 0;
     background: var(--bg-secondary);
-    padding-bottom: 0.75rem;
+    padding: 0.5rem 0.75rem 0.6rem 0.75rem;
     z-index: 10;
     border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
 }
 
 .sidebar-filter-input {
@@ -362,11 +426,12 @@ body {
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    padding: 0.4rem 0.65rem 0.4rem 2rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
+    padding: 0.32rem 0.6rem 0.32rem 1.85rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.76rem;
+    font-family: inherit;
     outline: none;
-    transition: border-color 0.2s ease;
+    transition: border-color var(--dur-fast) var(--ease);
 }
 
 .sidebar-filter-input:focus {
@@ -375,51 +440,51 @@ body {
 
 .sidebar-filter-icon {
     position: absolute;
-    left: 0.6rem;
-    top: 0.45rem;
+    left: 1.35rem;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--text-muted);
     pointer-events: none;
+    width: 12px;
+    height: 12px;
 }
 
-/* Sidebar Group */
 .sidebar-group {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.1rem;
 }
 
 .sidebar-group-title {
-    font-size: 0.72rem;
+    font-size: 0.67rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-muted);
-    padding: 0.4rem 0.6rem;
+    padding: 0.45rem 0.85rem 0.25rem 0.85rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     user-select: none;
     cursor: pointer;
-    border-radius: 4px;
-    transition: color 0.15s ease, background-color 0.15s ease;
+    transition: color var(--dur-fast) var(--ease);
 }
 
 .sidebar-group-title:hover {
     color: var(--text-primary);
-    background-color: var(--bg-card);
 }
 
 .sidebar-group-label {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
 }
 
 .sidebar-group-toggle-icon {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     color: var(--text-muted);
-    transition: transform 0.2s ease;
+    transition: transform var(--dur-base) var(--ease);
 }
 
 .sidebar-group.collapsed .sidebar-group-toggle-icon {
@@ -431,103 +496,105 @@ body {
 }
 
 .sidebar-group-count {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-family: "JetBrains Mono", monospace;
     color: var(--text-muted);
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
-    padding: 0.05rem 0.35rem;
-    border-radius: 3px;
+    padding: 0.02rem 0.3rem;
+    border-radius: var(--radius-xs);
 }
 
 .sidebar-links {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
-    padding-left: 0.25rem;
+    padding: 0 0.5rem;
+    margin-top: 0.15rem;
 }
 
 .sidebar-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.42rem 0.7rem;
+    display: block;
+    padding: 0.3rem 0.65rem;
     color: var(--text-secondary);
     text-decoration: none;
-    font-size: 0.84rem;
-    border-radius: 4px;
+    font-size: 0.77rem;
+    border-radius: var(--radius-xs);
     font-weight: 450;
-    transition: all 0.15s ease;
+    transition: all var(--dur-fast) var(--ease);
+    line-height: 1.45;
     border-left: 2px solid transparent;
 }
 
 .sidebar-link:hover {
-    background-color: var(--bg-card-hover);
     color: var(--text-primary);
-    transform: translateX(2px);
+    background: var(--bg-tertiary);
 }
 
 .sidebar-link.active {
-    background-color: var(--accent-subtle);
     color: var(--accent-color);
+    background: var(--accent-subtle);
     font-weight: 600;
     border-left-color: var(--accent-color);
 }
 
-/* ─── Main Content Area ───────────────────────────────────────────────── */
+/* ─── 9. Content Workspace ────────────────────────────────────────────── */
 .content-wrapper {
     flex: 1;
     display: flex;
     overflow: hidden;
+    justify-content: center;
 }
 
 .content {
     flex: 1;
-    padding: 2.5rem 4rem 6rem 4rem;
+    padding: 2.25rem 3.5rem 4.5rem 3.5rem;
     overflow-y: auto;
-    max-width: 980px;
+    max-width: var(--content-max);
+    width: 100%;
 }
 
-/* ─── Right Table of Contents (TOC) ───────────────────────────────────── */
+/* ─── 10. TOC Inspector (Right Panel) ─────────────────────────────────── */
 .toc-sidebar {
     width: var(--toc-width);
-    padding: 2.5rem 1.5rem 3rem 1.25rem;
+    padding: 2.25rem 1rem 3rem 1rem;
     border-left: 1px solid var(--border-color);
     overflow-y: auto;
     flex-shrink: 0;
-    font-size: 0.82rem;
+    font-size: 0.75rem;
     background: var(--bg-primary);
 }
 
 .toc-title {
-    font-size: 0.72rem;
+    font-size: 0.67rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-muted);
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.75rem;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 .toc-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.2rem;
     border-left: 1px solid var(--border-color);
     padding-left: 0.75rem;
+    position: relative;
 }
 
 .toc-list a {
-    color: var(--text-secondary);
+    color: var(--text-muted);
     text-decoration: none;
-    transition: all 0.15s ease;
+    transition: color var(--dur-fast) var(--ease);
     display: block;
-    line-height: 1.45;
+    line-height: 1.5;
     position: relative;
+    padding: 0.12rem 0;
 }
 
 .toc-list a:hover {
@@ -543,19 +610,19 @@ body {
     content: "";
     position: absolute;
     left: calc(-0.75rem - 1px);
-    top: 0;
-    bottom: 0;
+    top: 2px;
+    bottom: 2px;
     width: 2px;
-    background-color: var(--accent-color);
+    background: var(--accent-color);
     border-radius: 1px;
 }
 
-/* ─── Typography & Content Formatting ────────────────────────────────── */
+/* ─── 11. Technical Typography & Elements ─────────────────────────────── */
 .breadcrumb {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
+    gap: 0.45rem;
+    font-size: 0.74rem;
     color: var(--text-muted);
     margin-bottom: 1.25rem;
     font-family: "JetBrains Mono", monospace;
@@ -564,7 +631,7 @@ body {
 .breadcrumb a {
     color: var(--text-secondary);
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: color var(--dur-fast) var(--ease);
 }
 
 .breadcrumb a:hover {
@@ -572,155 +639,163 @@ body {
 }
 
 h1 {
-    font-size: 2.35rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
     color: var(--text-primary);
-    margin-bottom: 0.75rem;
-    line-height: 1.2;
+    margin-bottom: 0.65rem;
+    line-height: 1.22;
 }
 
 .page-lead {
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
     margin-bottom: 2.25rem;
     line-height: 1.65;
 }
 
 h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-size: 1.3rem;
+    font-weight: 650;
+    letter-spacing: -0.018em;
     color: var(--text-primary);
-    margin: 2.75rem 0 1rem 0;
-    padding-bottom: 0.5rem;
+    margin: 2.5rem 0 0.85rem 0;
+    padding-bottom: 0.45rem;
     border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
+    scroll-margin-top: 60px;
 }
 
 h3 {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.012em;
     color: var(--text-primary);
-    margin: 1.85rem 0 0.75rem 0;
+    margin: 1.75rem 0 0.6rem 0;
+    scroll-margin-top: 60px;
 }
 
 p {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.15rem;
     color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
+    font-size: 0.88rem;
+    line-height: 1.72;
 }
 
 ul, ol {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.15rem;
     padding-left: 1.5rem;
     color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
+    font-size: 0.88rem;
+    line-height: 1.72;
 }
 
 li {
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.35rem;
 }
 
-a.doc-link {
+li::marker { color: var(--text-muted); }
+
+a {
     color: var(--accent-color);
     text-decoration: none;
-    border-bottom: 1px dashed rgba(245, 158, 11, 0.4);
-    transition: border-color 0.15s ease;
+    transition: color var(--dur-fast) var(--ease);
 }
 
-a.doc-link:hover {
-    border-bottom-style: solid;
-    border-bottom-color: var(--accent-color);
+a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
 }
 
 kbd {
     font-family: "JetBrains Mono", monospace;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 0.15rem 0.45rem;
+    border-bottom: 2px solid var(--border-strong);
+    border-radius: var(--radius-xs);
+    padding: 0.12rem 0.38rem;
     color: var(--text-primary);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    line-height: 1.4;
 }
 
-/* ─── Callout Boxes ────────────────────────────────────────────────────── */
+/* ─── 12. Houdini Operator Callouts ───────────────────────────────────── */
 .callout {
-    padding: 1.1rem 1.35rem;
-    margin: 1.75rem 0;
-    border-radius: 6px;
-    background-color: var(--bg-secondary);
+    padding: 0.85rem 1.1rem;
+    margin: 1.5rem 0;
+    border-radius: var(--radius-xs);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     border-left: 3.5px solid var(--accent-color);
-    border-top: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
     display: flex;
-    gap: 0.9rem;
-    font-size: 0.9rem;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    line-height: 1.62;
 }
 
 .callout-icon {
     color: var(--accent-color);
     margin-top: 0.15rem;
+    flex-shrink: 0;
 }
 
-.callout-body {
-    flex: 1;
-}
+.callout-body { flex: 1; }
 
 .callout-body strong {
     color: var(--text-primary);
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
+    font-weight: 600;
 }
 
 .callout.tip {
     border-left-color: #10b981;
-    background-color: rgba(16, 185, 129, 0.05);
+    background: rgba(16, 185, 129, 0.035);
 }
 .callout.tip .callout-icon { color: #10b981; }
 
 .callout.warning {
-    border-left-color: #ef4444;
-    background-color: rgba(239, 68, 68, 0.05);
+    border-left-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.035);
 }
-.callout.warning .callout-icon { color: #ef4444; }
+.callout.warning .callout-icon { color: #f59e0b; }
 
 .callout.note {
-    border-left-color: #3b82f6;
-    background-color: rgba(59, 130, 246, 0.05);
+    border-left-color: var(--blue-accent);
+    background: var(--blue-subtle);
 }
-.callout.note .callout-icon { color: #3b82f6; }
+.callout.note .callout-icon { color: var(--blue-accent); }
 
-/* ─── Code Blocks & Inline Code ────────────────────────────────────────── */
+.callout-important {
+    border-left-color: #a855f7;
+    background: rgba(168, 85, 247, 0.035);
+}
+.callout-important .callout-icon { color: #a855f7; }
+
+/* ─── 13. VEX / Python Code Blocks ────────────────────────────────────── */
 code {
     font-family: "JetBrains Mono", Consolas, Monaco, monospace;
-    background-color: var(--code-bg);
+    background: var(--code-bg);
     color: var(--accent-color);
-    padding: 0.15rem 0.4rem;
-    border-radius: 3px;
-    font-size: 0.85em;
+    padding: 0.12rem 0.35rem;
+    border-radius: var(--radius-xs);
+    font-size: 0.83em;
     border: 1px solid var(--border-color);
 }
 
 pre {
-    background-color: var(--code-bg);
+    background: var(--code-bg);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     margin: 1.5rem 0;
     overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-md);
 }
 
 .code-header {
-    background-color: var(--code-header-bg);
+    background: var(--code-header-bg);
     padding: 0.45rem 1rem;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-family: "JetBrains Mono", monospace;
     color: var(--text-muted);
     display: flex;
@@ -731,119 +806,133 @@ pre {
 
 pre code {
     display: block;
-    padding: 1.1rem;
+    padding: 1rem 1.1rem;
     color: var(--code-text);
     background: transparent;
     border: none;
-    font-size: 0.86rem;
+    font-size: 0.81rem;
     overflow-x: auto;
-    line-height: 1.6;
+    line-height: 1.68;
+    font-family: "JetBrains Mono", monospace;
+    tab-size: 4;
 }
 
-/* ─── Tables ───────────────────────────────────────────────────────────── */
+/* ─── 14. Houdini Parameter Tables (Node Inspector Look) ──────────────── */
 .table-wrapper {
     overflow-x: auto;
-    margin: 1.75rem 0;
-    border-radius: 6px;
+    margin: 1.5rem 0;
+    border-radius: var(--radius-xs);
     border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.88rem;
+    font-size: 0.82rem;
     text-align: left;
 }
 
 th {
-    background-color: var(--table-header-bg);
+    background: var(--table-header-bg);
     color: var(--text-primary);
     font-weight: 600;
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.85rem;
     border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
     font-family: "JetBrains Mono", monospace;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
 }
+
+th:last-child { border-right: none; }
 
 td {
-    padding: 0.75rem 1rem;
+    padding: 0.65rem 0.85rem;
     border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
     color: var(--text-secondary);
+    vertical-align: top;
+    line-height: 1.6;
 }
 
-tr:last-child td {
-    border-bottom: none;
+td:last-child { border-right: none; }
+tr:last-child td { border-bottom: none; }
+
+tbody tr {
+    transition: background var(--dur-fast) var(--ease);
 }
 
-tr:hover td {
-    background-color: var(--bg-card-hover);
+tbody tr:hover td {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
 }
 
-/* ─── Cards Grid ───────────────────────────────────────────────────────── */
+/* ─── 15. Operator Cards ──────────────────────────────────────────────── */
 .card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.25rem;
-    margin: 2rem 0;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin: 1.75rem 0;
 }
 
 .doc-card {
-    background-color: var(--bg-secondary);
+    background: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 1.35rem;
+    border-radius: var(--radius-xs);
+    padding: 1.15rem;
     text-decoration: none;
     color: inherit;
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: border-color var(--dur-base) var(--ease),
+                background var(--dur-base) var(--ease);
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.5rem;
 }
 
 .doc-card:hover {
-    transform: translateY(-2px);
-    border-color: var(--border-light);
-    background-color: var(--bg-tertiary);
-    box-shadow: 0 8px 24px var(--shadow-color);
+    border-color: var(--accent-color);
+    background: var(--bg-tertiary);
 }
 
 .doc-card-header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.65rem;
 }
 
 .doc-card-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 5px;
-    background-color: var(--accent-subtle);
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-xs);
+    background: var(--accent-subtle);
     color: var(--accent-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(245, 158, 11, 0.2);
+    border: 1px solid var(--accent-border);
 }
 
 .doc-card-title {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.92rem;
+    font-weight: 600;
     color: var(--text-primary);
 }
 
 .doc-card-desc {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
-/* ─── Bottom Page Navigation ──────────────────────────────────────────── */
+/* ─── 16. Bottom Workspace Navigation ─────────────────────────────────── */
 .page-navigation {
     display: flex;
     justify-content: space-between;
-    margin-top: 4rem;
-    padding-top: 2rem;
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
     gap: 1rem;
 }
@@ -851,102 +940,117 @@ tr:hover td {
 .nav-card {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    padding: 0.9rem 1.25rem;
+    gap: 0.2rem;
+    padding: 0.85rem 1.15rem;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background-color: var(--bg-secondary);
+    border-radius: var(--radius-xs);
+    background: var(--bg-secondary);
     text-decoration: none;
     color: var(--text-secondary);
-    transition: all 0.2s ease;
-    min-width: 180px;
+    transition: all var(--dur-base) var(--ease);
+    min-width: 170px;
 }
 
 .nav-card:hover {
     border-color: var(--accent-color);
-    background-color: var(--bg-tertiary);
-    color: var(--accent-color);
-    transform: translateY(-2px);
+    background: var(--bg-tertiary);
 }
 
 .nav-card-sub {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-family: "JetBrains Mono", monospace;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted);
+    color: var(--text-faint);
 }
 
 .nav-card-title {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 0.86rem;
+    font-weight: 500;
     color: var(--text-primary);
+    transition: color var(--dur-fast) var(--ease);
 }
 
-.nav-card:hover .nav-card-title {
-    color: var(--accent-color);
-}
+.nav-card:hover .nav-card-title { color: var(--accent-color); }
 
 .nav-card.next {
     text-align: right;
     margin-left: auto;
 }
 
-/* ─── Documentation Figure & Image Containers ────────────────────────── */
+/* ─── 17. Viewports, Diagrams & Lightbox ──────────────────────────────── */
 .doc-figure {
     width: 100%;
-    margin: 2rem 0;
+    margin: 1.75rem 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.55rem;
 }
 
 .doc-image-frame {
     width: 100%;
-    border-radius: 6px;
+    padding: 10px;
+    border-radius: var(--radius-xs);
     border: 1px solid var(--border-color);
-    background-color: var(--bg-tertiary);
+    background: var(--bg-secondary);
     overflow: hidden;
-    box-shadow: 0 10px 30px var(--shadow-color);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     cursor: zoom-in;
+    transition: border-color var(--dur-base) var(--ease);
+}
+
+.doc-image-frame:hover {
+    border-color: var(--border-strong);
 }
 
 .doc-image-frame img {
-    width: 100%;
-    height: auto;
-    max-width: 100%;
     display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    max-height: 600px;
+    width: auto;
+    height: auto;
     object-fit: contain;
-    transition: transform 0.3s ease;
+    object-position: center;
+    border-radius: var(--radius-xs);
+    transition: transform 0.25s var(--ease);
 }
 
 .doc-image-frame:hover img {
-    transform: scale(1.015);
+    transform: scale(1.008);
+}
+
+.doc-image-frame img.doc-img-wide {
+    max-width: min(100%, 1100px);
+    max-height: 540px;
+}
+
+.doc-image-frame img.doc-img-tall {
+    max-height: 700px;
+    max-width: min(100%, 620px);
 }
 
 .doc-figure--panel {
     width: 100%;
-    margin: 2rem 0;
+    margin: 1.75rem 0;
 }
 
 .doc-image-frame--panel {
     width: 100%;
-    min-height: 420px;
-    height: min(720px, 72vh);
-    padding: 20px;
+    min-height: 400px;
+    height: min(680px, 70vh);
+    padding: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background-color: var(--bg-tertiary);
+    background: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    box-shadow: 0 10px 30px var(--shadow-color);
+    border-radius: var(--radius-xs);
     cursor: zoom-in;
 }
 
@@ -971,18 +1075,18 @@ tr:hover td {
 
 .doc-image-placeholder {
     width: 100%;
-    min-height: 280px;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.04) 0%, var(--bg-tertiary) 100%);
+    min-height: 240px;
+    background: var(--bg-secondary);
     border: 1px dashed var(--border-light);
-    border-radius: 6px;
+    border-radius: var(--radius-xs);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    gap: 0.75rem;
+    padding: 1.5rem;
+    gap: 0.6rem;
     color: var(--text-secondary);
-    transition: border-color 0.2s ease;
+    transition: border-color var(--dur-base) var(--ease);
 }
 
 .doc-image-placeholder:hover {
@@ -990,42 +1094,43 @@ tr:hover td {
 }
 
 .doc-image-placeholder svg {
-    width: 48px;
-    height: 48px;
+    width: 38px;
+    height: 38px;
     stroke: var(--accent-color);
     opacity: 0.85;
 }
 
 .doc-image-placeholder span {
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.84rem;
+    font-weight: 500;
     color: var(--text-primary);
 }
 
 .doc-caption {
     width: 100%;
-    max-width: 760px;
-    font-size: 0.8rem;
-    line-height: 1.5;
+    max-width: 720px;
+    font-size: 0.75rem;
+    line-height: 1.55;
     color: var(--text-muted);
     font-style: italic;
     text-align: center;
 }
 
-/* Lightbox Modal */
+/* Modal Lightbox */
 .doc-lightbox {
     position: fixed;
     inset: 0;
     z-index: 2000;
-    background: rgba(0, 0, 0, 0.92);
-    backdrop-filter: blur(10px);
+    background: rgba(14, 14, 16, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2rem;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--dur-base) var(--ease);
 }
 
 .doc-lightbox.is-open {
@@ -1037,69 +1142,96 @@ tr:hover td {
     max-width: 92vw;
     max-height: 88vh;
     object-fit: contain;
-    border-radius: 6px;
-    border: 1px solid var(--border-light);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow-xl);
 }
 
 .doc-lightbox-close {
     position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid var(--border-light);
-    color: #ffffff;
-    width: 38px;
-    height: 38px;
-    border-radius: 6px;
+    top: 1rem;
+    right: 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-xs);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
-    transition: all 0.15s ease;
+    font-size: 1.15rem;
+    line-height: 1;
+    transition: all var(--dur-fast) var(--ease);
 }
 
 .doc-lightbox-close:hover {
-    background: #ffffff;
-    color: #000000;
+    background: var(--bg-card-hover);
+    color: var(--accent-color);
 }
 
-/* ─── Responsive Mobile Layout ────────────────────────────────────────── */
-@media (max-width: 1080px) {
+/* ─── 18. Responsive Breakpoints ──────────────────────────────────────── */
+@media (max-width: 1200px) {
+    :root {
+        --sidebar-width: 240px;
+        --toc-width: 200px;
+    }
+    .content { padding: 2rem 2.25rem 3.5rem 2.25rem; }
+}
+
+@media (max-width: 1024px) {
     .toc-sidebar { display: none; }
-    .content { padding: 2rem 2.5rem 5rem 2.5rem; }
+    .content {
+        padding: 2rem 2rem 3.5rem 2rem;
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 840px) {
     .sidebar {
         position: fixed;
-        left: -320px;
+        left: -280px;
         top: var(--header-height);
         bottom: 0;
-        width: 300px;
+        width: 260px;
         z-index: 150;
-        transition: left 0.25s ease;
-        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+        transition: left var(--dur-base) var(--ease);
+        box-shadow: 8px 0 24px rgba(0, 0, 0, 0.65);
     }
-    
-    .sidebar.mobile-open {
-        left: 0;
-    }
-    
-    .mobile-sidebar-toggle {
-        display: flex;
-    }
-    
-    .content {
-        padding: 1.5rem 1.25rem 4rem 1.25rem;
-    }
-    
-    .search-container {
-        width: 170px;
-    }
-    
-    .nav-links {
-        display: none;
+    .sidebar.mobile-open { left: 0; }
+
+    .mobile-sidebar-toggle { display: flex; }
+
+    .content { padding: 1.25rem 1.25rem 3rem 1.25rem; }
+
+    .search-container { width: 150px; }
+    .nav-links { display: none; }
+
+    h1 { font-size: 1.55rem; }
+    h2 { font-size: 1.18rem; margin-top: 1.85rem; }
+    h3 { font-size: 0.98rem; }
+    .page-lead { font-size: 0.9rem; }
+
+    .doc-image-frame img { max-height: 420px; }
+    .doc-image-frame:hover img { transform: none; }
+
+    .page-navigation { flex-direction: column; }
+    .nav-card.next { text-align: left; margin-left: 0; }
+}
+
+@media (max-width: 480px) {
+    .content { padding: 1rem 1rem 3rem 1rem; }
+    .search-container { width: 120px; }
+    .brand-badge { display: none; }
+    .card-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── 19. Reduced Motion Accessibility ────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }

@@ -1,366 +1,298 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark" class="dark">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SM Engine — Create Without Breaking Flow</title>
-    <meta name="description" content="SM Engine is an open-source real-time creation suite for modeling, node systems, animation, physical worlds, audio and game development.">
-    <meta name="theme-color" content="#070b10">
+    <title>SM Engine — Make Worlds. Keep Your Flow.</title>
+    <meta name="description"
+        content="SM Engine is an open-source real-time creation suite for modeling, node systems, animation, physical worlds, audio and game development.">
+    <meta name="theme-color" content="#0a0a0b">
     <link rel="icon" href="./assets/app.svg" type="image/svg+xml">
-
-    <script>
-        (() => {
-            const stored = localStorage.getItem("sm_engine_theme");
-            const theme = stored || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
-            document.documentElement.dataset.theme = theme;
-            document.documentElement.classList.toggle("dark", theme === "dark");
-        })();
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>(() => { try { document.documentElement.dataset.theme = localStorage.getItem("sm_cine_theme") || "dark"; } catch (e) { document.documentElement.dataset.theme = "dark"; } })();</script>
+    <link rel="stylesheet" href="./cinematic.css?v=16">
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link rel="stylesheet" href="./styles.css?v=20260909">
+    <script defer src="./cinematic.js?v=8"></script>
 </head>
 
-<body data-page="home" class="home-page home-v2 intro-loading">
-    <section class="intro-splash" data-intro-splash aria-label="SM Engine introduction">
-        <div class="intro-splash-grid" aria-hidden="true"></div>
-        <div class="intro-splash-corner intro-splash-corner-top">SM / 001</div>
-        <div class="intro-splash-corner intro-splash-corner-bottom">REAL-TIME CREATION SUITE</div>
-        <div class="intro-splash-center">
-            <div class="intro-splash-mark"><img src="./assets/app.svg" alt=""></div>
-            <p class="intro-splash-kicker">A new space for making worlds</p>
-            <h1 class="intro-splash-title"><span>SM</span> Engine</h1>
-            <div class="intro-splash-rule"><i data-intro-progress></i></div>
-            <button class="intro-splash-enter" type="button" data-intro-enter>Enter workspace <span aria-hidden="true">↗</span></button>
-        </div>
-    </section>
-    <a class="skip-link" href="#main-content">Skip to content</a>
-    <div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
-    <div class="pointer-aurora" data-pointer-aurora aria-hidden="true"></div>
+<body>
 
-    <header class="site-header-shell" data-site-header>
-        <div class="site-header-bar home-nav header-inner" data-header-bar>
-            <a href="./index.html" class="brand-lockup" aria-label="SM Engine home">
-                <span class="brand-mark" aria-hidden="true"><img src="./assets/app.svg" alt=""></span>
-                <span class="brand-copy">
-                    <strong>SM Engine</strong>
-                    <small>Real-time creation suite</small>
-                </span>
-            </a>
-
-            <nav class="desktop-nav" aria-label="Primary navigation">
-                <a class="top-nav-link" data-nav="home" href="./index.html">Home</a>
-                <a class="top-nav-link" data-nav="features" href="./features.html">Features</a>
-                <a class="top-nav-link" data-nav="workspaces" href="./workspaces.html">Workspaces</a>
-                <a class="top-nav-link" data-nav="showcase" href="./showcase.html">Showcase</a>
-                <a class="top-nav-link" href="./docs/index.html">Docs</a>
-            </nav>
-
-            <div class="header-actions">
-                <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
-                    <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.55 1.55M17.52 17.52l1.55 1.55M2 12h2.2M19.8 12H22M4.93 19.07l1.55-1.55M17.52 6.48l1.55-1.55"></path></svg>
-                    <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 14.5A8.5 8.5 0 0 1 9.5 3.6 8.5 8.5 0 1 0 20.4 14.5Z"></path></svg>
-                </button>
-                <a class="header-github" href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">GitHub</a>
-                <a href="./download.html" class="nav-download-link">Get Engine <span aria-hidden="true">↗</span></a>
-                <button type="button" class="menu-button" data-menu-button aria-expanded="false" aria-label="Toggle navigation">
-                    <span></span><span></span>
-                </button>
-            </div>
-        </div>
-
-        <nav class="mobile-nav hidden" data-mobile-menu aria-label="Mobile navigation">
-            <a data-nav="home" href="./index.html">Home</a>
-            <a data-nav="features" href="./features.html">Features</a>
-            <a data-nav="workspaces" href="./workspaces.html">Workspaces</a>
-            <a data-nav="showcase" href="./showcase.html">Showcase</a>
-            <a data-nav="roadmap" href="./roadmap.html">Roadmap</a>
-            <a href="./docs/index.html">Documentation</a>
-            <a data-nav="download" href="./download.html">Download</a>
-            <button class="mobile-theme-switch" type="button" data-theme-toggle><span>Appearance</span><strong data-theme-label>Dark mode</strong></button>
+    <!-- Fixed instrument cluster -->
+    <div class="hud" aria-hidden="false">
+        <button class="hud-menu" type="button" data-menu-open
+            aria-label="Open menu"><span>menu</span><i></i><i></i></button>
+        <div class="hud-fps"><b data-fps>0</b><span>scroll fps</span><canvas class="fps-graph" data-fps-graph
+                width="240" height="60" aria-hidden="true"></canvas></div>
+        <button class="hud-theme" type="button" data-theme-toggle aria-label="Switch theme">theme: <b
+                data-theme-label>dark</b></button>
+        <div class="hud-gear">gear <b data-gear>00</b> (06)</div>
+        <nav class="hud-nav" aria-label="Story chapters">
+            <a href="./index.html#brief" class="active">brief</a>
+            <a href="./craft.html">craft</a>
+            <a href="./workspaces.html">workspaces</a>
+            <a href="./realtime.html">real-time</a>
+            <a href="./core.html">core</a>
+            <a href="./download.html">download</a>
         </nav>
-    </header>
+    </div>
 
-    <main id="main-content">
-        <section class="hero-v2">
-            <canvas class="hero-webgl" data-hero-webgl aria-hidden="true"></canvas>
-            <div class="hero-grid-lines" aria-hidden="true"></div>
-            <div class="hero-copy-v2">
-                <div class="hero-eyebrow hero-animate">
-                    <span class="live-dot" aria-hidden="true"></span>
-                    <span>SM Engine 1.0</span>
-                    <span class="eyebrow-divider"></span>
-                    <span>Open source · Windows</span>
+    <a class="brand-float" data-brand href="./index.html" aria-label="SM Engine home"><img src="./assets/icons/logo.png"
+            alt="SM Engine logo"></a>
+
+    <div class="progress" data-progress aria-hidden="true"></div>
+
+    <!-- Fullscreen menu overlay -->
+    <div class="menu-overlay" data-menu aria-hidden="true" role="dialog" aria-label="Site menu">
+        <div class="menu-panel">
+            <div class="menu-top">
+                <a href="./index.html" data-menu-link aria-label="SM Engine home"><img src="./assets/icons/logo.png"
+                        alt="SM Engine logo" style="height:30px;width:auto;display:block"></a>
+                <div class="menu-top-btns">
+                    <button type="button" data-theme-toggle aria-label="Switch theme">theme: <b
+                            data-theme-label>dark</b></button>
+                    <button type="button" data-menu-close aria-label="Close menu">close <b>×</b></button>
                 </div>
+            </div>
+            <nav class="menu-nav" aria-label="Menu chapters">
+                <a class="menu-link" href="./index.html#brief" data-menu-link
+                    data-img="./assets/screenshots/engine_overview_main.png"><span class="menu-idx">00</span><span
+                        class="menu-mask"><span class="menu-link-inner">Brief</span></span><small>what this machine
+                        is</small></a>
+                <a class="menu-link" href="./index.html#one-place" data-menu-link
+                    data-img="./assets/screenshots/engine_overview_main.png"><span class="menu-idx">01</span><span
+                        class="menu-mask"><span class="menu-link-inner">One place</span></span><small>unified
+                        workspace</small></a>
+                <a class="menu-link" href="./craft.html" data-menu-link
+                    data-img="./assets/screenshots/engine_overview_main_.png"><span class="menu-idx">02</span><span
+                        class="menu-mask"><span class="menu-link-inner">Design × systems</span></span><small>interface
+                        craft</small></a>
+                <a class="menu-link" href="./workspaces.html" data-menu-link
+                    data-img="./assets/screenshots/material-editor.png"><span class="menu-idx">03</span><span
+                        class="menu-mask"><span class="menu-link-inner">Workspaces</span></span><small>six
+                        decisions</small></a>
+                <a class="menu-link" href="./realtime.html" data-menu-link
+                    data-img="./assets/screenshots/Timeline-Editor.png"><span class="menu-idx">04</span><span
+                        class="menu-mask"><span class="menu-link-inner">Real-time</span></span><small>zero
+                        delay</small></a>
+                <a class="menu-link" href="./core.html" data-menu-link
+                    data-img="./assets/screenshots/Graph-Editor.png"><span class="menu-idx">05</span><span
+                        class="menu-mask"><span class="menu-link-inner">Core</span></span><small>under the
+                        surface</small></a>
+                <a class="menu-link" href="./download.html" data-menu-link
+                    data-img="./assets/screenshots/Video-Editing-Workflow.png"><span class="menu-idx">06</span><span
+                        class="menu-mask"><span class="menu-link-inner">Open</span></span><small>download</small></a>
+                <a class="menu-link" href="./download.html#fin" data-menu-link><span class="menu-idx">fn</span><span
+                        class="menu-mask"><span class="menu-link-inner">Fin.</span></span><small>credits</small></a>
+            </nav>
+            <div class="menu-meta">
+                <a class="menu-docs" href="./docs/index.html" data-menu-link><strong>Documentation</strong><span>guides
+                        · controls · reference →</span></a>
+                <a href="https://github.com/MEDELBOU3/SM-Engine/releases/latest" target="_blank" rel="noreferrer"
+                    data-menu-link>Get engine ↓</a>
+                <a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer" data-menu-link>GitHub
+                    ↗</a>
+            </div>
+            <div class="menu-preview" aria-hidden="true"><img src="./assets/screenshots/engine_overview_main.png" alt=""
+                    data-menu-preview></div>
+        </div>
+    </div>
 
-                <h1 class="hero-heading hero-animate">
-                    Make worlds.<br>
-                    <span>Keep your flow.</span>
+    <main class="story" id="top">
+
+        <!-- HERO -->
+        <header class="hero hero-split">
+            <div class="hero-main">
+                <p class="hero-kicker"><b>sm engine 1.0</b> — a real-time creation suite</p>
+                <h1 class="hero-title" data-hero-title>
+                    <span class="row"><span>SM</span></span>
+                    <span class="row"><span class="hollow">Engine</span></span>
                 </h1>
-
-                <div class="hero-support hero-animate">
-                    <p>A desktop space for turning a rough idea into a finished frame—without losing the scene, the decision or the thread between them.</p>
-                    <div class="hero-actions">
-                        <a href="./download.html" class="action-primary" data-magnetic>
-                            <span>Download free</span>
-                            <span class="action-arrow" aria-hidden="true">↗</span>
-                        </a>
-                        <a href="./showcase.html" class="action-secondary">See what it can do <span aria-hidden="true">→</span></a>
-                    </div>
+                <div class="hero-sub">
+                    <p>A desktop space for turning a rough idea into a finished frame — without losing the scene, the
+                        decision or the thread between them.</p>
+                    <span class="hero-meta">open source · windows · mit license</span>
                 </div>
+                <span class="scroll-hint"><i></i>scroll to drive</span>
             </div>
-
-            <div class="hero-product hero-animate" data-tilt-card>
-                <div class="product-window">
-                    <div class="product-window-bar">
-                        <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-                        <span>SM / WORLD VIEWPORT</span>
-                        <span class="render-status"><i></i> REAL-TIME</span>
+            <aside class="hero-media" aria-label="SM Engine 2D and solid viewports">
+                <figure class="hero-shot hs-1">
+                    <div class="shot-frame"><img src="../assets/screenshots/2d-game-mode.png"
+                            alt="SM Engine 2D mode: grease-pencil canvas with brushes and layers" fetchpriority="high">
                     </div>
-                    <button class="product-image img-zoom-container" type="button" data-caption="SM Engine unified real-time creation workspace">
-                        <img src="./assets/screenshots/engine_overview_main.png" alt="SM Engine real-time editor with viewport, hierarchy, inspector and timeline" fetchpriority="high">
-                    </button>
-                    <div class="product-window-footer">
-                        <span><b>01</b> Unified workspace</span>
-                        <span>Model → Simulate → Animate → Ship</span>
-                    </div>
-                </div>
+                    <figcaption class="shot-cap"><span>2d mode — grease pencil</span><span>draw · ink · animate</span>
+                    </figcaption>
+                </figure>
+                <figure class="hero-shot hs-2">
+                    <div class="shot-frame"><img src="../assets/screenshots/solid-view.png"
+                            alt="SM Engine solid view: character mesh in the 3D viewport" loading="lazy"></div>
+                    <figcaption class="shot-cap"><span>solid view — viewport</span><span>form · light · depth</span>
+                    </figcaption>
+                </figure>
+            </aside>
+        </header>
 
-                <div class="floating-signal signal-tools" aria-hidden="true">
-                    <svg viewBox="0 0 48 48"><path d="M12 30 24 9l12 21-12 9-12-9Z"></path><path d="m12 30 12-7 12 7M24 9v14M24 23v16"></path></svg>
-                    <span>Geometry</span>
-                </div>
-                <div class="floating-signal signal-nodes" aria-hidden="true">
-                    <svg viewBox="0 0 48 48"><circle cx="12" cy="15" r="4"></circle><circle cx="36" cy="12" r="4"></circle><circle cx="34" cy="36" r="4"></circle><path d="M16 15c8 0 8-3 16-3M15 18c6 12 9 15 15 17"></path></svg>
-                    <span>Live systems</span>
-                </div>
-            </div>
-
-            <div class="hero-proof hero-animate" aria-label="Product facts">
-                <div><strong>60+</strong><span>Integrated tools</span></div>
-                <div><strong>6</strong><span>Focused workspaces</span></div>
-                <div><strong>Real-time</strong><span>Visual feedback</span></div>
-                <div><strong>MIT</strong><span>Open-source license</span></div>
+        <!-- BRIEF -->
+        <section class="chapter chapter-narrow" id="brief" data-spy-section="brief">
+            <div class="gear-tag"><b>brief</b> what this machine is</div>
+            <h2 class="display" data-lines>Make worlds. <em>Keep your flow.</em></h2>
+            <p class="lede">SM Engine is an <strong>open-source desktop suite</strong> where modeling, node systems,
+                animation, physical worlds, audio and shipping live in <strong>one project, one scene, one flow</strong>
+                — so you never lose the thread between an idea and a finished frame.</p>
+            <div class="facts" data-counters>
+                <div><b><span data-count="60">0</span><em>+</em></b><span>integrated tools</span></div>
+                <div><b><span data-count="6">0</span></b><span>focused workspaces</span></div>
+                <div><b>real<em>-</em>time</b><span>visual feedback</span></div>
+                <div><b>mit</b><span>open-source license</span></div>
             </div>
         </section>
 
-        <section class="attention-section section-shell">
-            <div class="section-heading-v2 reveal">
-                <div class="section-label"><span>01</span> Designed for attention</div>
+        <div class="band" aria-hidden="true">
+            <div class="band-track">
+                <span>Make worlds</span><span class="o">Make worlds</span><span>Make worlds</span><span class="o">Make
+                    worlds</span>
+                <span>Make worlds</span><span class="o">Make worlds</span><span>Make worlds</span><span class="o">Make
+                    worlds</span>
+            </div>
+        </div>
+
+        <!-- GEAR 01 -->
+        <section class="chapter" id="one-place" data-gear-chapter="01" data-spy-section="one-place">
+            <div class="gear-tag"><b>gear 01</b> one space, every discipline</div>
+            <h2 class="display" data-lines>One project. <em>One place.</em></h2>
+            <p class="lede">Pick the view that matches the decision in front of you. <strong>The scene stays put while
+                    the controls change around it</strong> — modeling, systems, environment, motion and finishing, all
+                reading from the same source of truth.</p>
+            <div class="spec-split">
                 <div>
-                    <h2>Less interface friction.<br><span>More creative momentum.</span></h2>
-                    <p>The visual system uses clarity, immediate feedback and meaningful motion to help users know where they are, what changed and what to do next.</p>
+                    <h3 class="spec-name">Unified<small>sm / world viewport</small></h3>
+                    <dl class="spec-table">
+                        <div>
+                            <dt>scene</dt>
+                            <dd>The active scene anchors every mode</dd>
+                        </div>
+                        <div>
+                            <dt>context</dt>
+                            <dd>Viewport · outliner · inspector</dd>
+                        </div>
+                        <div>
+                            <dt>flow</dt>
+                            <dd>Model → simulate → animate → ship</dd>
+                        </div>
+                        <div>
+                            <dt>feedback</dt>
+                            <dd>Every action answers in real time</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="spec-copy">
+                    <p><strong>Less interface friction, more creative momentum.</strong> Shared scene, tools and
+                        shortcuts reduce context switching, so you keep a stable sense of place from blockout to final
+                        frame.</p>
+                    <p>Consistent hierarchy and purposeful transitions show continuity — instead of making each tool
+                        feel like a different app.</p>
                 </div>
             </div>
-
-            <div class="attention-grid">
-                <article class="attention-card reveal" data-tilt-card>
-                    <div class="attention-media">
-                        <img src="./assets/screenshots/Main-Interface-Regions.png" alt="SM Engine interface with viewport, outliner and inspector" loading="lazy">
-                        <span class="image-tag">Viewport / context</span>
-                    </div>
-                    <div class="card-number">01 / Focus</div>
-                    <h3>One mental model</h3>
-                    <p>Shared scene, tools and shortcuts reduce context switching, so the user keeps a stable sense of place.</p>
-                    <span class="card-outcome">Less cognitive load</span>
-                </article>
-
-                <article class="attention-card reveal" data-tilt-card>
-                    <div class="attention-media">
-                        <img src="./assets/screenshots/Visual-Node-Graphs-System.png" alt="SM Engine visual node graph with connected material systems" loading="lazy">
-                        <span class="image-tag">Nodes / feedback</span>
-                    </div>
-                    <div class="card-number">02 / Response</div>
-                    <h3>Every action answers</h3>
-                    <p>Direct manipulation and live visual feedback make the interface feel responsive, predictable and trustworthy.</p>
-                    <span class="card-outcome">Stronger confidence</span>
-                </article>
-
-                <article class="attention-card reveal" data-tilt-card>
-                    <div class="attention-media">
-                        <img src="./assets/screenshots/Timeline-and-Keyframing.png" alt="SM Engine timeline and keyframing workflow" loading="lazy">
-                        <span class="image-tag">Timeline / flow</span>
-                    </div>
-                    <div class="card-number">03 / Flow</div>
-                    <h3>Progress stays visible</h3>
-                    <p>Consistent hierarchy and purposeful transitions show continuity instead of making each tool feel like a new app.</p>
-                    <span class="card-outcome">Sustained momentum</span>
-                </article>
+            <div class="shot-split">
+                <div class="three-shot-gallery">
+                    <figure class="shot-card shot-card-main">
+                        <div class="shot-card-image">
+                            <img src="../assets/screenshots/game-dev-mode.png" alt="SM Engine unified workspace"
+                                loading="lazy">
+                            <div class="shot-card-overlay"></div>
+                            <span class="shot-index">01</span>
+                            <span class="shot-type">viewport</span>
+                        </div>
+                        <figcaption>
+                            <span>01 / unified workspace</span>
+                            <strong>Everything in one place.</strong>
+                        </figcaption>
+                    </figure>
+                    <figure class="shot-card">
+                        <div class="shot-card-image">
+                            <img src="../assets/screenshots/city.png"
+                                alt="SM Engine scene outliner and hierarchy" loading="lazy">
+                            <div class="shot-card-overlay"></div>
+                            <span class="shot-index">02</span>
+                            <span class="shot-type">hierarchy</span>
+                        </div>
+                        <figcaption>
+                            <span>02 / scene hierarchy</span>
+                            <strong>Every object. Always connected.</strong>
+                        </figcaption>
+                    </figure>
+                    <figure class="shot-card">
+                        <div class="shot-card-image">
+                            <img src="../assets/screenshots/architecture.png"
+                                alt="SM Engine inspector and scene controls" loading="lazy">
+                            <div class="shot-card-overlay"></div>
+                            <span class="shot-index">03</span>
+                            <span class="shot-type">systems</span>
+                        </div>
+                        <figcaption>
+                            <span>03 / systems control</span>
+                            <strong>Precision at every level.</strong>
+                        </figcaption>
+                    </figure>
+                </div>
+                <aside class="graph-panel" data-gp="01" aria-hidden="true"><span class="gp-tag">unified /
+                        viewport</span><span class="gp-acc"><i></i><i></i><i></i></span></aside>
             </div>
         </section>
 
-        <section class="workspace-section section-shell">
-            <div class="section-heading-v2 reveal">
-                <div class="section-label"><span>02</span> One project, different decisions</div>
-                <div>
-                    <h2>Move through the project.<br><span>Keep the context.</span></h2>
-                    <p>Pick the view that matches the decision in front of you. The scene stays put while the controls change around it.</p>
-                </div>
-            </div>
+        <footer class="page-foot">
+            <nav class="page-foot-nav" aria-label="Next chapter">
+                <span></span>
+                <a href="./craft.html" style="text-align:right"><small>next gear →</small>Design × systems</a>
+            </nav>
+            <div class="page-foot-meta"><span>© <span data-year></span> sm engine</span><span><a
+                        href="./docs/index.html">docs</a><a href="https://github.com/MEDELBOU3/SM-Engine"
+                        target="_blank" rel="noreferrer">github</a></span></div>
+        </footer>
 
-            <div class="workspace-tabs-v2 reveal" role="tablist" aria-label="SM Engine workspaces">
-                <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-workspace-tab="modeling"><span>01</span>Shape</button>
-                <button type="button" class="tab-btn" role="tab" aria-selected="false" data-workspace-tab="nodes"><span>02</span>Connect</button>
-                <button type="button" class="tab-btn" role="tab" aria-selected="false" data-workspace-tab="terrain"><span>03</span>Environment</button>
-                <button type="button" class="tab-btn" role="tab" aria-selected="false" data-workspace-tab="animation"><span>04</span>Direct</button>
-                <button type="button" class="tab-btn" role="tab" aria-selected="false" data-workspace-tab="media"><span>05</span>Finish</button>
-            </div>
-
-            <div class="workspace-stage-v2 reveal">
-                <article class="workspace-content-v2" role="tabpanel" data-workspace-content="modeling">
-                    <button class="workspace-visual img-zoom-container" type="button" data-caption="SM Engine precision 3D modeling workspace">
-                        <img src="./assets/screenshots/Mesh-Modeling.png" alt="SM Engine mesh modeling workspace" loading="lazy">
-                    </button>
-                    <div class="workspace-copy-v2">
-                        <span class="workspace-kicker">Start / Shape</span>
-                        <h3>Start where the idea has an edge.</h3>
-                        <p>Keep the object in view while you move from a rough silhouette to a form you can actually judge.</p>
-                        <ul><li>Extrude · Bevel · Loop cut</li><li>Mirror · Subdivision</li><li>Sculpt and topology workflow</li></ul>
-                        <a href="./workspaces.html#modeling" class="inline-link">Open the shape workspace <span>↗</span></a>
-                    </div>
-                </article>
-
-                <article class="workspace-content-v2 hidden" role="tabpanel" data-workspace-content="nodes">
-                    <button class="workspace-visual img-zoom-container" type="button" data-caption="SM Engine visual node graph system">
-                        <img src="./assets/screenshots/Visual-Node-Graphs-System.png" alt="SM Engine node graph workspace" loading="lazy">
-                    </button>
-                    <div class="workspace-copy-v2">
-                        <span class="workspace-kicker">Construct / Connect</span>
-                        <h3>Make cause and effect visible.</h3>
-                        <p>Lay out a relationship, change one input and read the result without leaving the scene behind.</p>
-                        <ul><li>PBR material graphs</li><li>Procedural math and textures</li><li>Runtime logic nodes</li></ul>
-                        <a href="./docs/materials.html" class="inline-link">Read the graph guide <span>↗</span></a>
-                    </div>
-                </article>
-
-                <article class="workspace-content-v2 hidden" role="tabpanel" data-workspace-content="terrain">
-                    <button class="workspace-visual img-zoom-container" type="button" data-caption="SM Engine terrain and physical ocean system">
-                        <img src="./assets/screenshots/Water-System-Ocean.png" alt="SM Engine ocean and terrain workspace" loading="lazy">
-                    </button>
-                    <div class="workspace-copy-v2">
-                        <span class="workspace-kicker">Set the scene / Environment</span>
-                        <h3>Give the frame a sense of place.</h3>
-                        <p>Use space, weather and movement to make the scene communicate scale before anyone presses play.</p>
-                        <ul><li>Gerstner ocean waves</li><li>Heightfield sculpting</li><li>GPU foliage instancing</li></ul>
-                        <a href="./docs/terrain-sculpting.html" class="inline-link">Open the world guide <span>↗</span></a>
-                    </div>
-                </article>
-
-                <article class="workspace-content-v2 hidden" role="tabpanel" data-workspace-content="animation">
-                    <button class="workspace-visual img-zoom-container" type="button" data-caption="SM Engine animation timeline and rigging">
-                        <img src="./assets/screenshots/Timeline-Editor.png" alt="SM Engine timeline and animation editor" loading="lazy">
-                    </button>
-                    <div class="workspace-copy-v2">
-                        <span class="workspace-kicker">Direct / Time</span>
-                        <h3>Let timing change the meaning.</h3>
-                        <p>Block a beat, adjust the pause and see the performance shift while the shot remains in context.</p>
-                        <ul><li>Multi-track keyframes</li><li>F-curves and Bezier editing</li><li>Skeleton and IK workflow</li></ul>
-                        <a href="./docs/animation.html" class="inline-link">Read the motion guide <span>↗</span></a>
-                    </div>
-                </article>
-
-                <article class="workspace-content-v2 hidden" role="tabpanel" data-workspace-content="media">
-                    <button class="workspace-visual img-zoom-container" type="button" data-caption="SM Engine sound mixer and media workspace">
-                        <img src="./assets/screenshots/Sound-Editor-Mixer.png" alt="SM Engine sound mixer and media workspace" loading="lazy">
-                    </button>
-                    <div class="workspace-copy-v2">
-                        <span class="workspace-kicker">Finish / Deliver</span>
-                        <h3>Make the final handoff deliberate.</h3>
-                        <p>Review picture, sound and timing together before the frame becomes a file someone else receives.</p>
-                        <ul><li>Multi-channel sound mixer</li><li>Non-linear sequencing</li><li>Direct media export</li></ul>
-                        <a href="./docs/video-editing.html" class="inline-link">Read the finishing guide <span>↗</span></a>
-                    </div>
-                </article>
-            </div>
-        </section>
-
-        <section class="capabilities-section section-shell">
-            <div class="section-heading-v2 reveal">
-                <div class="section-label"><span>03</span> Five ways in</div>
-                <div>
-                    <h2>From first shape<br><span>to final frame.</span></h2>
-                </div>
-            </div>
-
-            <div class="capability-grid-v2">
-                <a href="./features.html" class="capability-card reveal">
-                    <span class="capability-media"><img src="./assets/screenshots/Mesh-Modeling.png" alt="SM Engine mesh modeling workspace" loading="lazy"></span>
-                    <span class="capability-no">01</span>
-                    <h3>Start with a form.</h3>
-                    <p>Open with the object in view and make the first visible change.</p>
-                    <span class="capability-arrow">↗</span>
-                </a>
-                <a href="./features.html" class="capability-card reveal">
-                    <span class="capability-media"><img src="./assets/screenshots/Visual-Node-Graphs-System.png" alt="SM Engine material and logic node graph" loading="lazy"></span>
-                    <span class="capability-no">02</span>
-                    <h3>Make cause visible.</h3>
-                    <p>Turn a value, connection or rule into something you can inspect.</p>
-                    <span class="capability-arrow">↗</span>
-                </a>
-                <a href="./features.html" class="capability-card reveal">
-                    <span class="capability-media"><img src="./assets/screenshots/Timeline-Editor.png" alt="SM Engine timeline editor" loading="lazy"></span>
-                    <span class="capability-no">03</span>
-                    <h3>Direct the moment.</h3>
-                    <p>Set a beat, move the camera and see the difference immediately.</p>
-                    <span class="capability-arrow">↗</span>
-                </a>
-                <a href="./features.html" class="capability-card reveal">
-                    <span class="capability-media"><img src="./assets/screenshots/Water-System-Ocean.png" alt="SM Engine ocean and terrain workspace" loading="lazy"></span>
-                    <span class="capability-no">04</span>
-                    <h3>Give the world a mood.</h3>
-                    <p>Use light, water and space to make the frame feel like somewhere.</p>
-                    <span class="capability-arrow">↗</span>
-                </a>
-                <a href="./features.html#media" class="capability-card reveal">
-                    <span class="capability-media"><img src="./assets/screenshots/Video-Editing-Workflow.png" alt="SM Engine video editing workflow" loading="lazy"></span>
-                    <span class="capability-no">05</span>
-                    <h3>Carry it to the finish.</h3>
-                    <p>Review picture, sound and timing before the work leaves the editor.</p>
-                    <span class="capability-arrow">↗</span>
-                </a>
-            </div>
-        </section>
-
-        <section class="final-cta">
-            <div class="final-cta-grid" aria-hidden="true"></div>
-            <div class="final-cta-inner section-shell">
-                <div class="final-orbit reveal" aria-hidden="true">
-                    <span class="orbit orbit-a"></span><span class="orbit orbit-b"></span><span class="orbit orbit-c"></span>
-                    <span class="orbit-logo"><img src="./assets/app.svg" alt=""></span>
-                </div>
-                <div class="final-copy reveal">
-                    <div class="section-label"><span>04</span> Start creating</div>
-                    <h2>Your next world<br>starts in one place.</h2>
-                    <p>SM Engine is free, open source and ready for Windows.</p>
-                    <div class="hero-actions">
-                        <a href="./download.html" class="action-primary action-primary-light" data-magnetic><span>Get SM Engine</span><span class="action-arrow">↗</span></a>
-                        <a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer" class="action-secondary action-secondary-light">View source <span>→</span></a>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
-    <footer class="site-footer-v2 section-shell">
-        <div class="footer-main">
-            <div class="footer-brand">
-                <a href="./index.html" class="brand-lockup" aria-label="SM Engine home">
-                    <span class="brand-mark"><img src="./assets/app.svg" alt=""></span>
-                    <span class="brand-copy"><strong>SM Engine</strong><small>Real-time creation suite</small></span>
-                </a>
-                <p>Keep the scene close from the first decision to the final handoff.</p>
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <div class="site-footer-grid">
+                <div class="site-footer-brand">
+                    <a href="./index.html" aria-label="SM Engine home"><img src="./assets/icons/logo.png" alt="SM Engine logo"></a>
+                    <strong>SM Engine</strong>
+                    <p>Open-source real-time creation suite — model, connect, stage worlds, direct motion and ship, all in one flow.</p>
+                    <a class="btn-solid" href="https://github.com/MEDELBOU3/SM-Engine/releases/latest" target="_blank" rel="noreferrer">Get engine ↗</a>
+                </div>
+                <nav class="site-footer-col" aria-label="Story">
+                    <h4>story</h4>
+                    <ul>
+                        <li><a href="./index.html#brief">Brief</a></li>
+                        <li><a href="./index.html#one-place">One place</a></li>
+                        <li><a href="./craft.html">Design × systems</a></li>
+                        <li><a href="./workspaces.html">Workspaces</a></li>
+                        <li><a href="./realtime.html">Real-time</a></li>
+                        <li><a href="./core.html">Core</a></li>
+                        <li><a href="./download.html">Open / download</a></li>
+                    </ul>
+                </nav>
+                <nav class="site-footer-col" aria-label="Resources">
+                    <h4>resources</h4>
+                    <ul>
+                        <li><a href="./docs/index.html">Documentation</a></li>
+                        <li><a href="./features.html">Features</a></li>
+                        <li><a href="./showcase.html">Showcase</a></li>
+                        <li><a href="./roadmap.html">Roadmap</a></li>
+                        <li><a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">GitHub
+                                ↗</a></li>
+                    </ul>
+                </nav>
             </div>
-            <div class="footer-links"><span>Product</span><a href="./features.html">Features</a><a href="./workspaces.html">Workspaces</a><a href="./showcase.html">Showcase</a><a href="./roadmap.html">Roadmap</a></div>
-            <div class="footer-links"><span>Resources</span><a href="./docs/index.html">Documentation</a><a href="./download.html">Download</a><a href="https://github.com/MEDELBOU3/SM-Engine" target="_blank" rel="noreferrer">GitHub</a></div>
+            <div class="site-footer-word footer-wordmark" aria-hidden="true">SM Engine</div>
+            <div class="site-footer-base">
+                <span>© <span data-year></span> sm engine · mit license</span>
+                <button class="to-top" type="button" data-to-top>top ↑</button>
+            </div>
         </div>
-        <div class="footer-bottom"><span>© <span data-year></span> SM Engine</span><span>Built for uninterrupted creation</span></div>
     </footer>
 
-    <script src="./script.js"></script>
 </body>
+
 </html>

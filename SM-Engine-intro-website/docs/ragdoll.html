@@ -8,6 +8,77 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Image frame wrapper (image only, no caption inside) --- */
+        .doc-image-frame {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            background: var(--surface-2, #161616);
+            border: 1px solid var(--border, #2a2a2a);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            overflow: hidden;
+        }
+        .doc-image-frame:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+            border-color: var(--border-strong, #3a3a3a);
+        }
+        .doc-image-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            background: var(--surface-3, #0f0f0f);
+            cursor: zoom-in;
+        }
+        html[data-theme="light"] .doc-image-frame {
+            background: #f8f8f8;
+            border-color: #e2e2e2;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        html[data-theme="light"] .doc-image-frame img { background: #ffffff; }
+
+        /* --- Lightbox --------------------------------------------- */
+        .doc-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: zoom-out;
+            padding: 4vh 4vw;
+        }
+        .doc-lightbox.open { display: flex; }
+        .doc-lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+        }
+        .doc-lightbox .doc-lightbox-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-size: 1.75rem;
+            color: #fff;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.75;
+            transition: opacity 0.15s ease;
+        }
+        .doc-lightbox .doc-lightbox-close:hover { opacity: 1; }
+    </style>
 </head>
 <body>
     <header class="top-nav">
@@ -151,12 +222,29 @@
 
             <h2 id="how-it-works">How Ragdolls Work with Armatures</h2>
                 <figure class="doc-figure">
-                    <div class="doc-image-placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <span>Interface Preview: How Ragdolls Work with Armatures</span>
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/Ragdolls.png" alt="">
                     </div>
                     <figcaption class="doc-caption">Figure: Interactive overview of How Ragdolls Work with Armatures in SM Engine workspace.</figcaption>
                 </figure>
+
+            <!-- Figure 1 — Ragdoll Architecture -->
+            <figure class="doc-figure">
+                <div class="doc-image-frame">
+                    <img src="../assets/screenshots/uml-graphs/ragdoll-architecture-uml.png"
+                         alt="UML class diagram of the Ragdoll system: RagdollSystem facade composing Ragdoll and RagdollComponent, which bridges Armature/Bone hierarchy with PhysicsBody instances and ConeTwistConstraint joints, plus BlendFactor enum, RagdollGenerator and PhysicsDebugger"
+                         loading="lazy"
+                         width="1400" height="1000">
+                </div>
+                <figcaption class="doc-caption">
+                    <strong>Figure 1 — Ragdoll architecture.</strong>
+                    The <code>RagdollSystem</code> facade manages active ragdolls. Each
+                    <code>RagdollComponent</code> bridges an <code>Armature</code> (bone hierarchy)
+                    with a mirrored set of <code>PhysicsBody</code> instances connected by
+                    <code>ConeTwistConstraint</code> joints. The <code>blendFactor</code> (0.0 → 1.0)
+                    controls how much control physics has over the bones. Click to enlarge.
+                </figcaption>
+            </figure>
 
             <p>
                 A standard 3D character is driven by an Armature (a hierarchy of bones). When a ragdoll is generated, the engine creates a corresponding hierarchy of Rigid Bodies (capsules, boxes, or spheres) mapped 1:1 with the selected bones. These rigid bodies are connected using specialized physical joints (ConeTwist constraints) that mimic human anatomy limits.
@@ -187,13 +275,30 @@
 
             <h2 id="blending">Physics Blend Factor</h2>
             <p>
-                The Ragdoll system supports a float <strong>Blend Factor (0.0 to 1.0)</strong>. 
+                The Ragdoll system supports a float <strong>Blend Factor (0.0 to 1.0)</strong>.
             </p>
             <ul>
                 <li><code>0.0</code>: 100% Animation. Bones strictly follow keyframes/state machines. Physics bodies are kinematic and simply track the bone positions (useful for hit-detection).</li>
                 <li><code>0.5</code>: Partial blending. Physical impacts will nudge the bones, but the animation continues to play. Great for hit-reactions.</li>
                 <li><code>1.0</code>: 100% Physics. Bones are entirely driven by gravity and collisions (full ragdoll).</li>
             </ul>
+
+            <!-- Figure 2 — Blend Factor State Machine -->
+            <figure class="doc-figure">
+                <div class="doc-image-frame">
+                    <img src="../assets/screenshots/uml-graphs/ragdoll-blend-factor-uml.png"
+                         alt="UML state diagram of the Ragdoll blend factor: Animation (0.0) transitions to PartialBlend (0.5) on hit-reaction or to Ragdoll (1.0) on death, with Settling and Frozen sub-states"
+                         loading="lazy"
+                         width="1400" height="900">
+                </div>
+                <figcaption class="doc-caption">
+                    <strong>Figure 2 — Blend factor state machine.</strong>
+                    The character transitions from full animation (<code>blendFactor = 0.0</code>) to a
+                    brief partial-physics hit reaction (<code>0.3 – 0.5</code>) or directly to a full
+                    ragdoll on death (<code>1.0</code>), which then settles, freezes, and bakes its pose
+                    before being destroyed to reclaim performance. Click to enlarge.
+                </figcaption>
+            </figure>
 
             <h2 id="performance">Performance Considerations</h2>
             <p>
@@ -205,7 +310,7 @@
 
             <h2 id="scripting">Code Example: Activating Ragdoll on Death</h2>
             <p>Here is an example using the SM Engine JavaScript Scripting API to handle a character death sequence:</p>
-            
+
             <pre><code class="language-javascript">class CharacterController extends SM.Script {
     start() {
         this.health = 100;
@@ -244,7 +349,22 @@
 }
 </code></pre>
 
-        
+            <!-- Figure 3 — Death Sequence -->
+            <figure class="doc-figure">
+                <div class="doc-image-frame">
+                    <img src="../assets/screenshots/uml-graphs/ragdoll-death-sequence-uml.png"
+                         alt="UML sequence diagram of the Ragdoll death sequence: takeDamage flow with hit-reaction path (blendFactor 0.3) and death path (animator stop, setActive, blendFactor 1.0, applyImpulse), then per-frame physics loop and final pose baking"
+                         loading="lazy"
+                         width="1400" height="900">
+                </div>
+                <figcaption class="doc-caption">
+                    <strong>Figure 3 — Runtime death sequence.</strong>
+                    From <code>takeDamage()</code> through the hit-reaction branch or the death branch
+                    (impulse applied to the hit bone), then the per-frame physics → bone sync loop, and
+                    finally freezing, baking, and destroying the ragdoll. Click to enlarge.
+                </figcaption>
+            </figure>
+
             </main>
 
             <aside class="toc-sidebar">
@@ -255,5 +375,59 @@
     </div>
 
     <script src="./docs.js"></script>
+
+    <!-- Lightbox -->
+    <script>
+    (function () {
+        var imgs = document.querySelectorAll('.doc-image-frame img');
+        if (!imgs.length) return;
+
+        var overlay = document.createElement('div');
+        overlay.className = 'doc-lightbox';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', 'Enlarged diagram view');
+        overlay.innerHTML =
+            '<button class="doc-lightbox-close" aria-label="Close">&times;</button>' +
+            '<img alt="">';
+        document.body.appendChild(overlay);
+
+        var overlayImg = overlay.querySelector('img');
+        var closeBtn   = overlay.querySelector('.doc-lightbox-close');
+
+        function open(src, alt) {
+            overlayImg.src = src;
+            overlayImg.alt = alt || '';
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function close() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+            overlayImg.src = '';
+        }
+
+        imgs.forEach(function (img) {
+            img.addEventListener('click', function () {
+                open(img.currentSrc || img.src, img.alt);
+            });
+            img.setAttribute('tabindex', '0');
+            img.setAttribute('role', 'button');
+            img.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    open(img.currentSrc || img.src, img.alt);
+                }
+            });
+        });
+
+        closeBtn.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+        overlay.addEventListener('click', close);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+        });
+    })();
+    </script>
 </body>
 </html>
+

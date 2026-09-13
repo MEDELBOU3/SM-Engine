@@ -8,6 +8,77 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Image frame wrapper (image only, no caption inside) --- */
+        .doc-image-frame {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            background: var(--surface-2, #161616);
+            border: 1px solid var(--border, #2a2a2a);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            overflow: hidden;
+        }
+        .doc-image-frame:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+            border-color: var(--border-strong, #3a3a3a);
+        }
+        .doc-image-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            background: var(--surface-3, #0f0f0f);
+            cursor: zoom-in;
+        }
+        html[data-theme="light"] .doc-image-frame {
+            background: #f8f8f8;
+            border-color: #e2e2e2;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        html[data-theme="light"] .doc-image-frame img { background: #ffffff; }
+
+        /* --- Lightbox --------------------------------------------- */
+        .doc-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: zoom-out;
+            padding: 4vh 4vw;
+        }
+        .doc-lightbox.open { display: flex; }
+        .doc-lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+        }
+        .doc-lightbox .doc-lightbox-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-size: 1.75rem;
+            color: #fff;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.75;
+            transition: opacity 0.15s ease;
+        }
+        .doc-lightbox .doc-lightbox-close:hover { opacity: 1; }
+    </style>
 </head>
 <body>
 
@@ -168,11 +239,30 @@
 
                 <h2 id="layout">Editor Layout</h2>
                 <figure class="doc-figure">
-                    <div class="doc-image-placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <span>Interface Preview: Editor Layout</span>
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/audio-mode.png" alt="">
                     </div>
                     <figcaption class="doc-caption">Figure: Interactive overview of Editor Layout in SM Engine workspace.</figcaption>
+                </figure>
+
+                <!-- Figure 1 — MetaSound Architecture -->
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/uml-graphs/metasound-architecture-uml.png"
+                             alt="UML class diagram of the MetaSound system: SoundGraph facade composing GraphNode subclasses (WavePlayer, Oscillator, GainNode, DelayNode, FilterNode, PannerNode, AudioOutput), SoundGraphEditor, AudioVisualizer, DetailsPanel, AssetBrowser and CueAsset"
+                             loading="lazy"
+                             width="1400" height="1000">
+                    </div>
+                    <figcaption class="doc-caption">
+                        <strong>Figure 1 — MetaSound architecture.</strong>
+                        The <code>SoundGraph</code> facade composes <code>GraphNode</code> subclasses
+                        (<code>wavePlayer</code>, <code>oscillator</code>, <code>gain</code>, <code>delay</code>,
+                        <code>filter</code>, <code>panner</code>, <code>output</code>), wires them via
+                        <code>Connection</code> objects, and exposes <code>playGraph()</code> /
+                        <code>stopGraph()</code> / <code>exportCue()</code>. The editor composes the
+                        <code>AudioVisualizer</code>, <code>DetailsPanel</code> and <code>AssetBrowser</code>.
+                        Click to enlarge.
+                    </figcaption>
                 </figure>
 
                 <ul>
@@ -212,6 +302,23 @@
                     </table>
                 </div>
 
+                <!-- Figure 2 — MetaSound Signal Chain -->
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/uml-graphs/metasound-signal-chain-uml.png"
+                             alt="UML data flow diagram of the MetaSound signal chain: Wave Player and Oscillator feed into Gain, then Filter, then Delay, then 3D Panner, ending at the Audio Output node"
+                             loading="lazy"
+                             width="1400" height="700">
+                    </div>
+                    <figcaption class="doc-caption">
+                        <strong>Figure 2 — Audio signal chain.</strong>
+                        Sources (<code>wavePlayer</code> / <code>oscillator</code>) are chained through
+                        processing nodes (<code>gain</code> → <code>filter</code> → <code>delay</code> →
+                        <code>panner</code>) before reaching the master <code>output</code>. The
+                        <code>Gain Mod</code> socket enables automation. Click to enlarge.
+                    </figcaption>
+                </figure>
+
                 <h2 id="workflow">Workflow</h2>
                 <ol>
                     <li>Drag a <strong>source node</strong> (Wave Player or Oscillator) onto the canvas.</li>
@@ -224,6 +331,22 @@
                     <li>Hit <strong>Stop</strong>, then <strong>Create Cue Asset</strong> to save the graph as a cue for
                         timeline/gameplay use.</li>
                 </ol>
+
+                <!-- Figure 3 — MetaSound Workflow Lifecycle -->
+                <figure class="doc-figure">
+                    <div class="doc-image-frame">
+                        <img src="../assets/screenshots/uml-graphs/metasound-workflow-uml.png"
+                             alt="UML state diagram of the MetaSound authoring lifecycle: Idle → Source Added → Chain Built → Wired → Output Connected → Tuning → Playing → Stopped → Cue Exported"
+                             loading="lazy"
+                             width="1400" height="900">
+                    </div>
+                    <figcaption class="doc-caption">
+                        <strong>Figure 3 — Authoring workflow lifecycle.</strong>
+                        From opening the editor (<em>Idle</em>) to exporting a reusable cue asset, the state
+                        machine passes through source selection, chain building, wiring, tuning, playback
+                        and stop. Click to enlarge.
+                    </figcaption>
+                </figure>
 
                 <h2 id="scripting">Scripting Reference</h2>
                 <pre><code>window.SoundGraph.addNode("oscillator");  // synth / wavePlayer / gain / delay / filter / panner
@@ -263,5 +386,59 @@ window.SoundGraph.exportCue();            // bake graph into a cue asset
     </div>
 
     <script src="./docs.js"></script>
+
+    <!-- Lightbox -->
+    <script>
+    (function () {
+        var imgs = document.querySelectorAll('.doc-image-frame img');
+        if (!imgs.length) return;
+
+        var overlay = document.createElement('div');
+        overlay.className = 'doc-lightbox';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', 'Enlarged diagram view');
+        overlay.innerHTML =
+            '<button class="doc-lightbox-close" aria-label="Close">&times;</button>' +
+            '<img alt="">';
+        document.body.appendChild(overlay);
+
+        var overlayImg = overlay.querySelector('img');
+        var closeBtn   = overlay.querySelector('.doc-lightbox-close');
+
+        function open(src, alt) {
+            overlayImg.src = src;
+            overlayImg.alt = alt || '';
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function close() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+            overlayImg.src = '';
+        }
+
+        imgs.forEach(function (img) {
+            img.addEventListener('click', function () {
+                open(img.currentSrc || img.src, img.alt);
+            });
+            img.setAttribute('tabindex', '0');
+            img.setAttribute('role', 'button');
+            img.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    open(img.currentSrc || img.src, img.alt);
+                }
+            });
+        });
+
+        closeBtn.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+        overlay.addEventListener('click', close);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+        });
+    })();
+    </script>
 </body>
 </html>
+
