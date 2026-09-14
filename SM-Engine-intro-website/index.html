@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -14,9 +14,135 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script defer src="./cinematic.js?v=8"></script>
+
+    <style id="sm-cinematic-loader-css">
+        /* ─────────────────────────────────────────────────────────
+           SM ENGINE — SWISS EDITORIAL LOADER (THEME ADAPTIVE)
+           ───────────────────────────────────────────────────────── */
+        :root {
+            --loader-bg: var(--c-bg, #0a0a0b);
+            --loader-ink: var(--c-ink, #ffffff);
+            --loader-dim: var(--c-dim, rgba(255, 255, 255, 0.4));
+        }
+
+        :root[data-theme="light"] {
+            --loader-bg: var(--c-bg, #ffffff);
+            --loader-ink: var(--c-ink, #000000);
+            --loader-dim: var(--c-dim, rgba(0, 0, 0, 0.45));
+        }
+
+        .cine-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: var(--loader-bg);
+            color: var(--loader-ink);
+            font-family: -apple-system, BlinkMacSystemFont, "DM Sans", "Inter", "Segoe UI", sans-serif;
+            overflow: hidden;
+            pointer-events: auto;
+            user-select: none;
+            will-change: transform;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Vertical dividing line */
+        .cine-loader__v-line {
+            position: absolute;
+            left: 37%;
+            top: 0;
+            width: 1px;
+            height: 300px;
+            background: var(--loader-ink);
+            transform-origin: top center;
+        }
+
+        /* Top-Right label */
+        .cine-loader__text-right {
+            position: absolute;
+            left: calc(37% + 16px);
+            top: 24px;
+            font-size: clamp(13px, 1.05vw, 15px);
+            line-height: 1.25;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            color: var(--loader-ink);
+            margin: 0;
+        }
+
+        /* Mid-Left label */
+        .cine-loader__text-left {
+            position: absolute;
+            left: calc(37% - 16px);
+            transform: translateX(-100%);
+            top: 265px;
+            text-align: left;
+            font-size: clamp(13px, 1.05vw, 15px);
+            line-height: 1.25;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            color: var(--loader-ink);
+            margin: 0;
+        }
+
+        /* Oversized Bottom-Left percentage */
+        .cine-loader__count {
+            position: absolute;
+            left: clamp(16px, 2.8vw, 36px);
+            bottom: clamp(8px, 2vw, 24px);
+            font-size: clamp(90px, 15vw, 230px);
+            font-weight: 800;
+            line-height: 0.82;
+            letter-spacing: -0.06em;
+            color: var(--loader-ink);
+            margin: 0;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 768px) {
+            .cine-loader__v-line {
+                left: 45%;
+                height: 220px;
+            }
+
+            .cine-loader__text-right {
+                left: calc(45% + 12px);
+                top: 20px;
+            }
+
+            .cine-loader__text-left {
+                left: calc(45% - 12px);
+                top: 185px;
+            }
+
+            .cine-loader__count {
+                font-size: 26vw;
+            }
+        }
+    </style>
+
 </head>
 
 <body>
+
+    <!-- EXACT EDITORIAL MINIMAL OVERLAY -->
+    <div id="site-overlay" class="cine-loader" aria-hidden="false">
+        <div class="cine-loader__v-line" data-loader-line></div>
+
+        <p class="cine-loader__text-right loader-fade">
+            Based in Kyiv<br>
+            Working w/ TFTL
+        </p>
+
+        <p class="cine-loader__text-left loader-fade">
+            Designer<br>
+            &amp; Developer
+        </p>
+
+        <h1 class="cine-loader__count">
+            <span data-loader-percent>0</span>%
+        </h1>
+    </div>
 
     <!-- Fixed instrument cluster -->
     <div class="hud" aria-hidden="false">
@@ -117,14 +243,14 @@
             </div>
             <aside class="hero-media" aria-label="SM Engine 2D and solid viewports">
                 <figure class="hero-shot hs-1">
-                    <div class="shot-frame"><img src="./assets/screenshots/2d-game-mode.png"
+                    <div class="shot-frame"><img src="../assets/screenshots/2d-game-mode.png"
                             alt="SM Engine 2D mode: grease-pencil canvas with brushes and layers" fetchpriority="high">
                     </div>
                     <figcaption class="shot-cap"><span>2d mode — grease pencil</span><span>draw · ink · animate</span>
                     </figcaption>
                 </figure>
                 <figure class="hero-shot hs-2">
-                    <div class="shot-frame"><img src="./assets/screenshots/solid-view.png"
+                    <div class="shot-frame"><img src="../assets/screenshots/solid-view.png"
                             alt="SM Engine solid view: character mesh in the 3D viewport" loading="lazy"></div>
                     <figcaption class="shot-cap"><span>solid view — viewport</span><span>form · light · depth</span>
                     </figcaption>
@@ -139,6 +265,39 @@
             <p class="lede">SM Engine is an <strong>open-source desktop suite</strong> where modeling, node systems,
                 animation, physical worlds, audio and shipping live in <strong>one project, one scene, one flow</strong>
                 — so you never lose the thread between an idea and a finished frame.</p>
+
+            <!-- ─── PROFESSIONAL HERO SPOTLIGHT CARD ─── -->
+            <figure class="brief-card">
+                <div class="brief-card-top">
+                    <div class="brief-status">
+                        <i class="brief-dot"></i>
+                        <span>WORKSPACE 01 / LIVE PREVIEW</span>
+                    </div>
+                    <span class="brief-tech">VULKAN · 60 FPS · REAL-TIME</span>
+                </div>
+
+                <div class="brief-card-frame">
+                    <img src="./assets/screenshots/LIVE-PREVIEW.png" alt="SM Engine Workspace Overview"
+                        loading="lazy">
+                    <div class="brief-card-vignette"></div>
+                    <span class="brief-tag">CORE VIEWPORT</span>
+                    <i class="brief-mark bm-tl">+</i>
+                    <i class="brief-mark bm-tr">+</i>
+                    <i class="brief-mark bm-bl">+</i>
+                    <i class="brief-mark bm-br">+</i>
+                </div>
+
+                <figcaption class="brief-card-foot">
+                    <div class="brief-meta">
+                        <small>SCENE COMPOSITION &amp; GRAPHS</small>
+                        <strong>Zero latency between node architecture and rendered frame.</strong>
+                    </div>
+                    <div class="brief-action">
+                        <span>INSPECT VIEW</span><i>↗</i>
+                    </div>
+                </figcaption>
+            </figure>
+
             <div class="facts" data-counters>
                 <div><b><span data-count="60">0</span><em>+</em></b><span>integrated tools</span></div>
                 <div><b><span data-count="6">0</span></b><span>focused workspaces</span></div>
@@ -158,87 +317,90 @@
 
         <!-- GEAR 01 -->
         <section class="chapter" id="one-place" data-gear-chapter="01" data-spy-section="one-place">
-            <div class="gear-tag"><b>gear 01</b> one space, every discipline</div>
-            <h2 class="display" data-lines>One project. <em>One place.</em></h2>
-            <p class="lede">Pick the view that matches the decision in front of you. <strong>The scene stays put while
-                    the controls change around it</strong> — modeling, systems, environment, motion and finishing, all
-                reading from the same source of truth.</p>
-            <div class="spec-split">
-                <div>
-                    <h3 class="spec-name">Unified<small>sm / world viewport</small></h3>
-                    <dl class="spec-table">
-                        <div>
-                            <dt>scene</dt>
-                            <dd>The active scene anchors every mode</dd>
-                        </div>
-                        <div>
-                            <dt>context</dt>
-                            <dd>Viewport · outliner · inspector</dd>
-                        </div>
-                        <div>
-                            <dt>flow</dt>
-                            <dd>Model → simulate → animate → ship</dd>
-                        </div>
-                        <div>
-                            <dt>feedback</dt>
-                            <dd>Every action answers in real time</dd>
-                        </div>
-                    </dl>
+    <div class="gear-tag"><b>gear 01</b> one space, every discipline</div>
+    <h2 class="display" data-lines>One project. <em>One place.</em></h2>
+    <p class="lede">Pick the view that matches the decision in front of you. <strong>The scene stays put while the controls change around it</strong> — modeling, systems, environment, motion and finishing, all reading from the same source of truth.</p>
+    
+    <div class="spec-split">
+        <div>
+            <h3 class="spec-name">Unified <small>sm / world viewport</small></h3>
+            <dl class="spec-table">
+                <div><dt>scene</dt><dd>The active scene anchors every mode</dd></div>
+                <div><dt>context</dt><dd>Viewport · outliner · inspector</dd></div>
+                <div><dt>flow</dt><dd>Model → simulate → animate → ship</dd></div>
+                <div><dt>feedback</dt><dd>Every action answers in real time</dd></div>
+            </dl>
+        </div>
+        <div class="spec-copy">
+            <p><strong>Less interface friction, more creative momentum.</strong> Shared scene, tools and shortcuts reduce context switching, so you keep a stable sense of place from blockout to final frame.</p>
+            <p>Consistent hierarchy and purposeful transitions show continuity — instead of making each tool feel like a different app.</p>
+        </div>
+    </div>
+
+    <!-- ─── REFINED PRO SHOT SPLIT ─── -->
+    <div class="shot-split">
+        <div class="three-shot-gallery">
+            <!-- 01 VIEWPORT (MAIN) -->
+            <figure class="shot-card shot-card-main">
+                <div class="shot-card-image">
+                    <img src="../assets/screenshots/game-dev-mode.png" alt="SM Engine unified workspace" loading="lazy">
+                    <div class="shot-card-overlay"></div>
+                    <div class="shot-badge">
+                        <span class="shot-badge-idx">01</span>
+                        <span class="shot-badge-type">VIEWPORT · SCENE</span>
+                    </div>
                 </div>
-                <div class="spec-copy">
-                    <p><strong>Less interface friction, more creative momentum.</strong> Shared scene, tools and
-                        shortcuts reduce context switching, so you keep a stable sense of place from blockout to final
-                        frame.</p>
-                    <p>Consistent hierarchy and purposeful transitions show continuity — instead of making each tool
-                        feel like a different app.</p>
+                <figcaption>
+                    <span>01 / UNIFIED WORKSPACE</span>
+                    <strong>One source of truth from layout to final pixels.</strong>
+                </figcaption>
+            </figure>
+
+            <!-- 02 HIERARCHY -->
+            <figure class="shot-card">
+                <div class="shot-card-image">
+                    <img src="../assets/screenshots/city.png" alt="SM Engine scene outliner and hierarchy" loading="lazy">
+                    <div class="shot-card-overlay"></div>
+                    <div class="shot-badge">
+                        <span class="shot-badge-idx">02</span>
+                        <span class="shot-badge-type">HIERARCHY</span>
+                    </div>
                 </div>
+                <figcaption>
+                    <span>02 / SCENE HIERARCHY</span>
+                    <strong>Every object. Always connected.</strong>
+                </figcaption>
+            </figure>
+
+            <!-- 03 SYSTEMS -->
+            <figure class="shot-card">
+                <div class="shot-card-image">
+                    <img src="../assets/screenshots/architecture.png" alt="SM Engine inspector and scene controls" loading="lazy">
+                    <div class="shot-card-overlay"></div>
+                    <div class="shot-badge">
+                        <span class="shot-badge-idx">03</span>
+                        <span class="shot-badge-type">SYSTEMS</span>
+                    </div>
+                </div>
+                <figcaption>
+                    <span>03 / SYSTEMS CONTROL</span>
+                    <strong>Precision at every level.</strong>
+                </figcaption>
+            </figure>
+        </div>
+
+        <!-- TELEMETRY / GRAPH PANEL -->
+        <aside class="graph-panel" data-gp="01" aria-hidden="true">
+            <div class="gp-top">
+                <span class="gp-tag">UNIFIED / VIEWPORT</span>
+                <div class="gp-rhombus"></div>
             </div>
-            <div class="shot-split">
-                <div class="three-shot-gallery">
-                    <figure class="shot-card shot-card-main">
-                        <div class="shot-card-image">
-                            <img src="./assets/screenshots/game-dev-mode.png" alt="SM Engine unified workspace"
-                                loading="lazy">
-                            <div class="shot-card-overlay"></div>
-                            <span class="shot-index">01</span>
-                            <span class="shot-type">viewport</span>
-                        </div>
-                        <figcaption>
-                            <span>01 / unified workspace</span>
-                            <strong>Everything in one place.</strong>
-                        </figcaption>
-                    </figure>
-                    <figure class="shot-card">
-                        <div class="shot-card-image">
-                            <img src="./assets/screenshots/city.png"
-                                alt="SM Engine scene outliner and hierarchy" loading="lazy">
-                            <div class="shot-card-overlay"></div>
-                            <span class="shot-index">02</span>
-                            <span class="shot-type">hierarchy</span>
-                        </div>
-                        <figcaption>
-                            <span>02 / scene hierarchy</span>
-                            <strong>Every object. Always connected.</strong>
-                        </figcaption>
-                    </figure>
-                    <figure class="shot-card">
-                        <div class="shot-card-image">
-                            <img src="./assets/screenshots/architecture.png"
-                                alt="SM Engine inspector and scene controls" loading="lazy">
-                            <div class="shot-card-overlay"></div>
-                            <span class="shot-index">03</span>
-                            <span class="shot-type">systems</span>
-                        </div>
-                        <figcaption>
-                            <span>03 / systems control</span>
-                            <strong>Precision at every level.</strong>
-                        </figcaption>
-                    </figure>
-                </div>
-                <aside class="graph-panel" data-gp="01" aria-hidden="true"><span class="gp-tag">unified /
-                        viewport</span><span class="gp-acc"><i></i><i></i><i></i></span></aside>
-            </div>
-        </section>
+            <div class="gp-grid-bg"></div>
+            <div class="gp-acc"><i></i><i></i><i></i></div>
+            <span class="gp-num">01</span>
+        </aside>
+    </div>
+</section>
 
         <footer class="page-foot">
             <nav class="page-foot-nav" aria-label="Next chapter">
@@ -256,10 +418,13 @@
         <div class="site-footer-inner">
             <div class="site-footer-grid" style="grid-template-columns:1.35fr 0.9fr 0.9fr 0.9fr;gap:24px">
                 <div class="site-footer-brand">
-                    <a href="./index.html" aria-label="SM Engine home"><img src="./assets/icons/logo.png" alt="SM Engine logo"></a>
+                    <a href="./index.html" aria-label="SM Engine home"><img src="./assets/icons/logo.png"
+                            alt="SM Engine logo"></a>
                     <strong>SM Engine</strong>
-                    <p>Open-source real-time creation suite — model, connect, stage worlds, direct motion and ship, all in one flow.</p>
-                    <a class="btn-solid" href="https://github.com/MEDELBOU3/SM-Engine/releases/latest" target="_blank" rel="noreferrer">Get engine ↗</a>
+                    <p>Open-source real-time creation suite — model, connect, stage worlds, direct motion and ship, all
+                        in one flow.</p>
+                    <a class="btn-solid" href="https://github.com/MEDELBOU3/SM-Engine/releases/latest" target="_blank"
+                        rel="noreferrer">Get engine ↗</a>
                 </div>
                 <nav class="site-footer-col" aria-label="Story">
                     <h4>story</h4>
@@ -301,6 +466,96 @@
             </div>
         </div>
     </footer>
+
+    <!-- ADAPTIVE MINIMAL LOADER JS -->
+    <script id="sm-cinematic-loader-js">
+        (() => {
+            const overlay = document.getElementById('site-overlay');
+            if (!overlay) return;
+
+            const percentEl = overlay.querySelector('[data-loader-percent]');
+            const lineEl = overlay.querySelector('[data-loader-line]');
+            const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            let finished = false;
+
+            const finish = () => {
+                if (finished) return;
+                finished = true;
+
+                const gs = window.gsap;
+                if (gs && !reduce) {
+                    gs.timeline({
+                        onComplete: () => {
+                            overlay.style.display = 'none';
+                            overlay.setAttribute('aria-hidden', 'true');
+                        }
+                    })
+                        .to('.loader-fade, .cine-loader__count, [data-loader-line]', {
+                            opacity: 0,
+                            duration: 0.35,
+                            ease: 'power2.in'
+                        })
+                        .to(overlay, {
+                            yPercent: -100,
+                            duration: 0.85,
+                            ease: 'expo.inOut'
+                        }, '-=0.15');
+                } else {
+                    overlay.style.display = 'none';
+                    overlay.setAttribute('aria-hidden', 'true');
+                }
+
+                try { localStorage.setItem('sm_intro_seen', '1'); } catch (e) { }
+            };
+
+            const run = () => {
+                const gs = window.gsap;
+                if (!gs || reduce) {
+                    if (percentEl) percentEl.textContent = '100';
+                    setTimeout(finish, 350);
+                    return;
+                }
+
+                const counter = { val: 0 };
+                const tl = gs.timeline();
+
+                // 1. Draw line down & fade text in
+                tl.fromTo(lineEl,
+                    { scaleY: 0 },
+                    { scaleY: 1, duration: 0.7, ease: 'power3.inOut' }
+                )
+                    .fromTo('.loader-fade',
+                        { opacity: 0, y: 6 },
+                        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' },
+                        '-=0.4'
+                    )
+                    // 2. Count smoothly 0 -> 100%
+                    .to(counter, {
+                        val: 100,
+                        duration: 1.5,
+                        ease: 'power2.inOut',
+                        onUpdate: () => {
+                            if (percentEl) {
+                                percentEl.textContent = Math.round(counter.val);
+                            }
+                        }
+                    }, '-=0.3')
+                    // 3. Smooth curtain wipe
+                    .to({}, { duration: 0.2, onComplete: finish });
+            };
+
+            const boot = () => {
+                if (window.gsap || reduce) run();
+                else setTimeout(boot, 25);
+            };
+
+            // Quick dismiss
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') finish(); });
+            overlay.addEventListener('click', finish);
+
+            boot();
+        })();
+    </script>
 
 </body>
 
