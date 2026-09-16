@@ -78,7 +78,7 @@ A layered view of SM Engine — from desktop shell down to build/export. Every l
 ## Visual Showcase
 
 <div align="center">
-  <img src="assets/screenshots/engine_overview_main.png" alt="SM Engine main editor workspace" width="90%">
+  <img src="screenshots/game-play-sample.png" alt="SM Engine main editor workspace" width="90%">
   <p><em>Main editor workspace with scene tools, viewport, hierarchy, inspector and animation editing.</em></p>
 </div>
 
