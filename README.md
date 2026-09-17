@@ -1042,6 +1042,6 @@ Additional loader, exporter, UI and utility libraries are used by individual sub
 ### SM Engine
 
 **Build · Animate · Simulate · Play · Capture · Export**
-Made by Mohamed EL-BOUANANI
+**Made by Mohamed EL-BOUANANI**
 
 </div>
