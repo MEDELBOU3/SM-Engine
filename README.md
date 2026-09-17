@@ -43,18 +43,6 @@ A layered view of SM Engine — from desktop shell down to build/export. Every l
 
 ---
 
-## Official Trailer & Tutorial
-
-<div align="center">
-
-<a href="https://youtu.be/EY7ggEMSEGI">
-  <img src="https://img.youtube.com/vi/EY7ggEMSEGI/maxresdefault.jpg" alt="SM Engine trailer and tutorial" width="82%">
-</a>
-
-</div>
-
----
-
 ## Highlights
 
 | Area | Current capabilities |
