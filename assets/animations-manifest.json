@@ -1,0 +1,92 @@
+{
+  "packName": "Local FBX Animation Library",
+  "source": "external",
+  "root": "assets/offline-cdn/fbx-animations/",
+  "animations": [
+    {
+      "path": "idle.fbx",
+      "name": "idle",
+      "state": "idle",
+      "speed": 0,
+      "stripRootMotion": "xz",
+      "tags": ["idle"]
+    },
+    {
+      "path": "walk_forward.fbx",
+      "name": "walk_forward",
+      "state": "walk",
+      "speed": 1.2,
+      "directionAngle": 0,
+      "stripRootMotion": "xz",
+      "tags": ["walk", "forward"]
+    },
+    {
+      "path": "run_forward.fbx",
+      "name": "run_forward",
+      "state": "run",
+      "speed": 3.5,
+      "directionAngle": 0,
+      "stripRootMotion": "xz",
+      "tags": ["run", "forward"]
+    },
+    {
+      "path": "walk_backward.fbx",
+      "name": "walk_backward",
+      "state": "walk",
+      "speed": 1.0,
+      "directionAngle": 180,
+      "stripRootMotion": "xz",
+      "tags": ["walk", "backward"]
+    },
+    {
+      "path": "run_backward.fbx",
+      "name": "run_backward",
+      "state": "run",
+      "speed": 3.0,
+      "directionAngle": 180,
+      "stripRootMotion": "xz",
+      "tags": ["run", "backward"]
+    },
+    {
+      "path": "strafe_left.fbx",
+      "name": "strafe_left",
+      "state": "walk",
+      "speed": 1.5,
+      "directionAngle": -90,
+      "stripRootMotion": "xz",
+      "tags": ["walk", "strafe", "left"]
+    },
+    {
+      "path": "strafe_right.fbx",
+      "name": "strafe_right",
+      "state": "walk",
+      "speed": 1.5,
+      "directionAngle": 90,
+      "stripRootMotion": "xz",
+      "tags": ["walk", "strafe", "right"]
+    },
+    {
+      "path": "jump.fbx",
+      "name": "jump",
+      "state": "jump",
+      "stripRootMotion": "xz",
+      "isOneShot": true,
+      "tags": ["jump"]
+    },
+    {
+      "path": "fall.fbx",
+      "name": "fall",
+      "state": "fall",
+      "stripRootMotion": "xz",
+      "tags": ["fall"]
+    },
+    {
+      "path": "land.fbx",
+      "name": "land",
+      "state": "land",
+      "stripRootMotion": "xz",
+      "isOneShot": true,
+      "tags": ["land"]
+    }
+  ]
+}

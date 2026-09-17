@@ -1,0 +1,14 @@
+{
+  "format": "SM_PLAYER_CONFIG",
+  "version": 1,
+  "spawnPosition": [0, 0, 22],
+  "walkSpeed": 3.2,
+  "runSpeed": 6.2,
+  "startingHealth": 3,
+  "arenaBounds": {
+    "minX": -28,
+    "maxX": 28,
+    "minZ": -28,
+    "maxZ": 28
+  }
+}

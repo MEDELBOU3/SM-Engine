@@ -1,0 +1,40 @@
+name: Update Profile
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      
+      # Generate Snake
+      - uses: Platane/snk@v3
+        with:
+          github_user_name: MEDELBOU3
+          outputs: assets/github-snake.svg
+      
+      # Generate 3D Contribution
+      - uses: yoshi389111/github-profile-3d-contrib@0.7.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: MEDELBOU3
+      
+      # Update Blog Posts (if you have a blog)
+      - uses: gautamkrishnar/blog-post-workflow@v1
+        with:
+          feed_list: 'YOUR_RSS_FEED_URL'
+      
+      # Commit changes
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Update profile data" || exit 0
+          git push

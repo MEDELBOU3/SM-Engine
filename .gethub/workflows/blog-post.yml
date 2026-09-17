@@ -1,0 +1,19 @@
+name: Latest Blog Posts
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: gautamkrishnar/blog-post-workflow@v1
+        with:
+          feed_list: 'https://medium.com/feed/@yourusername'
+          max_post_count: 5
+          readme_path: './README.md'
+          comment_tag_name: 'BLOG-POST-LIST'
