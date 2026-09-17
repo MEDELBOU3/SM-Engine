@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="logo.svg" alt="SM Engine logo" width="150" height="150">
+<img src="assets/icons/logo.png" alt="SM Engine logo" width="150" height="150">
 
 ### Modular real-time 3D creation, game development, animation, virtual production, and runtime tooling
 
