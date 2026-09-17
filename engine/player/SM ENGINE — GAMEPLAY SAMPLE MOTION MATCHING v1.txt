@@ -131,14 +131,6 @@ translation from imported clips to avoid duplicated/unsafe root motion on FBX
 skeletons.  Therefore traversal animations provide the visual pose while
 PlayerMotionMatchingSystem moves the player root along a controlled arc/path.
 
-QUICK TEST
-----------
-1. Replace/add the files above.
-2. Hard refresh the editor (Ctrl+F5).
-3. Enter GAMEPLAY_SAMPLE.
-4. Start Play mode / possess the player camera.
-5. Run toward one of the three Motion Matching lane obstacles at Z ~= 32.
-6. Try Space and Shift+Space away from obstacles.
 
 CONSOLE DEBUG
 -------------
