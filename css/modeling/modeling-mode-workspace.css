@@ -1,0 +1,434 @@
+/* Blender-inspired modeling workspace, scoped to Modeling mode. */
+#modeling-viewport-toolbar,
+#modeling-viewport-header {
+    display: none;
+}
+
+#modeling-viewport-header button {
+    width: auto;
+    height: 20px;
+}
+
+body.modeling-workspace-active #modeling-viewport-toolbar {
+    position: absolute;
+    top: 44px;
+    left: 10px;
+    z-index: 240;
+    display: flex;
+    flex-direction: column;
+    width: 38px;
+    background: var(--pp-surface-1, var(--secondary-dark));
+    border: 1px solid var(--pp-border-mid, var(--input-border));
+    border-radius: var(--radius, 4px);
+    box-shadow: var(--shadow-medium);
+    pointer-events: auto;
+    overflow: hidden;
+}
+
+.modeling-rail-group {
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+    gap: 2px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.modeling-rail-group:last-child {
+    border-bottom: 0;
+}
+
+.modeling-rail-btn,
+.modeling-icon-command {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--pp-r-sm, 3px);
+    cursor: pointer;
+}
+
+.modeling-rail-btn svg,
+.modeling-icon-command svg,
+.modeling-selection-switch svg,
+.modeling-component-modes svg,
+.modeling-command-grid svg,
+.modeling-primary-command svg {
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    font-weight: bold;
+}
+
+.modeling-rail-btn:hover,
+.modeling-icon-command:hover {
+    color: var(--text-primary);
+    background: var(--hover-bg);
+}
+
+.modeling-rail-btn.active {
+    color: var(--text-primary);
+    background: var(--active-bg);
+    border-color: var(--accent-active);
+}
+
+.modeling-rail-btn:disabled {
+    color: var(--text-muted);
+    cursor: default;
+    background: transparent;
+}
+
+/* Viewport tool rail: shared layout and modeling-mode presentation. */
+.viewport-tool-rail {
+    background: var(--secondary-dark) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: var(--shadow-medium) !important;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+    scrollbar-width: thin;
+}
+
+.viewport-tool-rail .tool-btn {
+    flex: 0 0 32px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius, 4px);
+    transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.viewport-tool-rail .tool-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 1.9;
+    opacity: 1;
+    filter: drop-shadow(0 1px 1px var(--shadow-base));
+}
+
+.viewport-tool-rail .tool-btn:hover {
+    color: var(--text-primary);
+    background: var(--hover-bg);
+    border-color: var(--input-border);
+}
+
+.viewport-tool-rail .tool-btn.active {
+    color: var(--text-primary);
+    background: var(--active-bg);
+    border-color: var(--accent-active);
+    box-shadow: var(--active-shadow-inset);
+}
+
+.viewport-tool-rail .tool-btn:focus-visible {
+    outline: 2px solid var(--accent-active);
+    outline-offset: -2px;
+}
+
+.viewport-tool-rail .tool-separator {
+    width: 22px;
+    min-height: 1px;
+    margin: 2px 0;
+    background: var(--border-subtle);
+    opacity: 1;
+}
+
+body.modeling-workspace-active #modeling-viewport-header {
+    position: absolute;
+    bottom: 12px;
+    left: 12%;
+    z-index: 240;
+    display: flex;
+    align-items: center;
+    height: 20px;
+    color: var(--text-secondary);
+    background: var(--header-bg);
+    border: 1px solid var(--border-color);
+    pointer-events: auto;
+}
+
+.modeling-mode-switch,
+.modeling-selection-switch {
+    display: flex;
+    align-items: stretch;
+}
+
+.modeling-mode-switch button,
+.modeling-selection-switch button {
+    min-width: 52px;
+    height: 28px;
+    padding: 0 9px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--border-subtle);
+    font: 600 10px/1 'Segoe UI', sans-serif;
+    cursor: pointer;
+}
+
+.modeling-selection-switch button {
+    display: grid;
+    place-items: center;
+    min-width: 30px;
+    padding: 0;
+}
+
+.modeling-mode-switch button.active,
+.modeling-selection-switch button.active {
+    color: var(--text-primary);
+    background: var(--active-bg);
+}
+
+#modeling-viewport-status {
+    max-width: 300px;
+    padding: 0 10px 0 3px;
+    overflow: hidden;
+    color: var(--text-muted);
+    font: 10px/1 'Segoe UI', sans-serif;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#modeling-studio-panel.modeling-workspace-inspector {
+    display: none;
+    flex-direction: column;
+    position: relative !important;
+    inset: auto !important;
+    z-index: auto !important;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto !important;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    color: var(--mw-text, var(--text-primary));
+    background: var(--panel-bg);
+    border: 0;
+    border-radius: 0;
+}
+
+body.modeling-workspace-active #modeling-studio-panel.modeling-workspace-inspector {
+    display: flex !important;
+}
+
+.modeling-inspector-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--header-bg);
+}
+
+.modeling-inspector-header > div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 3px;
+}
+
+.modeling-inspector-header strong {
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.modeling-eyebrow {
+    color: var(--accent-active);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.modeling-mode-panel,
+.modeling-inspector-section {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    background-color: #333;
+}
+
+.modeling-mode-switch-wide {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: 7px;
+    border: 1px solid var(--input-border);
+    border-radius: var(--pp-r-sm, 3px);
+    overflow: hidden;
+}
+
+.modeling-mode-switch-wide button {
+    min-width: 0;
+    border-right: 1px solid var(--input-border);
+}
+
+.modeling-mode-switch-wide button:last-child {
+    border-right: 0;
+}
+
+.modeling-primary-command {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 30px;
+    gap: 6px;
+    color: var(--button-text-color);
+    background: var(--button-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--pp-r-sm, 3px);
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.modeling-primary-command:hover {
+    background: var(--button-hover-bg);
+}
+
+.modeling-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+#modeling-selection-count {
+    color: var(--accent-active);
+    font-weight: 600;
+    text-transform: none;
+}
+
+.modeling-component-modes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.modeling-component-modes button,
+.modeling-command-grid button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 28px;
+    gap: 5px;
+    padding: 4px 6px;
+    color: var(--mw-text-dim, var(--text-secondary));
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--pp-r-sm, 3px);
+    font-size: 9px;
+    cursor: pointer;
+}
+
+.modeling-component-modes button:hover,
+.modeling-command-grid button:hover {
+    color: var(--text-primary);
+    background: var(--hover-bg);
+    border-color: var(--border-color);
+}
+
+.modeling-component-modes button.active,
+.modeling-command-grid button.active {
+    color: var(--text-primary);
+    background: var(--active-bg);
+    border-color: var(--accent-active);
+}
+
+.modeling-command-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.modeling-command-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.modeling-number-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 78px;
+    align-items: center;
+    min-height: 27px;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+.modeling-number-row input {
+    width: 100%;
+    height: 22px;
+    box-sizing: border-box;
+    padding: 2px 5px;
+    color: var(--text-primary);
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius, 2px);
+    font: 10px/1 'Cascadia Code', monospace;
+    text-align: right;
+}
+
+.modeling-number-row input:focus {
+    border-color: var(--input-focus-border);
+    outline: 0;
+}
+
+.modeling-mesh-info dl {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 0;
+    gap: 4px;
+}
+
+.modeling-mesh-info dl > div {
+    padding: 6px;
+    text-align: center;
+    background: var(--secondary-dark);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--pp-r-sm, 3px);
+}
+
+.modeling-mesh-info dt {
+    color: var(--text-muted);
+    font-size: 8px;
+    text-transform: uppercase;
+}
+
+.modeling-mesh-info dd {
+    margin: 3px 0 0;
+    color: var(--text-primary);
+    font: 600 11px/1 'Cascadia Code', monospace;
+}
+
+.modeling-message {
+    position: sticky;
+    bottom: 0;
+    margin-top: auto;
+    padding: 7px 10px;
+    color: var(--text-muted);
+    background: var(--primary-dark);
+    border-top: 1px solid var(--border-subtle);
+    font-size: 9px;
+}
+
+body.modeling-workspace-active .inspector-sidebar {
+    border-right-color: var(--border-color);
+}
+
+@media (max-width: 900px) {
+    #modeling-viewport-status {
+        display: none;
+    }
+
+    body.modeling-workspace-active #modeling-viewport-header {
+        right: 10px;
+    }
+}

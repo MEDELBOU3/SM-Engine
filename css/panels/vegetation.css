@@ -1,0 +1,45 @@
+/* css/vegetation.css */
+
+.veg-species-btn {
+    border: 1px solid #2d3748;
+    background-color: #1a202c;
+    color: #a0aec0;
+    transition: all 0.2s ease;
+    font-size: 11px;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.veg-species-btn:hover {
+    border-color: #4a5568;
+    color: #fff;
+    background-color: #2d3748;
+}
+
+.veg-species-btn.active {
+    background-color: rgba(0, 255, 204, 0.1) !important;
+    border-color: #00ffcc !important;
+    color: #00ffcc !important;
+    font-weight: 600;
+}
+
+/* Panel Layout helper configurations */
+.ph-prop-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 11px;
+}
+
+.ph-prop-label {
+    color: #a0aec0;
+    flex: 1;
+}
+
+.ph-prop-ctrl {
+    flex: 2;
+    display: flex;
+    justify-content: flex-end;
+}

@@ -1,0 +1,643 @@
+/* ============================================================================
+   css/editors/sprite-sheet-editor.css
+   SM Engine - 2D Sprite Sheet & Animation Studio (Windows 11 / Unreal Style)
+   ============================================================================ */
+
+.sm-sse-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 24px;
+}
+
+.sm-sse-modal.active {
+    display: flex;
+}
+
+.sm-sse-window {
+    width: 100%;
+    height: 100%;
+    max-width: 1600px;
+    max-height: 940px;
+    background: #0f131a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #e2e8f0;
+}
+
+/* Top Bar */
+.sm-sse-topbar {
+    height: 48px;
+    background: #0b0e14;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    flex-shrink: 0;
+}
+
+.sm-sse-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #f59e0b;
+}
+
+.sm-sse-topbar-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sm-sse-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 0 4px;
+}
+
+.sm-sse-btn {
+    height: 30px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    color: #cbd5e1;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.sm-sse-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.sm-sse-btn-primary {
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+    border-color: #f59e0b;
+    color: #000;
+    font-weight: 750;
+}
+
+.sm-sse-btn-primary:hover {
+    background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+    color: #000;
+}
+
+.sm-sse-btn-accent {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: #fff;
+}
+
+.sm-sse-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 6px;
+}
+
+.sm-sse-close:hover {
+    color: #ef4444;
+}
+
+/* Workspace 3-Column Body */
+.sm-sse-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px 1fr 320px;
+    overflow: hidden;
+}
+
+/* Left & Right Sidebars */
+.sm-sse-sidebar-left,
+.sm-sse-sidebar-right {
+    background: #111622;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sm-sse-sidebar-left {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sm-sse-sidebar-right {
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sm-sse-panel-header {
+    height: 36px;
+    padding: 0 12px;
+    background: #151c2c;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 750;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Tool Selector Bar */
+.sm-sse-tool-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 8px;
+    gap: 4px;
+    background: #0b0e14;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sm-sse-tool-btn {
+    height: 32px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.sm-sse-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+
+.sm-sse-tool-btn.active {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.4);
+    color: #f59e0b;
+}
+
+/* Slice Inspector */
+.sm-sse-slice-inspector {
+    padding: 12px;
+    background: #0f1420;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sm-sse-prop-title {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #64748b;
+    margin-bottom: 6px;
+    letter-spacing: 0.06em;
+}
+
+.sm-sse-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 6px;
+}
+
+.sm-sse-form-row label,
+.sm-sse-form-grid-2 label {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.sm-sse-input {
+    height: 24px;
+    background: #06090e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    padding: 0 6px;
+    color: #fff;
+    font-size: 11px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sm-sse-form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.sm-sse-pivot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin-top: 4px;
+}
+
+.sm-sse-pivot-grid button {
+    height: 22px;
+    background: #182030;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    color: #94a3b8;
+    font-size: 9.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.sm-sse-pivot-grid button:hover {
+    background: #f59e0b;
+    color: #000;
+}
+
+/* Slices Scrollable List */
+.sm-sse-slice-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sm-sse-slice-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 11.5px;
+    color: #cbd5e1;
+}
+
+.sm-sse-slice-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.sm-sse-slice-item.active {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
+    font-weight: 600;
+}
+
+.sm-sse-slice-idx {
+    font-size: 10px;
+    color: #64748b;
+    width: 16px;
+}
+
+.sm-sse-slice-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sm-sse-slice-res {
+    font-size: 9.5px;
+    color: #64748b;
+    font-family: monospace;
+}
+
+.sm-sse-delete-slice {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.sm-sse-delete-slice:hover {
+    color: #ef4444;
+}
+
+/* Center Canvas Viewport */
+.sm-sse-viewport-wrap {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    cursor: crosshair;
+    background: #111622;
+}
+
+.sm-sse-canvas-hud {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(11, 14, 20, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border-radius: 4px;
+    padding: 4px 10px;
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+/* Right Panel: Preview & Clips */
+.sm-sse-preview-box {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sm-sse-preview-canvas-wrap {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0b0e14;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sm-sse-preview-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.sm-sse-preview-controls button,
+.sm-sse-mini-btn {
+    width: 24px;
+    height: 24px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: #cbd5e1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.sm-sse-mini-btn {
+    width: auto;
+    padding: 0 8px;
+    gap: 4px;
+}
+
+.sm-sse-preview-footer {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sm-sse-slider-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+}
+
+.sm-sse-slider-row input[type="range"] {
+    accent-color: #f59e0b;
+}
+
+.sm-sse-toggle-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.sm-sse-clips-manager {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sm-sse-clips-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sm-sse-clip-card {
+    background: #182030;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.sm-sse-clip-card.active {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.12);
+}
+
+.sm-sse-clip-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.sm-sse-clip-body {
+    display: flex;
+    gap: 12px;
+    font-size: 10.5px;
+    color: #94a3b8;
+}
+
+.sm-sse-empty-hint {
+    padding: 20px;
+    text-align: center;
+    color: #64748b;
+    font-size: 11px;
+    font-style: italic;
+}
+
+/* Grid Dialog */
+.sm-sse-dialog-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.sm-sse-dialog {
+    width: 320px;
+    background: #111622;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+}
+
+.sm-sse-dialog h3 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sm-sse-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+/* Asset-aware production workflow ------------------------------------------------ */
+.sm-sse-brand > div {
+    display: grid;
+    gap: 1px;
+}
+
+.sm-sse-asset-context {
+    color: #7f91aa;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    max-width: 340px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sm-sse-source-warning {
+    max-width: 560px;
+    overflow: hidden;
+    color: #ffbd5d;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sm-sse-btn-save {
+    background: #173b31;
+    border-color: #2f8067;
+    color: #c5f4df;
+}
+
+.sm-sse-btn-save:hover,
+.sm-sse-btn-save.is-dirty {
+    background: #1f5b49;
+    border-color: #5fe0ae;
+    color: #fff;
+}
+
+.sm-sse-btn-save:disabled {
+    cursor: not-allowed;
+    opacity: .45;
+}
+
+.sm-sse-timeline {
+    flex: 0 0 92px;
+    min-height: 92px;
+    display: grid;
+    grid-template-columns: 116px minmax(0, 1fr);
+    background: #0a0f19;
+    border-top: 1px solid rgba(148, 163, 184, .16);
+    overflow: hidden;
+}
+
+.sm-sse-timeline-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: #788aa5;
+    background: #0d1421;
+    border-right: 1px solid rgba(148, 163, 184, .12);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .06em;
+}
+
+.sm-sse-frame-strip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    overflow-x: auto;
+    padding: 9px 12px;
+    scrollbar-color: #34435c transparent;
+}
+
+.sm-sse-timeline-empty {
+    color: #60708a;
+    font-size: 11px;
+    font-style: italic;
+}
+
+.sm-sse-frame-chip {
+    flex: 0 0 56px;
+    height: 68px;
+    display: grid;
+    grid-template-rows: 48px 16px;
+    gap: 2px;
+    padding: 2px;
+    color: #8999b2;
+    background: #121b2a;
+    border: 1px solid rgba(148, 163, 184, .18);
+    border-radius: 5px;
+    cursor: pointer;
+    font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.sm-sse-frame-chip:hover {
+    border-color: #f0ad3d;
+    color: #fff;
+}
+
+.sm-sse-frame-chip.active {
+    background: #163a52;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, .24);
+    color: #d9f5ff;
+}
+
+.sm-sse-frame-thumb {
+    display: block;
+    width: 100%;
+    height: 48px;
+    background-color: #1b2638;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+}
+
+@media (max-width: 980px) {
+    .sm-sse-modal { padding: 10px; }
+    .sm-sse-window { max-height: none; }
+    .sm-sse-body { grid-template-columns: 210px 1fr 250px; }
+    .sm-sse-topbar-tools .sm-sse-btn { padding: 0 7px; }
+    .sm-sse-topbar-tools .sm-sse-btn:not(.sm-sse-btn-save) { font-size: 0; }
+    .sm-sse-topbar-tools .sm-sse-btn i { font-size: 12px; }
+}

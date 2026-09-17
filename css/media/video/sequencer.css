@@ -1,0 +1,96 @@
+/* ============================================================================ sequencer.css — SM Engine Professional Video Sequencer Uses :root theme design tokens (--video-*, --timeline-*, --text-*, etc.) ============================================================================ */
+/* ─── Root Container ─────────────────────────────────────────── */
+.sequencer-root{width:100%;height:100%;display:flex;flex-direction:column;background:var(--timeline-surface-0);color:var(--text-primary);font-family:'Segoe UI',system-ui,sans-serif;user-select:none;box-sizing:border-box;}
+#editor-scene > .sequencer-root{position:absolute;left:0;right:0;bottom:0;height:var(--sequencer-live-height,260px);z-index:9;display:flex;flex-direction:column;background:var(--timeline-surface-0);border-top:1px solid var(--border-color);box-shadow:var(--shadow-heavy);min-height:120px;}
+body.video-editing-mode #video-editing-container{bottom:calc(var(--sequencer-live-height,260px) + 5px)!important;}
+/* ─── Resizer Splitter Bar ───────────────────────────────────── */
+#editor-scene > .sequencer-splitter{position:absolute;left:0;right:0;bottom:calc(var(--sequencer-live-height,260px) + 1px);height:5px;z-index:11;cursor:ns-resize;background:transparent;}
+#editor-scene > .sequencer-splitter::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46px;height:3px;border-radius:2px;background:var(--border-color);}
+#editor-scene > .sequencer-splitter:hover::after{background:var(--text-secondary);}
+body.video-editing-mode #timelineBody{display:none!important;}
+body.video-editing-mode .editor-scene{bottom:0!important;}
+/* ─── Top Toolbar ────────────────────────────────────────────── */
+.sequencer-toolbar{display:flex;align-items:center;justify-content:space-between;height:var(--toolbar-height,32px);min-height:32px;padding:0 10px;gap:8px;background:var(--timeline-surface-1);border-bottom:1px solid var(--border-color);flex:none;overflow:hidden;}
+.sequencer-toolbar-group{display:flex;align-items:center;gap:4px;}
+.sequencer-toolbar-group + .sequencer-toolbar-group{margin-left:5px;padding-left:5px;border-left:1px solid var(--border-color);}
+.sequencer-toolbar-right{margin-left:auto;border-left:none!important;}
+.sequencer-view-select{height:22px;background:var(--input-bg);color:var(--text-secondary);border:1px solid var(--input-border);border-radius:3px;font-size:10px;padding:0 4px;outline:none;}
+.sequencer-tool-btn,.sequencer-icon-btn{height:22px;padding:0 8px;display:inline-flex;align-items:center;gap:4px;background:var(--input-bg);color:var(--text-secondary);border:1px solid var(--input-border);border-radius:3px;font-size:10px;cursor:pointer;white-space:nowrap;transition:background 0.15s,color 0.15s,border-color 0.15s;}
+.sequencer-tool-btn span{line-height:1;}
+.sequencer-tool-btn:hover,.sequencer-icon-btn:hover{background:var(--hover-bg);color:var(--text-primary);border-color:var(--border-color);}
+.sequencer-tool-btn.active{background:var(--active-bg);color:var(--text-primary);border-color:var(--accent-info);}
+.sequencer-icon-btn{width:22px;padding:0;justify-content:center;color:var(--text-secondary);}
+.sequencer-icon-btn.btn-play.playing{color:var(--accent-danger);}
+.sequencer-check{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--text-secondary);cursor:pointer;height:22px;padding:0 3px;}
+.sequencer-check input{accent-color:var(--accent-info);margin:0;}
+.sequencer-timecode{font-family:'Cascadia Code','Consolas',monospace;font-size:11px;font-weight:700;color:var(--accent-info);margin-right:8px;white-space:nowrap;}
+/* ─── Scroll & Main Content Area ────────────────────────────── */
+.sequencer-scroll{flex:1;overflow:auto;position:relative;background:var(--timeline-surface-0);}
+.sequencer-scroll::-webkit-scrollbar{width:8px;height:8px;}
+.sequencer-scroll::-webkit-scrollbar-track{background:var(--timeline-surface-0);}
+.sequencer-scroll::-webkit-scrollbar-thumb{background:var(--tertiary-dark);border-radius:4px;}
+.sequencer-scroll::-webkit-scrollbar-thumb:hover{background:var(--hover-bg);}
+.sequencer-inner{position:relative;min-width:100%;}
+/* ─── Time Ruler (Sticky Top Bar) ────────────────────────────── */
+.sequencer-ruler{position:sticky;top:0;z-index:200;height:var(--sequencer-ruler-height,26px);background:var(--timeline-surface-1);border-bottom:1px solid var(--border-color);display:flex;}
+/* Ruler Left Corner Header */
+.sequencer-ruler-corner{position:sticky;left:0;width:120px!important;min-width:120px!important;height:100%;background:var(--timeline-surface-1);border-right:1px solid var(--border-color);z-index:210;}
+.sequencer-ruler-canvas{position:absolute;top:0;height:100%;}
+/* ─── Playhead & Indicator ──────────────────────────────────── */
+.sequencer-playhead-handle{position:absolute;top:0;width:12px;height:26px;background:var(--accent-info);clip-path:polygon(0 0,100% 0,100% 65%,50% 100%,0 65%);cursor:ew-resize;z-index:220;box-shadow:0 2px 6px rgba(var(--accent-info-rgb),0.35);}
+/* Playhead Vertical Line (Starts after Track Header) */
+.sequencer-playhead-line{position:absolute;top:26px;width:2px!important;background:var(--accent-info)!important;box-shadow:0 0 8px rgba(var(--accent-info-rgb),0.55)!important;z-index:150;pointer-events:none;}
+.sequencer-playhead-line.playing{background:var(--text-primary);box-shadow:0 0 8px rgba(var(--text-primary-rgb),0.55);}
+/* ─── Track Lanes & Headers ──────────────────────────────────── */
+.sequencer-lanes{position:relative;width:100%;}
+/* Track Lane Row (36px Height) */
+.sequencer-lane{display:flex;height:36px!important;min-height:36px!important;border-bottom:1px solid var(--border-subtle);position:relative;}
+.sequencer-lane[data-track-type='audio'] .sequencer-lane-body{background:rgba(var(--accent-success-rgb),0.06);}
+.sequencer-lane[data-track-type='audio'] .sequencer-lane-head{background:var(--timeline-surface-2);}
+/* Left Track Header Column */
+.sequencer-lane-head{position:sticky;left:0;width:120px!important;min-width:120px!important;height:36px!important;background:var(--timeline-surface-2);border-right:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;padding:0 8px;z-index:100;box-sizing:border-box;}
+.sequencer-lane-name{flex:1;font-size:11px;font-weight:600;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sequencer-lane-btns{display:flex;align-items:center;gap:4px;}
+.sequencer-track-btn{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--text-muted);cursor:pointer;border-radius:2px;padding:0;}
+.sequencer-track-btn:hover{background:var(--hover-bg);color:var(--text-primary);}
+.sequencer-track-btn.off{opacity:0.35;}
+.sequencer-track-btn.on.btn-vis{color:var(--text-primary);}
+.sequencer-track-btn.on.btn-mute{color:var(--accent-danger);}
+.sequencer-track-btn.on.btn-lock{color:var(--accent-warning);}
+.sequencer-lane.locked .sequencer-lane-body .sequencer-clip{opacity:0.5;cursor:not-allowed;}
+.sequencer-lane.hidden .sequencer-lane-body{opacity:0.3;}
+.sequencer-lane-body{flex:1;position:relative;background:var(--timeline-surface-0);}
+/* ─── Clips (Video / Audio / Image / Text / Solid) ──────────── */
+.sequencer-clip{position:absolute;top:3px!important;height:30px!important;border-radius:4px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;padding:0 8px!important;gap:6px!important;cursor:pointer;overflow:hidden!important;border-left:3px solid var(--accent-blue);background:rgba(var(--accent-blue-rgb),0.18);}
+.sequencer-clip[data-media-type='audio']{background:var(--video-clip-audio-bg);border-left-color:var(--accent-success);}
+.sequencer-clip[data-media-type='image']{background:var(--video-clip-image-bg);border-left-color:var(--accent-orange-light);}
+.sequencer-clip::before,.sequencer-clip::after{content:'';position:absolute;top:0;bottom:0;width:6px;cursor:ew-resize;z-index:2;}
+.sequencer-clip::before{left:0;}
+.sequencer-clip::after{right:0;}
+.sequencer-clip.selected{border:2px solid var(--accent-info)!important;box-shadow:0 0 10px rgba(var(--accent-info-rgb),0.35);}
+.sequencer-clip.locked{cursor:not-allowed;}
+.sequencer-clip.hidden{display:none;}
+/* Badge (VID / AUD / TXT) */
+.sequencer-clip-badge{position:relative!important;top:auto!important;left:auto!important;transform:none!important;font-size:9px!important;font-weight:800!important;padding:1px 4px!important;border-radius:2px!important;background:rgba(var(--primary-dark-rgb),0.5)!important;color:var(--text-primary)!important;flex-shrink:0;}
+/* Clip Title Name */
+.sequencer-clip-name{position:relative!important;top:auto!important;left:auto!important;right:auto!important;font-size:11px!important;font-weight:600!important;color:var(--text-primary)!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;flex:1;}
+/* Time Duration Badge */
+.sequencer-clip-time{position:relative!important;left:auto!important;bottom:auto!important;font-size:10px!important;font-family:'Cascadia Code','Consolas',monospace!important;color:var(--text-secondary)!important;flex-shrink:0;margin-left:auto;}
+.sequencer-clip-wave{position:absolute;left:34px;right:8px;bottom:4px;height:16px;display:flex;gap:1px;align-items:center;}
+.sequencer-clip-wave i{flex:1;background:var(--text-secondary);opacity:0.45;border-radius:1px;min-width:1px;}
+.sequencer-clip-thumb{position:absolute;left:34px;right:8px;top:18px;bottom:6px;object-fit:cover;opacity:0.55;display:none;border-radius:2px;}
+.sequencer-empty-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-muted);pointer-events:none;z-index:1;letter-spacing:0.03em;}
+/* ─── Clip Inspector Panel ──────────────────────────────────── */
+.sequencer-inspector{display:flex;flex-direction:column;gap:8px;padding:8px;overflow-y:auto;background:var(--timeline-surface-0);}
+.sequencer-inspector .inspector-card{background:var(--panel-bg);border:1px solid var(--border-color);border-radius:4px;}
+.sequencer-inspector .inspector-card-header{font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--text-primary);padding:6px 8px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;}
+.sequencer-inspector .inspector-card-body{padding:8px;display:flex;flex-direction:column;gap:6px;}
+.sequencer-inspector .sq-field-row{display:flex;align-items:center;gap:8px;}
+.sequencer-inspector .sq-field-label{font-size:10px;color:var(--text-secondary);width:84px;flex:none;}
+.sequencer-inspector input[type='number'],.sequencer-inspector select,.sequencer-inspector textarea{flex:1;background:var(--input-bg);border:1px solid var(--input-border);color:var(--text-primary);font-size:11px;padding:4px 6px;border-radius:3px;outline:none;min-width:0;}
+.sequencer-inspector input:focus,.sequencer-inspector select:focus,.sequencer-inspector textarea:focus{border-color:var(--accent-info);}
+.sequencer-inspector input[type='range']{flex:1;accent-color:var(--accent-info);background:transparent;}
+.sequencer-inspector input[type='color']{width:44px;height:24px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:3px;padding:0;cursor:pointer;}
+.sequencer-inspector .sq-timecode-readonly{font-family:'Cascadia Code','Consolas',monospace;font-size:10px;color:var(--accent-info);flex:none;}
+.sequencer-inspector .sq-inspector-badge{font-size:8px;letter-spacing:0.5px;color:var(--text-primary);background:rgba(var(--primary-dark-rgb),0.4);padding:2px 6px;border-radius:2px;}
+.sequencer-inspector .vea-host{border-top:1px solid var(--border-color);padding-top:6px;}

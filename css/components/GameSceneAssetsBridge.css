@@ -1,0 +1,32 @@
+/* GameProjectAssetsBridge.css — Step 2 */
+
+.asset-item.game-project-folder .asset-thumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sm-game-project-icon {
+    width: 66%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--secondary-dark, #3c3c3c);
+    color: var(--text-primary, #ffffff);
+    font-size: 30px;
+}
+
+.asset-item.game-project-folder .asset-meta {
+    color: var(--text-secondary, #b0b0b0);
+}
+
+.game-project-folder-tree .category-icon {
+    color: var(--text-primary, #ffffff);
+}
+
+.sm-new-game-project-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

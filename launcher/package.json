@@ -1,15 +1,19 @@
 {
   "name": "sm-engine-launcher",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Official SM Engine project and version launcher",
   "main": "electron-main.js",
   "author": "Mohamed El-Bouanani",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MEDELBOU3/SM-Engine.git"
+  },
   "license": "MIT",
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "dist:win": "electron-builder --win nsis portable --x64"
+    "dist:win": "electron-builder --win nsis portable zip --x64"
   },
   "devDependencies": {
     "electron": "^31.7.7",
@@ -19,7 +23,7 @@
     "appId": "com.smengine.launcher",
     "productName": "SM Engine Launcher",
     "directories": {
-      "output": "dist-win"
+      "output": "dist-release"
     },
     "files": [
       "electron-main.js",
@@ -31,9 +35,16 @@
       "assets/**/*",
       "package.json"
     ],
+    "compression": "maximum",
     "win": {
       "icon": "assets/icons/logo.ico",
       "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
         {
           "target": "portable",
           "arch": [
@@ -41,7 +52,7 @@
           ]
         },
         {
-          "target": "nsis",
+          "target": "zip",
           "arch": [
             "x64"
           ]
@@ -49,14 +60,20 @@
       ]
     },
     "nsis": {
+      "artifactName": "SM-Engine-Launcher-Setup-${version}-x64.exe",
       "oneClick": false,
+      "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "SM Engine Launcher",
+      "runAfterFinish": true,
       "installerIcon": "assets/icons/logo.ico",
       "uninstallerIcon": "assets/icons/logo.ico",
       "installerHeaderIcon": "assets/icons/logo.ico"
+    },
+    "portable": {
+      "artifactName": "SM-Engine-Launcher-Portable-${version}-x64.exe"
     }
   },
   "dependencies": {

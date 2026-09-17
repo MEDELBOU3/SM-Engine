@@ -1,0 +1,3435 @@
+/*
+ * SM Engine — assets-panel.css v9.0 PRO+
+ * Professional Content Browser stylesheet
+ * Compatible with:
+ *   - panels/assetsPanel.js (professional UI shell)
+ *   - AssetsPanel advanced logic
+ *   - engine/assets/AssetBrowserPro.js
+ *
+ * Notes:
+ *   - Uses SM Engine root tokens when available.
+ *   - Keeps compatibility hooks used by the previous v7 browser.
+ *   - No external font import is required.
+ */
+
+/* ==========================================================================
+   0. SCOPED DESIGN TOKENS
+   ========================================================================== */
+
+#assetsPanel {
+    --cb-bg: var(--panel-bg, #333333);
+    --cb-bg-0: #2d2d2d;
+    --cb-bg-1: var(--primary-dark, #333333);
+    --cb-bg-2: var(--secondary-dark, #3c3c3c);
+    --cb-bg-3: #414141;
+    --cb-bg-4: #474747;
+    --cb-bg-hover: rgba(255, 255, 255, 0.055);
+    --cb-bg-active: rgba(255, 255, 255, 0.10);
+
+    --cb-border: var(--border-color, rgba(77, 77, 77, 0.50));
+    --cb-border-strong: rgba(255, 255, 255, 0.12);
+    --cb-border-soft: rgba(255, 255, 255, 0.055);
+
+    --cb-text: var(--text-primary, #ffffff);
+    --cb-text-2: var(--text-secondary, #b0b0b0);
+    --cb-text-3: #858585;
+    --cb-text-4: #686868;
+
+    --cb-accent: var(--accent-blue, #5f5f5f);
+    --cb-accent-dark: var(--accent-blue-dark, #474747);
+    --cb-accent-soft: rgba(160, 160, 160, 0.14);
+    --cb-accent-line: rgba(200, 200, 200, 0.30);
+
+    --cb-danger: #b85c5c;
+    --cb-danger-soft: rgba(184, 92, 92, 0.12);
+    --cb-success: #658b69;
+
+    --cb-model: #6f74a5;
+    --cb-texture: #a97955;
+    --cb-material: #5f8f82;
+    --cb-hdri: #718c67;
+    --cb-primitive: #637f99;
+    --cb-light: #a58a58;
+    --cb-code: #8f6677;
+    --cb-prefab: #9b7453;
+    --cb-folder: #aa925f;
+
+    --cb-sidebar-width: 230px;
+    --cb-properties-width: 290px;
+    --thumbnail-size: 100px;
+
+    --cb-header-height: 38px;
+    --cb-toolbar-height: 38px;
+    --cb-status-height: 24px;
+
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    font-size: 12px;
+    color: var(--cb-text-2);
+}
+
+/* ==========================================================================
+   1. RESET / COMMON
+   ========================================================================== */
+
+#assetsPanel,
+#assetsPanel *,
+.upload-dropzone,
+.upload-dropzone *,
+#contextMenu,
+#contextMenu * {
+    box-sizing: border-box;
+}
+
+#assetsPanel button,
+#assetsPanel input,
+#assetsPanel select,
+#assetsPanel textarea,
+.upload-dropzone button,
+.upload-dropzone input {
+    font: inherit;
+}
+
+#assetsPanel button,
+.upload-dropzone button,
+#contextMenu {
+    -webkit-tap-highlight-color: transparent;
+}
+
+#assetsPanel button:focus-visible,
+#assetsPanel input:focus-visible,
+#assetsPanel select:focus-visible,
+.upload-dropzone button:focus-visible {
+    outline: 1px solid var(--cb-accent-line);
+    outline-offset: -1px;
+}
+
+#assetsPanel .svg-icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.1em;
+    fill: currentColor;
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+#assetsPanel .svg-icon.outline {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+}
+
+/* ==========================================================================
+   2. OUTER PANEL
+   ========================================================================== */
+
+.assets-panel-container {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: clamp(260px, 38vh, 620px);
+    min-height: 220px;
+    max-height: 86vh;
+
+    display: none;
+    flex-direction: column;
+
+    background: var(--cb-bg);
+    border-top: 1px solid var(--cb-border);
+    box-shadow: 0 -10px 34px rgba(0, 0, 0, 0.34);
+
+    overflow: hidden;
+    z-index: 800;
+}
+
+.assets-panel-container.visible {
+    display: flex;
+}
+
+.assets-panel-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    cursor: ns-resize;
+    z-index: 8;
+}
+
+/* ==========================================================================
+   3. HEADER
+   ========================================================================== */
+
+#assetsPanel .assets-panel-header {
+    min-height: var(--cb-header-height);
+    height: var(--cb-header-height);
+    flex: 0 0 var(--cb-header-height);
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 0 7px 0 10px;
+    background: var(--cb-bg-2);
+    border-bottom: 1px solid var(--cb-border);
+
+    cursor: ns-resize;
+    user-select: none;
+}
+
+#assetsPanel .cb-title-area {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#assetsPanel .cb-title-icon {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    color: #d0d0d0;
+    flex: 0 0 22px;
+}
+
+#assetsPanel .cb-title-copy {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+#assetsPanel .cb-title-copy strong {
+    color: var(--cb-text);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#assetsPanel .cb-title-copy span {
+    color: var(--cb-text-3);
+    font-size: 10px;
+}
+
+#assetsPanel .assets-panel-controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1px;
+}
+
+/* legacy title markup */
+#assetsPanel .assets-panel-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#assetsPanel .assets-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--cb-text);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#assetsPanel .assets-panel-tab-close {
+    color: var(--cb-text-4);
+    margin-left: 4px;
+}
+
+/* ==========================================================================
+   4. GENERIC BUTTONS
+   ========================================================================== */
+
+#assetsPanel .cb-icon-btn,
+#assetsPanel .cb-action-btn,
+#assetsPanel .panel-btn,
+#assetsPanel .filter-btn,
+#assetsPanel .view-mode-btn,
+.upload-dropzone .cb-icon-btn,
+.upload-dropzone .cb-action-btn {
+    border: 0;
+    border-radius: 0;
+    color: var(--cb-text-2);
+    background: transparent;
+    cursor: pointer;
+    transition:
+        background-color 0.08s ease,
+        color 0.08s ease,
+        opacity 0.08s ease;
+}
+
+#assetsPanel .cb-icon-btn,
+.upload-dropzone .cb-icon-btn {
+    width: 28px;
+    height: 27px;
+    min-width: 28px;
+    padding: 0;
+
+    display: inline-grid;
+    place-items: center;
+}
+
+#assetsPanel .cb-icon-btn:hover,
+.upload-dropzone .cb-icon-btn:hover {
+    background: var(--cb-bg-hover);
+    color: var(--cb-text);
+}
+
+#assetsPanel .cb-icon-btn:active,
+.upload-dropzone .cb-icon-btn:active {
+    background: var(--cb-bg-active);
+}
+
+#assetsPanel .cb-icon-btn:disabled {
+    opacity: 0.28;
+    cursor: default;
+    background: transparent;
+}
+
+#assetsPanel .cb-action-btn,
+#assetsPanel .panel-btn,
+.upload-dropzone .cb-action-btn {
+    min-height: 28px;
+    padding: 0 9px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    background: var(--cb-bg-3);
+    color: #d8d8d8;
+    white-space: nowrap;
+}
+
+#assetsPanel .cb-action-btn:hover,
+#assetsPanel .panel-btn:hover,
+.upload-dropzone .cb-action-btn:hover {
+    background: var(--cb-bg-4);
+    color: #ffffff;
+}
+
+#assetsPanel .cb-action-primary,
+#assetsPanel .panel-btn.accent-btn,
+.upload-dropzone .cb-action-primary {
+    background: #555555;
+    color: #ffffff;
+}
+
+#assetsPanel .cb-action-primary:hover,
+#assetsPanel .panel-btn.accent-btn:hover,
+.upload-dropzone .cb-action-primary:hover {
+    background: #626262;
+}
+
+#assetsPanel .mini-btn {
+    min-height: 21px;
+    height: 21px;
+    padding: 0 6px;
+    font-size: 9px;
+}
+
+/* ==========================================================================
+   5. TOOLBARS
+   ========================================================================== */
+
+#assetsPanel .assets-toolbar {
+    min-height: var(--cb-toolbar-height);
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 4px 8px;
+    background: var(--cb-bg-1);
+    border-bottom: 1px solid var(--cb-border-soft);
+
+    overflow: hidden;
+}
+
+#assetsPanel .cb-main-toolbar {
+    min-height: 40px;
+}
+
+#assetsPanel .cb-secondary-toolbar {
+    min-height: 34px;
+    background: #313131;
+}
+
+#assetsPanel .cb-toolbar-group,
+#assetsPanel .cb-primary-actions,
+#assetsPanel .cb-toolbar-actions,
+#assetsPanel .cb-navigation,
+#assetsPanel .view-mode-toggle,
+#assetsPanel .filter-group,
+#assetsPanel .cb-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+#assetsPanel .cb-toolbar-spacer {
+    flex: 1 1 auto;
+    min-width: 8px;
+}
+
+#assetsPanel .cb-separator,
+#assetsPanel .cb-divider {
+    width: 1px;
+    height: 21px;
+    background: var(--cb-border);
+    flex: 0 0 1px;
+    margin: 0 2px;
+}
+
+/* ==========================================================================
+   6. NAVIGATION + BREADCRUMBS
+   ========================================================================== */
+
+#assetsPanel .cb-path-shell {
+    height: 28px;
+    min-width: 160px;
+    max-width: min(520px, 40vw);
+    flex: 1 1 300px;
+
+    display: flex;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.13);
+    border: 1px solid var(--cb-border-soft);
+    overflow: hidden;
+}
+
+#assetsPanel .cb-path-icon {
+    width: 28px;
+    flex: 0 0 28px;
+    text-align: center;
+    color: #7b7b7b;
+}
+
+#assetsPanel .cb-path-bar {
+    height: 28px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+#assetsPanel .assets-breadcrumbs {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#assetsPanel .breadcrumb-item {
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    padding: 0 5px;
+
+    color: var(--cb-text-2);
+    font-size: 10.5px;
+    cursor: pointer;
+}
+
+#assetsPanel .breadcrumb-item:hover {
+    background: var(--cb-bg-hover);
+    color: #ffffff;
+}
+
+#assetsPanel .breadcrumb-item.active,
+#assetsPanel .breadcrumb-item:last-child {
+    color: #e2e2e2;
+}
+
+#assetsPanel .breadcrumb-separator {
+    color: #696969;
+    font-size: 8px;
+    padding: 0 1px;
+}
+
+/* ==========================================================================
+   7. SEARCH / FILTERS / SORT
+   ========================================================================== */
+
+#assetsPanel .cb-search-wrap {
+    width: clamp(190px, 21vw, 330px);
+    height: 28px;
+    flex: 0 1 auto;
+
+    display: flex;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.16);
+    border: 1px solid var(--cb-border-soft);
+    position: relative;
+}
+
+#assetsPanel .cb-search-icon {
+    width: 28px;
+    flex: 0 0 28px;
+    text-align: center;
+    color: #757575;
+    position: static;
+    transform: none;
+    pointer-events: none;
+}
+
+#assetsPanel .search-box {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    height: 26px;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 0;
+    outline: none;
+
+    background: transparent !important;
+    color: var(--cb-text);
+    font-size: 11px;
+}
+
+#assetsPanel .search-box::placeholder {
+    color: #737373;
+}
+
+#assetsPanel .cb-search-wrap:focus-within {
+    border-color: rgba(255, 255, 255, 0.20);
+}
+
+#assetsPanel .cb-search-clear {
+    width: 25px;
+    height: 25px;
+
+    border: 0;
+    background: transparent;
+    color: #6c6c6c;
+    cursor: pointer;
+}
+
+#assetsPanel .cb-search-clear:hover {
+    color: #ffffff;
+}
+
+#assetsPanel .cb-filter-strip {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+
+#assetsPanel .cb-filter-strip::-webkit-scrollbar {
+    display: none;
+}
+
+#assetsPanel .filter-btn {
+    height: 25px;
+    padding: 0 8px;
+    background: transparent;
+    color: #929292;
+    white-space: nowrap;
+    font-size: 10.5px;
+}
+
+#assetsPanel .filter-btn:hover {
+    background: var(--cb-bg-hover);
+    color: #d5d5d5;
+}
+
+#assetsPanel .filter-btn.active {
+    background: var(--cb-bg-active);
+    color: #ffffff;
+}
+
+#assetsPanel .tag-cloud-container {
+    min-width: 0;
+    max-width: 320px;
+
+    display: flex;
+    align-items: center;
+    gap: 3px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+
+#assetsPanel .tag-cloud-container::-webkit-scrollbar {
+    display: none;
+}
+
+#assetsPanel .tag-cloud-tag {
+    min-height: 19px;
+    padding: 2px 6px;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    background: rgba(255, 255, 255, 0.035) !important;
+    color: #858585 !important;
+
+    font-size: 9px !important;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+#assetsPanel .tag-cloud-tag:hover,
+#assetsPanel .tag-cloud-tag.active {
+    background: rgba(255, 255, 255, 0.075) !important;
+    color: #ffffff !important;
+}
+
+#assetsPanel .cb-sort-wrap,
+#assetsPanel .cb-thumb-control,
+#assetsPanel .thumbnail-size-control {
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #818181;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+#assetsPanel .cb-select {
+    height: 26px;
+    min-width: 112px;
+
+    padding: 0 5px;
+
+    border: 1px solid var(--cb-border-soft);
+    border-radius: 0;
+    outline: 0;
+
+    background: #383838;
+    color: #b8b8b8;
+}
+
+#assetsPanel .view-mode-toggle {
+    background: rgba(0, 0, 0, 0.13);
+}
+
+#assetsPanel .view-mode-btn {
+    width: 28px;
+    height: 26px;
+    padding: 0;
+
+    display: grid;
+    place-items: center;
+
+    background: transparent;
+    color: #838383;
+}
+
+#assetsPanel .view-mode-btn:hover {
+    background: var(--cb-bg-hover);
+    color: #dddddd;
+}
+
+#assetsPanel .view-mode-btn.active {
+    background: var(--cb-bg-active);
+    color: #ffffff;
+}
+
+#assetsPanel #thumbnailSizeSlider,
+#assetsPanel .thumbnail-size-control input[type="range"],
+#assetsPanel .cb-thumb-control input[type="range"] {
+    width: 78px;
+    height: 3px;
+    accent-color: #777777;
+}
+
+/* ==========================================================================
+   8. THREE-PANE CONTENT
+   ========================================================================== */
+
+#assetsPanel .assets-content {
+    min-height: 0;
+    flex: 1 1 auto;
+
+    display: flex;
+    overflow: hidden;
+
+    background: var(--cb-bg-0);
+}
+
+/* ==========================================================================
+   9. LEFT SOURCES / FOLDER TREE
+   ========================================================================== */
+
+#assetsPanel .assets-categories {
+    width: var(--cb-sidebar-width);
+    min-width: 150px;
+    max-width: 420px;
+    flex: 0 0 auto;
+
+    padding: 6px 0 12px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    background: #303030;
+    border-right: 1px solid var(--cb-border);
+}
+
+#assetsPanel.sources-collapsed .assets-categories,
+#assetsPanel.sources-collapsed .assets-pane-resizer-left {
+    display: none !important;
+}
+
+#assetsPanel .abp-quick-sources {
+    padding: 0 5px 7px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid var(--cb-border-soft);
+}
+
+#assetsPanel .abp-quick-sources button {
+    width: 100%;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 0 8px;
+
+    border: 0;
+    background: transparent;
+    color: #929292;
+
+    cursor: pointer;
+    text-align: left;
+}
+
+#assetsPanel .abp-quick-sources button i {
+    width: 14px;
+    text-align: center;
+    color: #777777;
+}
+
+#assetsPanel .abp-quick-sources button:hover {
+    background: var(--cb-bg-hover);
+    color: #dddddd;
+}
+
+#assetsPanel .abp-quick-sources button.active {
+    background: var(--cb-bg-active);
+    color: #ffffff;
+}
+
+#assetsPanel .tree-section-header,
+#assetsPanel .sidebar-section-header,
+#assetsPanel .sidebar-sec-label {
+    min-height: 26px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 8px;
+
+    color: #939393;
+    background: #353535;
+
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+
+    cursor: pointer;
+}
+
+#assetsPanel .tree-section-header:hover {
+    background: #393939;
+    color: #c5c5c5;
+}
+
+#assetsPanel .tree-section-header > .fa-search {
+    margin-left: auto;
+    opacity: 0.45;
+}
+
+#assetsPanel .tree-node-container {
+    position: relative;
+    user-select: none;
+}
+
+#assetsPanel .tree-row {
+    min-height: 24px;
+
+    display: flex;
+    align-items: center;
+
+    position: relative;
+    color: #a9a9a9;
+
+    cursor: pointer;
+}
+
+#assetsPanel .tree-row:hover {
+    background: var(--cb-bg-hover);
+    color: #d4d4d4;
+}
+
+#assetsPanel .tree-row.active {
+    background: var(--cb-bg-active);
+    color: #ffffff;
+}
+
+#assetsPanel .tree-arrow,
+#assetsPanel .tree-folder-icon,
+#assetsPanel .tree-icon {
+    width: 20px;
+    flex: 0 0 20px;
+    text-align: center;
+    color: #767676;
+}
+
+#assetsPanel .tree-folder-icon {
+    color: var(--cb-folder);
+}
+
+#assetsPanel .tree-arrow i {
+    transition: transform 0.08s ease;
+}
+
+#assetsPanel .tree-arrow.expanded i,
+#assetsPanel .tree-section-header .tree-arrow.expanded {
+    transform: rotate(90deg);
+}
+
+#assetsPanel .tree-label {
+    min-width: 0;
+    padding-right: 8px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#assetsPanel .indent-guide {
+    width: 12px;
+    flex: 0 0 12px;
+    align-self: stretch;
+    position: relative;
+}
+
+#assetsPanel .indent-guide.line::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 6px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.055);
+}
+
+#assetsPanel .tree-row .current-indent::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 0;
+    width: 7px;
+    height: 12px;
+    border-left: 1px solid rgba(255, 255, 255, 0.055);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+#assetsPanel .category-item {
+    min-height: 27px;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 0 8px;
+
+    color: #a2a2a2;
+    cursor: pointer;
+
+    position: relative;
+    overflow: hidden;
+}
+
+#assetsPanel .category-item:hover {
+    background: var(--cb-bg-hover);
+    color: #d8d8d8;
+}
+
+#assetsPanel .category-item.active {
+    background: var(--cb-bg-active);
+    color: #ffffff;
+}
+
+#assetsPanel .category-item.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 3px;
+    bottom: 3px;
+    width: 2px;
+    background: #8a8a8a;
+}
+
+#assetsPanel .category-icon,
+#assetsPanel .expand-toggle {
+    width: 16px;
+    flex: 0 0 16px;
+    display: grid;
+    place-items: center;
+}
+
+#assetsPanel .category-icon {
+    color: var(--cb-folder);
+}
+
+#assetsPanel .expand-toggle {
+    color: #707070;
+}
+
+#assetsPanel .expand-toggle.expanded {
+    transform: rotate(90deg);
+}
+
+#assetsPanel .folder-name {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#assetsPanel .folder-actions {
+    display: flex;
+    gap: 3px;
+    padding: 6px;
+    border-bottom: 1px solid var(--cb-border-soft);
+}
+
+#assetsPanel .folder-actions .panel-btn {
+    flex: 1;
+}
+
+/* legacy source shell hooks */
+#assetsPanel .cb-sources-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+#assetsPanel .cb-sources-header,
+#assetsPanel .cb-sources-project {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--cb-border-soft);
+}
+
+#assetsPanel .cb-sources-search {
+    width: 100%;
+}
+
+/* ==========================================================================
+   10. PANE RESIZERS
+   ========================================================================== */
+
+#assetsPanel .assets-pane-resizer {
+    width: 4px;
+    flex: 0 0 4px;
+    align-self: stretch;
+
+    position: relative;
+    z-index: 5;
+
+    background: transparent;
+    cursor: col-resize;
+    user-select: none;
+    touch-action: none;
+}
+
+#assetsPanel .assets-pane-resizer::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 1px;
+    width: 2px;
+    background: transparent;
+}
+
+#assetsPanel .assets-pane-resizer:hover::before,
+#assetsPanel .assets-pane-resizer.is-active::before {
+    background: rgba(255, 255, 255, 0.13);
+}
+
+body.assets-pane-resizing,
+body.assets-pane-resizing * {
+    cursor: col-resize !important;
+    user-select: none !important;
+}
+
+/* ==========================================================================
+   11. CENTER ASSET AREA
+   ========================================================================== */
+
+#assetsPanel .assets-grid-container {
+    min-width: 240px;
+    flex: 1 1 auto;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #2d2d2d;
+    overflow: hidden;
+    position: relative;
+}
+
+#assetsPanel .cb-grid-header {
+    height: 36px;
+    min-height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 10px;
+
+    background: #343434;
+    border-bottom: 1px solid var(--cb-border-soft);
+}
+
+#assetsPanel .cb-grid-header > div:first-child {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+#assetsPanel .cb-grid-header strong {
+    color: #d6d6d6;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#assetsPanel .cb-grid-header span {
+    color: #777777;
+    font-size: 9.5px;
+}
+
+#assetsPanel .cb-grid-header-actions {
+    flex-shrink: 0;
+}
+
+#assetsPanel .assets-grid-scroll {
+    min-height: 0;
+    flex: 1 1 auto;
+
+    overflow: auto;
+    position: relative;
+}
+
+#assetsPanel .assets-grid {
+    min-height: 100%;
+
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fill, minmax(var(--thumbnail-size, 100px), 1fr));
+    align-content: start;
+
+    gap: 8px;
+    padding: 10px;
+}
+
+/* ==========================================================================
+   12. ASSET CARDS
+   ========================================================================== */
+
+#assetsPanel .asset-item {
+    min-width: 0;
+    height: calc(var(--thumbnail-size, 100px) + 42px);
+
+    display: flex;
+    flex-direction: column;
+
+    position: relative;
+    overflow: hidden;
+
+    background: #373737;
+    border: 1px solid transparent;
+
+    cursor: default;
+    transition:
+        background-color 0.08s ease,
+        border-color 0.08s ease;
+}
+
+#assetsPanel .asset-item:hover {
+    background: #3c3c3c;
+    border-color: rgba(255, 255, 255, 0.075);
+}
+
+#assetsPanel .asset-item.selected {
+    background: #424242;
+    border-color: #717171;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.055);
+}
+
+#assetsPanel .asset-item[data-type]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 2;
+}
+
+#assetsPanel .asset-item[data-type="model"]::before {
+    background: var(--cb-model);
+}
+
+#assetsPanel .asset-item[data-type="texture"]::before,
+#assetsPanel .asset-item[data-type="image"]::before,
+#assetsPanel .asset-item[data-type="icon"]::before {
+    background: var(--cb-texture);
+}
+
+#assetsPanel .asset-item[data-type="material"]::before {
+    background: var(--cb-material);
+}
+
+#assetsPanel .asset-item[data-type="hdri"]::before {
+    background: var(--cb-hdri);
+}
+
+#assetsPanel .asset-item[data-type="primitive"]::before {
+    background: var(--cb-primitive);
+}
+
+#assetsPanel .asset-item[data-type="light"]::before {
+    background: var(--cb-light);
+}
+
+#assetsPanel .asset-item[data-type="code"]::before {
+    background: var(--cb-code);
+}
+
+#assetsPanel .asset-item[data-type="prefab"]::before {
+    background: var(--cb-prefab);
+}
+
+#assetsPanel .asset-item[data-type="folder"]::before {
+    background: var(--cb-folder);
+}
+
+#assetsPanel .asset-thumbnail {
+    height: var(--thumbnail-size, 100px);
+    flex: 0 0 var(--thumbnail-size, 100px);
+
+    display: grid;
+    place-items: center;
+
+    overflow: hidden;
+    position: relative;
+
+    background:
+        linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.018) 25%,
+            transparent 25%,
+            transparent 75%,
+            rgba(255, 255, 255, 0.018) 75%
+        ),
+        linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.018) 25%,
+            #303030 25%,
+            #303030 75%,
+            rgba(255, 255, 255, 0.018) 75%
+        );
+
+    background-size: 18px 18px;
+    background-position: 0 0, 9px 9px;
+}
+
+#assetsPanel .asset-thumbnail img,
+#assetsPanel .asset-thumbnail canvas,
+#assetsPanel .asset-preview-canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+#assetsPanel .asset-thumbnail .svg-icon {
+    width: 42%;
+    height: 42%;
+    opacity: 0.72;
+}
+
+#assetsPanel .folder-icon-large {
+    font-size: 38px;
+    color: var(--cb-folder);
+}
+
+#assetsPanel .asset-info {
+    min-width: 0;
+    padding: 6px 7px 5px;
+}
+
+#assetsPanel .asset-name {
+    color: #d1d1d1;
+    font-size: 10.5px;
+    font-weight: 500;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#assetsPanel .asset-meta,
+#assetsPanel .asset-subtitle {
+    margin-top: 2px;
+
+    color: #747474;
+    font-size: 8.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#assetsPanel .asset-fav-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+    color: #b39b67;
+    font-size: 10px;
+    text-shadow: 0 1px 2px #000000;
+
+    z-index: 3;
+}
+
+#assetsPanel .asset-item.favorite .asset-fav-icon {
+    display: block;
+}
+
+#assetsPanel .asset-type-badge {
+    position: absolute;
+    left: 4px;
+    bottom: 4px;
+
+    min-height: 14px;
+    padding: 1px 4px;
+
+    background: rgba(0, 0, 0, 0.65);
+    color: #d0d0d0;
+
+    font-size: 8px;
+    line-height: 12px;
+    text-transform: uppercase;
+
+    pointer-events: none;
+}
+
+#assetsPanel .asset-quick-actions {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+
+    display: flex;
+    gap: 2px;
+
+    opacity: 0;
+    z-index: 4;
+}
+
+#assetsPanel .asset-item:hover .asset-quick-actions {
+    opacity: 1;
+}
+
+#assetsPanel .qa-btn {
+    width: 19px;
+    height: 19px;
+
+    border: 0;
+    border-radius: 0;
+
+    display: grid;
+    place-items: center;
+
+    background: rgba(20, 20, 20, 0.82);
+    color: #bdbdbd;
+    cursor: pointer;
+}
+
+#assetsPanel .qa-btn:hover {
+    background: #2e2e2e;
+    color: #ffffff;
+}
+
+/* folders */
+#assetsPanel .asset-item.folder-item {
+    background: #353535;
+}
+
+#assetsPanel .asset-item.folder-item .asset-thumbnail {
+    background: #303030;
+}
+
+#assetsPanel .asset-item.folder-item.selected {
+    border-color: rgba(170, 146, 95, 0.62);
+}
+
+/* generic glyph helpers */
+#assetsPanel .asset-glyph,
+#assetsPanel .folder-glyph {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+#assetsPanel .asset-glyph-model {
+    color: var(--cb-model);
+}
+
+#assetsPanel .asset-glyph-texture {
+    color: var(--cb-texture);
+}
+
+#assetsPanel .asset-glyph-material {
+    color: var(--cb-material);
+}
+
+#assetsPanel .asset-glyph-hdri {
+    color: var(--cb-hdri);
+}
+
+#assetsPanel .asset-glyph-light {
+    color: var(--cb-light);
+}
+
+#assetsPanel .asset-glyph-code {
+    color: var(--cb-code);
+}
+
+#assetsPanel .asset-glyph-prefab {
+    color: var(--cb-prefab);
+}
+
+#assetsPanel .asset-glyph-primitive {
+    color: var(--cb-primitive);
+}
+
+/* ==========================================================================
+   13. LIST VIEW
+   ========================================================================== */
+
+#assetsPanel .assets-grid.list-view {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1px;
+    padding: 5px;
+}
+
+#assetsPanel .assets-grid.list-view .asset-item {
+    width: 100%;
+    height: 34px;
+    min-height: 34px;
+    flex: 0 0 34px;
+
+    display: grid;
+    grid-template-columns: 34px minmax(100px, 1fr) auto;
+    grid-template-rows: 34px;
+    align-items: center;
+
+    background: transparent;
+    border-color: transparent;
+}
+
+#assetsPanel .assets-grid.list-view .asset-item:hover {
+    background: var(--cb-bg-hover);
+}
+
+#assetsPanel .assets-grid.list-view .asset-item.selected {
+    background: var(--cb-bg-active);
+    border-color: transparent;
+}
+
+#assetsPanel .assets-grid.list-view .asset-item::before {
+    width: 2px;
+    height: 100%;
+    right: auto;
+    bottom: 0;
+}
+
+#assetsPanel .assets-grid.list-view .asset-thumbnail {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    flex-basis: 34px;
+    background: #303030;
+}
+
+#assetsPanel .assets-grid.list-view .asset-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 0 9px;
+}
+
+#assetsPanel .assets-grid.list-view .asset-name {
+    flex: 1 1 auto;
+}
+
+#assetsPanel .assets-grid.list-view .asset-meta {
+    min-width: 70px;
+    margin: 0;
+
+    text-align: right;
+}
+
+#assetsPanel .assets-grid.list-view .asset-fav-icon {
+    position: static;
+    padding-right: 9px;
+}
+
+#assetsPanel .assets-grid.list-view .asset-type-badge,
+#assetsPanel .assets-grid.list-view .asset-quick-actions {
+    display: none;
+}
+
+/* compatibility if the logic injects a list header */
+#assetsPanel .list-view-header {
+    min-height: 28px;
+
+    display: grid;
+    grid-template-columns: 34px 1fr 90px 70px;
+
+    background: #343434;
+    border-bottom: 1px solid var(--cb-border);
+
+    position: sticky;
+    top: 0;
+    z-index: 6;
+}
+
+#assetsPanel .list-view-hcell {
+    padding: 0 8px;
+
+    display: flex;
+    align-items: center;
+
+    color: #8a8a8a;
+    font-size: 9px;
+    text-transform: uppercase;
+
+    border-right: 1px solid var(--cb-border-soft);
+}
+
+/* ==========================================================================
+   14. EMPTY GRID
+   ========================================================================== */
+
+#assetsPanel .abp-empty-state,
+#assetsPanel .no-assets {
+    grid-column: 1 / -1;
+    min-height: 180px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    color: #727272;
+    text-align: center;
+}
+
+#assetsPanel .abp-empty-state i {
+    font-size: 24px;
+    color: #656565;
+}
+
+#assetsPanel .abp-empty-state strong {
+    color: #9b9b9b;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+#assetsPanel .abp-empty-state span {
+    color: #717171;
+    font-size: 10px;
+}
+
+/* ==========================================================================
+   15. RIGHT DETAILS PANEL
+   ========================================================================== */
+
+#assetsPanel .assets-properties {
+    width: var(--cb-properties-width);
+    min-width: 220px;
+    max-width: 470px;
+    flex: 0 0 auto;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    background: #333333;
+    border-left: 1px solid var(--cb-border);
+}
+
+#assetsPanel.details-collapsed .assets-properties,
+#assetsPanel.details-collapsed .assets-pane-resizer-right {
+    display: none !important;
+}
+
+#assetsPanel .cb-details-header {
+    height: 36px;
+    min-height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 6px 0 9px;
+
+    background: #373737;
+    border-bottom: 1px solid var(--cb-border-soft);
+}
+
+#assetsPanel .cb-details-header > div:first-child {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+#assetsPanel .cb-details-header strong {
+    color: #d5d5d5;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#assetsPanel .cb-details-header span {
+    color: #777777;
+    font-size: 9.5px;
+}
+
+/* ==========================================================================
+   16. PREVIEW
+   ========================================================================== */
+
+#assetsPanel .asset-preview-container {
+    height: 190px;
+    min-height: 130px;
+    flex: 0 0 auto;
+
+    position: relative;
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at 50% 45%, #3a3a3a 0%, #292929 68%);
+    border-bottom: 1px solid var(--cb-border);
+}
+
+#assetsPanel #assetPreviewCanvas,
+#assetsPanel .asset-preview-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#assetsPanel .asset-preview-empty-state,
+#assetsPanel .asset-preview-loading-state,
+#assetsPanel .preview-overlay {
+    position: absolute;
+    inset: 0;
+
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    background: #292929;
+    color: #777777;
+
+    text-align: center;
+    pointer-events: none;
+}
+
+#assetsPanel .asset-preview-empty-state i {
+    color: #666666;
+    font-size: 25px;
+}
+
+#assetsPanel .asset-preview-empty-state strong {
+    color: #989898;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+#assetsPanel .asset-preview-empty-state span,
+#assetsPanel .asset-preview-loading-state span {
+    color: #737373;
+    font-size: 9.5px;
+}
+
+#assetsPanel .asset-preview-container.empty .asset-preview-empty-state,
+#assetsPanel .asset-preview-container.empty .preview-overlay {
+    display: flex;
+}
+
+#assetsPanel .asset-preview-container.loading .asset-preview-loading-state {
+    display: flex;
+}
+
+#assetsPanel .cb-spinner,
+#assetsPanel .preview-loading-spinner,
+.upload-dropzone .cb-spinner,
+.upload-dropzone .spinner {
+    width: 24px;
+    height: 24px;
+
+    border: 2px solid rgba(255, 255, 255, 0.11);
+    border-top-color: rgba(255, 255, 255, 0.55);
+    border-radius: 50%;
+
+    animation: sm-cb-spin 0.78s linear infinite;
+}
+
+@keyframes sm-cb-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================================================================
+   17. PROPERTIES
+   ========================================================================== */
+
+#assetsPanel .cb-properties-scroll {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
+#assetsPanel #propertiesContent {
+    padding: 8px;
+}
+
+#assetsPanel .properties-title {
+    padding: 5px 4px 10px;
+
+    color: #dedede;
+    font-size: 12px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+#assetsPanel .property-section-header {
+    min-height: 28px;
+
+    margin: 8px -8px 3px;
+    padding: 0 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: #393939;
+    border-top: 1px solid var(--cb-border-soft);
+    border-bottom: 1px solid var(--cb-border-soft);
+
+    color: #a3a3a3;
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+}
+
+#assetsPanel .property-row {
+    min-height: 28px;
+
+    display: grid;
+    grid-template-columns: minmax(74px, 42%) minmax(0, 1fr);
+    align-items: center;
+    gap: 6px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.022);
+}
+
+#assetsPanel .property-label {
+    color: #858585;
+    font-size: 9.5px;
+}
+
+#assetsPanel .property-value {
+    min-width: 0;
+
+    color: #bebebe;
+    font-size: 10px;
+
+    overflow-wrap: anywhere;
+}
+
+#assetsPanel .property-input {
+    width: 100%;
+    min-width: 0;
+    height: 24px;
+
+    padding: 0 5px;
+
+    border: 1px solid var(--cb-border-soft);
+    border-radius: 0;
+    outline: 0;
+
+    background: #2d2d2d;
+    color: #c4c4c4;
+
+    font-size: 10px;
+}
+
+#assetsPanel .property-input:focus {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+#assetsPanel .property-input.color-input {
+    width: 42px;
+    height: 22px;
+    padding: 1px;
+}
+
+#assetsPanel .property-input.range-input {
+    height: 3px;
+    border: 0;
+    padding: 0;
+    accent-color: #777777;
+}
+
+#assetsPanel .texture-slot-input {
+    border-style: dashed;
+    color: #999999;
+}
+
+#assetsPanel .texture-slot-input.dragover {
+    border-style: solid;
+    border-color: #777777;
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffffff;
+}
+
+#assetsPanel .asset-dependency-list {
+    margin: 3px 0 7px;
+}
+
+#assetsPanel .dependency-item {
+    min-height: 25px;
+    padding: 4px 6px;
+
+    display: flex;
+    align-items: center;
+
+    color: #a3a3a3;
+    background: #303030;
+
+    cursor: pointer;
+}
+
+#assetsPanel .dependency-item:hover {
+    background: #3b3b3b;
+    color: #ffffff;
+}
+
+#assetsPanel .dependency-item.broken {
+    color: #b77c7c;
+    background: rgba(184, 92, 92, 0.08);
+}
+
+#assetsPanel .cb-empty-properties {
+    min-height: 110px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    color: #727272;
+    text-align: center;
+    font-size: 9.5px;
+}
+
+/* ==========================================================================
+   18. EMBEDDED HISTORY
+   ========================================================================== */
+
+#assetsPanel .history-embedded-view {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+
+    display: flex;
+    flex-direction: column;
+
+    background: var(--cb-bg-0);
+}
+
+#assetsPanel .history-toolbar {
+    height: 34px;
+    min-height: 34px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 0 9px;
+
+    background: #363636;
+    border-bottom: 1px solid var(--cb-border);
+}
+
+#assetsPanel .history-toolbar span {
+    color: #929292;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+#assetsPanel #btnHistoryBack {
+    height: 23px;
+    padding: 0 7px;
+
+    border: 0;
+    background: #404040;
+    color: #c0c0c0;
+
+    cursor: pointer;
+}
+
+#assetsPanel #btnHistoryBack:hover {
+    background: #484848;
+    color: #ffffff;
+}
+
+#assetsPanel .history-grid-header,
+#assetsPanel .history-grid-row {
+    display: grid;
+    grid-template-columns: 28px 120px minmax(150px, 1fr) 100px 70px;
+}
+
+#assetsPanel .history-grid-header {
+    min-height: 28px;
+    background: #373737;
+    border-bottom: 1px solid var(--cb-border);
+}
+
+#assetsPanel .history-list-scroll-area {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
+#assetsPanel .history-grid-row {
+    min-height: 29px;
+    border-bottom: 1px solid var(--cb-border-soft);
+}
+
+#assetsPanel .history-grid-row:nth-child(even) {
+    background: rgba(255, 255, 255, 0.012);
+}
+
+#assetsPanel .history-grid-row:hover:not(.current-version) {
+    background: var(--cb-bg-hover);
+}
+
+#assetsPanel .history-grid-row.current-version {
+    background: var(--cb-bg-active);
+}
+
+#assetsPanel .history-cell {
+    min-width: 0;
+    min-height: 28px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 7px;
+
+    border-right: 1px solid var(--cb-border-soft);
+
+    color: #aaaaaa;
+    font-size: 10px;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#assetsPanel .history-cell.center {
+    justify-content: center;
+}
+
+#assetsPanel .history-grid-header .history-cell {
+    color: #828282;
+    font-size: 8.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+#assetsPanel .btn-revert-link {
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    color: #a6a6a6;
+    text-decoration: underline;
+
+    cursor: pointer;
+    font-size: 9.5px;
+}
+
+#assetsPanel .btn-revert-link:hover {
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   19. REFERENCE VIEWER
+   ========================================================================== */
+
+#assetsPanel .reference-viewer-container {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+
+    min-height: 100%;
+
+    flex-direction: column;
+
+    background: #2d2d2d;
+}
+
+#assetsPanel .reference-viewer-header,
+#assetsPanel .ref-viewer-header {
+    min-height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 9px;
+
+    background: #353535;
+    border-bottom: 1px solid var(--cb-border);
+}
+
+#assetsPanel .reference-viewer-header > div {
+    display: flex;
+    flex-direction: column;
+}
+
+#assetsPanel .reference-viewer-header strong,
+#assetsPanel .ref-viewer-title {
+    color: #d1d1d1;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#assetsPanel .reference-viewer-header span {
+    color: #777777;
+    font-size: 9px;
+}
+
+#assetsPanel .dependency-graph-canvas {
+    min-height: 320px;
+    flex: 1 1 auto;
+
+    position: relative;
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at center, #333333 0%, #292929 72%);
+}
+
+/* ==========================================================================
+   20. STATUS BAR
+   ========================================================================== */
+
+#assetsPanel .assets-status-bar {
+    height: var(--cb-status-height);
+    min-height: var(--cb-status-height);
+    flex: 0 0 var(--cb-status-height);
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 0 9px;
+
+    background: #303030;
+    border-top: 1px solid var(--cb-border);
+
+    color: #747474;
+    font-size: 9px;
+}
+
+#assetsPanel .status-item {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    white-space: nowrap;
+}
+
+#assetsPanel .status-item strong {
+    color: #a6a6a6;
+    font-weight: 500;
+}
+
+#assetsPanel .status-sep {
+    width: 1px;
+    height: 11px;
+    background: var(--cb-border);
+}
+
+#assetsPanel .cb-status-types {
+    color: #777777;
+}
+
+#assetsPanel .cb-status-path {
+    min-width: 0;
+    max-width: 38vw;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#assetsPanel .cb-status-engine {
+    margin-left: auto;
+}
+
+/* ==========================================================================
+   21. CONTEXT MENU
+   ========================================================================== */
+
+#contextMenu,
+.assets-context-menu,
+.context-menu {
+    position: fixed;
+    z-index: 11000;
+
+    min-width: 190px;
+    padding: 4px 0;
+
+    background: #383838;
+    color: #c8c8c8;
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0;
+
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+
+    font: 11px Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.context-menu-item {
+    min-height: 27px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 0 10px;
+
+    color: #c5c5c5;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.context-menu-item:hover {
+    background: #474747;
+    color: #ffffff;
+}
+
+.context-menu-item .svg-icon {
+    width: 12px;
+    height: 12px;
+    opacity: 0.70;
+}
+
+.context-menu-separator {
+    height: 1px;
+    margin: 4px 0;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+/* ==========================================================================
+   22. IMPORT OVERLAY — NEW SHELL
+   ========================================================================== */
+
+.upload-dropzone {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.60);
+    backdrop-filter: blur(2px);
+}
+
+.upload-dropzone.visible {
+    display: flex;
+}
+
+.cb-import-dialog {
+    width: min(560px, calc(100vw - 32px));
+
+    background: var(--panel-bg, #333333);
+    color: var(--text-primary, #ffffff);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+
+    font: 12px Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.cb-import-header {
+    min-height: 54px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 10px 0 14px;
+
+    background: var(--secondary-dark, #3c3c3c);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cb-import-header > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cb-import-header strong {
+    font-size: 13px;
+}
+
+.cb-import-header span {
+    color: #888888;
+    font-size: 10px;
+}
+
+.cb-import-body {
+    padding: 18px;
+}
+
+.cb-drop-hero {
+    min-height: 210px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    border: 1px dashed rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.018);
+
+    text-align: center;
+}
+
+.upload-dropzone.dragover .cb-drop-hero {
+    background: rgba(255, 255, 255, 0.045);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.cb-drop-icon {
+    color: #858585;
+    font-size: 34px;
+}
+
+.cb-drop-hero strong {
+    color: #d9d9d9;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.cb-drop-hero span,
+.cb-drop-hero small {
+    color: #898989;
+}
+
+.cb-drop-hero small {
+    font-size: 9px;
+}
+
+.cb-import-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+    margin-top: 12px;
+}
+
+.cb-import-progress {
+    min-height: 220px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+
+    padding: 30px;
+}
+
+.cb-progress-track {
+    width: min(360px, 80%);
+    height: 3px;
+
+    background: #292929;
+    overflow: hidden;
+}
+
+.cb-progress-bar {
+    width: 0;
+    height: 100%;
+
+    background: #777777;
+    transition: width 0.18s ease;
+}
+
+/* ==========================================================================
+   23. IMPORT OVERLAY — LEGACY COMPATIBILITY
+   ========================================================================== */
+
+.upload-content {
+    width: min(560px, calc(100vw - 32px));
+
+    padding: 36px;
+
+    background: #333333;
+    border: 1px dashed rgba(255, 255, 255, 0.16);
+
+    color: #dddddd;
+    text-align: center;
+}
+
+.upload-dropzone.dragover .upload-content {
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+.upload-icon {
+    margin-bottom: 14px;
+    color: #8b8b8b;
+}
+
+.upload-icon .svg-icon {
+    width: 45px;
+    height: 45px;
+}
+
+.upload-text {
+    margin: 0 0 7px;
+
+    color: #dedede;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.upload-subtext {
+    margin: 0 0 18px;
+
+    color: #898989;
+    font-size: 10.5px;
+    line-height: 1.7;
+}
+
+.upload-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.close-btn {
+    min-height: 28px;
+    margin-top: 14px;
+    padding: 0 12px;
+
+    border: 0;
+    background: #414141;
+    color: #bdbdbd;
+
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   24. SCROLLBARS
+   ========================================================================== */
+
+#assetsPanel * {
+    scrollbar-width: thin;
+    scrollbar-color: #505050 transparent;
+}
+
+#assetsPanel *::-webkit-scrollbar,
+.upload-dropzone *::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+#assetsPanel *::-webkit-scrollbar-track,
+.upload-dropzone *::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#assetsPanel *::-webkit-scrollbar-thumb,
+.upload-dropzone *::-webkit-scrollbar-thumb {
+    background: #4b4b4b;
+}
+
+#assetsPanel *::-webkit-scrollbar-thumb:hover,
+.upload-dropzone *::-webkit-scrollbar-thumb:hover {
+    background: #5b5b5b;
+}
+
+/* ==========================================================================
+   25. DRAG STATES
+   ========================================================================== */
+
+#assetsPanel .asset-item.dragover,
+#assetsPanel .folder-item.dragover,
+#assetsPanel .category-item.dragover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+#assetsPanel .texture-slot-input.dragover {
+    outline: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+/* ==========================================================================
+   26. LEGACY COLLECTION HOOKS
+   ========================================================================== */
+
+#assetsPanel .collections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px;
+}
+
+#assetsPanel .collection-pill {
+    min-height: 25px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 7px;
+
+    background: transparent;
+    color: #909090;
+
+    cursor: pointer;
+}
+
+#assetsPanel .collection-pill:hover,
+#assetsPanel .collection-pill.active {
+    background: var(--cb-bg-hover);
+    color: #ffffff;
+}
+
+#assetsPanel .content-root {
+    min-height: 26px;
+}
+
+/* ==========================================================================
+   27. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1250px) {
+    #assetsPanel .cb-action-btn span,
+    #assetsPanel .cb-sort-wrap > span {
+        display: none;
+    }
+
+    #assetsPanel .cb-search-wrap {
+        width: 210px;
+    }
+
+    #assetsPanel .tag-cloud-container {
+        max-width: 180px;
+    }
+}
+
+@media (max-width: 1080px) {
+    #assetsPanel .assets-properties,
+    #assetsPanel .assets-pane-resizer-right {
+        display: none;
+    }
+
+    #assetsPanel .cb-thumb-control > i,
+    #assetsPanel .tag-cloud-container {
+        display: none;
+    }
+}
+
+@media (max-width: 840px) {
+    #assetsPanel .assets-categories,
+    #assetsPanel .assets-pane-resizer-left {
+        display: none;
+    }
+
+    #assetsPanel .cb-path-shell {
+        min-width: 120px;
+    }
+
+    #assetsPanel .cb-search-wrap {
+        width: 170px;
+    }
+}
+
+@media (max-width: 650px) {
+    #assetsPanel .cb-secondary-toolbar {
+        overflow-x: auto;
+    }
+
+    #assetsPanel .cb-path-shell {
+        display: none;
+    }
+
+    #assetsPanel .cb-status-types,
+    #assetsPanel .cb-status-path {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   28. ACCESSIBILITY / REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    #assetsPanel *,
+    .upload-dropzone * {
+        transition: none !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+/* ==========================================================================
+   29. V9 PRO+ VISUAL UPGRADE
+   SM Engine Content Browser — denser, clearer, more editor-native
+   ========================================================================== */
+
+#assetsPanel {
+    --cb-v9-panel: #303030;
+    --cb-v9-panel-2: #343434;
+    --cb-v9-panel-3: #383838;
+    --cb-v9-panel-4: #3d3d3d;
+    --cb-v9-canvas: #292929;
+    --cb-v9-canvas-soft: #2c2c2c;
+    --cb-v9-hover: rgba(255, 255, 255, 0.045);
+    --cb-v9-hover-strong: rgba(255, 255, 255, 0.072);
+    --cb-v9-selected: rgba(255, 255, 255, 0.095);
+    --cb-v9-line: rgba(255, 255, 255, 0.055);
+    --cb-v9-line-strong: rgba(255, 255, 255, 0.095);
+    --cb-v9-text: #d7d7d7;
+    --cb-v9-muted: #8b8b8b;
+    --cb-v9-faint: #666666;
+    --cb-v9-project: #8d929a;
+    --cb-v9-project-active: #b9bec7;
+    --cb-v9-warning: #b79d63;
+    --cb-v9-ok: #7f9b82;
+
+    --cb-header-height: 34px;
+    --cb-toolbar-height: 34px;
+    --cb-status-height: 22px;
+}
+
+/* ---------- Panel shell ---------- */
+
+#assetsPanel.assets-panel-container,
+.assets-panel-container#assetsPanel {
+    background: var(--cb-v9-panel);
+    border-top-color: rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 -1px 0 rgba(255, 255, 255, 0.025),
+        0 -18px 44px rgba(0, 0, 0, 0.28);
+}
+
+#assetsPanel.assets-panel-container::before,
+.assets-panel-container#assetsPanel::before {
+    height: 5px;
+}
+
+#assetsPanel.assets-panel-container::after,
+.assets-panel-container#assetsPanel::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 50%;
+    width: 46px;
+    height: 2px;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.13);
+    pointer-events: none;
+    z-index: 9;
+}
+
+/* ---------- Header ---------- */
+
+#assetsPanel .assets-panel-header {
+    padding: 0 6px 0 9px;
+    gap: 7px;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.025), transparent),
+        #373737;
+    border-bottom-color: var(--cb-v9-line-strong);
+}
+
+#assetsPanel .cb-title-icon {
+    width: 20px;
+    height: 20px;
+    flex-basis: 20px;
+    color: #bdbdbd;
+}
+
+#assetsPanel .cb-title-copy {
+    gap: 7px;
+}
+
+#assetsPanel .cb-title-copy strong,
+#assetsPanel .assets-panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+}
+
+#assetsPanel .cb-title-copy span {
+    font-size: 9px;
+    color: #727272;
+}
+
+#assetsPanel .assets-panel-controls {
+    gap: 0;
+}
+
+/* ---------- Main/secondary toolbar ---------- */
+
+#assetsPanel .assets-toolbar {
+    padding: 3px 7px;
+    gap: 4px;
+    background: #303030;
+    border-bottom-color: var(--cb-v9-line);
+}
+
+#assetsPanel .cb-main-toolbar {
+    min-height: 35px;
+    background: #323232;
+}
+
+#assetsPanel .cb-secondary-toolbar {
+    min-height: 31px;
+    background: #2f2f2f;
+}
+
+#assetsPanel .cb-action-btn,
+#assetsPanel .panel-btn {
+    min-height: 26px;
+    height: 26px;
+    padding: 0 8px;
+    background: #3a3a3a;
+    color: #bdbdbd;
+}
+
+#assetsPanel .cb-action-btn:hover,
+#assetsPanel .panel-btn:hover {
+    background: #444444;
+    color: #f0f0f0;
+}
+
+#assetsPanel .cb-action-primary,
+#assetsPanel .panel-btn.accent-btn {
+    background: #4a4a4a;
+}
+
+#assetsPanel .cb-action-primary:hover,
+#assetsPanel .panel-btn.accent-btn:hover {
+    background: #555555;
+}
+
+#assetsPanel .cb-icon-btn {
+    width: 27px;
+    min-width: 27px;
+    height: 26px;
+}
+
+#assetsPanel .cb-icon-btn:hover {
+    background: rgba(255,255,255,.06);
+}
+
+#assetsPanel .cb-divider,
+#assetsPanel .cb-separator {
+    height: 18px;
+    background: rgba(255,255,255,.075);
+}
+
+/* ---------- Address/path bar ---------- */
+
+#assetsPanel .cb-path-shell {
+    height: 27px;
+    background: #292929;
+    border-color: rgba(255, 255, 255, 0.065);
+}
+
+#assetsPanel .cb-path-icon {
+    width: 25px;
+    flex-basis: 25px;
+    color: #676767;
+}
+
+#assetsPanel .cb-path-bar,
+#assetsPanel .assets-breadcrumbs {
+    height: 25px;
+}
+
+#assetsPanel .breadcrumb-item {
+    height: 25px;
+    padding: 0 6px;
+    font-size: 10px;
+    color: #969696;
+}
+
+#assetsPanel .breadcrumb-item:hover {
+    background: rgba(255,255,255,.055);
+}
+
+#assetsPanel .breadcrumb-item.active,
+#assetsPanel .breadcrumb-item:last-child {
+    color: #dedede;
+}
+
+#assetsPanel .breadcrumb-separator {
+    color: #5f5f5f;
+}
+
+/* ---------- Search ---------- */
+
+#assetsPanel .cb-search-wrap {
+    height: 27px;
+    background: #292929;
+    border-color: rgba(255,255,255,.065);
+}
+
+#assetsPanel .cb-search-wrap:focus-within {
+    background: #2b2b2b;
+    border-color: rgba(255,255,255,.15);
+}
+
+#assetsPanel .cb-search-icon {
+    width: 25px;
+    flex-basis: 25px;
+    color: #6b6b6b;
+}
+
+#assetsPanel .search-box {
+    height: 25px;
+    font-size: 10.5px;
+}
+
+#assetsPanel .search-box::placeholder {
+    color: #666666;
+}
+
+#assetsPanel .filter-btn {
+    height: 23px;
+    padding: 0 7px;
+    font-size: 10px;
+}
+
+#assetsPanel .filter-btn.active {
+    background: rgba(255,255,255,.085);
+    box-shadow: inset 0 -1px 0 rgba(255,255,255,.13);
+}
+
+/* ---------- Three panes ---------- */
+
+#assetsPanel .assets-content {
+    background: var(--cb-v9-canvas);
+}
+
+#assetsPanel .assets-categories {
+    background: #2f2f2f;
+    border-right-color: var(--cb-v9-line-strong);
+}
+
+#assetsPanel .assets-grid-container {
+    background: var(--cb-v9-canvas);
+}
+
+#assetsPanel .assets-properties {
+    background: #303030;
+    border-left-color: var(--cb-v9-line-strong);
+}
+
+/* ---------- Source tree ---------- */
+
+#assetsPanel .abp-quick-sources {
+    padding: 4px 5px 6px;
+    margin-bottom: 4px;
+}
+
+#assetsPanel .abp-quick-sources button {
+    height: 24px;
+    padding: 0 7px;
+    gap: 7px;
+    font-size: 10.5px;
+}
+
+#assetsPanel .tree-section-header,
+#assetsPanel .sidebar-section-header,
+#assetsPanel .sidebar-sec-label {
+    min-height: 24px;
+    padding: 0 7px;
+    background: #323232;
+    color: #858585;
+    border-top: 1px solid rgba(255,255,255,.025);
+    border-bottom: 1px solid rgba(0,0,0,.12);
+    font-size: 9px;
+    letter-spacing: .42px;
+}
+
+#assetsPanel .tree-section-header:hover,
+#assetsPanel .sidebar-section-header:hover {
+    background: #373737;
+    color: #b7b7b7;
+}
+
+#assetsPanel .tree-row {
+    min-height: 23px;
+    color: #9e9e9e;
+}
+
+#assetsPanel .tree-row:hover {
+    background: rgba(255,255,255,.04);
+}
+
+#assetsPanel .tree-row.active {
+    background: rgba(255,255,255,.085);
+}
+
+#assetsPanel .tree-row.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    bottom: 2px;
+    width: 2px;
+    background: #8c8c8c;
+}
+
+#assetsPanel .tree-arrow,
+#assetsPanel .tree-folder-icon,
+#assetsPanel .tree-icon {
+    width: 18px;
+    flex-basis: 18px;
+}
+
+#assetsPanel .tree-folder-icon,
+#assetsPanel .category-icon {
+    color: #9a8559;
+}
+
+#assetsPanel .category-item {
+    min-height: 25px;
+    padding: 0 7px;
+    gap: 5px;
+    font-size: 10.5px;
+}
+
+#assetsPanel .category-item.active::before {
+    top: 2px;
+    bottom: 2px;
+    background: #8f8f8f;
+}
+
+/* ---------- Pane resizers ---------- */
+
+#assetsPanel .assets-pane-resizer {
+    width: 3px;
+    flex-basis: 3px;
+}
+
+#assetsPanel .assets-pane-resizer::before {
+    left: 1px;
+    width: 1px;
+}
+
+#assetsPanel .assets-pane-resizer:hover::before,
+#assetsPanel .assets-pane-resizer.is-active::before {
+    background: rgba(255,255,255,.16);
+}
+
+/* ---------- Grid header ---------- */
+
+#assetsPanel .cb-grid-header {
+    height: 32px;
+    min-height: 32px;
+    padding: 0 8px;
+    background: #303030;
+    border-bottom-color: var(--cb-v9-line);
+}
+
+#assetsPanel .cb-grid-header strong {
+    font-size: 10.5px;
+    color: #c9c9c9;
+}
+
+#assetsPanel .cb-grid-header span {
+    font-size: 9px;
+    color: #707070;
+}
+
+#assetsPanel .assets-grid {
+    gap: 7px;
+    padding: 8px;
+    background:
+        linear-gradient(rgba(255,255,255,.007), rgba(255,255,255,.007)),
+        #292929;
+}
+
+/* ---------- Asset cards ---------- */
+
+#assetsPanel .asset-item {
+    height: calc(var(--thumbnail-size, 100px) + 40px);
+    background: #333333;
+    border-color: rgba(255,255,255,.025);
+    box-shadow: 0 1px 0 rgba(0,0,0,.12);
+}
+
+#assetsPanel .asset-item:hover {
+    background: #393939;
+    border-color: rgba(255,255,255,.085);
+}
+
+#assetsPanel .asset-item.selected {
+    background: #3e3e3e;
+    border-color: #686868;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.04),
+        0 0 0 1px rgba(0,0,0,.15);
+}
+
+#assetsPanel .asset-item[data-type]::before {
+    height: 1px;
+    opacity: .9;
+}
+
+#assetsPanel .asset-thumbnail {
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.012), rgba(0,0,0,.035)),
+        #2d2d2d;
+    border-bottom: 1px solid rgba(255,255,255,.025);
+}
+
+#assetsPanel .asset-item[data-type="texture"] .asset-thumbnail,
+#assetsPanel .asset-item[data-type="image"] .asset-thumbnail,
+#assetsPanel .asset-item[data-type="icon"] .asset-thumbnail {
+    background:
+        linear-gradient(45deg, rgba(255,255,255,.017) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.017) 75%),
+        linear-gradient(45deg, rgba(255,255,255,.017) 25%, #2d2d2d 25%, #2d2d2d 75%, rgba(255,255,255,.017) 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+}
+
+#assetsPanel .asset-info {
+    padding: 5px 7px 4px;
+}
+
+#assetsPanel .asset-name {
+    color: #d4d4d4;
+    font-size: 10.5px;
+    line-height: 15px;
+}
+
+#assetsPanel .asset-meta,
+#assetsPanel .asset-subtitle,
+#assetsPanel .asset-type {
+    color: #707070;
+    font-size: 8.5px;
+}
+
+#assetsPanel .asset-type-badge {
+    left: 5px;
+    bottom: 5px;
+    background: rgba(22,22,22,.84);
+    color: #bdbdbd;
+}
+
+#assetsPanel .asset-quick-actions {
+    top: 5px;
+    right: 5px;
+}
+
+#assetsPanel .qa-btn {
+    width: 20px;
+    height: 20px;
+    background: rgba(28,28,28,.90);
+}
+
+#assetsPanel .qa-btn:hover {
+    background: #444444;
+}
+
+#assetsPanel .asset-item.folder-item {
+    background: #323232;
+}
+
+#assetsPanel .asset-item.folder-item:hover {
+    background: #383838;
+}
+
+#assetsPanel .asset-item.folder-item .asset-thumbnail {
+    background:
+        linear-gradient(180deg, rgba(170,146,95,.025), transparent),
+        #2d2d2d;
+}
+
+#assetsPanel .folder-icon-large {
+    font-size: 34px;
+    color: #9b8557;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,.35));
+}
+
+/* ---------- List view ---------- */
+
+#assetsPanel .assets-grid.list-view {
+    gap: 0;
+    padding: 3px 4px;
+}
+
+#assetsPanel .assets-grid.list-view .asset-item {
+    height: 31px;
+    min-height: 31px;
+    flex-basis: 31px;
+    grid-template-columns: 31px minmax(100px, 1fr) auto;
+    grid-template-rows: 31px;
+    border-bottom: 1px solid rgba(255,255,255,.018);
+}
+
+#assetsPanel .assets-grid.list-view .asset-thumbnail {
+    width: 31px;
+    height: 31px;
+    min-width: 31px;
+    flex-basis: 31px;
+    border-bottom: 0;
+    border-right: 1px solid rgba(255,255,255,.025);
+}
+
+#assetsPanel .assets-grid.list-view .asset-info {
+    padding: 0 8px;
+}
+
+#assetsPanel .assets-grid.list-view .asset-item.selected {
+    background: rgba(255,255,255,.085);
+}
+
+#assetsPanel .list-view-header {
+    min-height: 26px;
+    grid-template-columns: 31px 1fr 90px 70px;
+    background: #303030;
+}
+
+#assetsPanel .list-view-hcell {
+    font-size: 8.5px;
+    color: #777777;
+}
+
+/* ---------- Details / Preview ---------- */
+
+#assetsPanel .cb-details-header {
+    height: 32px;
+    min-height: 32px;
+    padding: 0 5px 0 8px;
+    background: #343434;
+}
+
+#assetsPanel .cb-details-header strong {
+    font-size: 10.5px;
+    color: #c9c9c9;
+}
+
+#assetsPanel .asset-preview-container {
+    height: 168px;
+    min-height: 118px;
+    background:
+        radial-gradient(circle at 50% 43%, #383838 0%, #292929 72%);
+}
+
+#assetsPanel .asset-preview-container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    box-shadow: inset 0 0 34px rgba(0,0,0,.16);
+}
+
+#assetsPanel .asset-preview-empty-state,
+#assetsPanel .asset-preview-loading-state,
+#assetsPanel .preview-overlay {
+    background: #292929;
+}
+
+#assetsPanel #propertiesContent {
+    padding: 6px 8px 10px;
+}
+
+#assetsPanel .properties-title {
+    padding: 5px 2px 9px;
+    font-size: 11.5px;
+}
+
+#assetsPanel .property-section-header {
+    min-height: 25px;
+    margin: 7px -8px 2px;
+    padding: 0 8px;
+    background: #363636;
+    font-size: 9px;
+}
+
+#assetsPanel .property-row {
+    min-height: 26px;
+    grid-template-columns: minmax(72px, 40%) minmax(0, 1fr);
+    border-bottom-color: rgba(255,255,255,.018);
+}
+
+#assetsPanel .property-label {
+    color: #818181;
+}
+
+#assetsPanel .property-value {
+    color: #bdbdbd;
+}
+
+#assetsPanel .property-input {
+    height: 22px;
+    background: #292929;
+}
+
+/* ---------- Empty states ---------- */
+
+#assetsPanel .abp-empty-state,
+#assetsPanel .no-assets,
+#assetsPanel .sm-project-empty {
+    min-height: 150px;
+    color: #6f6f6f;
+}
+
+#assetsPanel .abp-empty-state i {
+    color: #5f5f5f;
+    font-size: 22px;
+}
+
+#assetsPanel .abp-empty-state strong {
+    color: #969696;
+}
+
+/* ---------- Status bar ---------- */
+
+#assetsPanel .assets-status-bar {
+    height: 22px;
+    min-height: 22px;
+    padding: 0 8px;
+    gap: 10px;
+    background: #2e2e2e;
+    border-top-color: rgba(255,255,255,.055);
+    font-size: 8.5px;
+}
+
+#assetsPanel .status-item strong {
+    color: #999999;
+}
+
+#assetsPanel .cb-status-engine {
+    color: #636363;
+}
+
+/* ==========================================================================
+   30. V9 — SM PROJECTS INTEGRATION
+   ========================================================================== */
+
+#assetsPanel .sm-project-section {
+    margin: 0 0 5px !important;
+    padding: 0 0 5px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+}
+
+#assetsPanel .sm-project-section-header {
+    height: 24px !important;
+    min-height: 24px;
+    padding: 0 7px !important;
+    gap: 6px !important;
+    background: #323232;
+    color: #858585 !important;
+    border-top: 1px solid rgba(255,255,255,.025);
+    border-bottom: 1px solid rgba(0,0,0,.13);
+    font-size: 9px !important;
+    font-weight: 600;
+    letter-spacing: .42px !important;
+}
+
+#assetsPanel .sm-project-section-header:hover {
+    background: #373737 !important;
+    color: #bcbcbc !important;
+}
+
+#assetsPanel .sm-project-section-header .fa-diagram-project {
+    color: var(--cb-v9-project);
+}
+
+#assetsPanel .sm-project-sidebar-row {
+    min-height: 25px !important;
+    height: 25px;
+    padding: 0 7px 0 18px !important;
+    gap: 6px !important;
+    color: #a4a4a4 !important;
+    position: relative;
+}
+
+#assetsPanel .sm-project-sidebar-row:hover {
+    background: rgba(255,255,255,.043) !important;
+    color: #d4d4d4 !important;
+}
+
+#assetsPanel .sm-project-sidebar-row.active {
+    background: rgba(255,255,255,.085) !important;
+    color: #ffffff !important;
+}
+
+#assetsPanel .sm-project-sidebar-row.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    bottom: 2px;
+    width: 2px;
+    background: #929292;
+}
+
+#assetsPanel .sm-project-sidebar-icon {
+    width: 15px !important;
+    color: #818181 !important;
+}
+
+#assetsPanel .sm-project-sidebar-row.active .sm-project-sidebar-icon {
+    color: #aaaeb5 !important;
+}
+
+#assetsPanel .sm-project-sidebar-name {
+    font-size: 10.5px;
+}
+
+#assetsPanel .sm-project-sidebar-active {
+    width: 5px !important;
+    height: 5px !important;
+    background: #9ea3aa !important;
+    box-shadow: 0 0 0 2px rgba(158,163,170,.10);
+}
+
+#assetsPanel .sm-project-browser-toolbar {
+    grid-column: 1 / -1;
+    min-height: 34px !important;
+    height: 34px;
+    margin: -8px -8px 2px !important;
+    padding: 0 8px !important;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.016), transparent),
+        #303030 !important;
+    border-bottom: 1px solid rgba(255,255,255,.055) !important;
+    position: sticky;
+    top: 0;
+    z-index: 8;
+}
+
+#assetsPanel .sm-project-browser-title {
+    font-size: 10.5px !important;
+    color: #cfcfcf !important;
+    gap: 7px !important;
+}
+
+#assetsPanel .sm-project-browser-title > i {
+    color: #92979f;
+}
+
+#assetsPanel .sm-project-browser-title strong {
+    font-weight: 600;
+}
+
+#assetsPanel .sm-project-state {
+    padding: 2px 5px;
+    background: rgba(255,255,255,.025);
+    color: #858585 !important;
+    font-size: 8.5px !important;
+    text-transform: uppercase;
+    letter-spacing: .25px;
+}
+
+#assetsPanel .sm-project-state.modified {
+    color: #bea76e !important;
+    background: rgba(190,167,110,.07);
+}
+
+#assetsPanel .sm-project-browser-btn {
+    height: 24px !important;
+    padding: 0 8px !important;
+    background: #3a3a3a !important;
+    color: #bdbdbd !important;
+    font-size: 9.5px !important;
+    border: 0 !important;
+}
+
+#assetsPanel .sm-project-browser-btn:hover {
+    background: #454545 !important;
+    color: #ffffff !important;
+}
+
+#assetsPanel .sm-project-browser-btn.primary {
+    background: #4a4a4a !important;
+}
+
+#assetsPanel .sm-project-card {
+    background:
+        linear-gradient(180deg, rgba(150,155,164,.028), transparent 45%),
+        #343434 !important;
+}
+
+#assetsPanel .sm-project-card:hover {
+    background:
+        linear-gradient(180deg, rgba(150,155,164,.045), transparent 45%),
+        #3a3a3a !important;
+}
+
+#assetsPanel .sm-project-card.active-project {
+    outline: 0 !important;
+    border-color: rgba(176,181,190,.42) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(176,181,190,.08),
+        0 0 0 1px rgba(0,0,0,.16);
+}
+
+#assetsPanel .sm-project-card .asset-thumbnail {
+    background:
+        linear-gradient(180deg, rgba(150,155,164,.04), rgba(0,0,0,.025)),
+        #2e2e2e;
+}
+
+#assetsPanel .sm-project-card .asset-thumbnail > i {
+    font-size: 31px !important;
+    color: #8e939b !important;
+}
+
+#assetsPanel .sm-project-card.active-project .asset-thumbnail > i {
+    color: #aeb3bb !important;
+}
+
+#assetsPanel .sm-project-card-badge {
+    top: 5px !important;
+    right: 5px !important;
+    padding: 2px 5px !important;
+    background: rgba(31,31,31,.90) !important;
+    border: 1px solid rgba(255,255,255,.07);
+    color: #b8bdc5 !important;
+    font-size: 8px !important;
+    letter-spacing: .35px;
+}
+
+#assetsPanel .sm-project-file-meta {
+    color: #676767 !important;
+    font-size: 8px !important;
+}
+
+#assetsPanel .sm-project-file-item .asset-thumbnail > i {
+    color: #858585;
+    font-size: 28px;
+}
+
+#assetsPanel .sm-project-file-item[data-type="binary"] .asset-thumbnail > i {
+    color: #777f87;
+}
+
+/* ==========================================================================
+   31. V9 — CONTEXT MENU / OVERLAYS
+   ========================================================================== */
+
+#contextMenu,
+.assets-context-menu,
+.context-menu {
+    min-width: 200px;
+    padding: 3px 0;
+    background: #343434;
+    border-color: rgba(255,255,255,.105);
+    box-shadow:
+        0 14px 34px rgba(0,0,0,.38),
+        inset 0 1px 0 rgba(255,255,255,.018);
+}
+
+.context-menu-item {
+    min-height: 26px;
+    padding: 0 9px;
+    color: #bdbdbd;
+    font-size: 10.5px;
+}
+
+.context-menu-item:hover {
+    background: #414141;
+}
+
+.context-menu-separator {
+    margin: 3px 0;
+    background: rgba(255,255,255,.065);
+}
+
+.upload-dropzone {
+    background: rgba(0,0,0,.66);
+    backdrop-filter: blur(3px);
+}
+
+.cb-import-dialog {
+    background: #303030;
+    border-color: rgba(255,255,255,.11);
+    box-shadow: 0 22px 68px rgba(0,0,0,.48);
+}
+
+.cb-import-header {
+    min-height: 48px;
+    background: #373737;
+}
+
+.cb-import-body {
+    padding: 14px;
+}
+
+.cb-drop-hero {
+    min-height: 190px;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.012), transparent),
+        #2d2d2d;
+    border-color: rgba(255,255,255,.12);
+}
+
+.upload-dropzone.dragover .cb-drop-hero {
+    background: #323232;
+    border-color: rgba(255,255,255,.25);
+}
+
+/* ==========================================================================
+   32. V9 — SELECTION / DRAG / FOCUS
+   ========================================================================== */
+
+#assetsPanel .asset-item.dragover,
+#assetsPanel .folder-item.dragover,
+#assetsPanel .category-item.dragover {
+    background: rgba(255,255,255,.095);
+    border-color: rgba(255,255,255,.20);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+}
+
+#assetsPanel .asset-item:focus-visible,
+#assetsPanel .tree-row:focus-visible,
+#assetsPanel .category-item:focus-visible,
+#assetsPanel .sm-project-sidebar-row:focus-visible {
+    outline: 1px solid rgba(255,255,255,.22);
+    outline-offset: -1px;
+}
+
+/* ==========================================================================
+   33. V9 — DENSITY MODES
+   Optional: add class .compact or .comfortable to #assetsPanel
+   ========================================================================== */
+
+#assetsPanel.compact {
+    --thumbnail-size: 82px;
+}
+
+#assetsPanel.compact .assets-grid {
+    gap: 5px;
+    padding: 6px;
+}
+
+#assetsPanel.compact .asset-item {
+    height: calc(var(--thumbnail-size, 82px) + 35px);
+}
+
+#assetsPanel.comfortable {
+    --thumbnail-size: 118px;
+}
+
+#assetsPanel.comfortable .assets-grid {
+    gap: 10px;
+    padding: 11px;
+}
+
+/* ==========================================================================
+   34. V9 — RESPONSIVE REFINEMENTS
+   ========================================================================== */
+
+@media (max-width: 1180px) {
+    #assetsPanel {
+        --cb-sidebar-width: 205px;
+        --cb-properties-width: 260px;
+    }
+
+    #assetsPanel .cb-search-wrap {
+        width: 190px;
+    }
+}
+
+@media (max-width: 980px) {
+    #assetsPanel .sm-project-state {
+        display: none;
+    }
+
+    #assetsPanel .cb-main-toolbar {
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    #assetsPanel .cb-main-toolbar::-webkit-scrollbar {
+        display: none;
+    }
+}

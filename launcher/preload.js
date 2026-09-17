@@ -60,6 +60,14 @@ contextBridge.exposeInMainWorld(
                 targetPath
             ),
 
+        // Use openExternal for http/https URLs — shell.openPath() cannot
+        // handle URLs and throws a Windows "No app associated" error.
+        openExternal: url =>
+            ipcRenderer.invoke(
+                'launcher:openExternal',
+                url
+            ),
+
 
         /* ============================================================
            ENGINE VERSIONS & DOWNLOADS

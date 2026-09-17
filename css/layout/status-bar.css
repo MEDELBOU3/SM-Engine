@@ -1,0 +1,22 @@
+﻿/* ================================================================
+   STATUS BAR - #stats-panel, FPS/triangles/objects display
+================================================================ */
+#timelineBody > #stats-panel,
+#stats-panel.status-bar {
+    display: flex !important; flex: 0 0 34px; align-items: center;
+    justify-content: space-between; gap: 10px; width: 100%;
+    min-height: 34px; max-height: 34px; padding: 0 8px; box-sizing: border-box;
+    overflow: visible; position: relative; z-index: 12;
+    background: #202226; border-top: 1px solid #33373f; border-bottom: 1px solid #101114;
+    color: #b8c0cc; font: 600 11px/1 "Segoe UI", Arial, sans-serif;
+}
+#stats-panel .status-bar-stats { display: flex; align-items: center; gap: 8px; min-width: 0; margin: 0; overflow: hidden; }
+#stats-panel .status-bar-stats > div { display: inline-flex; align-items: center; min-height: 20px; padding: 0 7px; border: 1px solid #313640; background: #17191d; color: #aeb6c2; white-space: nowrap; font-size: 10px; }
+#stats-panel #fps      { color: #8fd18f; }
+#stats-panel #objects  { color: #a9c8ff; }
+#stats-panel #triangles { color: #e0c173; }
+#stats-panel .timeline-view-tabs { display: flex !important; align-items: center; justify-content: flex-end; gap: 2px; min-width: 0; max-width: 58%; height: 100%; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+#stats-panel .view-tab { flex: 0 0 auto; height: 25px; min-height: 25px; padding: 0 9px; border: 1px solid transparent; border-radius: 0; background: transparent; color: #aeb6c2; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; line-height: 23px; }
+#stats-panel .view-tab:hover { background: #2a2e36; border-color: #3a414c; color: #f2f5f8; }
+#stats-panel .view-tab.active { background: #354052; border-color: #4d6c9d; color: #fff; box-shadow: inset 0 -2px 0 #4a9eff; }
+#stats-panel #animation-library { position: absolute; left: 8px; bottom: calc(100% + 6px); top: auto; z-index: 1000; }

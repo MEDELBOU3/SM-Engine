@@ -1,0 +1,523 @@
+ /* =========================================================
+   UNREAL ENGINE 5 DETAILS & INSPECTOR PANEL STYLES
+   ========================================================= */
+
+:root {
+    /* ==========================================
+       SM ENGINE — PROFESSIONAL GRAY THEME
+       No pure black
+       ========================================== */
+
+    /* Main backgrounds */
+    --ue5-bg-base:          #2b2b2b;
+    --ue5-bg-panel:         #303030;
+    --ue5-bg-card:          #363636;
+    --ue5-bg-header:        #3c3c3c;
+    --ue5-bg-header-hover:  #474747;
+
+    /* Inputs */
+    --ue5-bg-input:         #292929;
+    --ue5-bg-input-focus:   #3a3a3a;
+    --ue5-bg-input-hover:   #343434;
+
+    /* Borders */
+    --ue5-border-subtle:    #4a4a4a;
+    --ue5-border:           #555555;
+    --ue5-border-strong:    #666666;
+    --ue5-border-focus:     #808080;
+
+    /* Text */
+    --ue5-text-primary:     #eeeeee;
+    --ue5-text-secondary:   #c0c0c0;
+    --ue5-text-muted:       #999999;
+    --ue5-text-disabled:    #707070;
+
+    /* Interaction */
+    --ue5-hover:            #464646;
+    --ue5-active:           #525252;
+    --ue5-selected:         #5d5d5d;
+    --ue5-pressed:          #686868;
+
+    /* Neutral accent */
+    --ue5-accent:           #9a9a9a;
+    --ue5-accent-hover:     #b0b0b0;
+    --ue5-accent-active:    #c2c2c2;
+
+    /* Functional colors */
+    --ue5-accent-blue:      #6f9fc9;
+    --ue5-accent-green:     #72a88a;
+    --ue5-accent-yellow:    #c5a466;
+    --ue5-accent-red:       #c47777;
+
+    /* Sprite viewport */
+    --sprite-viewport-bg:   #383838;
+    --sprite-grid-color:    #505050;
+    --sprite-grid-major:    #696969;
+    --sprite-canvas-bg:     #424242;
+
+    /* Sprite selection */
+    --sprite-selection:      #b5b5b5;
+    --sprite-selection-fill: rgba(190, 190, 190, 0.16);
+    --sprite-selection-hover:#d0d0d0;
+
+    /* Shadows */
+    --ue5-shadow-soft:       0 2px 8px rgba(40, 40, 40, 0.35);
+    --ue5-shadow-panel:     0 4px 18px rgba(35, 35, 35, 0.4);
+
+    /* Radius */
+    --ue5-radius-small:     3px;
+    --ue5-radius-medium:    5px;
+    --ue5-radius-large:     7px;
+}
+
+/* Master Details Panel Wrapper */
+.ue5-details-panel {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    background: var(--ue5-bg-panel);
+    border-left: 1px solid var(--ue5-border-subtle);
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    color: var(--ue5-text-primary);
+}
+
+/* Top Search & Controls */
+.ue5-details-header {
+    flex: 0 0 34px;
+    height: 34px;
+    background: var(--ue5-bg-base);
+    border-bottom: 1px solid var(--ue5-border-subtle);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 6px;
+    box-sizing: border-box;
+}
+
+.ue5-search-box {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ue5-search-box i {
+    position: absolute;
+    left: 8px;
+    color: var(--ue5-text-muted);
+    font-size: 11px;
+    pointer-events: none;
+}
+
+.ue5-search-box input {
+    width: 100%;
+    height: 24px;
+    background: var(--ue5-bg-input);
+    border: 1px solid var(--ue5-border-subtle);
+    border-radius: 3px;
+    padding: 0 8px 0 24px;
+    color: var(--ue5-text-primary);
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.ue5-search-box input:focus {
+    border-color: var(--ue5-border-focus);
+}
+
+.ue5-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.ue5-icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--ue5-text-secondary);
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.ue5-icon-btn:hover {
+    background: var(--ue5-bg-header);
+    color: var(--ue5-text-primary);
+}
+
+/* Main Scrollable Body */
+.ue5-details-scroll-content {
+    position: relative;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    gap: 1px;
+    background: var(--ue5-bg-base);
+}
+
+/* Smooth UE5 Dark Scrollbar */
+.ue5-details-scroll-content::-webkit-scrollbar {
+    width: 6px;
+}
+.ue5-details-scroll-content::-webkit-scrollbar-track {
+    background: var(--ue5-bg-base);
+}
+.ue5-details-scroll-content::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 3px;
+}
+.ue5-details-scroll-content::-webkit-scrollbar-thumb:hover {
+    background: #4a4a4a;
+}
+
+/* Card / Section Rollout Containers */
+.inspector-card {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    background: var(--ue5-bg-card);
+    border-bottom: 1px solid var(--ue5-border-subtle);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Card Header (UE5 Category Banner) */
+.inspector-card-header {
+    height: 26px;
+    min-height: 26px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--ue5-bg-header);
+    color: var(--ue5-text-primary);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    user-select: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-left: 2px solid transparent;
+    transition: background 0.1s ease, border-color 0.1s ease;
+}
+
+.inspector-card-header:hover {
+    background: var(--ue5-bg-header-hover);
+    border-left-color: var(--ue5-accent-blue);
+}
+
+.inspector-card-header .ue5-fold-icon {
+    font-size: 10px;
+    color: var(--ue5-text-secondary);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Collapsed State */
+.inspector-card.collapsed .ue5-fold-icon {
+    transform: rotate(-90deg);
+}
+.inspector-card.collapsed .inspector-card-body {
+    display: none !important;
+}
+
+.inspector-card-header .header-type-icon {
+    font-size: 11px;
+    color: var(--ue5-accent-blue);
+}
+
+.inspector-card-header .header-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+}
+
+.inspector-card-header .header-badge {
+    font-size: 9.5px;
+    color: var(--ue5-text-muted);
+    font-weight: 400;
+    font-family: monospace;
+}
+
+.inspector-card-header .sm-remove-component {
+    background: transparent;
+    border: none;
+    color: var(--ue5-text-muted);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+.inspector-card-header .sm-remove-component:hover {
+    color: #ff5555;
+    background: rgba(255, 0, 0, 0.15);
+}
+
+/* Card Body (Field Rows List) */
+.inspector-card-body {
+    padding: 6px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--ue5-bg-card);
+}
+
+/* Single Field Row (Key-Value style) */
+.inspector-field-row,
+.sm-component-property {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    align-items: center;
+    min-height: 24px;
+    gap: 8px;
+    font-size: 11px;
+    box-sizing: border-box;
+}
+
+.field-label,
+.sm-component-property > span {
+    color: var(--ue5-text-secondary);
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Inputs & Form Controls */
+.field-input-text,
+.field-number-input,
+.field-dropdown {
+    width: 100%;
+    height: 22px;
+    background: var(--ue5-bg-input);
+    border: 1px solid var(--ue5-border-subtle);
+    border-radius: 2px;
+    color: var(--ue5-text-primary);
+    padding: 0 6px;
+    font-size: 11px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.12s ease;
+}
+
+.field-input-text:focus,
+.field-number-input:focus,
+.field-dropdown:focus {
+    border-color: var(--ue5-border-focus);
+    background: var(--ue5-bg-input-focus);
+}
+
+/* Color Picker & Sliders */
+.field-color-wrap,
+.field-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.field-color-picker {
+    width: 28px;
+    height: 20px;
+    padding: 0;
+    border: 1px solid var(--ue5-border-subtle);
+    border-radius: 2px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.field-color-hex {
+    font-size: 10px;
+    font-family: monospace;
+    color: var(--ue5-text-secondary);
+}
+
+.field-slider {
+    flex: 1;
+    height: 4px;
+    accent-color: var(--ue5-accent-blue);
+    background: #333;
+    border-radius: 2px;
+    cursor: ew-resize;
+}
+
+.field-slider-val {
+    min-width: 32px;
+    font-size: 10.5px;
+    font-family: monospace;
+    color: var(--ue5-text-primary);
+    text-align: right;
+}
+
+.field-badge-green {
+    display: inline-block;
+    padding: 2px 6px;
+    background: rgba(38, 162, 105, 0.15);
+    color: #33d17a;
+    border: 1px solid rgba(38, 162, 105, 0.3);
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    width: fit-content;
+}
+
+.ue5-toggle-group {
+    display: flex !important;
+    gap: 14px;
+    padding: 4px 0;
+}
+
+.ue5-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--ue5-text-secondary);
+}
+
+.ue5-checkbox-label input[type="checkbox"] {
+    accent-color: var(--ue5-accent-blue);
+    cursor: pointer;
+}
+
+/* Add Component Action Row (UE5 Green/Dark Button) */
+.inspector-action-row {
+    position: relative;
+    padding: 12px 10px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-add-component {
+    width: 100%;
+    height: 28px;
+    background: #1f382b;
+    border: 1px solid rgba(56, 180, 110, 0.4);
+    border-radius: 3px;
+    color: #62e89d;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-add-component:hover {
+    background: #254736;
+    border-color: #4ee090;
+    color: #ffffff;
+}
+
+.btn-add-component:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #222222;
+    border-color: #333333;
+    color: #777777;
+}
+
+/* Component Picker Popup */
+.sm-component-picker {
+    position: absolute;
+    bottom: calc(100% - 4px);
+    left: 10px;
+    right: 10px;
+    background: #1e1e1e;
+    border: 1px solid #383838;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    max-height: 260px;
+    overflow: hidden;
+}
+
+.sm-picker-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    background: #161616;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.sm-picker-search-wrap i {
+    position: absolute;
+    left: 14px;
+    color: var(--ue5-text-muted);
+    font-size: 11px;
+}
+
+.sm-picker-search-wrap input {
+    width: 100%;
+    height: 24px;
+    background: #0f0f0f;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    padding: 0 8px 0 24px;
+    color: #fff;
+    font-size: 11px;
+    outline: none;
+}
+
+.sm-component-options {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+}
+
+.sm-component-options button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    color: var(--ue5-text-primary);
+    cursor: pointer;
+    text-align: left;
+    font-size: 11px;
+}
+
+.sm-component-options button:hover {
+    background: var(--ue5-accent-blue);
+    color: #ffffff;
+}
+
+.sm-component-options button i {
+    font-size: 12px;
+    color: var(--ue5-accent-blue);
+}
+
+.sm-component-options button:hover i {
+    color: #ffffff;
+}
+
+.sm-component-empty {
+    padding: 12px;
+    color: var(--ue5-text-muted);
+    font-size: 11px;
+    text-align: center;
+}

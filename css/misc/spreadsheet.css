@@ -1,0 +1,46 @@
+body.spreadsheet-active #spreadsheet-editor-container {
+  display: flex !important;
+}
+
+#spreadsheet-editor-container,
+.spreadsheet-editor {
+  min-height: 0;
+  overflow: hidden;
+  background: #171b22;
+  color: var(--text-primary, #f4f7fb);
+}
+
+.spreadsheet-table-wrap {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.spreadsheet-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font: 12px/1.35 Consolas, Monaco, monospace;
+}
+
+.spreadsheet-table th,
+.spreadsheet-table td {
+  padding: 6px 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  white-space: nowrap;
+}
+
+.spreadsheet-table th {
+  position: sticky;
+  top: 0;
+  background: #242a34;
+  color: #dce5ef;
+  z-index: 1;
+}
+
+.spreadsheet-empty-state {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--text-secondary, #aeb6c2);
+}

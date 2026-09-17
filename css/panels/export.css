@@ -1,0 +1,54 @@
+﻿/* ================================================================
+   EXPORT PANEL
+================================================================ */
+.export-panel {
+    background-color: var(--secondary-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.export-panel .panel-header {
+    margin: -10px -10px 0 -10px;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: var(--accent-info);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.export-method {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 1rem;
+}
+
+#exportFormat {
+    flex-grow: 1;
+}
+
+.export-options {
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.export-options label {
+    display: block;
+    margin: 5px 0;
+    color: var(--text-secondary);
+}
+
+.export-panel .property-input {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
+    padding: 5px;
+    border-radius: 4px;
+    width: 100%;
+    margin-bottom: 10px;
+}

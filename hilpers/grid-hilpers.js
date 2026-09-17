@@ -1,3 +1,14 @@
+function markEditorHelperTree(root) {
+    if (!root) return root;
+    root.traverse((object) => {
+        object.userData = object.userData || {};
+        object.userData.isSystemObject = true;
+        object.userData.ignoreInHierarchy = true;
+        object.userData.selectable = false;
+        object.userData.isViewportGrid = true;
+    });
+    return root;
+}
 // Function to create Blender-like grid system
 /**
  * Create a Blender-like grid for Three.js
@@ -16,12 +27,7 @@ function createBlenderGrid(size = 100, divisions = 100) {
     gridHelper.position.y = 0;
     gridGroup.add(gridHelper);
 
-    // Create a smaller, more prominent grid at the center
-    const centerGrid = new THREE.GridHelper(10, 10, 0x4444ff, 0xaaaaaa);
-    centerGrid.material.transparent = true;
-    centerGrid.material.opacity = 0.5;
-    centerGrid.position.y = 0.001; // Slightly above the main grid to avoid z-fighting
-    gridGroup.add(centerGrid);
+    // Center grid removed to avoid unwanted white square overlay at origin
 
     // Create axis lines that extend beyond the grid
     const axisLength = size / 2 * 1.2; // 20% longer than half the grid
@@ -42,7 +48,7 @@ function createBlenderGrid(size = 100, divisions = 100) {
     ));
     const yAxisMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 2 });
     const yAxis = new THREE.Line(yAxisGeometry, yAxisMaterial);
-    gridGroup.add(yAxis);
+    //gridGroup.add(yAxis);
     
     // Z-axis (blue)
     const zAxisGeometry = new THREE.BufferGeometry();
@@ -53,7 +59,7 @@ function createBlenderGrid(size = 100, divisions = 100) {
     const zAxis = new THREE.Line(zAxisGeometry, zAxisMaterial);
     gridGroup.add(zAxis);
 
-    return gridGroup;
+    return markEditorHelperTree(gridGroup);
 }
 
 /**
@@ -159,7 +165,7 @@ function addBlenderGridToScene() {
     setupBlenderControls(camera, renderer.domElement);
 }
 
-// Replace your createAdvancedGridHelper function with this
+//Replace your createAdvancedGridHelper function with this
 function createAdvancedGridHelper(size = 1000, divisions = 100) {
     const gridGroup = new THREE.Group();
     gridGroup.name = "blenderGrid";
@@ -171,12 +177,7 @@ function createAdvancedGridHelper(size = 1000, divisions = 100) {
     gridHelper.position.y = 0;
     gridGroup.add(gridHelper);
 
-    // Center grid (more visible)
-    const centerGrid = new THREE.GridHelper(10, 10, 0x4444ff, 0xaaaaaa);
-    centerGrid.material.transparent = true;
-    centerGrid.material.opacity = 0.5;
-    centerGrid.position.y = 0.001; // Slightly above to prevent z-fighting
-    gridGroup.add(centerGrid);
+    // Center grid removed to avoid unwanted white square overlay at origin
 
     // Create axis lines with colors matching Blender
     const axisLength = size / 2;
@@ -197,7 +198,7 @@ function createAdvancedGridHelper(size = 1000, divisions = 100) {
     ));
     const yAxisMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 2 });
     const yAxis = new THREE.Line(yAxisGeometry, yAxisMaterial);
-    gridGroup.add(yAxis);
+    //gridGroup.add(yAxis);
     
     // Z-axis (blue)
     const zAxisGeometry = new THREE.BufferGeometry();
@@ -237,7 +238,7 @@ function createAdvancedGridHelper(size = 1000, divisions = 100) {
     gridGroup.add(yLabel);
     gridGroup.add(zLabel);
 
-    return gridGroup;
+    return markEditorHelperTree(gridGroup);
 }
 
 // Blender-like Camera Controls
@@ -483,80 +484,81 @@ class BlenderCameraControls {
 
 // Function to update your init() function to use the new grid and camera controls
 function initWithBlenderControls() {
-    // Scene setup
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x333333);
 
-    // Camera setup
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    
-    // Renderer setup
-    renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.0,
-        powerPreference: "high-performance",
-        stencil: true,
-        depth: true,
-    });
+    camera = new THREE.PerspectiveCamera(
+        75,
+        1,
+        0.1,
+        1000
+    );
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('renderer-container').appendChild(renderer.domElement);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer = window.renderer;
+
+    if (!renderer) {
+        console.error(
+            '[BlenderControls] Shared engine renderer is not initialized.'
+        );
+        return;
+    }
+
+    const container =
+        document.getElementById('renderer-container');
+
+    if (
+        container &&
+        renderer.domElement.parentElement !== container
+    ) {
+        container.appendChild(renderer.domElement);
+    }
+
     renderer.autoClear = false;
     renderer.physicallyCorrectLights = true;
-    renderer.setPixelRatio(window.devicePixelRatio);
 
-    // Remove previous controls if any
     if (controls) {
         controls.dispose();
         controls = null;
     }
 
-    // Add Blender-like grid
     const blenderGrid = createBlenderGrid(100, 100);
     scene.add(blenderGrid);
 
-    // Setup Blender-like camera controls
-    blenderControls = new BlenderCameraControls(camera, renderer.domElement);
-    
-    // Remove transform controls listener that may interfere
-    if (transformControls) {
-        transformControls.removeEventListener('mouseDown', function() {});
-        transformControls.removeEventListener('mouseUp', function() {});
-        transformControls.removeEventListener('dragging-changed', function() {});
+    blenderControls =
+        new BlenderCameraControls(
+            camera,
+            renderer.domElement
+        );
+
+    if (!window.transformControls) {
+        window.transformControls =
+            new THREE.TransformControls(
+                camera,
+                renderer.domElement
+            );
+
+        scene.add(window.transformControls);
     }
 
-    // Set up transform controls again
-    transformControls = new THREE.TransformControls(camera, renderer.domElement);
-    scene.add(transformControls);
-    
-    transformControls.addEventListener('mouseDown', function() {
-        blenderControls.isRotating = false;
-        blenderControls.isPanning = false;
-    });
+    window.transformControls.addEventListener(
+        'mouseDown',
+        () => {
+            if (typeof blenderControls !== 'undefined') {
+                blenderControls.isRotating = false;
+                blenderControls.isPanning = false;
+            }
+        }
+    );
 
-    transformControls.addEventListener('mouseUp', function() {
-        // Do nothing, let the blenderControls handle this
-    });
+    // NO renderer.setSize()
+    // NO renderer.setPixelRatio()
+    // NO requestAnimationFrame()
+    // NO renderer.render()
 
-    // Add lighting
-    setupLighting(scene);
-    
-    // Update the animation loop
-    function animate() {
-        requestAnimationFrame(animate);
-        
-        // Update Blender-like controls
-        blenderControls.update();
-        
-        // Render the scene
-        renderer.clear();
-        renderer.render(scene, camera);
-    }
-    
-    animate();
+    window.SMViewportLayout?.setRenderer?.(renderer);
+    window.SMViewportLayout?.invalidate?.(
+        'blender-controls-init'
+    );
 }
 
 // Function to set up lighting

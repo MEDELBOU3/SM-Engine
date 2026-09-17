@@ -1,0 +1,42 @@
+.file-browser-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+}
+
+.file-browser-toolbar,
+.file-browser-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.file-browser-list,
+.file-browser-tree {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.16);
+}
+
+.file-browser-row,
+.file-browser-item {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  color: var(--text-secondary, #c8d0db);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.file-browser-row:hover,
+.file-browser-item:hover {
+  background: rgba(79, 193, 255, 0.1);
+  color: var(--text-primary, #fff);
+}

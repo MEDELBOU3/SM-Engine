@@ -1,0 +1,34 @@
+.preferences-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: auto;
+}
+
+.preferences-group {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.14);
+}
+
+.preferences-title {
+  padding: 9px 11px;
+  color: var(--text-primary, #fff);
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.preferences-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+  padding: 8px 11px;
+  color: var(--text-secondary, #c8d0db);
+}
+
+.preferences-row input,
+.preferences-row select {
+  accent-color: var(--accent-blue, #4fc1ff);
+}

@@ -1,0 +1,466 @@
+/* ================================================================
+   HIERARCHY PANEL — UE5-style Professional Scene Outliner
+   All classes use the .hm- prefix (HierarchyManager)
+   Legacy selectors retained for backward compat below.
+================================================================ */
+
+/* ── Panel Shell ─────────────────────────────────────────────── */
+.hierarchy-panel {
+    position: absolute;
+    z-index: 6;
+    top: var(--toolbar-height);
+    left: 0;
+    width: var(--hierarchy-live-width, var(--hierarchy-width-default));
+    height: calc(100vh - var(--toolbar-height));
+    min-width: var(--hierarchy-width-min);
+    max-width: var(--hierarchy-width-max);
+    background: #333;
+    border-right: 1px solid var(--panel-header-border);
+    box-shadow: var(--panel-shadow-pro);
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    color: var(--text-primary);
+    overflow: hidden;
+    box-sizing: border-box;
+    scrollbar-gutter: stable;
+}
+
+/* ── Panel Header rows ───────────────────────────────────────── */
+.hierarchy-panel > .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    min-height: 34px;
+    background: var(--panel-header-bg);
+    border-bottom: 1px solid var(--panel-header-border);
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+.hierarchy-panel > .panel-header:hover { background: var(--hover-bg); }
+.hierarchy-panel > .panel-header .fas { color: var(--accent-blue-dark); font-size: 12px; }
+.hierarchy-panel > .panel-header .expand-button {
+    margin-left: auto;
+    color: var(--text-secondary);
+    font-size: 11px;
+    transition: transform 0.2s;
+}
+.hierarchy-panel > .panel-header.collapsed .expand-button { transform: rotate(-90deg); }
+
+/* ── Scroll regions ──────────────────────────────────────────── */
+.hierarchy-panel > .panel-content {
+    overflow: auto;
+    transition: max-height 0.25s ease;
+    flex-shrink: 0;
+    background: var(--panel-inner-bg);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    overscroll-behavior: contain;
+}
+.hierarchy-panel > .panel-content.collapsed { max-height: 0 !important; }
+#hierarchy-list-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* ── Search bar ──────────────────────────────────────────────── */
+.hierarchy-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--panel-soft-border);
+    flex-shrink: 0;
+}
+#hierarchy-search-input {
+    flex: 1;
+    height: 26px;
+    padding: 0 8px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 12px;
+    transition: border-color 0.15s;
+}
+#hierarchy-search-input:focus { outline: none; border-color: var(--accent-blue-dark); }
+#hierarchy-search-input::placeholder { color: var(--text-secondary); }
+
+#hierarchy-search-clear {
+    width: 26px; height: 26px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+}
+#hierarchy-search-clear:hover { background: var(--accent-danger); border-color: var(--accent-danger); }
+
+/* ── View-mode dropdown ──────────────────────────────────────── */
+#hierarchyViewMode {
+    height: 26px;
+    padding: 0 24px 0 8px;
+    background: var(--input-bg) url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2210%22 height%3D%226%22%3E%3Cpath fill%3D%22%23aaa%22 d%3D%22M0 0l5 6 5-6z%22%2F%3E%3C%2Fsvg%3E') no-repeat right 8px center;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 11px;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+#hierarchyViewMode:focus { outline: none; border-color: var(--accent-blue-dark); }
+
+/* ── Tree content area ───────────────────────────────────────── */
+#hierarchy-content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    background: #161618;
+    color: #cccccc;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 12.5px;
+    padding: 2px 0;
+    user-select: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
+}
+#hierarchy-content::-webkit-scrollbar { width: 6px; }
+#hierarchy-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.hm-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 120px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+.hm-empty .fas { font-size: 22px; opacity: 0.3; }
+
+/* ── Row ─────────────────────────────────────────────────────── */
+.hm-row {
+    display: flex;
+    align-items: center;
+    height: 22px;
+    padding-right: 4px;
+    position: relative;
+    cursor: pointer;
+    white-space: nowrap;
+    border-radius: 0;
+    transition: background 0.1s;
+}
+.hm-row:hover { background: rgba(255,255,255,0.055); }
+.hm-row:hover .hm-action { opacity: 1; }
+
+.hm-row.hm-selected {
+    background: rgba(0, 115, 200, 0.35) !important;
+    box-shadow: inset 1px 0 0 #0073c8;
+}
+.hm-row.hm-selected .hm-name { color: #fff; font-weight: 600; }
+
+.hm-row.hm-row-hidden { opacity: 0.45; }
+.hm-row.hm-row-locked { cursor: default; }
+.hm-row.hm-row-locked .hm-name { color: var(--text-secondary); }
+.hm-row.hm-drop-target { background: rgba(0,160,255,0.18); outline: 1px dashed rgba(0,160,255,0.5); outline-offset: -1px; }
+.hm-row.hm-search-match .hm-name { color: #ffd080; font-weight: 600; }
+
+/* ── Tree guide lines ────────────────────────────────────────── */
+.hm-lines {
+    position: relative;
+    flex-shrink: 0;
+    height: 22px;
+    pointer-events: none;
+}
+.hm-vline {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(255,255,255,0.1);
+}
+.hm-elbow {
+    position: absolute;
+    top: 0; height: 50%;
+    width: 1px;
+    background: rgba(255,255,255,0.1);
+}
+.hm-elbow::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 100%;
+    width: 8px; height: 1px;
+    background: rgba(255,255,255,0.1);
+}
+/* last child: elbow ends at center, no continuation below */
+.hm-elbow.hm-elbow-last {
+    top: 0; height: 50%;
+}
+
+/* ── Toggle arrow ────────────────────────────────────────────── */
+.hm-toggle {
+    width: 16px; height: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+    color: var(--text-secondary);
+    font-size: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 2px;
+    transition: color 0.15s, background 0.15s;
+}
+.hm-toggle:hover,
+.hm-toggle:focus,
+.hm-toggle:active { color: #fff; background: transparent !important; }
+/* Leaf items reserve the same indentation as folders, but must not inherit
+   global button chrome: that was the source of the small dark squares. */
+.hm-toggle-empty {
+    visibility: hidden;
+    pointer-events: none;
+    color: transparent !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* ── Icon ────────────────────────────────────────────────────── */
+.hm-icon {
+    width: 16px; height: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-right: 5px;
+}
+.icon-light   { color: #ffc837; }
+.icon-camera  { color: #4fc3f7; }
+.icon-mesh    { color: #ef5350; }
+.icon-bone    { color: #b39ddb; }
+.icon-group   { color: #90a4ae; }
+.icon-scene   { color: #66bb6a; }
+.icon-default { color: #78909c; }
+
+/* ── Name ────────────────────────────────────────────────────── */
+.hm-name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12.5px;
+    color: #d4d4d4;
+    line-height: 22px;
+}
+
+/* ── Spacer ──────────────────────────────────────────────────── */
+.hm-spacer { flex: 1 1 auto; }
+
+/* ── Action buttons (vis / lock) ─────────────────────────────── */
+.hm-action {
+    width: 20px; height: 20px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: none; border: none;
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 3px;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, background 0.15s;
+}
+/* Always show on selected row or on non-default state */
+.hm-row.hm-selected .hm-action,
+.hm-row.hm-row-hidden .hm-action,
+.hm-row.hm-row-locked .hm-action,
+.hm-lock.hm-lock-active { opacity: 1; }
+
+.hm-action:hover { color: #fff; background: rgba(255,255,255,0.1); opacity: 1; }
+.hm-lock.hm-lock-active { color: #ff9800; }
+
+/* ── Inline rename input ─────────────────────────────────────── */
+.hm-rename-input {
+    flex: 1 1 auto;
+    height: 18px;
+    padding: 0 4px;
+    font-size: 12px;
+    background: #1a2a3a;
+    border: 1px solid var(--accent-blue-dark);
+    border-radius: 2px;
+    color: #fff;
+    outline: none;
+}
+
+/* ── Type-group header ───────────────────────────────────────── */
+.hm-type-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 26px;
+    padding: 0 8px;
+    background: rgba(255,255,255,0.035);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: default;
+}
+.hm-count {
+    background: rgba(255,255,255,0.08);
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+}
+
+/* ── Context menu ────────────────────────────────────────────── */
+.hm-context-menu {
+    position: fixed;
+    z-index: 99999;
+    background: #1e2127;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.55), 0 2px 6px rgba(0,0,0,0.35);
+    padding: 4px 0;
+    min-width: 150px;
+    font-size: 12px;
+    animation: hm-ctx-appear 0.1s ease;
+}
+@keyframes hm-ctx-appear {
+    from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.hm-ctx-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 14px;
+    background: none;
+    border: none;
+    color: #d0d0d0;
+    text-align: left;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.1s, color 0.1s;
+}
+.hm-ctx-item .fas { width: 14px; text-align: center; color: #888; }
+.hm-ctx-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.hm-ctx-item:hover .fas { color: #ccc; }
+.hm-ctx-danger { color: #ff6b6b; }
+.hm-ctx-danger .fas { color: #ff6b6b; }
+.hm-ctx-danger:hover { background: rgba(255, 80, 80, 0.12); color: #ff8a8a; }
+.hm-ctx-sep {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 3px 0;
+}
+
+/* ── Resize handle ───────────────────────────────────────────── */
+.resize-handle-hierarchy {
+    position: absolute;
+    top: 0; right: -8px; bottom: 0;
+    width: var(--hierarchy-resizer-width, 8px);
+    background: transparent;
+    cursor: col-resize;
+    z-index: 100;
+    pointer-events: auto;
+}
+.resize-handle-hierarchy:hover,
+body.resizing-hierarchy .resize-handle-hierarchy {
+    background: rgba(var(--accent-blue-rgb), 0.3);
+}
+
+/* ── Selection Sets section ──────────────────────────────────── */
+#selection-sets-content {
+    background: #1c1e22;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding: 10px;
+    overscroll-behavior: contain;
+}
+.selection-set-toolbar { display: flex; gap: 6px; margin-bottom: 8px; }
+.selection-set-actions { display: flex; gap: 6px; }
+.selection-set-list {
+    background: #141618;
+    border: 1px solid rgba(255,255,255,0.07);
+    min-height: 60px;
+    max-height: 160px;
+    overflow-y: auto;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+.selection-set-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.1s;
+}
+.selection-set-item:hover { background: rgba(255,255,255,0.05); }
+.selection-set-item small { color: var(--text-secondary); font-size: 10px; }
+.selection-set-empty {
+    padding: 12px;
+    border: 1px dashed rgba(255,255,255,0.08);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-align: center;
+    background: rgba(255,255,255,0.02);
+    margin: 4px;
+}
+.panel-button-set {
+    background: #2d3038;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #d0d0d0;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+.panel-button-set:hover:not(:disabled) { background: #3d4150; }
+.panel-button-set:disabled { color: #555; cursor: not-allowed; border-style: dashed; }
+
+/* ── Brush panel ─────────────────────────────────────────────── */
+#brush-settings-header { margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); color: var(--accent-warning); }
+#brush-panel { background: var(--secondary-dark); border-radius: 4px; padding: 8px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 200px; }
+.brush-controls { display: flex; flex-direction: column; gap: 8px; padding: 8px; background: var(--secondary-dark); border-radius: 4px; }
+.brush-controls label { display: flex; align-items: center; justify-content: space-between; color: var(--text-secondary); font-size: 12px; }
+.brush-controls input[type="range"] { flex-grow: 1; margin-left: 10px; }
+.brush-actions { display: flex; gap: 8px; margin-top: 8px; justify-content: center; }
+.brush-button { flex: 1; padding: 6px 10px; border: 1px solid var(--input-border); background: var(--hover-bg); color: var(--text-primary); border-radius: 4px; cursor: pointer; font-size: 12px; transition: background 0.15s, transform 0.1s; }
+.brush-button:hover { background: var(--active-bg); border-color: var(--accent-blue-dark); }
+.brush-button:active { transform: translateY(1px); }
+
+/* ── Media Pool ──────────────────────────────────────────────── */
+#media-pool-content { padding: 8px; }
+.media-pool-toolbar { margin-bottom: 6px; }
+.media-pool-filters { display: flex; gap: 4px; margin-bottom: 8px; }
+.media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 6px; }

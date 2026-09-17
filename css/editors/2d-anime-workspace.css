@@ -1,0 +1,179 @@
+/* Anime production workspace layered over the existing 2D drawing runtime. */
+.anime2d-workspace-header{position:static;z-index:auto;display:none;align-items:center;flex:1 1 auto;min-width:0;height:26px;margin:0 8px;padding:0;gap:2px;color:var(--text-secondary);background:transparent;border:0;border-radius:0;box-shadow:none;box-sizing:border-box;pointer-events:auto;overflow:hidden;}
+body.anime2d-production-workspace .anime2d-workspace-header{display:flex;}
+.anime2d-workspace-header[hidden]{display:none !important;}
+.anime2d-mode-switch{display:inline-flex;flex:0 0 auto;height:24px;padding:1px;gap:1px;background:var(--primary-dark);border:1px solid var(--border-color);border-radius:4px;}
+.anime2d-mode-switch button{min-width:46px;height:20px;padding:0 8px;color:var(--text-secondary);background:transparent;border:1px solid transparent;border-radius:3px;font-size:10px;font-weight:600;cursor:pointer;}
+.anime2d-mode-switch button:hover{color:var(--text-primary);background:var(--hover-bg);}
+.anime2d-mode-switch button.active{color:var(--text-primary);background:var(--accent-blue-dark);border-color:var(--accent-blue);}
+.anime2d-header-divider{flex:0 0 1px;align-self:stretch;margin:3px 2px;background:var(--border-color);}
+.anime2d-icon-btn,.anime2d-layer-panel button{display:inline-grid;place-items:center;flex:0 0 23px;width:23px;height:23px;padding:0;color:var(--text-secondary);background:transparent;border:1px solid transparent;border-radius:4px;cursor:pointer;}
+.anime2d-icon-btn .material-icons-outlined,.anime2d-layer-panel button .material-icons-outlined{font-size:17px;line-height:1;}
+.anime2d-icon-btn:hover,.anime2d-layer-panel button:hover{color:var(--text-primary);background:var(--hover-bg);border-color:var(--input-border);}
+.anime2d-icon-btn.active{color:var(--text-primary);background:var(--accent-blue-dark);border-color:var(--accent-blue);}
+.anime2d-play-btn{color:var(--accent-success);}
+.anime2d-frame-readout{flex:0 0 47px;padding:0 5px;background-color:var(--primary-dark);color:var(--accent-info);font-family:Consolas,monospace;font-size:11px;font-variant-numeric:tabular-nums;text-align:center;}
+.anime2d-header-spacer{flex:1 1 auto;min-width:6px;}
+.anime2d-compact-field{display:inline-flex;align-items:center;flex:0 0 auto;height:23px;gap:5px;padding:0 5px;color:var(--text-muted);background:var(--secondary-dark);border:1px solid var(--input-border);border-radius:4px;font-size:9px;}
+.anime2d-compact-field select{height:20px;color:var(--text-primary);background:var(--primary-dark);border:1px solid var(--input-border);border-radius:3px;font-size:10px;}
+.anime2d-size-field{width:148px;}
+.anime2d-size-field input[type="range"]{width:72px;min-width:50px;}
+.anime2d-size-field output{width:22px;color:var(--text-primary);font-family:Consolas,monospace;font-size:10px;text-align:right;}
+.anime2d-color-control{display:grid;place-items:center;flex:0 0 23px;width:23px;height:23px;}
+.anime2d-color-control input{width:22px;height:22px;padding:0;background:transparent;border:1px solid var(--input-border);border-radius:3px;cursor:pointer;}
+.anime2d-layer-panel{margin:0 0 8px;color:var(--text-secondary);background:var(--panel-bg);border:1px solid var(--border-color);border-radius:4px;overflow:hidden;}
+.anime2d-layer-panel[hidden]{display:none !important;}
+.anime2d-layer-panel > header{display:flex;align-items:center;justify-content:space-between;height:30px;padding:0 5px 0 9px;background:var(--header-bg);border-bottom:1px solid var(--border-color);font-size:10px;font-weight:700;text-transform:uppercase;}
+.anime2d-layer-panel > header > div{display:flex;}
+.anime2d-layer-panel button{width:24px;height:24px;flex-basis:24px;}
+.anime2d-layer-list{display:flex;flex-direction:column;min-height:36px;max-height:184px;padding:3px;overflow-y:auto; background-color: var(--panel-bg);}
+.anime2d-layer-row{display:grid;grid-template-columns:24px 22px minmax(0,1fr) 24px;align-items:center;min-height:29px;color:var(--text-secondary);border:1px solid transparent;border-radius:3px;cursor:default;}
+.anime2d-layer-row:hover{background:var(--bg-hover);}
+.anime2d-layer-row.active{color:var(--text-primary);background:var(--active-bg);border-color:var(--accent-blue);}
+.anime2d-layer-type{color:var(--accent-info);font-size:15px;}
+.anime2d-layer-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;}
+/* Anime Pro belongs to the Inspector and stays closed until its toolbar button is used. */
+#panel-2d-right #ap-production-panel{position:relative !important;inset:auto !important;transform:none !important;width:100% !important;max-height:none !important;margin:0 0 8px !important;overflow:visible !important;border:1px solid var(--border-color) !important;border-radius:4px !important;box-shadow:none !important;box-sizing:border-box !important;z-index:auto !important;}
+#panel-2d-right #ap-production-panel[hidden]{display:none !important;}
+#panel-2d-right #ap-production-panel .ap-header{cursor:default !important;}
+body.anime2d-production-workspace .sm-panel-header{min-height:30px;}
+body.anime2d-production-workspace .sm-panel-header-left,body.anime2d-production-workspace .sm-panel-header-right{flex:0 0 auto;}
+body.anime2d-production-workspace #animation-2d-toolbar{top:38px !important;max-height:calc(100% - 46px) !important;}
+body.anime2d-production-workspace #animation-2d-container{background-color:var(--panel-bg);background-image:linear-gradient(45deg,rgba(var(--text-primary-rgb),0.025) 25%,transparent 25%),linear-gradient(-45deg,rgba(var(--text-primary-rgb),0.025) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(var(--text-primary-rgb),0.025) 75%),linear-gradient(-45deg,transparent 75%,rgba(var(--text-primary-rgb),0.025) 75%);background-position:0 0,0 8px,8px -8px,-8px 0;background-size:16px 16px;}
+@media (max-width:1120px){.anime2d-size-field{width:100px;}.anime2d-size-field span,.anime2d-compact-field > span{display:none;}.anime2d-size-field input[type="range"]{width:58px;}}
+@media (max-width:820px){.anime2d-compact-field,.anime2d-color-control,.anime2d-size-field{display:none;}}
+/* Ordered 2D viewport header: editor controls stay central, panel layout actions stay at the edge. */
+body.anime2d-production-workspace .sm-panel-header{display:flex;align-items:center;gap:4px;padding-right:4px;overflow:hidden;}
+body.anime2d-production-workspace .sm-panel-header-left{order:1;}
+body.anime2d-production-workspace .anime2d-workspace-header{order:2;flex:1 1 auto;margin-right:2px;}
+body.anime2d-production-workspace .sm-panel-header-right{order:3;flex:0 0 auto;margin-left:auto;padding-left:6px;gap:3px;border-left:1px solid var(--border-color);}
+/* Colored controls are scoped to the active 2D workspace header. */
+body.anime2d-production-workspace .sm-panel-header button{color:var(--text-primary);background:var(--secondary-dark);border:1px solid var(--input-border);box-shadow:inset 0 1px 0 rgba(var(--text-primary-rgb),0.05);}
+body.anime2d-production-workspace .sm-panel-header button:hover{color:var(--text-primary);background:var(--hover-bg);border-color:var(--accent-blue);}
+body.anime2d-production-workspace .anime2d-mode-switch button{background:var(--secondary-dark);border-color:var(--input-border);}
+body.anime2d-production-workspace .anime2d-mode-switch button.active{color:var(--text-primary);background:var(--accent-blue-dark);border-color:var(--accent-blue);}
+body.anime2d-production-workspace .anime2d-play-btn{color:var(--text-primary);background:var(--accent-success);border-color:var(--accent-success);}
+body.anime2d-production-workspace .anime2d-icon-btn.active{color:var(--text-primary);background:var(--accent-blue-dark);border-color:var(--accent-blue);}
+body.anime2d-production-workspace .sm-panel-header-right .sm-panel-btn{color:var(--text-primary);background:var(--accent-blue-dark);border:1px solid var(--accent-blue);}
+body.anime2d-production-workspace .sm-panel-header-right .sm-panel-btn:hover{background:var(--accent-blue-dark);border-color:var(--accent-blue);}
+body.anime2d-production-workspace .sm-panel-header-right .sm-panel-btn.close{color:var(--text-primary);background:var(--accent-danger);border-color:var(--accent-danger);}
+body.anime2d-production-workspace .sm-panel-header-right .sm-panel-btn.close:hover{color:var(--text-primary);background:var(--accent-danger);border-color:var(--accent-danger);}
+/* 2D production recording and live 3D compositing states. */
+body.anime2d-production-workspace .anime2d-record-btn{color:var(--text-primary);background:var(--accent-danger);border-color:var(--accent-danger);}
+body.anime2d-production-workspace .anime2d-record-btn.active{color:var(--text-primary);background:var(--accent-danger);border-color:var(--accent-danger);box-shadow:0 0 0 1px rgba(var(--accent-danger-rgb),0.18);}
+body.anime2d-production-workspace .anime2d-underlay-btn{color:var(--text-primary);background:var(--accent-info);border-color:var(--accent-info);}
+body.anime2d-production-workspace .anime2d-underlay-btn.active{color:var(--text-primary);background:var(--accent-info);border-color:var(--accent-info);}
+body.animation-2d-3d-underlay #renderer-container,body.animation-2d-3d-underlay.anime2d-production-workspace #animation-2d-container{background-color:var(--text-primary) !important;background-image:none !important;}
+body.animation-2d-3d-underlay #renderer-container canvas,body.animation-2d-3d-underlay #renderer-container > canvas{background:var(--text-primary) !important;}
+body.animation-2d-3d-underlay #animation-2d-canvas{background:transparent !important;}
+body.animation-2d-mode-active #animation-2d-canvas{touch-action:none;contain:strict;}
+
+/*
+ * SM Engine — 2D Animation Workspace compatibility layer
+ * ------------------------------------------------------
+ * The old timeline-2d-brush-panel mega-panel has been retired.
+ * Anime2DWorkspace.js owns viewport/right-side 2D tools.
+ * TimelinePanel.js remains the single bottom animation editor.
+ */
+
+/* Old panel must never occupy timeline space again. */
+#timeline-2d-brush-panel,
+.timeline-2d-brush-panel,
+#a2pro-dopesheet,
+#advanced-2d-inspector {
+    display: none !important;
+}
+
+/*
+ * CRITICAL MODE ISOLATION
+ * -----------------------
+ * Do NOT force .animation-2d-only visible while 2D is active.
+ * Individual tools (Storyboard, Color Studio, etc.) decide when they open.
+ * Outside 2D mode every 2D-only surface is hard-hidden, even if an older
+ * script left an inline `display:flex/block` behind.
+ */
+body:not(.animation-2d-mode-active) .animation-2d-only,
+body:not(.animation-2d-mode-active) #animation-2d-toolbar,
+body:not(.animation-2d-mode-active) #animation-2d-container,
+body:not(.animation-2d-mode-active) #panel-2d-right,
+body:not(.animation-2d-mode-active) #advanced-2d-inspector,
+body:not(.animation-2d-mode-active) #storyboard-header,
+body:not(.animation-2d-mode-active) #storyboard-panel,
+body:not(.animation-2d-mode-active) #anime-color-studio-header,
+body:not(.animation-2d-mode-active) #anime-color-studio-content,
+body:not(.animation-2d-mode-active) #anim-2d-controls-group,
+body:not(.animation-2d-mode-active) #a2w-topbar,
+body:not(.animation-2d-mode-active) #a2w-brush-shelf {
+    display: none !important;
+}
+
+/* `hidden` must beat component display:flex declarations. */
+#a2w-topbar[hidden],
+#a2w-brush-shelf[hidden] {
+    display: none !important;
+}
+
+/* Keep the existing shared TimelinePanel intact in 2D mode. */
+body.animation-2d-mode-active #timelineBody {
+    height: var(--timeline-live-height, var(--timeline-height, 240px));
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body.animation-2d-mode-active #timelineBody .timeline-body,
+body.animation-2d-mode-active #timelineBody #timeline-controls-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Existing engine sections that are irrelevant while drawing stay hidden. */
+body.animation-2d-mode-active #hierarchy-header,
+body.animation-2d-mode-active #hierarchy-list-content,
+body.animation-2d-mode-active #selection-sets-header,
+body.animation-2d-mode-active #selection-sets-content,
+body.animation-2d-mode-active #brush-settings-header,
+body.animation-2d-mode-active #brush-settings-content,
+body.animation-2d-mode-active #media-pool-header,
+body.animation-2d-mode-active #media-pool-content {
+    display: none !important;
+}
+
+/* The viewport owns the 2D canvas and its compact asset shelf. */
+body.animation-2d-mode-active #renderer-container {
+    position: relative;
+    min-height: 0;
+}
+
+/* Do not allow legacy panel rules from older builds to re-enable the mega panel. */
+body.animation-2d-mode-active .timeline-2d-brush-panel,
+body.animation-2d-compact .timeline-2d-brush-panel {
+    display: none !important;
+    max-height: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+}
+
+/* Shared timeline context: only TimelinePanel's small frame-op group appears in 2D. */
+#timelineBody .sm-timeline-2d-only {
+    display: none !important;
+}
+
+#timelineBody[data-timeline-context="2d"] .sm-timeline-2d-only {
+    display: flex !important;
+}
+
+/* Avoid old CSS selectors forcing all bottom editor children into view. */
+body.animation-2d-mode-active #timelineBody > * {
+    min-width: 0;
+}
+
+/* Only the v2 workspace-owned surfaces may be globally exposed by mode state. */
+body.animation-2d-mode-active #a2w-topbar:not([hidden]) {
+    display: flex;
+}
+body.animation-2d-mode-active #a2w-brush-shelf:not([hidden]) {
+    display: flex;
+}

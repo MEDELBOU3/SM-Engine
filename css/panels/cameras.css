@@ -1,0 +1,453 @@
+﻿/* ================================================================
+   CAMERAS PANEL
+================================================================ */
+#Cameras .panel-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: var(--panel-bg);
+}
+
+#Cameras .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+#Cameras .panel-button-tool {
+    width: 36px;
+    height: 36px;
+    background: var(--header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    padding: 0;
+}
+
+#Cameras .panel-button-tool:hover {
+    background: var(--hover-bg);
+    transform: scale(1.05);
+}
+
+#Cameras .panel-button-tool:active {
+    transform: scale(0.95);
+    background: var(--accent-blue-dark);
+}
+
+#Cameras #addCinematicPathCamera {
+    padding: 6px 12px;
+    background: var(--accent-blue-dark);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#Cameras #addCinematicPathCamera:hover {
+    background: var(--accent-blue);
+}
+
+#Cameras .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#Cameras .input-group label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+#Cameras .input-group input[type="number"] {
+    padding: 4px 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--header-bg);
+    color: var(--text-primary);
+    width: 80px;
+}
+
+#Cameras .camera-special-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#Cameras .panel-button-tool svg g:first-of-type {
+    stroke: var(--text-primary);
+}
+
+#Cameras .panel-button-tool svg g:last-of-type {
+    stroke: var(--accent-success);
+}
+
+#Cameras .panel-button-tool svg circle[fill="#E0E0E0"] {
+    fill: var(--text-primary);
+}
+
+/* ============================================================
+   PHYSICAL / CINEMATIC CAMERA PANEL
+   Uses the global #333 family root palette
+   ============================================================ */
+#camera-editor-container, .property-group{
+    background-color: var(--panel-bg) !important;
+}
+.ph-camera-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    box-sizing: border-box;
+    background: var(--panel-bg, #333333);
+    color: var(--text-primary, #eeeeee);
+    font-family: inherit;
+}
+
+.ph-panel-header {
+    height: 28px;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px 0 10px;
+    box-sizing: border-box;
+    background: var(--panel-header, #333333);
+    border-bottom: 1px solid var(--border-color, #444444);
+    color: var(--text-primary, #eeeeee);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.ph-close-btn {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted, #888888);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.ph-close-btn:hover {
+    background: var(--button-hover, #3d3d3d);
+    border-color: var(--border-light, #4a4a4a);
+    color: var(--text-primary, #eeeeee);
+}
+
+.ph-panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    box-sizing: border-box;
+    background: var(--panel-bg, #333333);
+}
+
+.ph-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 9px;
+    box-sizing: border-box;
+    background: var(--panel-bg-alt, #303030);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 3px;
+}
+
+.ph-card-title {
+    margin: 0 0 9px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text-secondary, #bdbdbd);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ph-prop-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 24px;
+    padding: 3px 0;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.025);
+}
+
+.ph-prop-row:last-child {
+    border-bottom: none;
+}
+
+.ph-label {
+    flex: 0 0 35%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-secondary, #bdbdbd);
+}
+
+.ph-control {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    width: 65%;
+    min-width: 0;
+}
+
+.ph-select {
+    width: 65%;
+    height: 22px;
+    min-width: 0;
+    padding: 2px 5px;
+    box-sizing: border-box;
+    background: var(--input-bg, #292929);
+    border: 1px solid var(--input-border, #444444);
+    border-radius: 2px;
+    outline: none;
+    color: var(--text-primary, #eeeeee);
+    font-family: inherit;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.ph-select:hover {
+    background: var(--input-bg-hover, #333333);
+    border-color: var(--border-light, #4a4a4a);
+}
+
+.ph-select:focus {
+    background: var(--input-bg-focus, #383838);
+    border-color: var(--border-light, #4a4a4a);
+}
+
+.ph-select option {
+    background: var(--input-bg, #292929);
+    color: var(--text-primary, #eeeeee);
+}
+
+.ph-number-input {
+    width: 65px;
+    height: 22px;
+    padding: 2px 5px;
+    box-sizing: border-box;
+    background: var(--input-bg, #292929);
+    border: 1px solid var(--input-border, #444444);
+    border-radius: 2px;
+    outline: none;
+    color: var(--text-primary, #eeeeee);
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 10px;
+    text-align: right;
+}
+
+.ph-number-input:hover {
+    background: var(--input-bg-hover, #333333);
+    border-color: var(--border-light, #4a4a4a);
+}
+
+.ph-number-input:focus {
+    background: var(--input-bg-focus, #383838);
+    border-color: var(--border-light, #4a4a4a);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.ph-number-input::-webkit-inner-spin-button,
+.ph-number-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.ph-number-input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.ph-unit {
+    flex: 0 0 auto;
+    font-size: 9px;
+    color: var(--text-muted, #888888);
+}
+
+.ph-clip-control {
+    gap: 4px;
+}
+
+.ph-clip-control .ph-number-input {
+    width: calc(50% - 2px);
+    text-align: center;
+}
+
+.ph-range {
+    width: 100%;
+    height: 14px;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    accent-color: var(--accent-color, #777777);
+    cursor: pointer;
+}
+
+.ph-range::-webkit-slider-runnable-track {
+    height: 3px;
+    background: var(--border-light, #4a4a4a);
+    border-radius: 2px;
+}
+
+.ph-range::-webkit-slider-thumb {
+    width: 10px;
+    height: 10px;
+    margin-top: -3.5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--text-secondary, #bdbdbd);
+    border: 1px solid var(--border-light, #4a4a4a);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.ph-range::-moz-range-track {
+    height: 3px;
+    background: var(--border-light, #4a4a4a);
+    border-radius: 2px;
+}
+
+.ph-range::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    background: var(--text-secondary, #bdbdbd);
+    border: 1px solid var(--border-light, #4a4a4a);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.ph-range:hover::-webkit-slider-thumb {
+    background: var(--text-primary, #eeeeee);
+}
+
+.ph-range:hover::-moz-range-thumb {
+    background: var(--text-primary, #eeeeee);
+}
+
+.ph-value-label {
+    min-width: 32px;
+    height: 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-sizing: border-box;
+    background: var(--input-bg, #292929);
+    border: 1px solid var(--input-border, #444444);
+    border-radius: 2px;
+    color: var(--text-primary, #eeeeee);
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 9px;
+    text-align: center;
+}
+
+.ph-checkbox {
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    accent-color: var(--selection-bg, #454545);
+    cursor: pointer;
+}
+
+.ph-checkbox:focus {
+    outline: 1px solid var(--border-light, #4a4a4a);
+    outline-offset: 1px;
+}
+
+.ph-operations {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 2px;
+}
+
+.ph-btn {
+    width: 100%;
+    height: 26px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    background: var(--button-bg, #333333);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 2px;
+    color: var(--text-secondary, #bdbdbd);
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.ph-btn:hover {
+    background: var(--button-hover, #3d3d3d);
+    border-color: var(--border-light, #4a4a4a);
+    color: var(--text-primary, #eeeeee);
+}
+
+.ph-btn:active {
+    background: var(--button-active, #484848);
+}
+
+.ph-btn-active {
+    background: var(--button-active, #484848);
+    border-color: var(--border-light, #4a4a4a);
+    color: var(--text-primary, #eeeeee);
+    font-weight: 700;
+}
+
+.ph-btn-active:hover {
+    background: var(--selection-bg, #454545);
+    border-color: var(--selection-border, #5a5a5a);
+}
+
+.ph-btn-danger {
+    background: var(--button-bg, #333333);
+    border-color: var(--border-color, #444444);
+    color: #d88;
+}
+
+.ph-btn-danger:hover {
+    background: #3d3030;
+    border-color: #665050;
+    color: #f0aaaa;
+}
+
+.ph-btn-primary {
+    background: var(--button-active, #484848);
+    border-color: var(--selection-border, #5a5a5a);
+    color: var(--text-primary, #eeeeee);
+    font-weight: 700;
+}
+
+.ph-btn-primary:hover {
+    background: var(--selection-bg, #454545);
+    border-color: var(--border-light, #4a4a4a);
+}
+
+.ph-camera-panel input,
+.ph-camera-panel select,
+.ph-camera-panel button {
+    font-family: inherit;
+}

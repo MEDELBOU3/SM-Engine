@@ -1,0 +1,18 @@
+/* ============================================================================
+   GEOMETRY NODE EDITOR — ROOTS.CSS THEME
+   Blender-style Geometry Nodes workspace
+   ============================================================================ */
+.geo-editor-dock-layout{width:100%;height:100%;min-height:0;display:flex;flex:1 1 auto;align-items:stretch;overflow:hidden;background:var(--primary-dark);}
+#geometry-graph-wrapper.node-sub-editor,#geometry-graph-wrapper.geo-editor-host{width:100%;height:100%;min-width:0;min-height:0;flex:1 1 auto;align-items:stretch;overflow:hidden;}
+.node-geo-editor-container{width:100%;height:100%;min-width:0;min-height:0;display:flex;align-items:stretch;overflow:hidden;}
+.geo-library-sidebar{width:260px;min-width:200px;}
+.geo-properties-sidebar{width:300px;min-width:220px;}
+.geo-preview-viewport{width:100%;height:220px;min-height:140px;background:var(--panel-bg);border-bottom:1px solid var(--border-subtle);position:relative;overflow:hidden;flex-shrink:0;}
+.geo-preview-viewport canvas{display:block;width:100%;height:100%;outline:none;}
+.geo-canvas-workspace{position:relative;flex:1 1 auto;min-width:0;min-height:0;overflow:hidden;background:var(--primary-dark);}
+.geo-canvas-workspace .geo-graph-canvas,.geo-graph-canvas{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;display:block;flex:none;cursor:crosshair;touch-action:none;pointer-events:auto;z-index:1;}
+.geo-graph-canvas.grabbing{cursor:grabbing;}
+.geo-context-menu button:hover{background:var(--hover-bg);color:var(--text-primary);}
+#geo-node-library-list .node-item{border-left:3px solid var(--accent-blue);}
+.geo-toolbar-status{font-size:10px;color:var(--text-muted);padding:3px 8px;border:1px solid var(--border-color);border-radius:3px;background:var(--secondary-dark);}
+.geo-preview-viewport .placeholder{padding:40px 10px;text-align:center;color:var(--text-muted);font-size:11px;}

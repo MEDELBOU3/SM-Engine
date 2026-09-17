@@ -1,0 +1,433 @@
+/* SM Architecture Studio
+ * Uses the shared CAD/panel palette from css/roots.css.
+ */
+#architecture-tools-panel.sm-architecture-suite {
+    --arch-shell: var(--cad-shell-bg, var(--panel-shell-bg, #303030));
+    --arch-panel: var(--cad-panel-bg, var(--panel-inner-bg, #2d2d2d));
+    --arch-card: var(--cad-card-bg, var(--panel-bg, #333333));
+    --arch-field: var(--cad-field-bg, var(--input-bg, #303030));
+    --arch-button: var(--cad-button-bg, rgba(255, 255, 255, 0.04));
+    --arch-button-hover: var(--cad-button-hover, var(--hover-bg, #3a3a3a));
+    --arch-border: var(--cad-border, var(--panel-soft-border, rgba(255, 255, 255, 0.06)));
+    --arch-border-strong: var(--cad-border-strong, var(--input-border, #4a4a4a));
+    --arch-text: var(--cad-text, var(--text-primary, #f3f4f6));
+    --arch-muted: var(--cad-muted, var(--text-secondary, #b3bcc8));
+    --arch-soft: var(--text-muted, #7e8794);
+    --arch-active: var(--cad-accent-active, rgba(var(--accent-blue-rgb, 93, 102, 114), 0.2));
+    --arch-active-border: var(--cad-accent-border, rgba(var(--accent-blue-rgb, 93, 102, 114), 0.42));
+    --arch-success: var(--accent-success, #4caf50);
+    --arch-warning: var(--accent-warning, #ffcc00);
+    --arch-danger: var(--accent-danger, #e74c3c);
+    width: var(--secondary-panel-width, 300px);
+    min-width: 0;
+    max-width: var(--secondary-panel-width, 300px);
+    color: var(--arch-text);
+    background: var(--arch-shell);
+    border-right: 1px solid var(--panel-header-border, var(--border-color));
+    box-shadow: var(--panel-shadow-pro, 4px 0 12px rgba(0, 0, 0, 0.35));
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 11px;
+}
+#architecture-tools-panel.sm-architecture-suite *,
+#architecture-tools-panel.sm-architecture-suite *::before,
+#architecture-tools-panel.sm-architecture-suite *::after { box-sizing: border-box; }
+
+#architecture-tools-panel.sm-architecture-suite .arch-suite-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 38px;
+    min-height: 38px;
+    padding: 0 7px 0 9px;
+    background: var(--panel-header-bg, var(--header-bg));
+    border-bottom: 1px solid var(--panel-header-border, var(--border-color));
+}
+.arch-suite-brand { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.arch-suite-mark {
+    display: grid;
+    place-items: center;
+    width: 23px;
+    height: 23px;
+    flex: 0 0 auto;
+    color: var(--arch-muted);
+    background: var(--arch-button);
+    border: 1px solid var(--arch-border-strong);
+    border-radius: 2px;
+}
+.arch-suite-title { display: block; color: var(--arch-text); font-size: 11px; font-weight: 600; line-height: 1.1; }
+.arch-suite-subtitle { display: block; margin-top: 2px; color: var(--arch-soft); font-size: 8px; line-height: 1; }
+.arch-suite-close {
+    display: grid;
+    place-items: center;
+    width: 23px;
+    height: 23px;
+    padding: 0;
+    color: var(--arch-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    cursor: pointer;
+}
+.arch-suite-close:hover { color: var(--arch-text); background: var(--arch-button-hover); border-color: var(--arch-border); }
+
+.arch-suite-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    flex: 0 0 29px;
+    height: 29px;
+    padding: 0 5px;
+    background: var(--arch-panel);
+    border-bottom: 1px solid var(--arch-border-strong);
+}
+.arch-suite-tab {
+    height: 29px;
+    padding: 0 5px;
+    color: var(--arch-muted);
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    font: inherit;
+    font-size: 9px;
+    cursor: pointer;
+}
+.arch-suite-tab:hover { color: var(--arch-text); background: var(--panel-hover-bg); }
+.arch-suite-tab.is-active { color: var(--arch-text); background: var(--panel-active-bg); border-bottom-color: var(--accent-blue, #5d6672); }
+
+.arch-suite-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    overflow: auto;
+    padding: 5px;
+    background: var(--arch-panel);
+    scrollbar-color: var(--arch-border-strong) transparent;
+    scrollbar-width: thin;
+}
+.arch-suite-pane { display: none; }
+.arch-suite-pane.is-active { display: block; }
+
+.arch-project-card,
+.arch-section {
+    margin: 0 0 5px;
+    overflow: hidden;
+    background: var(--arch-card);
+    border: 1px solid var(--arch-border);
+    border-radius: 2px;
+}
+.arch-project-card { padding: 7px; }
+.arch-project-kicker { color: var(--arch-soft); font-size: 8px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.arch-project-name { margin-top: 3px; color: var(--arch-text); font-size: 11px; font-weight: 600; }
+.arch-project-meta { margin-top: 3px; color: var(--arch-muted); font-size: 8px; }
+
+.arch-project-actions,
+.arch-view-actions,
+.arch-export-actions { display: grid; gap: 3px; margin-top: 6px; }
+.arch-view-actions { grid-template-columns: repeat(3, 1fr); }
+.arch-project-actions,
+.arch-export-actions { grid-template-columns: 1fr 1fr; }
+
+.arch-btn,
+.arch-tool,
+.arch-toggle,
+.arch-story-btn {
+    min-height: 24px;
+    padding: 0 6px;
+    color: var(--arch-muted);
+    background: var(--arch-button);
+    border: 1px solid var(--arch-border);
+    border-radius: 2px;
+    box-shadow: none;
+    font: inherit;
+    font-size: 8px;
+    cursor: pointer;
+}
+.arch-btn:hover,
+.arch-tool:hover,
+.arch-toggle:hover,
+.arch-story-btn:hover { color: var(--arch-text); background: var(--arch-button-hover); border-color: var(--arch-border-strong); }
+.arch-btn:focus-visible,
+.arch-tool:focus-visible,
+.arch-toggle:focus-visible,
+.arch-story-btn:focus-visible { outline: 1px solid var(--input-focus-border, var(--accent-blue)); outline-offset: 1px; }
+.arch-btn.is-primary,
+.arch-btn.is-blue { color: var(--arch-text); background: var(--button-bg, var(--accent-blue)); border-color: var(--arch-active-border); }
+.arch-btn.is-primary:hover,
+.arch-btn.is-blue:hover { background: var(--button-hover-bg, var(--accent-blue-dark)); }
+.arch-btn.is-danger { color: color-mix(in srgb, var(--arch-danger) 78%, var(--arch-text) 22%); }
+
+.arch-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 24px;
+    padding: 0 7px;
+    color: var(--arch-muted);
+    background: var(--panel-header-bg, var(--header-bg));
+    border-bottom: 1px solid var(--arch-border);
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+}
+.arch-section-title span:last-child { color: var(--arch-soft); font-size: 8px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+.arch-section-content { padding: 5px; }
+
+.arch-tool-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
+.arch-tool {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 40px;
+    min-width: 0;
+    padding: 3px 1px;
+    background: var(--arch-button);
+    line-height: 1;
+}
+.arch-tool i { color: var(--arch-soft); font-size: 12px; }
+.arch-tool span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arch-tool.is-active { color: var(--arch-text); background: var(--arch-active); border-color: var(--arch-active-border); box-shadow: inset 2px 0 0 var(--accent-blue, #5d6672); }
+.arch-tool.is-active i { color: var(--arch-text); }
+
+.arch-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.arch-field { min-width: 0; }
+.arch-field.is-wide { grid-column: 1 / -1; }
+.arch-field label { display: flex; align-items: center; justify-content: space-between; margin: 0 0 3px; color: var(--arch-muted); font-size: 8px; }
+.arch-field input[type="number"],
+.arch-field input[type="text"],
+.arch-field select {
+    width: 100%;
+    height: 23px;
+    padding: 0 5px;
+    color: var(--arch-text);
+    background: var(--arch-field);
+    border: 1px solid var(--input-border, var(--arch-border-strong));
+    border-radius: 2px;
+    box-shadow: var(--shadow-inset, none);
+    font: inherit;
+    font-size: 9px;
+    outline: none;
+}
+.arch-field input:focus,
+.arch-field select:focus { border-color: var(--input-focus-border, var(--accent-blue-dark)); }
+.arch-field input[type="range"] { width: 100%; height: 18px; margin: 0; accent-color: var(--accent-blue, #5d6672); }
+
+.arch-story-row { display: grid; grid-template-columns: 24px 1fr 24px; gap: 3px; align-items: center; }
+.arch-story-display {
+    display: grid;
+    place-items: center;
+    height: 27px;
+    color: var(--arch-text);
+    background: var(--arch-field);
+    border: 1px solid var(--arch-border-strong);
+    border-radius: 2px;
+    font-size: 9px;
+    font-weight: 600;
+}
+.arch-story-btn { height: 27px; padding: 0; }
+.arch-toggle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-top: 5px; }
+.arch-toggle { min-height: 23px; padding: 0 2px; }
+.arch-toggle.is-active { color: var(--arch-text); background: var(--arch-active); border-color: var(--arch-active-border); }
+
+.arch-status {
+    position: sticky;
+    bottom: -5px;
+    z-index: 3;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    min-height: 28px;
+    margin: 5px -5px -5px;
+    padding: 6px 7px;
+    color: var(--status-bar-text, var(--arch-muted));
+    background: var(--status-bar-bg, var(--arch-shell));
+    border-top: 1px solid var(--status-bar-border, var(--arch-border-strong));
+    font-size: 8px;
+    line-height: 1.3;
+}
+.arch-status-dot { width: 6px; height: 6px; flex: 0 0 auto; margin-top: 2px; border-radius: 50%; background: var(--arch-success); }
+
+.arch-blueprint-preview { position: relative; height: 118px; overflow: hidden; background: var(--arch-field); border: 1px solid var(--arch-border); border-radius: 2px; }
+.arch-blueprint-preview img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: .76; filter: grayscale(.35) contrast(1.05); }
+.arch-blueprint-badge { position: absolute; left: 5px; bottom: 5px; padding: 3px 5px; color: var(--arch-text); background: color-mix(in srgb, var(--arch-shell) 90%, transparent); border: 1px solid var(--arch-border-strong); border-radius: 2px; font-size: 8px; }
+.arch-dropzone { display: grid; place-items: center; min-height: 52px; color: var(--arch-muted); background: var(--arch-field); border: 1px dashed var(--arch-border-strong); border-radius: 2px; text-align: center; font-size: 8px; cursor: pointer; }
+.arch-dropzone:hover { color: var(--arch-text); background: var(--arch-button-hover); }
+.arch-dropzone input { display: none; }
+.arch-dropzone i { display: block; margin-bottom: 3px; color: var(--arch-muted); font-size: 13px; }
+
+.arch-note { padding: 6px 7px; color: var(--arch-muted); background: var(--arch-field); border: 1px solid var(--arch-border); border-left: 2px solid var(--arch-warning); border-radius: 1px; font-size: 8px; line-height: 1.4; }
+.arch-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.arch-stat { padding: 6px; background: var(--arch-field); border: 1px solid var(--arch-border); border-radius: 2px; }
+.arch-stat-value { color: var(--arch-text); font-size: 13px; font-weight: 600; line-height: 1; }
+.arch-stat-label { margin-top: 4px; color: var(--arch-soft); font-size: 7px; letter-spacing: .04em; text-transform: uppercase; }
+.arch-validation-list { display: flex; flex-direction: column; gap: 3px; }
+.arch-check { display: grid; grid-template-columns: 14px 1fr; gap: 4px; align-items: start; padding: 5px; color: var(--arch-muted); background: var(--arch-field); border: 1px solid var(--arch-border); border-radius: 2px; font-size: 8px; line-height: 1.3; }
+.arch-check i { margin-top: 1px; color: var(--arch-success); }
+.arch-check.is-warning i { color: var(--arch-warning); }
+.arch-check.is-error i { color: var(--arch-danger); }
+
+.arch-schedule { width: 100%; border-collapse: collapse; color: var(--arch-muted); font-size: 8px; }
+.arch-schedule th,
+.arch-schedule td { padding: 5px 4px; border-bottom: 1px solid var(--arch-border); text-align: left; }
+.arch-schedule th { color: var(--arch-soft); background: var(--panel-header-bg); font-weight: 600; }
+.arch-schedule td:last-child,
+.arch-schedule th:last-child { text-align: right; }
+.arch-progress { height: 3px; margin-top: 5px; overflow: hidden; background: var(--arch-field); border-radius: 0; }
+.arch-progress span { display: block; width: 0; height: 100%; background: var(--accent-blue, #5d6672); transition: width .2s ease; }
+
+@media (max-width: 900px) {
+    .arch-tool-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* AutoCAD-style plan workspace mounted inside the existing 3D viewport. */
+body.arch-cad-plan-mode #renderer-container {
+    background: var(--cad-drafting-bg) !important;
+}
+body.arch-cad-plan-mode #renderer-container > canvas {
+    cursor: crosshair !important;
+}
+body.arch-cad-plan-mode .sm-panel-header,
+body.arch-cad-plan-mode .sm-panel-label {
+    display: none !important;
+}
+.arch-cad-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 24;
+    display: none;
+    color: var(--cad-text);
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 10px;
+    pointer-events: none;
+}
+body.arch-cad-plan-mode .arch-cad-overlay { display: block; }
+.arch-cad-toolbar {
+    position: absolute;
+    top: 9px;
+    left: 58px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 28px;
+    padding: 3px;
+    background: var(--cad-drafting-hud-bg);
+    border: 1px solid var(--cad-drafting-hud-border);
+    border-radius: 2px;
+    box-shadow: var(--shadow-medium);
+    pointer-events: auto;
+}
+.arch-cad-mode-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 7px;
+    color: var(--cad-text);
+    background: var(--cad-accent-active);
+    border: 1px solid var(--cad-accent-border);
+    border-radius: 1px;
+    font-weight: 700;
+    letter-spacing: .04em;
+}
+.arch-cad-toolbar button {
+    display: grid;
+    place-items: center;
+    min-width: 24px;
+    height: 22px;
+    padding: 0 6px;
+    color: var(--cad-muted);
+    background: var(--cad-button-bg);
+    border: 1px solid transparent;
+    border-radius: 1px;
+    font: inherit;
+    cursor: pointer;
+}
+.arch-cad-toolbar button:hover,
+.arch-cad-toolbar button.is-active {
+    color: var(--cad-text);
+    background: var(--cad-button-hover);
+    border-color: var(--cad-border-strong);
+}
+.arch-cad-level {
+    padding: 0 5px;
+    color: var(--cad-muted);
+    white-space: nowrap;
+}
+.arch-cad-commandbar {
+    position: absolute;
+    right: 8px;
+    bottom: 31px;
+    left: 8px;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    align-items: center;
+    min-height: 29px;
+    overflow: hidden;
+    background: var(--cad-drafting-hud-bg);
+    border: 1px solid var(--cad-drafting-hud-border);
+    border-radius: 2px;
+    box-shadow: var(--shadow-medium);
+    pointer-events: auto;
+}
+.arch-cad-command {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    min-width: 0;
+    height: 100%;
+}
+.arch-cad-command label {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    padding: 0 7px;
+    color: var(--cad-muted);
+    background: var(--cad-field-bg);
+    border-right: 1px solid var(--cad-border);
+}
+.arch-cad-command input {
+    width: 100%;
+    height: 27px;
+    min-width: 0;
+    padding: 0 8px;
+    color: var(--cad-text);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    outline: none;
+    font: inherit;
+    text-transform: uppercase;
+}
+.arch-cad-command input::placeholder { color: var(--text-muted); text-transform: none; }
+.arch-cad-help { padding: 0 8px; color: var(--cad-muted); white-space: nowrap; }
+.arch-cad-statusbar {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 24px;
+    padding: 0 9px;
+    color: var(--status-bar-text);
+    background: var(--status-bar-bg);
+    border-top: 1px solid var(--status-bar-border);
+}
+.arch-cad-coordinates { color: var(--cad-drafting-crosshair); }
+.arch-cad-status-items { display: flex; gap: 10px; }
+.arch-cad-status-items span.is-on { color: var(--accent-success); }
+.arch-view-actions .arch-btn.is-active {
+    color: var(--cad-text);
+    background: var(--cad-accent-active);
+    border-color: var(--cad-accent-border);
+}
+
+@media (max-width: 760px) {
+    .arch-cad-toolbar { left: 52px; }
+    .arch-cad-commandbar { grid-template-columns: 1fr; }
+    .arch-cad-help { display: none; }
+    .arch-cad-status-items span:nth-child(n + 3) { display: none; }
+}

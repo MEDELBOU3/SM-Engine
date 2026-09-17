@@ -11,6 +11,19 @@ const {
     shell
 } = require('electron');
 
+// shell.openPath() is for filesystem paths only.
+// shell.openExternal() is required for http/https URLs.
+// _shellOpen() picks the right one automatically.
+async function _shellOpen(target) {
+    if (
+        typeof target === 'string' &&
+        (target.startsWith('https://') || target.startsWith('http://'))
+    ) {
+        return shell.openExternal(target);
+    }
+    return shell.openPath(String(target || ''));
+}
+
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -487,22 +500,33 @@ function registerCoreIPC() {
             _event,
             targetPath
         ) => {
-            const error =
-                await shell.openPath(
-                    String(
-                        targetPath ||
-                        ''
-                    )
-                );
+            // _shellOpen() automatically routes URLs to shell.openExternal()
+            // and filesystem paths to shell.openPath(), preventing the
+            // Windows "No app associated" error when opening https:// links.
+            try {
+                await _shellOpen(targetPath);
+                return { ok: true, error: null };
+            } catch (err) {
+                return { ok: false, error: err?.message || String(err) };
+            }
+        }
+    );
 
-            return {
-                ok:
-                    !error,
-
-                error:
-                    error ||
-                    null
-            };
+    ipcMain.handle(
+        'launcher:openExternal',
+        async (_event, url) => {
+            if (
+                typeof url !== 'string' ||
+                (!url.startsWith('https://') && !url.startsWith('http://'))
+            ) {
+                return { ok: false, error: 'Invalid URL: must start with http:// or https://' };
+            }
+            try {
+                await shell.openExternal(url);
+                return { ok: true };
+            } catch (err) {
+                return { ok: false, error: err?.message || String(err) };
+            }
         }
     );
 }

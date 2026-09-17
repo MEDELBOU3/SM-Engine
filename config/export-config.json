@@ -1,0 +1,219 @@
+{
+    "exportSystem": {
+        "version": "1.0.0",
+        "engine": "SM-Engine",
+        "lastUpdated": "2024-01-20",
+        "author": "SM Engine Team"
+    },
+
+    "exportSettings": {
+        "defaultFormat": "zip",
+        "compressionLevel": 6,
+        "includeSourceCode": false,
+        "minifyJavaScript": true,
+        "optimizeAssets": true,
+        "embedTextures": false,
+        "preserveHierarchy": true
+    },
+
+    "platforms": {
+        "web": {
+            "enabled": true,
+            "template": "runtime/export-template.html",
+            "dependencies": [
+                "three.js/r128/three.min.js",
+                "three.js/examples/js/loaders/GLTFLoader.min.js",
+                "three.js/examples/js/controls/OrbitControls.min.js"
+            ],
+            "cdnBaseUrl": "https://cdnjs.cloudflare.com/ajax/libs/",
+            "outputStructure": {
+                "html": "index.html",
+                "javascript": "js/game.js",
+                "styles": "css/style.css",
+                "assets": "assets/",
+                "data": "data/game-config.json"
+            },
+            "features": {
+                "webGL2": true,
+                "pwaSupport": false,
+                "offlineMode": false,
+                "responsiveDesign": true
+            }
+        },
+
+        "windows": {
+            "enabled": false,
+            "requires": ["node.js", "electron"],
+            "buildCommand": "npm run build:windows",
+            "output": "dist/windows/game.exe",
+            "icon": "assets/icon.ico"
+        },
+
+        "android": {
+            "enabled": false,
+            "requires": ["android-sdk", "java"],
+            "buildCommand": "npm run build:android",
+            "output": "dist/android/app-release.apk"
+        }
+    },
+
+    "assetProcessing": {
+        "textureFormats": ["png", "jpg", "webp"],
+        "preferredTextureFormat": "webp",
+        "modelFormats": ["gltf", "glb", "json"],
+        "preferredModelFormat": "glb",
+        "maxTextureSize": 2048,
+        "compressTextures": true,
+        "textureQuality": 0.8,
+        "generateMipmaps": true
+    },
+
+    "gameConfiguration": {
+        "defaultControls": {
+            "movement": {
+                "forward": ["w", "arrowup"],
+                "backward": ["s", "arrowdown"],
+                "left": ["a", "arrowleft"],
+                "right": ["d", "arrowright"],
+                "jump": ["space"],
+                "run": ["shift"],
+                "crouch": ["ctrl"]
+            },
+            "camera": {
+                "orbit": "mouse-drag",
+                "zoom": "mouse-wheel",
+                "pan": "mouse-right-drag"
+            },
+            "actions": {
+                "interact": ["e"],
+                "inventory": ["i"],
+                "pause": ["escape"]
+            }
+        },
+
+        "defaultSettings": {
+            "graphics": {
+                "quality": "medium",
+                "resolution": "auto",
+                "shadowQuality": "medium",
+                "antialiasing": true,
+                "vsync": true
+            },
+            "audio": {
+                "masterVolume": 1.0,
+                "musicVolume": 0.7,
+                "sfxVolume": 0.8,
+                "voiceVolume": 1.0
+            },
+            "gameplay": {
+                "difficulty": "normal",
+                "language": "auto",
+                "subtitles": true,
+                "tutorial": true
+            },
+            "controls": {
+                "mouseSensitivity": 0.5,
+                "invertYAxis": false,
+                "controllerSupport": true
+            }
+        },
+
+        "gameFeatures": {
+            "hasInventory": false,
+            "hasQuests": false,
+            "hasDialogue": false,
+            "hasMultiplayer": false,
+            "hasSaveSystem": false,
+            "hasAchievements": false
+        }
+    },
+
+    "exportTemplates": {
+        "html": {
+            "web": {
+                "basic": "templates/web/basic.html",
+                "advanced": "templates/web/advanced.html",
+                "pwa": "templates/web/pwa.html"
+            }
+        },
+        "javascript": {
+            "playerController": "templates/js/player-controller.js",
+            "cameraSystem": "templates/js/camera-system.js",
+            "gameManager": "templates/js/game-manager.js",
+            "uiManager": "templates/js/ui-manager.js"
+        },
+        "css": {
+            "main": "templates/css/main.css",
+            "ui": "templates/css/ui.css",
+            "responsive": "templates/css/responsive.css"
+        }
+    },
+
+    "validationRules": {
+        "minRequirements": {
+            "models": 1,
+            "textures": 0,
+            "scripts": 1,
+            "sceneObjects": 1
+        },
+        "warnings": {
+            "tooManyPolygons": 100000,
+            "largeTextureSize": 4096,
+            "missingMaterials": true,
+            "unoptimizedMeshes": true
+        },
+        "errors": {
+            "noScene": true,
+            "noCamera": true,
+            "noRenderer": true
+        }
+    },
+
+    "buildProcess": {
+        "steps": [
+            "validateScene",
+            "collectAssets",
+            "processAssets",
+            "generateCode",
+            "createStructure",
+            "bundleFiles",
+            "compressOutput",
+            "createMetadata"
+        ],
+        "timeout": 300000,
+        "maxFileSize": 500000000
+    },
+
+    "metadataGeneration": {
+        "include": [
+            "sceneStats",
+            "assetList",
+            "performanceMetrics",
+            "exportLog",
+            "systemInfo"
+        ],
+        "format": "json",
+        "filename": "export-metadata.json"
+    },
+
+    "postExport": {
+        "actions": [
+            "showSuccessMessage",
+            "offerDownload",
+            "createShortcut",
+            "openInBrowser"
+        ],
+        "analytics": {
+            "trackExports": true,
+            "collectStats": true,
+            "anonymousUsage": true
+        }
+    },
+
+    "debug": {
+        "enabled": false,
+        "logLevel": "info",
+        "saveIntermediateFiles": false,
+        "showProgressDetails": true
+    }
+}

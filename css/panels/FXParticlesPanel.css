@@ -1,0 +1,564 @@
+/*
+ * ============================================================================
+ * SM ENGINE — FX PARTICLES PANEL
+ * Source file: panels/fx/FXParticlesPanel.css
+ * ============================================================================
+ * Scoped to #snow-sittings to avoid leaking styles into other panels.
+ * ============================================================================
+ */
+
+#snow-sittings.sm-fx-panel {
+    --sm-fx-bg: var(--ph-bg, #1c1f24);
+    --sm-fx-bg-raised: var(--ph-panel-bg, #23272d);
+    --sm-fx-bg-soft: var(--ph-input-bg, #181b20);
+    --sm-fx-border: var(--ph-border, #343942);
+    --sm-fx-border-soft: var(--ph-border-light, #2b3038);
+    --sm-fx-text: var(--ph-text, #d7dbe0);
+    --sm-fx-text-muted: var(--ph-text-dim, #8f98a4);
+    --sm-fx-accent: var(--ph-accent, #4da3ff);
+    --sm-fx-accent-soft: rgba(77, 163, 255, 0.16);
+    --sm-fx-danger: #e05252;
+    --sm-fx-danger-soft: rgba(224, 82, 82, 0.16);
+    --sm-fx-success: #65c88a;
+    --sm-fx-control-height: 26px;
+
+    box-sizing: border-box;
+    width: 15%;
+    height: 100%;
+    overflow: hidden;
+
+    color: var(--sm-fx-text);
+    background: var(--sm-fx-bg);
+
+    font-family:
+        Inter,
+        "Segoe UI",
+        system-ui,
+        -apple-system,
+        sans-serif;
+
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+#snow-sittings.sm-fx-panel *,
+#snow-sittings.sm-fx-panel *::before,
+#snow-sittings.sm-fx-panel *::after {
+    box-sizing: border-box;
+}
+
+#snow-sittings .sm-fx-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 38px;
+    padding: 0 8px 0 10px;
+
+    border-bottom: 1px solid var(--sm-fx-border);
+    background: var(--sm-fx-bg-raised);
+}
+
+#snow-sittings .sm-fx-header-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    min-width: 0;
+
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+#snow-sittings .sm-fx-header-icon {
+    color: #7ad7ff;
+}
+
+#snow-sittings .sm-fx-content {
+    height: calc(100% - 38px);
+    padding: 8px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #434a55 transparent;
+}
+
+#snow-sittings .sm-fx-content::-webkit-scrollbar {
+    width: 7px;
+}
+
+#snow-sittings .sm-fx-content::-webkit-scrollbar-thumb {
+    background: #434a55;
+}
+
+#snow-sittings .sm-fx-card {
+    margin: 0 0 8px;
+    padding: 8px;
+
+    border: 1px solid var(--sm-fx-border-soft);
+    border-radius: 3px;
+
+    background: var(--sm-fx-bg-raised);
+}
+
+#snow-sittings .sm-fx-card:last-child {
+    margin-bottom: 0;
+}
+
+#snow-sittings .sm-fx-card-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    min-height: 24px;
+    margin: -2px 0 7px;
+
+    color: var(--sm-fx-text);
+    font-size: 11px;
+    font-weight: 650;
+}
+
+#snow-sittings .sm-fx-card-title-button {
+    width: 100%;
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+    background: transparent;
+
+    text-align: left;
+    cursor: pointer;
+}
+
+#snow-sittings .sm-fx-collapse-chevron {
+    color: var(--sm-fx-text-muted);
+    font-size: 9px;
+    transition: transform 120ms ease;
+}
+
+#snow-sittings .sm-fx-card-title-button.is-collapsed .sm-fx-collapse-chevron {
+    transform: rotate(-90deg);
+}
+
+#snow-sittings .sm-fx-section-body {
+    display: block;
+}
+
+#snow-sittings .sm-fx-section-body.is-collapsed {
+    display: none;
+}
+
+#snow-sittings .sm-fx-status-dot {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+
+    border-radius: 50%;
+    background: #4d535d;
+
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+#snow-sittings .sm-fx-status-dot.is-online {
+    background: var(--sm-fx-success);
+    box-shadow: 0 0 8px rgba(101, 200, 138, 0.5);
+}
+
+#snow-sittings .sm-fx-property-row {
+    display: grid;
+    grid-template-columns: minmax(72px, 0.82fr) minmax(0, 1.45fr);
+    align-items: center;
+    gap: 8px;
+
+    min-height: 31px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.025);
+}
+
+#snow-sittings .sm-fx-property-row:first-of-type {
+    border-top: 0;
+}
+
+#snow-sittings .sm-fx-label {
+    min-width: 0;
+    overflow: hidden;
+
+    color: var(--sm-fx-text-muted);
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#snow-sittings .sm-fx-control {
+    min-width: 0;
+}
+
+#snow-sittings .sm-fx-slider-control {
+    display: grid;
+    grid-template-columns: minmax(62px, 1fr) 58px;
+    align-items: center;
+    gap: 6px;
+}
+
+#snow-sittings .sm-fx-select,
+#snow-sittings .sm-fx-number {
+    width: 100%;
+    height: var(--sm-fx-control-height);
+
+    border: 1px solid var(--sm-fx-border);
+    border-radius: 2px;
+    outline: none;
+
+    color: var(--sm-fx-text);
+    background: var(--sm-fx-bg-soft);
+
+    font: inherit;
+}
+
+#snow-sittings .sm-fx-select {
+    padding: 0 6px;
+}
+
+#snow-sittings .sm-fx-number {
+    padding: 0 5px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+#snow-sittings .sm-fx-select:hover,
+#snow-sittings .sm-fx-number:hover {
+    border-color: #48515d;
+}
+
+#snow-sittings .sm-fx-select:focus,
+#snow-sittings .sm-fx-number:focus {
+    border-color: var(--sm-fx-accent);
+    box-shadow: 0 0 0 1px rgba(77, 163, 255, 0.18);
+}
+
+#snow-sittings .sm-fx-range {
+    --sm-fx-slider-fill: 0%;
+
+    width: 100%;
+    height: 16px;
+    margin: 0;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    border: 0;
+    outline: 0;
+    background: transparent;
+}
+
+#snow-sittings .sm-fx-range::-webkit-slider-runnable-track {
+    height: 3px;
+
+    border-radius: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--sm-fx-accent) 0,
+            var(--sm-fx-accent) var(--sm-fx-slider-fill),
+            #3a4049 var(--sm-fx-slider-fill),
+            #3a4049 100%
+        );
+}
+
+#snow-sittings .sm-fx-range::-webkit-slider-thumb {
+    width: 10px;
+    height: 10px;
+    margin-top: -3.5px;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    border: 1px solid #7f8995;
+    border-radius: 50%;
+
+    background: #dce2e8;
+
+    cursor: ew-resize;
+}
+
+#snow-sittings .sm-fx-range::-moz-range-track {
+    height: 3px;
+    border: 0;
+    background: #3a4049;
+}
+
+#snow-sittings .sm-fx-range::-moz-range-progress {
+    height: 3px;
+    background: var(--sm-fx-accent);
+}
+
+#snow-sittings .sm-fx-range::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+
+    border: 1px solid #7f8995;
+    border-radius: 50%;
+
+    background: #dce2e8;
+
+    cursor: ew-resize;
+}
+
+#snow-sittings .sm-fx-button,
+#snow-sittings .sm-fx-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    min-height: var(--sm-fx-control-height);
+
+    border: 1px solid var(--sm-fx-border);
+    border-radius: 2px;
+    outline: none;
+
+    color: var(--sm-fx-text);
+    background: #2a2f36;
+
+    font: inherit;
+
+    cursor: pointer;
+    user-select: none;
+
+    transition:
+        background 90ms ease,
+        border-color 90ms ease,
+        color 90ms ease;
+}
+
+#snow-sittings .sm-fx-button {
+    padding: 0 8px;
+}
+
+#snow-sittings .sm-fx-icon-button {
+    width: 27px;
+    min-width: 27px;
+    padding: 0;
+}
+
+#snow-sittings .sm-fx-button:hover,
+#snow-sittings .sm-fx-icon-button:hover {
+    border-color: #4b5562;
+    background: #323840;
+}
+
+#snow-sittings .sm-fx-button:active,
+#snow-sittings .sm-fx-icon-button:active {
+    background: #24292f;
+}
+
+#snow-sittings .sm-fx-button:focus-visible,
+#snow-sittings .sm-fx-icon-button:focus-visible {
+    border-color: var(--sm-fx-accent);
+    box-shadow: 0 0 0 1px var(--sm-fx-accent-soft);
+}
+
+#snow-sittings .sm-fx-button-primary {
+    border-color: rgba(77, 163, 255, 0.45);
+    background: rgba(77, 163, 255, 0.12);
+}
+
+#snow-sittings .sm-fx-button-primary:hover,
+#snow-sittings .sm-fx-button-primary.is-active,
+#snow-sittings .sm-fx-button-primary.active {
+    border-color: var(--sm-fx-accent);
+    background: rgba(77, 163, 255, 0.23);
+}
+
+#snow-sittings .sm-fx-button-danger {
+    border-color: rgba(224, 82, 82, 0.55);
+    background: var(--sm-fx-danger-soft);
+}
+
+#snow-sittings .sm-fx-button-danger:hover {
+    border-color: var(--sm-fx-danger);
+    background: rgba(224, 82, 82, 0.24);
+}
+
+#snow-sittings .sm-fx-button-wide {
+    width: 100%;
+    margin-bottom: 7px;
+}
+
+#snow-sittings .sm-fx-button-grow {
+    flex: 1 1 auto;
+}
+
+#snow-sittings .sm-fx-icon-button.is-active,
+#snow-sittings .sm-fx-icon-button.active {
+    border-color: var(--sm-fx-accent);
+    color: #dfefff;
+    background: var(--sm-fx-accent-soft);
+}
+
+#snow-sittings .sm-fx-preset-row,
+#snow-sittings .sm-fx-action-row,
+#snow-sittings .sm-fx-toolbar,
+#snow-sittings .sm-fx-toolbar-group {
+    display: flex;
+    align-items: center;
+}
+
+#snow-sittings .sm-fx-preset-row {
+    gap: 4px;
+    margin-bottom: 7px;
+}
+
+#snow-sittings .sm-fx-action-row {
+    gap: 5px;
+    margin-bottom: 7px;
+}
+
+#snow-sittings .sm-fx-toolbar {
+    justify-content: space-between;
+    gap: 5px;
+
+    margin-bottom: 7px;
+    padding: 4px;
+
+    border: 1px solid var(--sm-fx-border-soft);
+    border-radius: 2px;
+
+    background: var(--sm-fx-bg-soft);
+}
+
+#snow-sittings .sm-fx-toolbar-group {
+    gap: 3px;
+}
+
+#snow-sittings .sm-fx-toolbar-divider {
+    width: 1px;
+    height: 16px;
+
+    background: var(--sm-fx-border);
+}
+
+#snow-sittings .sm-fx-section-title {
+    margin: 7px 0 2px;
+    padding-top: 7px;
+
+    border-top: 1px solid var(--sm-fx-border);
+
+    color: var(--sm-fx-text);
+    font-size: 10px;
+    font-weight: 650;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+#snow-sittings .sm-fx-stats {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+
+    margin-top: 7px;
+    padding-top: 6px;
+
+    border-top: 1px solid var(--sm-fx-border-soft);
+
+    color: var(--sm-fx-text-muted);
+    font-size: 9px;
+}
+
+#snow-sittings .sm-fx-stats strong {
+    min-width: 48px;
+
+    color: var(--sm-fx-accent);
+
+    font-family:
+        "Cascadia Mono",
+        Consolas,
+        monospace;
+
+    font-size: 10px;
+    font-weight: 600;
+    text-align: right;
+}
+
+#snow-sittings .sm-fx-color-wrap {
+    display: inline-flex;
+
+    width: 27px;
+    height: var(--sm-fx-control-height);
+
+    border: 1px solid var(--sm-fx-border);
+    border-radius: 2px;
+
+    overflow: hidden;
+}
+
+#snow-sittings .sm-fx-color {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+    cursor: pointer;
+}
+
+#snow-sittings .sm-fx-color::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#snow-sittings .sm-fx-color::-webkit-color-swatch {
+    border: 0;
+}
+
+#snow-sittings .sm-fx-fire-icon {
+    color: #ff7a3d;
+}
+
+#snow-sittings .sm-fx-nuclear-icon {
+    color: #a8d296;
+}
+
+#snow-sittings .sm-fx-dust-icon {
+    color: #a7a7a7;
+}
+
+#snow-sittings .sm-fx-shockwave-icon {
+    color: #58c9ff;
+}
+
+#snow-sittings .sm-fx-sparks-icon {
+    color: #ffd34d;
+}
+
+#snow-sittings .sm-fx-visually-hidden {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+
+    border: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 340px) {
+    #snow-sittings .sm-fx-property-row {
+        grid-template-columns: 66px minmax(0, 1fr);
+        gap: 5px;
+    }
+
+    #snow-sittings .sm-fx-slider-control {
+        grid-template-columns: minmax(50px, 1fr) 52px;
+        gap: 4px;
+    }
+}

@@ -1,0 +1,53 @@
+/* Workspace selector shell styles. The runtime injects most content from WorkspaceManager.js. */
+.workspace-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 7, 11, 0.72);
+  backdrop-filter: blur(10px);
+  z-index: 24000;
+}
+
+.workspace-overlay.active {
+  display: flex;
+}
+
+.workspace-window {
+  width: min(1040px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  background: var(--panel-bg, #1d2027);
+  color: var(--text-primary, #f4f7fb);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  box-shadow: 0 24px 72px rgba(0,0,0,0.58);
+}
+
+.workspace-grid,
+.workspace-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.workspace-card,
+.workspace-mode-card {
+  min-height: 116px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.045);
+  color: inherit;
+  cursor: pointer;
+}
+
+.workspace-card:hover,
+.workspace-mode-card:hover,
+.workspace-card.active,
+.workspace-mode-card.active {
+  border-color: var(--accent-blue, #4fc1ff);
+  background: rgba(79, 193, 255, 0.12);
+}

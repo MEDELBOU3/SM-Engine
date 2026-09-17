@@ -1,0 +1,999 @@
+﻿/* ==========================================================
+   SM ENGINE — SCULPTING TOOLS
+   Inspector-native design using roots.css
+   ========================================================== */
+
+.sculpting-tools {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: #333;
+    color: var(--text-primary);
+    font-family: "Segoe UI", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11px;
+    box-sizing: border-box;
+}
+
+.sculpting-tools *,
+.sculpting-tools *::before,
+.sculpting-tools *::after {
+    box-sizing: border-box;
+}
+
+/* Terrain landscape workflow: compact session controls, deliberately neutral
+   like the rest of the editor rather than a colourful floating toolbox. */
+.sw-session-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 31px;
+    padding: 4px 7px;
+    background: #333;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sw-session-btn {
+    min-height: 24px;
+    padding: 0 8px;
+    background: var(--secondary-dark, #3c3c3c);
+    border: 1px solid var(--border-color, #4a4a4a);
+    border-radius: 2px;
+    color: var(--text-secondary);
+    font: 600 9px var(--ui-font, "Segoe UI", sans-serif);
+    letter-spacing: .025em;
+    cursor: pointer;
+}
+
+.sw-session-btn:hover {
+    background: var(--hover-bg, #474747);
+    color: var(--text-primary);
+}
+
+.sw-brush-toggle.is-active {
+    background: var(--active-bg, #454545);
+    border-color: var(--input-focus-border, #5b84a8);
+    color: var(--text-primary);
+}
+
+.sw-session-btn i { margin-right: 4px; font-size: 9px; }
+
+.sw-session-status {
+    min-width: 0;
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 9px;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sw-advanced-grid { padding-top: 0; }
+.sw-advanced-grid .sw-prop > span {
+    color: var(--text-muted);
+    font-size: 9px;
+    letter-spacing: .035em;
+    white-space: nowrap;
+}
+
+.sw-landscape-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    padding: 8px 8px 3px;
+}
+
+.sw-landscape-actions .sw-session-btn {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sw-help {
+    margin: 0;
+    padding: 5px 8px 8px;
+    color: var(--text-muted);
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+/* ==========================================================
+   LANDSCAPE GENERATOR
+   A neutral, inspector-native terrain creation section. This is intentionally
+   part of Terrain Sculpt only; mesh sculpting has its own UI and data path.
+   ========================================================== */
+
+.sw-generator-section {
+    background: #383838;
+    border-color: #515151;
+}
+
+.sw-generator-title-row {
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.sw-generator-badge {
+    padding: 2px 5px;
+    background: #454545;
+    border: 1px solid #5b5b5b;
+    border-radius: 2px;
+    color: #c7c7c7;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    line-height: 1;
+}
+
+.sw-generator-note,
+.sw-generator-status {
+    margin: 0;
+    padding: 7px 8px 1px;
+    color: var(--text-muted);
+    font-size: 9px;
+    line-height: 1.42;
+}
+
+.sw-generator-range {
+    margin: 0 8px 8px;
+    padding: 7px 8px;
+    background: #333;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+}
+
+.sw-generator-range-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.sw-generator-range-head strong {
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+.sw-generator-edge-grid {
+    padding-top: 0;
+}
+
+.sw-generator-range.is-disabled,
+.sw-generator-edge-grid.is-disabled {
+    opacity: .44;
+}
+
+.sw-generator-advanced {
+    margin: 0 8px 8px;
+    overflow: hidden;
+    background: #333;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+}
+
+.sw-generator-advanced summary {
+    min-height: 27px;
+    padding: 7px 8px;
+    color: var(--text-secondary);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.sw-generator-advanced summary::-webkit-details-marker {
+    display: none;
+}
+
+.sw-generator-advanced summary::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 6px;
+    color: var(--text-muted);
+    transition: transform .12s ease;
+}
+
+.sw-generator-advanced[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.sw-generator-advanced .sw-prop-grid {
+    padding-top: 1px;
+    border-top: 1px solid var(--border-color);
+}
+
+.sw-generator-summary {
+    margin: 0 8px 8px;
+    padding: 7px 8px;
+    background: #333;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    color: var(--text-secondary);
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+.sw-generator-actions {
+    padding-top: 0;
+}
+
+.sw-generator-create {
+    background: #4a4a4a;
+    border-color: #626262;
+    color: #f0f0f0;
+}
+
+.sw-generator-create:hover {
+    background: #565656;
+    border-color: #707070;
+    color: #fff;
+    box-shadow: none;
+}
+
+.sw-generator-status {
+    min-height: 27px;
+    padding: 0 8px 8px;
+}
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+
+.sw-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 34px;
+    width: 100%;
+    height: 34px;
+    min-height: 34px;
+    padding: 0 8px 0 10px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: inset 0 -1px 0 rgba(var(--text-primary-rgb), .025);
+    user-select: none;
+}
+
+.sw-title {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 7px;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .055em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sw-title span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sw-title i {
+    flex: 0 0 auto;
+    color: var(--accent-info);
+    font-size: 12px;
+}
+
+/* ==========================================================
+   HEADER ICON BUTTON
+   ========================================================== */
+
+.sw-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: var(--text-muted);
+    outline: none;
+    cursor: pointer;
+    transition:
+        background .12s ease,
+        border-color .12s ease,
+        color .12s ease,
+        transform .06s ease;
+}
+
+.sw-btn-icon:hover {
+    background: var(--hover-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.sw-btn-icon:active {
+    background: var(--active-bg);
+    transform: translateY(1px);
+}
+
+.sw-btn-icon:focus-visible {
+    border-color: var(--input-focus-border);
+    outline: 1px solid var(--input-focus-border);
+    outline-offset: 1px;
+}
+
+/* ==========================================================
+   CONTENT / SCROLLING
+   ========================================================== */
+
+.sw-content-scroll {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 7px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #333;
+    scrollbar-gutter: stable;
+}
+
+.sw-content-scroll::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+.sw-content-scroll::-webkit-scrollbar-track {
+    background: var(--panel-bg);
+}
+
+.sw-content-scroll::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border: 2px solid var(--panel-bg);
+    border-radius: 5px;
+}
+
+.sw-content-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ==========================================================
+   SECTIONS
+   ========================================================== */
+
+.sw-section {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    margin: 0 0 7px;
+    overflow: hidden;
+    background: var(--secondary-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    box-shadow: var(--shadow-inset);
+    transition:
+        border-color .12s ease,
+        background .12s ease;
+}
+
+.sw-section:last-child {
+    margin-bottom: 0;
+}
+
+.sw-section:hover {
+    border-color: var(--input-border);
+}
+
+.sw-section-title {
+    display: flex;
+    align-items: center;
+    min-height: 27px;
+    padding: 0 9px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+/* ==========================================================
+   PROPERTY GRID
+   ========================================================== */
+
+.sw-prop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    padding: 8px;
+}
+
+.sw-prop {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 4px;
+}
+
+.sw-prop label {
+    display: flex;
+    align-items: center;
+    min-height: 15px;
+    min-width: 0;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+}
+
+/* Generator fields use label.sw-prop so the label text is a direct span. */
+.sw-prop > span {
+    display: flex;
+    align-items: center;
+    min-height: 15px;
+    min-width: 0;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+}
+
+/* ==========================================================
+   TEXT / NUMBER / SELECT INPUTS
+   ========================================================== */
+
+.sw-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 26px;
+    padding: 0 7px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 3px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 10px;
+    outline: none;
+    transition:
+        background .12s ease,
+        border-color .12s ease,
+        box-shadow .12s ease;
+}
+
+.sw-input:hover {
+    border-color: var(--text-muted);
+}
+
+.sw-input:focus {
+    background: var(--tertiary-dark);
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 1px rgba(var(--accent-blue-rgb), .12);
+}
+
+.sw-input:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+select.sw-input {
+    padding-right: 22px;
+    cursor: pointer;
+}
+
+select.sw-input option {
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+input.sw-input[type="number"] {
+    font-variant-numeric: tabular-nums;
+}
+
+input.sw-input[type="number"]::-webkit-inner-spin-button,
+input.sw-input[type="number"]::-webkit-outer-spin-button {
+    opacity: .35;
+}
+
+/* ==========================================================
+   NORMAL BUTTONS
+   ========================================================== */
+
+.sw-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    min-height: 28px;
+    padding: 4px 8px;
+    gap: 6px;
+    background: var(--secondary-dark);
+    border: 1px solid var(--border-color);
+    border-top-color: var(--input-border);
+    border-radius: 3px;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .025em;
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+    transition:
+        background .12s ease,
+        border-color .12s ease,
+        color .12s ease,
+        transform .06s ease;
+}
+
+.sw-btn:hover {
+    background: var(--hover-bg);
+    border-color: var(--input-border);
+    color: var(--text-primary);
+}
+
+.sw-btn:active {
+    background: var(--active-bg);
+    transform: translateY(1px);
+}
+
+.sw-btn:focus-visible {
+    border-color: var(--input-focus-border);
+    outline: 1px solid var(--input-focus-border);
+    outline-offset: 1px;
+}
+
+/* ==========================================================
+   PRIMARY ACTION
+   ========================================================== */
+
+.sw-btn.primary-action,
+.primary-action.sw-btn {
+    background:
+        color-mix(in srgb,
+            var(--accent-info) 14%,
+            var(--secondary-dark) 86%);
+    border-color:
+        color-mix(in srgb,
+            var(--accent-info) 32%,
+            var(--border-color) 68%);
+    color:
+        color-mix(in srgb,
+            var(--accent-info) 70%,
+            var(--text-primary) 30%);
+}
+
+.sw-btn.primary-action:hover,
+.primary-action.sw-btn:hover {
+    background:
+        color-mix(in srgb,
+            var(--accent-info) 22%,
+            var(--hover-bg) 78%);
+    border-color:
+        color-mix(in srgb,
+            var(--accent-info) 46%,
+            var(--input-border) 54%);
+    color: var(--text-primary);
+    box-shadow: 0 0 8px rgba(var(--accent-blue-rgb), .12);
+}
+
+/* ==========================================================
+   DANGER ACTION
+   ========================================================== */
+
+.sw-btn.danger,
+.danger.sw-btn {
+    background:
+        color-mix(in srgb,
+            var(--accent-danger) 14%,
+            var(--secondary-dark) 86%);
+    border-color:
+        color-mix(in srgb,
+            var(--accent-danger) 30%,
+            var(--border-color) 70%);
+    color:
+        color-mix(in srgb,
+            var(--accent-danger) 72%,
+            var(--text-primary) 28%);
+}
+
+.sw-btn.danger:hover,
+.danger.sw-btn:hover {
+    background:
+        color-mix(in srgb,
+            var(--accent-danger) 23%,
+            var(--hover-bg) 77%);
+    border-color:
+        color-mix(in srgb,
+            var(--accent-danger) 46%,
+            var(--input-border) 54%);
+    color: var(--text-primary);
+}
+
+/* ==========================================================
+   BUTTON GROUPS
+   ========================================================== */
+
+.sw-btn-group {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+    gap: 6px;
+    padding: 8px;
+}
+
+.sw-btn-group>.sw-btn,
+.sw-btn-group>.sw-tool {
+    flex: 1 1 0;
+}
+
+/* ==========================================================
+   SCULPT TOOL GRID
+   ========================================================== */
+
+.sw-tool-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    padding: 8px;
+}
+
+.sw-tool {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    height: 42px;
+    padding: 0;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    color: var(--text-secondary);
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+    transition:
+        background .12s ease,
+        border-color .12s ease,
+        color .12s ease,
+        box-shadow .12s ease,
+        transform .06s ease;
+}
+
+.sw-tool::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(to bottom,
+            rgba(var(--text-primary-rgb), .025),
+            transparent 50%,
+            rgba(0, 0, 0, .04));
+}
+
+.sw-tool:hover {
+    background: var(--hover-bg);
+    border-color: var(--input-border);
+    color: var(--text-primary);
+}
+
+.sw-tool:active {
+    background: var(--active-bg);
+    transform: translateY(1px);
+}
+
+/* Selected sculpt brush */
+.sw-tool.active {
+    background:
+        color-mix(in srgb,
+            var(--accent-info) 13%,
+            var(--active-bg) 87%);
+    border-color:
+        color-mix(in srgb,
+            var(--accent-info) 55%,
+            var(--input-border) 45%);
+    color: var(--text-primary);
+    box-shadow:
+        inset 2px 0 0 var(--accent-info),
+        inset 0 0 0 1px rgba(var(--text-primary-rgb), .025);
+}
+
+.sw-tool.active:hover {
+    background:
+        color-mix(in srgb,
+            var(--accent-info) 17%,
+            var(--hover-bg) 83%);
+}
+
+.sw-tool:focus-visible {
+    border-color: var(--input-focus-border);
+    outline: 1px solid var(--input-focus-border);
+    outline-offset: 1px;
+}
+
+.sw-tool svg {
+    position: relative;
+    z-index: 1;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    stroke-width: 1.7;
+}
+
+.sw-tool i {
+    position: relative;
+    z-index: 1;
+    font-size: 14px;
+}
+
+/* Erosion text buttons */
+.sw-btn-group .sw-tool.sw-btn {
+    height: 30px !important;
+    min-height: 30px;
+}
+
+/* ==========================================================
+   DATA / VALUE READOUTS
+   ========================================================== */
+
+.sw-data {
+    display: inline-block;
+    margin-left: 3px;
+    color: var(--accent-info);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-transform: none;
+}
+
+/* ==========================================================
+   RANGE SLIDERS
+   Scoped only to sculpting panel
+   ========================================================== */
+
+.sculpting-tools input[type="range"] {
+    width: 100%;
+    height: 16px;
+    margin: 2px 0 0;
+    padding: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.sculpting-tools input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 2px;
+}
+
+.sculpting-tools input[type="range"]::-webkit-slider-thumb {
+    width: 8px;
+    height: 12px;
+    margin-top: -5px;
+    background: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    box-shadow: var(--shadow-light);
+    -webkit-appearance: none;
+    appearance: none;
+    transition:
+        background .12s ease,
+        border-color .12s ease,
+        transform .12s ease;
+}
+
+.sculpting-tools input[type="range"]:hover::-webkit-slider-thumb {
+    background: var(--text-primary);
+}
+
+.sculpting-tools input[type="range"]:focus::-webkit-slider-thumb {
+    background: var(--accent-info);
+    border-color: var(--input-focus-border);
+}
+
+.sculpting-tools input[type="range"]:active::-webkit-slider-thumb {
+    transform: scaleY(1.12);
+}
+
+.sculpting-tools input[type="range"]::-moz-range-track {
+    height: 4px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 2px;
+}
+
+.sculpting-tools input[type="range"]::-moz-range-thumb {
+    width: 8px;
+    height: 12px;
+    background: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+}
+
+/* ==========================================================
+   CHECKBOX
+   ========================================================== */
+
+.sw-checkbox {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    accent-color: var(--accent-info);
+    cursor: pointer;
+}
+
+.sw-checkbox:focus-visible {
+    outline: 1px solid var(--input-focus-border);
+    outline-offset: 2px;
+}
+
+/* ==========================================================
+   PREVIEW AREA
+   ========================================================== */
+
+.sw-preview {
+    position: relative;
+    width: 100%;
+    min-height: 60px;
+    overflow: hidden;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    box-shadow: var(--shadow-inset);
+}
+
+/* ==========================================================
+   DISABLED STATES
+   Scoped only to Sculpting
+   ========================================================== */
+
+.sculpting-tools button:disabled,
+.sculpting-tools input:disabled,
+.sculpting-tools select:disabled {
+    opacity: .42;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ==========================================================
+   TERRAIN DIMENSIONS ACTION
+   ========================================================== */
+
+#applyTerrainChanges {
+    min-height: 28px;
+}
+
+/* ==========================================================
+   BRUSH ATTRIBUTES
+   ========================================================== */
+
+#brushSize,
+#brushStrength {
+    width: 100%;
+}
+
+#symmetryAxis {
+    min-width: 68px;
+}
+
+/* ==========================================================
+   SCULPT DONE BUTTON
+   ========================================================== */
+
+#sculpt-done-btn {
+    min-height: 30px;
+}
+
+/* ==========================================================
+   Inspector integration
+   ========================================================== */
+
+#sculpting-panel {
+    min-width: 0;
+    min-height: 0;
+    background: #333;
+}
+
+#sculpting-panel.sculpting-inspector-inner {
+    overflow: hidden;
+}
+
+#sculpting-panel .sculpting-tools {
+    border: 0;
+    border-radius: 0;
+     background: #333;
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media(max-width:1200px) {
+    .sw-tool-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media(max-width:900px) {
+    .sw-tool-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sw-prop-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sw-btn-group {
+        flex-wrap: wrap;
+    }
+
+    .sw-btn-group>.sw-btn,
+    .sw-btn-group>.sw-tool {
+        flex: 1 1 calc(50% - 3px);
+    }
+}
+
+@media(max-width:520px) {
+    .sw-header {
+        padding-inline: 7px;
+    }
+
+    .sw-title {
+        font-size: 9px;
+        letter-spacing: .035em;
+    }
+
+    .sw-content-scroll {
+        padding: 5px;
+    }
+
+    .sw-section-title {
+        padding-inline: 7px;
+    }
+
+    .sw-prop-grid,
+    .sw-tool-grid,
+    .sw-btn-group {
+        padding: 6px;
+    }
+
+    .sw-tool {
+        height: 38px;
+    }
+}

@@ -2,6 +2,11 @@
 node_modules/
 dist/
 dist-*/
+dist-win/
+launcher/dist-release/
+companion-apps/**/build/
+companion-apps/**/.gradle/
+companion-apps/**/.gradle-tooling/
 package-lock.json
 
 # Trash and logs

@@ -1,0 +1,29 @@
+﻿/* ================================================================
+   ENVIRONMENTAL - WEATHER EFFECTS (Snow/Rain/Volumetric settings)
+================================================================ */
+#snow-settings .weather-effects .button-container {
+    flex-wrap: nowrap;
+}
+
+#snow-settings .panel-button-tool svg {
+    stroke: currentColor;
+}
+
+#snow-settings .panel-button {
+    margin-top: 5px;
+    width: 100%;
+}
+
+#snow-settings .control-group {
+    margin-bottom: 8px;
+}
+
+#snow-settings .control-group label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#snow-settings #particle-count-display {
+    color: var(--accent-success);
+}

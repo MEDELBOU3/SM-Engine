@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SM Engine — Game View</title>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Copy the SAME stylesheets that the editor uses, so the
+     #renderer-container keeps working exactly as it does in the editor.
+     ═══════════════════════════════════════════════════════════ -->
+<link href="css/main.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* ============================================================
+       FULL VIEWPORT RESET
+       ============================================================ */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        font-family: Inter, "Segoe UI", Arial, sans-serif;
+        color: #e0e0e0;
+        user-select: none;
+    }
+
+    /* ============================================================
+       ROOT — full window
+       ============================================================ */
+    #game-view-root {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background: #000;
+    }
+
+    /* ============================================================
+       CANVAS HOST — the #renderer-container will be moved here
+       ============================================================ */
+    #game-canvas-host {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+    }
+
+    /* The adopted #renderer-container must fill the host */
+    #game-canvas-host > #renderer-container,
+    #game-canvas-host > .renderer-container {
+        position: absolute !important;
+        inset: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        z-index: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    /* All canvases inside the renderer container must fill it */
+    #game-canvas-host #renderer-container canvas,
+    #game-canvas-host .renderer-container canvas {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    /* Hide editor-only elements that came with the container */
+    #game-canvas-host #axis-controls,
+    #game-canvas-host #animation-2d-container,
+    #game-canvas-host #animation-2d-toolbar,
+    #game-canvas-host #d2-cursor-ring,
+    #game-canvas-host #d2-symmetry-line,
+    #game-canvas-host #d2-brush-hud,
+    #game-canvas-host #video-editing-container {
+        display: none !important;
+    }
+
+    /* ============================================================
+       GAME UI OVERLAY
+       ============================================================ */
+    #sm-game-ui-layer {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 100;
+        overflow: hidden;
+    }
+
+    #sm-game-ui-layer > * {
+        position: absolute;
+        box-sizing: border-box;
+    }
+
+    #sm-game-ui-layer canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: auto;
+        display: block;
+    }
+
+    /* ============================================================
+       CONTROLS BAR — top-right, auto-hide
+       ============================================================ */
+    #game-controls-bar {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        z-index: 200;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        background: rgba(10, 14, 20, 0.78);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        padding: 6px 10px;
+        opacity: 0.3;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+        pointer-events: auto;
+    }
+
+    #game-controls-bar:hover {
+        opacity: 1;
+    }
+
+    #game-controls-bar.hidden {
+        transform: translateY(-100px);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .gv-btn {
+        height: 32px;
+        min-width: 36px;
+        padding: 0 10px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #cfd8e3;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: inherit;
+        transition: all 0.12s ease;
+    }
+
+    .gv-btn:hover {
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+    }
+
+    .gv-btn.gv-btn-primary {
+        background: rgba(60, 180, 110, 0.2);
+        border-color: rgba(60, 180, 110, 0.5);
+        color: #7ae0a8;
+    }
+
+    .gv-btn.gv-btn-danger {
+        background: rgba(214, 106, 106, 0.18);
+        border-color: rgba(214, 106, 106, 0.45);
+        color: #ff9a9a;
+    }
+
+    /* ============================================================
+       STATUS / FPS
+       ============================================================ */
+    #game-status-hint {
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+        z-index: 150;
+        padding: 6px 12px;
+        background: rgba(10, 14, 20, 0.72);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        font-size: 11px;
+        color: #94a3b8;
+        font-family: monospace;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    #game-fps {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        z-index: 150;
+        padding: 4px 8px;
+        background: rgba(10, 14, 20, 0.65);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        font-size: 11px;
+        font-family: monospace;
+        color: #7dd3fc;
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    /* ============================================================
+       LOADING OVERLAY
+       ============================================================ */
+    #game-loading {
+        position: absolute;
+        inset: 0;
+        z-index: 999;
+        background: #0a0e14;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        color: #7dd3fc;
+        transition: opacity 0.4s ease;
+    }
+
+    #game-loading.done {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .gv-spinner {
+        width: 44px;
+        height: 44px;
+        border: 3px solid rgba(125, 211, 252, 0.15);
+        border-top-color: #7dd3fc;
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    #game-loading-text {
+        font-size: 13px;
+        color: #94a3b8;
+    }
+</style>
+</head>
+<body>
+    <div id="game-view-root">
+        <!-- The parent window's #renderer-container gets moved here -->
+        <div id="game-canvas-host"></div>
+
+        <!-- Game UI overlay (moved from parent) -->
+        <div id="sm-game-ui-layer"></div>
+
+        <!-- Controls -->
+        <div id="game-controls-bar">
+            <button class="gv-btn gv-btn-primary" id="gv-btn-pause" title="Pause / Resume">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 4h4v16H6zM14 4h4v16h-4z"/>
+                </svg>
+                <span id="gv-pause-label">Pause</span>
+            </button>
+            <button class="gv-btn" id="gv-btn-step" title="Step Frame">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 4l12 8-12 8z"/>
+                    <path d="M18 4h2v16h-2z"/>
+                </svg>
+            </button>
+            <button class="gv-btn" id="gv-btn-fullscreen" title="Fullscreen">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
+                </svg>
+            </button>
+            <button class="gv-btn gv-btn-danger" id="gv-btn-stop" title="Stop Game">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="6" width="12" height="12" rx="1"/>
+                </svg>
+                <span>Stop</span>
+            </button>
+        </div>
+
+        <div id="game-status-hint">WASD · Mouse · Space · Shift</div>
+        <div id="game-fps">-- FPS</div>
+
+        <div id="game-loading">
+            <div class="gv-spinner"></div>
+            <div id="game-loading-text">Connecting to game session...</div>
+        </div>
+    </div>
+
+<script>
+// ============================================================================
+// GAME VIEW WINDOW — Controller
+// ============================================================================
+(function () {
+    'use strict';
+
+    const params = new URLSearchParams(location.search);
+    const HEARTBEAT_INTERVAL = 1000;
+
+    const state = {
+        channel: null,
+        sessionId: null,
+        isReady: false,
+        isPaused: false,
+        parentWindow: window.opener,
+    };
+
+    const els = {
+        canvasHost: document.getElementById('game-canvas-host'),
+        uiLayer: document.getElementById('sm-game-ui-layer'),
+        loading: document.getElementById('game-loading'),
+        loadingText: document.getElementById('game-loading-text'),
+        fps: document.getElementById('game-fps'),
+        pauseBtn: document.getElementById('gv-btn-pause'),
+        pauseLabel: document.getElementById('gv-pause-label'),
+        stepBtn: document.getElementById('gv-btn-step'),
+        fullscreenBtn: document.getElementById('gv-btn-fullscreen'),
+        stopBtn: document.getElementById('gv-btn-stop'),
+        controlsBar: document.getElementById('game-controls-bar'),
+    };
+
+    // ========================================================================
+    // Channel to opener
+    // ========================================================================
+    function initChannel() {
+        if (!state.parentWindow || state.parentWindow.closed) {
+            showLoadingError('Parent window closed.');
+            return false;
+        }
+
+        state.sessionId = params.get('session') || 'default';
+
+        try {
+            state.channel = new BroadcastChannel(`sm-game-view-${state.sessionId}`);
+        } catch (e) {
+            state.channel = null;
+        }
+
+        // Notify parent we're ready
+        sendToParent({ type: 'child-ready', sessionId: state.sessionId });
+
+        // Listen for parent messages
+        window.addEventListener('message', onParentMessage);
+
+        // Heartbeat
+        setInterval(() => {
+            sendToParent({ type: 'game-view-heartbeat', t: Date.now() });
+        }, HEARTBEAT_INTERVAL);
+
+        // Detect parent close
+        setInterval(() => {
+            if (state.parentWindow?.closed) {
+                window.close();
+            }
+        }, HEARTBEAT_INTERVAL);
+
+        return true;
+    }
+
+    function sendToParent(payload) {
+        if (!state.parentWindow || state.parentWindow.closed) return;
+        try {
+            if (state.channel) {
+                state.channel.postMessage({ ...payload, from: 'game-view' });
+            }
+        } catch (e) {}
+        try {
+            state.parentWindow.postMessage({ ...payload, from: 'game-view' }, '*');
+        } catch (e) {}
+    }
+
+    function onParentMessage(event) {
+        const data = event.data;
+        if (!data || data.from !== 'editor') return;
+
+        switch (data.type) {
+            case 'scene-ready':
+                state.isReady = true;
+                // Hide loading
+                setTimeout(() => els.loading.classList.add('done'), 300);
+                // Resize observer for canvas
+                setupResizeObserver();
+                break;
+
+            case 'pie-pause':
+                setPauseState(true);
+                break;
+
+            case 'pie-resume':
+                setPauseState(false);
+                break;
+
+            case 'pie-stop':
+                sendToParent({ type: 'stop-clicked' });
+                setTimeout(() => window.close(), 200);
+                break;
+
+            case 'close':
+                window.close();
+                break;
+        }
+    }
+
+    // ========================================================================
+    // Resize observer — tells parent to resize the renderer
+    // ========================================================================
+    function setupResizeObserver() {
+        const host = els.canvasHost;
+        if (!host) return;
+
+        let raf = 0;
+
+        const observer = new ResizeObserver(() => {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => {
+                const rect = host.getBoundingClientRect();
+                if (rect.width < 10 || rect.height < 10) return;
+
+                sendToParent({
+                    type: 'game-view-resized',
+                    width: Math.floor(rect.width),
+                    height: Math.floor(rect.height),
+                    dpr: Math.min(window.devicePixelRatio || 1, 2),
+                });
+            });
+        });
+
+        observer.observe(host);
+    }
+
+    // ========================================================================
+    // Controls
+    // ========================================================================
+    function setPauseState(paused) {
+        state.isPaused = paused;
+        els.pauseLabel.textContent = paused ? 'Resume' : 'Pause';
+        els.pauseBtn.classList.toggle('gv-btn-primary', !paused);
+    }
+
+    els.pauseBtn.addEventListener('click', () => {
+        sendToParent({ type: state.isPaused ? 'resume-clicked' : 'pause-clicked' });
+        setPauseState(!state.isPaused);
+    });
+
+    els.stepBtn.addEventListener('click', () => {
+        sendToParent({ type: 'step-clicked' });
+    });
+
+    els.fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen?.().catch(() => {});
+        } else {
+            document.exitFullscreen?.().catch(() => {});
+        }
+    });
+
+    els.stopBtn.addEventListener('click', () => {
+        sendToParent({ type: 'stop-clicked' });
+        setTimeout(() => window.close(), 200);
+    });
+
+    // Keyboard
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !document.pointerLockElement) {
+            sendToParent({ type: 'stop-clicked' });
+            setTimeout(() => window.close(), 100);
+        }
+        if (e.key === 'F11') {
+            e.preventDefault();
+            els.fullscreenBtn.click();
+        }
+        if (e.key === ' ' && e.ctrlKey) {
+            e.preventDefault();
+            els.pauseBtn.click();
+        }
+    });
+
+    // Auto-hide controls
+    let idleTimer = 0;
+    function resetIdle() {
+        els.controlsBar.classList.remove('hidden');
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => els.controlsBar.classList.add('hidden'), 3000);
+    }
+    document.addEventListener('mousemove', resetIdle);
+    document.addEventListener('mousedown', resetIdle);
+    resetIdle();
+
+    // ========================================================================
+    // Loading / Errors
+    // ========================================================================
+    function showLoadingError(msg) {
+        els.loadingText.textContent = msg;
+        els.loadingText.style.color = '#ff7a7a';
+        els.loading.querySelector('.gv-spinner')?.remove();
+    }
+
+    // ========================================================================
+    // Lifecycle
+    // ========================================================================
+    window.addEventListener('beforeunload', () => {
+        sendToParent({ type: 'game-view-closing' });
+    });
+
+    // ========================================================================
+    // Public API — parent can call these via SMGameViewBridge
+    // ========================================================================
+    window.SMGameViewBridge = {
+        getCanvasHost: () => els.canvasHost,
+        getUILayer: () => els.uiLayer,
+        isReady: () => state.isReady,
+        setPaused: (p) => setPauseState(p),
+    };
+
+    // ========================================================================
+    // Boot
+    // ========================================================================
+    function boot() {
+        console.log('[GameView] Booting session:', params.get('session'));
+        if (!initChannel()) return;
+
+        setTimeout(() => {
+            els.loadingText.textContent = 'Waiting for game scene...';
+        }, 2000);
+
+        setTimeout(() => {
+            if (!state.isReady) {
+                els.loadingText.textContent = 'Still loading...';
+            }
+        }, 5000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
+    }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+﻿/* ================================================================
+   LIGHTS PANEL
+================================================================ */
+#lights .panel-content {
+    padding: 10px;
+    background-color: var(--panel-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#toggle-lighting {
+    width: 100%;
+    padding: 8px;
+    background: var(--accent-blue-dark);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+#toggle-lighting:hover {
+    background: var(--accent-blue);
+}
+
+#lights .light-button-rack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+}
+
+#lights .panel-button-tool {
+    width: 36px;
+    height: 36px;
+    background: var(--header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#lights .panel-button-tool:hover {
+    background: var(--hover-bg);
+    transform: scale(1.05);
+}
+
+#lights .panel-button-tool:active {
+    transform: scale(0.95);
+    background: var(--accent-blue-dark);
+}
+
+#lights .light-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#lights .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#lights .control-group label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+#lights input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+}
+
+#lights .color-input {
+    width: 100%;
+    height: 28px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2px;
+}
+
+#lights .panel-button-tool svg {
+    stroke: currentColor;
+    fill: currentColor;
+    opacity: 0.7;
+}
+
+#lights .panel-button-tool#addPointLight svg circle {
+    fill: gold;
+}
+
+#lights .panel-button-tool#addSunLight svg circle {
+    fill: orange;
+}
+
+#lights .panel-button-tool#addSpotLight svg path:first-of-type {
+    fill: #FFA500;
+    opacity: 0.4;
+}
+
+#lights .panel-button-tool#addAreaLight svg rect {
+    fill: #33CCFF;
+    opacity: 0.3;
+}
+
+#lights .panel-button-tool#addHemisphereLight svg path:first-of-type {
+    fill: #66CCFF;
+    opacity: 0.4;
+}
+
+#lights .panel-button-tool#addLensflareLight svg circle {
+    fill: cyan;
+}
+
+#lights .panel-button-tool#addVolumetricLight svg circle,
+#lights .panel-button-tool#addVolumetricLight svg path:last-of-type {
+    fill: violet;
+    opacity: 0.3;
+}

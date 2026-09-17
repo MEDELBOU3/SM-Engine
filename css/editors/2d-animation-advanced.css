@@ -1,0 +1,111 @@
+/* Advanced 2D Animation UI Styles */
+#advanced-2d-animation-panel{background:linear-gradient(135deg,var(--a2d-panel-bg) 0%,var(--primary-dark) 100%);border:1px solid var(--a2d-panel-border);border-radius:var(--a2d-panel-radius);box-shadow:var(--a2d-panel-shadow);font-family:'Courier New',monospace;font-size:11px;color:var(--a2d-panel-text);padding:12px;margin:8px;max-height:500px;overflow-y:auto;z-index:10000;width:320px;}
+#advanced-2d-animation-panel h3{margin:0 0 12px 0;color:var(--text-primary);text-transform:uppercase;letter-spacing:1px;font-size:12px;}
+#advanced-2d-animation-panel fieldset{border:1px solid var(--a2d-panel-border);border-radius:4px;padding:8px;margin:8px 0;background:rgba(var(--text-primary-rgb),0.02);}
+#advanced-2d-animation-panel legend{color:var(--a2d-panel-accent);font-weight:bold;font-size:10px;text-transform:uppercase;padding:0 4px;}
+#advanced-2d-animation-panel label{display:block;margin:6px 0;cursor:pointer;color:var(--a2d-panel-text-dim);user-select:none;transition:color .2s ease;}
+#advanced-2d-animation-panel label:hover{color:var(--text-primary);}
+#advanced-2d-animation-panel input[type="checkbox"]{margin-right:6px;cursor:pointer;accent-color:var(--a2d-panel-accent);width:14px;height:14px;}
+#advanced-2d-animation-panel input[type="range"]{width:100%;margin:4px 0;cursor:pointer;height:5px;border-radius:3px;background:var(--border-color);outline:none;-webkit-appearance:none;appearance:none;}
+#advanced-2d-animation-panel input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:var(--a2d-panel-accent);cursor:pointer;box-shadow:0 0 0 2px var(--a2d-panel-accent-soft);}
+#advanced-2d-animation-panel input[type="range"]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--a2d-panel-accent);cursor:pointer;border:none;box-shadow:0 0 0 2px var(--a2d-panel-accent-soft);}
+#advanced-2d-animation-panel button{width:100%;padding:8px 12px;margin-top:6px;background:var(--button-bg);color:var(--button-text-color);border:1px solid var(--a2d-panel-border-strong);border-radius:4px;cursor:pointer;font-weight:bold;font-size:10px;text-transform:uppercase;letter-spacing:.5px;transition:all .3s ease;box-shadow:var(--button-active-shadow);}
+#advanced-2d-animation-panel button:hover{background:var(--button-hover-bg);border-color:var(--a2d-panel-accent);transform:translateY(-2px);}
+#advanced-2d-animation-panel button:active{background:var(--button-active-bg);transform:translateY(0);}
+#advanced-2d-animation-panel::-webkit-scrollbar{width:8px;}
+#advanced-2d-animation-panel::-webkit-scrollbar-track{background:rgba(var(--text-primary-rgb),0.05);border-radius:4px;}
+#advanced-2d-animation-panel::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:4px;box-shadow:var(--shadow-inset);}
+#advanced-2d-animation-panel::-webkit-scrollbar-thumb:hover{background:var(--timeline-border-strong);}
+#keyframe-graph-container{background:var(--graph-bg);border:1px solid var(--graph-node-border);border-radius:8px;box-shadow:var(--graph-node-shadow);color:var(--graph-text-primary);}
+.keyframe-graph-canvas{width:100%;height:100%;}
+.brush-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--a2d-panel-bg-2);padding:12px;border-radius:6px;border:1px solid var(--a2d-panel-border);}
+.brush-control-item{display:flex;flex-direction:column;}
+.brush-control-item label{font-size:10px;color:var(--a2d-panel-text-dim);margin-bottom:4px;text-transform:uppercase;}
+.brush-control-item input,.brush-control-item select{background:var(--a2d-panel-input-bg);border:1px solid var(--a2d-panel-input-border);color:var(--a2d-panel-text);padding:4px 6px;border-radius:3px;font-size:11px;}
+.brush-control-item input:focus,.brush-control-item select:focus{border-color:var(--a2d-panel-accent);outline:none;box-shadow:0 0 0 2px var(--a2d-panel-accent-soft);}
+.effects-panel{background:var(--a2d-panel-bg-2);border:1px solid var(--a2d-panel-border);border-radius:6px;padding:12px;margin:8px 0;}
+.effect-toggle{display:flex;align-items:center;margin:8px 0;padding:6px;border-radius:4px;transition:all .2s ease;}
+.effect-toggle:hover{background:var(--a2d-panel-accent-soft);}
+.color-preset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:8px 0;}
+.color-preset{width:24px;height:24px;border-radius:3px;border:2px solid transparent;cursor:pointer;transition:all .2s ease;}
+.color-preset:hover{transform:scale(1.1);border-color:var(--a2d-panel-accent);}
+.timeline-enhanced{background:var(--timeline-surface-1);border:1px solid var(--timeline-border);border-radius:6px;padding:8px;margin:8px 0;}
+.timeline-scrubber{background:var(--timeline-border-accent);height:3px;border-radius:2px;position:relative;}
+.timeline-scrubber-handle{position:absolute;width:12px;height:12px;background:var(--timeline-playhead);border-radius:50%;left:0;top:-5px;cursor:pointer;box-shadow:0 0 0 2px var(--timeline-accent-soft);}
+.advanced-help-text{font-size:9px;color:var(--text-muted);margin-top:4px;font-style:italic;}
+.status-indicator{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;animation:pulse 2s infinite;}
+.status-indicator.active{background-color:var(--accent-success);}
+.status-indicator.inactive{background-color:var(--text-muted);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+@media print{#advanced-2d-animation-panel{display:none;}#animation-2d-container{border:2px solid var(--border-color);}}
+/* Old panel must never occupy timeline space again. */
+#timeline-2d-brush-panel,
+.timeline-2d-brush-panel,
+#a2pro-dopesheet {
+    display: none !important;
+}
+
+/* Keep the existing shared TimelinePanel intact in 2D mode. */
+body.animation-2d-mode-active #timelineBody {
+    height: var(--timeline-live-height, var(--timeline-height, 240px));
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body.animation-2d-mode-active #timelineBody .timeline-body,
+body.animation-2d-mode-active #timelineBody #timeline-controls-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Existing engine sections that are irrelevant while drawing stay hidden. */
+body.animation-2d-mode-active #hierarchy-header,
+body.animation-2d-mode-active #hierarchy-list-content,
+body.animation-2d-mode-active #selection-sets-header,
+body.animation-2d-mode-active #selection-sets-content,
+body.animation-2d-mode-active #brush-settings-header,
+body.animation-2d-mode-active #brush-settings-content,
+body.animation-2d-mode-active #media-pool-header,
+body.animation-2d-mode-active #media-pool-content {
+    display: none !important;
+}
+
+body.animation-2d-mode-active .animation-2d-only {
+    display: block !important;
+}
+
+body.animation-2d-mode-active #anime-color-studio-header {
+    display: flex !important;
+}
+
+/* The viewport owns the 2D canvas and its compact asset shelf. */
+body.animation-2d-mode-active #renderer-container {
+    position: relative;
+    min-height: 0;
+}
+
+/* Do not allow legacy panel rules from older builds to re-enable the mega panel. */
+body.animation-2d-mode-active .timeline-2d-brush-panel,
+body.animation-2d-compact .timeline-2d-brush-panel {
+    display: none !important;
+    max-height: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+}
+
+/* Shared timeline context: only TimelinePanel's small frame-op group appears in 2D. */
+#timelineBody .sm-timeline-2d-only {
+    display: none !important;
+}
+
+#timelineBody[data-timeline-context="2d"] .sm-timeline-2d-only {
+    display: flex !important;
+}
+
+/* Avoid old CSS selectors forcing all bottom editor children into view. */
+body.animation-2d-mode-active #timelineBody > * {
+    min-width: 0;
+}

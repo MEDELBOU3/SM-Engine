@@ -1,0 +1,2421 @@
+:root {
+    --settings-bg: #2b2d31;
+    --settings-bg-deep: #202226;
+    --settings-bg-sidebar: #26282c;
+
+    --settings-border: #45484e;
+
+    --settings-text: #d7d9dd;
+    --settings-muted: #90959d;
+
+    --settings-control: #1d1f22;
+    --settings-control-hover: #33363b;
+
+    --settings-accent: #4e78b6;
+}
+
+
+.settings-window {
+    position: fixed;
+
+    width: min(1180px, calc(100vw - 80px));
+    height: min(760px, calc(100vh - 80px));
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%) scale(0.985);
+
+    display: none;
+    flex-direction: column;
+
+    background: var(--settings-bg);
+
+    border: 1px solid #16181b;
+    border-radius: 5px;
+
+    box-shadow:
+        0 22px 70px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.025);
+
+    overflow: hidden;
+
+    z-index: 99999;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.12s ease,
+        transform 0.12s ease;
+}
+
+
+.settings-window.settings-window-enter {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+
+.settings-window[style*="transform: none"].settings-window-enter {
+    transform: none;
+}
+
+
+.settings-window.minimized {
+    height: 34px !important;
+}
+
+
+.settings-window.minimized .settings-window-body {
+    display: none;
+}
+
+
+/* TITLEBAR */
+
+.settings-window-titlebar {
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    flex-shrink: 0;
+
+    padding-left: 10px;
+
+    background: #1d2026;
+
+    border-bottom: 1px solid #121417;
+
+    user-select: none;
+
+    cursor: default;
+}
+
+
+.settings-window-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #ebedf0;
+
+    font-size: 12px;
+}
+
+
+.settings-window-title i {
+    color: #f28c18;
+}
+
+
+.settings-window-controls {
+    height: 100%;
+
+    display: flex;
+}
+
+
+.settings-window-titlebar-actions {
+    height: 100%;
+
+    display: flex;
+    align-items: stretch;
+
+    margin-left: auto;
+}
+
+
+.settings-titlebar-shortcuts {
+    min-width: 108px;
+    height: 100%;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    padding: 0 10px;
+
+    color: var(--text-secondary);
+    background: transparent;
+
+    border: 0;
+    border-left: 1px solid var(--border-color);
+    border-radius: 0;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.settings-titlebar-shortcuts:hover,
+.settings-titlebar-shortcuts:focus-visible {
+    color: var(--text-primary);
+    background: var(--hover-bg);
+    outline: none;
+}
+
+
+.settings-titlebar-shortcuts kbd {
+    min-width: 14px;
+
+    padding: 1px 3px;
+
+    color: var(--text-secondary);
+    background: var(--panel-bg);
+
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+
+    font-family: inherit;
+    font-size: 9px;
+    line-height: 1;
+}
+
+
+.settings-window-control {
+    width: 44px;
+    height: 100%;
+
+    border: none;
+
+    background: transparent;
+    color: #d9dce1;
+
+    cursor: pointer;
+}
+
+
+.settings-window-control:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+
+.settings-close-btn:hover {
+    background: #c42b1c;
+}
+
+
+@media (max-width: 620px) {
+    .settings-titlebar-shortcuts {
+        min-width: 34px;
+        padding: 0 8px;
+    }
+
+    .settings-titlebar-shortcuts span,
+    .settings-titlebar-shortcuts kbd {
+        display: none;
+    }
+}
+
+
+/* BODY */
+
+.settings-window-body {
+    min-width: 0;
+    min-height: 0;
+
+    flex: 1;
+
+    display: flex;
+}
+
+
+/* SIDEBAR */
+
+.settings-sidebar {
+    width: 160px;
+
+    flex-shrink: 0;
+
+    padding: 7px;
+
+    overflow-y: auto;
+
+    background: var(--settings-bg-sidebar);
+
+    border-right: 1px solid #202226;
+}
+
+
+.settings-sidebar-group {
+    padding: 3px 0 7px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+
+    margin-bottom: 5px;
+}
+
+
+.settings-sidebar-group:last-child {
+    border-bottom: none;
+}
+
+
+.settings-nav-btn {
+    width: 100%;
+    height: 27px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 9px;
+
+    border: none;
+    border-radius: 3px;
+
+    background: transparent;
+
+    color: #bec2c8;
+
+    font-size: 11px;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+
+.settings-nav-btn i {
+    width: 13px;
+
+    color: #8c929b;
+
+    text-align: center;
+}
+
+
+.settings-nav-btn:hover {
+    background: #34373c;
+
+    color: #fff;
+}
+
+
+.settings-nav-btn.active {
+    background: var(--settings-accent);
+
+    color: white;
+}
+
+
+.settings-nav-btn.active i {
+    color: white;
+}
+
+
+/* MAIN */
+
+.settings-main {
+    flex: 1;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow: auto;
+
+    background: #333538;
+}
+
+
+.settings-section {
+    display: none;
+
+    min-height: 100%;
+
+    padding: 7px;
+}
+
+
+.settings-section.active {
+    display: block;
+}
+
+
+/* KEYMAP / KEYBOARD SHORTCUTS */
+
+.settings-keymap-page {
+    height: 100%;
+    min-height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 14px;
+
+    background: var(--panel-bg);
+    box-sizing: border-box;
+}
+
+
+.settings-section[data-settings-page="keymap"].active {
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+}
+
+
+.settings-keymap-page-header {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 0 2px 12px;
+
+    border-bottom: 1px solid var(--border-color);
+}
+
+
+.settings-keymap-page-header h2 {
+    margin: 0;
+
+    color: var(--text-primary);
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.settings-keymap-page-header p {
+    margin: 4px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+}
+
+
+.settings-keymap-hint {
+    flex: 0 0 auto;
+
+    color: var(--text-secondary);
+
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+
+.settings-keymap-hint kbd,
+.settings-keymap-shortcuts kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+
+    padding: 2px 5px;
+
+    color: var(--text-primary);
+    background: var(--secondary-dark);
+
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    box-shadow: none;
+
+    font: 600 10px/1 inherit;
+}
+
+
+.settings-keymap-shortcuts {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    display: flex;
+
+    padding-top: 10px;
+}
+
+
+/* The existing component is moved into Settings and loses its modal shell. */
+.settings-window .shortcuts-panel.shortcuts-embedded {
+    position: static;
+    inset: auto;
+    transform: none;
+
+    width: 100%;
+    height: auto;
+    min-height: 0;
+
+    flex: 1 1 auto;
+
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+
+    transition: none;
+}
+
+
+.settings-window .shortcuts-embedded .shortcuts-header {
+    display: none;
+}
+
+
+.settings-window .shortcuts-embedded .shortcuts-tabs {
+    gap: 2px;
+
+    padding: 0 0 8px;
+
+    background: transparent;
+    border-bottom: 1px solid var(--border-color);
+}
+
+
+.settings-window .shortcuts-embedded .tab-btn {
+    padding: 6px 9px;
+
+    color: var(--text-secondary);
+    background: transparent;
+
+    border: 1px solid transparent;
+    border-radius: 2px;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+
+.settings-window .shortcuts-embedded .tab-btn:hover {
+    color: var(--text-primary);
+    background: var(--hover-bg);
+}
+
+
+.settings-window .shortcuts-embedded .tab-btn.active {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    border-color: var(--border-color);
+}
+
+
+.settings-window .shortcuts-embedded .tab-btn.active::after {
+    display: none;
+}
+
+
+.settings-window .shortcuts-embedded .tab-contents-wrapper,
+.settings-window .shortcuts-embedded .tab-contents {
+    min-height: 0;
+}
+
+
+.settings-window .shortcuts-embedded .tab-contents {
+    padding: 5px 0;
+}
+
+
+.settings-window .shortcuts-embedded .shortcuts-table tr:not(:last-child) {
+    border-color: var(--border-color);
+}
+
+
+.settings-window .shortcuts-embedded .shortcuts-table tr:hover {
+    background: var(--hover-bg);
+}
+
+
+.settings-window .shortcuts-embedded .key-cell {
+    width: 180px;
+    padding: 8px 10px;
+}
+
+
+.settings-window .shortcuts-embedded .desc-cell {
+    padding: 8px 10px;
+
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+
+.settings-window .shortcuts-embedded .search-container {
+    padding: 9px 0 0;
+
+    background: transparent;
+    border-top: 1px solid var(--border-color);
+}
+
+
+.settings-window .shortcuts-embedded #shortcut-search,
+.settings-window .shortcuts-embedded #category-dropdown,
+.settings-window .shortcuts-embedded .desc-input,
+.settings-window .shortcuts-embedded .key-capture-btn {
+    color: var(--text-primary);
+    background: var(--secondary-dark);
+    border-color: var(--border-color);
+    border-radius: 2px;
+}
+
+
+.settings-window .shortcuts-embedded #shortcut-search {
+    height: 28px;
+    padding: 0 9px;
+
+    font-family: inherit;
+    font-size: 11px;
+}
+
+
+.settings-window .shortcuts-embedded #shortcut-search:focus {
+    border-color: var(--text-secondary);
+}
+
+
+.settings-window .shortcuts-embedded .search-results {
+    margin-top: 5px;
+
+    background: var(--secondary-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+}
+
+
+.settings-window .shortcuts-embedded .result-category {
+    color: var(--text-secondary);
+    background: var(--bg-hover);
+    border-radius: 2px;
+}
+
+
+.settings-window .shortcuts-embedded .customize-panel {
+    gap: 10px;
+    padding: 8px 0;
+}
+
+
+.settings-window .shortcuts-embedded .customize-buttons {
+    gap: 5px;
+}
+
+
+.settings-window .shortcuts-embedded .primary-btn,
+.settings-window .shortcuts-embedded .outline-btn {
+    padding: 6px 9px;
+
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+
+    font-family: inherit;
+    font-size: 10px;
+}
+
+
+.settings-window .shortcuts-embedded .primary-btn:hover,
+.settings-window .shortcuts-embedded .outline-btn:hover {
+    background: var(--hover-bg);
+}
+
+
+.settings-window .shortcuts-embedded .shortcut-editor {
+    gap: 8px;
+
+    padding: 8px;
+    margin-bottom: 4px;
+
+    background: var(--secondary-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+}
+
+
+.settings-nav-btn.hidden,
+.settings-section.hidden {
+    display: none !important;
+}
+
+
+/* BLOCK */
+
+.settings-section-block {
+    margin-bottom: 5px;
+
+    border-top: 1px solid #46494e;
+    border-bottom: 1px solid #26282b;
+
+    background: #3a3c3f;
+}
+
+
+.settings-section-header {
+    height: 29px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    padding: 0 8px;
+
+    color: #d8dade;
+
+    font-size: 11px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+.settings-section-header>i {
+    width: 11px;
+
+    color: #c1c5cb;
+
+    font-size: 9px;
+}
+
+
+.settings-section-block.collapsed .settings-section-content {
+    display: none;
+}
+
+
+/* SETTINGS ROWS */
+
+.settings-section-content {
+    padding: 7px 12px 10px;
+}
+
+
+.settings-row {
+    min-height: 29px;
+
+    display: grid;
+    grid-template-columns: minmax(150px, 38%) minmax(200px, 1fr);
+
+    align-items: center;
+
+    gap: 14px;
+
+    color: #c9ccd1;
+
+    font-size: 11px;
+}
+
+
+.settings-label {
+    text-align: right;
+
+    color: #c9ccd1;
+}
+
+
+/* CONTROLS */
+
+.settings-select-wide,
+.settings-number-input {
+    min-height: 22px;
+
+    border: 1px solid #17191c;
+    border-radius: 3px;
+
+    outline: none;
+
+    background: var(--settings-control);
+
+    color: #d7d9dd;
+
+    font-size: 11px;
+}
+
+
+.settings-select-wide {
+    width: min(520px, 100%);
+
+    padding: 2px 7px;
+}
+
+
+.settings-number-input {
+    width: 70px;
+
+    padding: 2px 6px;
+}
+
+
+.settings-control-wide {
+    width: min(520px, 100%);
+
+    display: grid;
+    grid-template-columns: 1fr 45px;
+
+    gap: 9px;
+
+    align-items: center;
+}
+
+
+.settings-range {
+    width: 100%;
+}
+
+
+.settings-range-small {
+    max-width: 300px;
+}
+
+
+.settings-checkbox-row {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    color: #d5d7dc;
+
+    font-size: 11px;
+}
+
+
+.settings-checkbox-row input {
+    accent-color: var(--settings-accent);
+}
+
+
+.settings-checkbox-column {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+/* PLACEHOLDER */
+
+.settings-placeholder {
+    height: 100%;
+
+    min-height: 340px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #8f949d;
+
+    text-align: center;
+}
+
+
+.settings-placeholder i {
+    margin-bottom: 12px;
+
+    font-size: 30px;
+
+    color: #686e77;
+}
+
+
+.settings-placeholder h3 {
+    margin: 0 0 7px;
+
+    color: #d2d5da;
+
+    font-size: 15px;
+}
+
+
+.settings-placeholder p {
+    margin: 0;
+
+    font-size: 11px;
+}
+
+
+/* DRAG */
+
+.settings-window-dragging {
+    user-select: none;
+    cursor: move;
+}
+
+
+/* SCROLLBARS */
+
+.settings-window *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+
+.settings-window *::-webkit-scrollbar-thumb {
+    background: #55595f;
+
+    border-radius: 10px;
+
+    border: 2px solid transparent;
+
+    background-clip: padding-box;
+}
+
+
+.settings-window *::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 720px) {
+
+    .settings-window {
+        width: calc(100vw - 20px);
+        height: calc(100vh - 20px);
+    }
+
+
+    .settings-sidebar {
+        width: 48px;
+
+        padding: 5px;
+    }
+
+
+    .settings-nav-btn {
+        justify-content: center;
+
+        padding: 0;
+    }
+
+
+    .settings-nav-btn span {
+        display: none;
+    }
+
+
+    .settings-row {
+        grid-template-columns: 1fr;
+
+        gap: 5px;
+
+        margin-bottom: 8px;
+    }
+
+
+    .settings-label {
+        text-align: left;
+    }
+
+}
+/* ==========================================================================
+   SM ENGINE SETTINGS — PROFESSIONAL FLAT THEME v2
+   --------------------------------------------------------------------------
+   Keeps the existing SettingsPanel markup and behavior intact.
+   This final override layer normalizes colors, spacing, controls, navigation,
+   keymap pages and the Add-ons UI into one neutral DCC/editor visual language.
+   ========================================================================== */
+
+:root {
+    --settings-bg: #303030;
+    --settings-bg-deep: #242424;
+    --settings-bg-sidebar: #292929;
+
+    --settings-surface: #333333;
+    --settings-surface-soft: #383838;
+    --settings-surface-hover: #3d3d3d;
+    --settings-surface-active: #434343;
+
+    --settings-border: rgba(255, 255, 255, 0.065);
+    --settings-border-strong: rgba(255, 255, 255, 0.105);
+
+    --settings-text: #e4e4e4;
+    --settings-text-soft: #c6c6c6;
+    --settings-muted: #8a8a8a;
+    --settings-muted-deep: #666666;
+
+    --settings-control: #272727;
+    --settings-control-hover: #303030;
+    --settings-control-focus: #343434;
+
+    /* Small warm accent only; active surfaces remain neutral grey. */
+    --settings-accent: #c77b36;
+    --settings-accent-soft: rgba(199, 123, 54, 0.16);
+
+    --settings-danger: #c44d45;
+
+    --settings-row-height: 31px;
+    --settings-control-height: 25px;
+}
+
+/* --------------------------------------------------------------------------
+   WINDOW
+   -------------------------------------------------------------------------- */
+
+.settings-window {
+    width: min(1180px, calc(100vw - 64px));
+    height: min(760px, calc(100vh - 64px));
+
+    background: var(--settings-bg);
+    color: var(--settings-text);
+
+    border: 1px solid var(--settings-border-strong);
+    border-radius: 2px;
+
+    box-shadow:
+        0 24px 72px rgba(0, 0, 0, 0.48),
+        0 1px 0 rgba(255, 255, 255, 0.025) inset;
+}
+
+.settings-window::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.22) inset;
+
+    z-index: 0;
+}
+
+.settings-window > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   TITLE BAR
+   -------------------------------------------------------------------------- */
+
+.settings-window-titlebar {
+    height: 36px;
+
+    padding-left: 11px;
+
+    background: #252525;
+
+    border-bottom: 1px solid var(--settings-border);
+
+    cursor: default;
+}
+
+.settings-window-title {
+    gap: 8px;
+
+    color: #e9e9e9;
+
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+}
+
+.settings-window-title i {
+    color: var(--settings-accent);
+    font-size: 11px;
+}
+
+.settings-titlebar-shortcuts {
+    min-width: 104px;
+
+    color: var(--settings-muted);
+
+    border-left: 1px solid var(--settings-border);
+
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.settings-titlebar-shortcuts:hover,
+.settings-titlebar-shortcuts:focus-visible {
+    color: var(--settings-text);
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.settings-titlebar-shortcuts kbd {
+    color: #b9b9b9;
+    background: #303030;
+
+    border: 1px solid var(--settings-border-strong);
+    border-radius: 2px;
+
+    box-shadow: none;
+}
+
+.settings-window-control {
+    width: 42px;
+
+    color: #bdbdbd;
+
+    transition:
+        background-color 80ms ease,
+        color 80ms ease;
+}
+
+.settings-window-control:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.055);
+}
+
+.settings-close-btn:hover {
+    color: #ffffff;
+    background: var(--settings-danger);
+}
+
+/* --------------------------------------------------------------------------
+   BODY / SIDEBAR
+   -------------------------------------------------------------------------- */
+
+.settings-window-body {
+    background: var(--settings-bg);
+}
+
+.settings-sidebar {
+    width: 174px;
+
+    padding: 7px 6px;
+
+    background: var(--settings-bg-sidebar);
+
+    border-right: 1px solid var(--settings-border);
+}
+
+.settings-sidebar-group {
+    margin-bottom: 5px;
+    padding: 3px 0 6px;
+
+    border-bottom: 1px solid var(--settings-border);
+}
+
+.settings-nav-btn {
+    position: relative;
+
+    height: 29px;
+
+    gap: 8px;
+
+    padding: 0 9px 0 11px;
+
+    color: #b8b8b8;
+    background: transparent;
+
+    border: 0;
+    border-radius: 0;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    transition:
+        background-color 80ms ease,
+        color 80ms ease;
+}
+
+.settings-nav-btn::before {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    top: 5px;
+    bottom: 5px;
+
+    width: 2px;
+
+    background: transparent;
+}
+
+.settings-nav-btn i {
+    width: 14px;
+
+    color: #7f7f7f;
+
+    font-size: 10px;
+}
+
+.settings-nav-btn:hover {
+    color: #e0e0e0;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.settings-nav-btn:hover i {
+    color: #a0a0a0;
+}
+
+.settings-nav-btn.active {
+    color: #f0f0f0;
+    background: var(--settings-surface-soft);
+}
+
+.settings-nav-btn.active::before {
+    background: var(--settings-accent);
+}
+
+.settings-nav-btn.active i {
+    color: #cfcfcf;
+}
+
+/* --------------------------------------------------------------------------
+   MAIN / SECTIONS
+   -------------------------------------------------------------------------- */
+
+.settings-main {
+    background: var(--settings-bg);
+}
+
+.settings-section {
+    padding: 10px 11px 14px;
+}
+
+.settings-section-block {
+    margin-bottom: 7px;
+
+    background: #333333;
+
+    border-top: 1px solid var(--settings-border);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.22);
+}
+
+.settings-section-block:hover {
+    background: #343434;
+}
+
+.settings-section-header {
+    height: 31px;
+
+    gap: 6px;
+
+    padding: 0 10px;
+
+    color: #d2d2d2;
+
+    background: rgba(255, 255, 255, 0.012);
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.settings-section-header:hover {
+    background: rgba(255, 255, 255, 0.026);
+}
+
+.settings-section-header > i {
+    color: #8d8d8d;
+    font-size: 8px;
+}
+
+.settings-section-content {
+    padding: 8px 13px 11px;
+
+    background: #313131;
+}
+
+/* --------------------------------------------------------------------------
+   SETTING ROWS
+   -------------------------------------------------------------------------- */
+
+.settings-row {
+    min-height: var(--settings-row-height);
+
+    grid-template-columns:
+        minmax(150px, 36%)
+        minmax(200px, 1fr);
+
+    gap: 15px;
+
+    color: var(--settings-text-soft);
+
+    font-size: 10px;
+}
+
+.settings-row:hover {
+    background: rgba(255, 255, 255, 0.012);
+}
+
+.settings-label {
+    color: #bcbcbc;
+
+    font-size: 10px;
+    line-height: 1.35;
+}
+
+.settings-row:hover .settings-label {
+    color: #d1d1d1;
+}
+
+/* --------------------------------------------------------------------------
+   SELECT / INPUT / RANGE / CHECKBOX
+   -------------------------------------------------------------------------- */
+
+.settings-select-wide,
+.settings-number-input,
+.settings-window input[type="text"],
+.settings-window input[type="search"],
+.settings-window input[type="number"],
+.settings-window select {
+    min-height: var(--settings-control-height);
+
+    color: #d6d6d6;
+    background: var(--settings-control);
+
+    border: 1px solid var(--settings-border-strong);
+    border-radius: 2px;
+
+    outline: none;
+
+    box-shadow: none;
+
+    font-family: inherit;
+    font-size: 10px;
+
+    transition:
+        background-color 80ms ease,
+        border-color 80ms ease;
+}
+
+.settings-select-wide:hover,
+.settings-number-input:hover,
+.settings-window input[type="text"]:hover,
+.settings-window input[type="search"]:hover,
+.settings-window input[type="number"]:hover,
+.settings-window select:hover {
+    background: var(--settings-control-hover);
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.settings-select-wide:focus,
+.settings-number-input:focus,
+.settings-window input[type="text"]:focus,
+.settings-window input[type="search"]:focus,
+.settings-window input[type="number"]:focus,
+.settings-window select:focus {
+    background: var(--settings-control-focus);
+    border-color: rgba(199, 123, 54, 0.62);
+}
+
+.settings-select-wide {
+    padding: 2px 8px;
+}
+
+.settings-number-input {
+    width: 76px;
+
+    padding: 2px 7px;
+
+    font-family:
+        "Cascadia Mono",
+        Consolas,
+        monospace;
+}
+
+.settings-control-wide {
+    grid-template-columns: minmax(0, 1fr) 52px;
+
+    gap: 9px;
+}
+
+.settings-range {
+    height: 4px;
+
+    appearance: none;
+
+    background: #202020;
+
+    border-radius: 0;
+
+    outline: none;
+}
+
+.settings-range::-webkit-slider-runnable-track {
+    height: 4px;
+
+    background: #202020;
+}
+
+.settings-range::-webkit-slider-thumb {
+    width: 11px;
+    height: 15px;
+
+    margin-top: -5px;
+
+    appearance: none;
+
+    background: #a7a7a7;
+
+    border: 1px solid #171717;
+    border-radius: 1px;
+
+    cursor: ew-resize;
+}
+
+.settings-range:hover::-webkit-slider-thumb {
+    background: #c4c4c4;
+}
+
+.settings-range:focus-visible::-webkit-slider-thumb {
+    background: var(--settings-accent);
+}
+
+.settings-checkbox-row {
+    gap: 7px;
+
+    color: #c7c7c7;
+
+    font-size: 10px;
+}
+
+.settings-window input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+
+    accent-color: var(--settings-accent);
+}
+
+.settings-window input[type="checkbox"]:focus-visible {
+    outline: 1px solid rgba(199, 123, 54, 0.72);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   PLACEHOLDER
+   -------------------------------------------------------------------------- */
+
+.settings-placeholder {
+    color: #777777;
+}
+
+.settings-placeholder i {
+    margin-bottom: 10px;
+
+    color: #5f5f5f;
+
+    font-size: 26px;
+}
+
+.settings-placeholder h3 {
+    margin-bottom: 5px;
+
+    color: #c9c9c9;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.settings-placeholder p {
+    color: #777777;
+
+    font-size: 9px;
+}
+
+/* --------------------------------------------------------------------------
+   KEYMAP PAGE
+   -------------------------------------------------------------------------- */
+
+.settings-keymap-page {
+    padding: 13px;
+
+    background: var(--settings-bg);
+}
+
+.settings-keymap-page-header {
+    padding: 0 1px 11px;
+
+    border-bottom: 1px solid var(--settings-border);
+}
+
+.settings-keymap-page-header h2 {
+    color: #dddddd;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.settings-keymap-page-header p,
+.settings-keymap-hint {
+    color: var(--settings-muted);
+
+    font-size: 9px;
+}
+
+.settings-keymap-hint kbd,
+.settings-keymap-shortcuts kbd {
+    color: #c8c8c8;
+    background: #292929;
+
+    border: 1px solid var(--settings-border-strong);
+    border-radius: 2px;
+}
+
+.settings-window .shortcuts-embedded .shortcuts-tabs {
+    border-bottom: 1px solid var(--settings-border);
+}
+
+.settings-window .shortcuts-embedded .tab-btn {
+    color: #8f8f8f;
+
+    border: 0;
+    border-radius: 0;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    letter-spacing: 0.3px;
+}
+
+.settings-window .shortcuts-embedded .tab-btn:hover {
+    color: #d2d2d2;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.settings-window .shortcuts-embedded .tab-btn.active {
+    color: #ededed;
+    background: #3a3a3a;
+
+    border: 0;
+    box-shadow: 0 -2px 0 var(--settings-accent) inset;
+}
+
+.settings-window .shortcuts-embedded .shortcuts-table tr:not(:last-child) {
+    border-color: var(--settings-border);
+}
+
+.settings-window .shortcuts-embedded .shortcuts-table tr:hover {
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.settings-window .shortcuts-embedded .key-cell,
+.settings-window .shortcuts-embedded .desc-cell {
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+.settings-window .shortcuts-embedded .desc-cell {
+    color: #a8a8a8;
+
+    font-size: 10px;
+}
+
+.settings-window .shortcuts-embedded #shortcut-search,
+.settings-window .shortcuts-embedded #category-dropdown,
+.settings-window .shortcuts-embedded .desc-input,
+.settings-window .shortcuts-embedded .key-capture-btn {
+    color: #d0d0d0;
+    background: #292929;
+
+    border: 1px solid var(--settings-border-strong);
+    border-radius: 2px;
+}
+
+.settings-window .shortcuts-embedded #shortcut-search:focus {
+    border-color: rgba(199, 123, 54, 0.62);
+}
+
+.settings-window .shortcuts-embedded .search-results {
+    background: #2b2b2b;
+
+    border: 1px solid var(--settings-border-strong);
+    border-radius: 2px;
+}
+
+.settings-window .shortcuts-embedded .result-category {
+    color: #a4a4a4;
+    background: #353535;
+}
+
+.settings-window .shortcuts-embedded .primary-btn,
+.settings-window .shortcuts-embedded .outline-btn {
+    color: #c9c9c9;
+    background: #353535;
+
+    border: 1px solid var(--settings-border-strong);
+    border-radius: 2px;
+
+    font-size: 9px;
+}
+
+.settings-window .shortcuts-embedded .primary-btn:hover,
+.settings-window .shortcuts-embedded .outline-btn:hover {
+    color: #ffffff;
+    background: #3e3e3e;
+}
+
+.settings-window .shortcuts-embedded .shortcut-editor {
+    background: #2b2b2b;
+
+    border: 1px solid var(--settings-border);
+    border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   ADD-ONS PAGE HARMONIZATION
+   Higher specificity than the injected Add-ons UI stylesheet.
+   -------------------------------------------------------------------------- */
+
+.settings-window #sm-addon-settings-root {
+    background: var(--settings-bg);
+
+    color: var(--settings-text);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-page-head {
+    min-height: 45px;
+
+    padding: 7px 11px;
+
+    background: #2d2d2d;
+
+    border-bottom: 1px solid var(--settings-border);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-page-title > i {
+    color: var(--settings-accent);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-page-title strong {
+    color: #dfdfdf;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-page-title span,
+.settings-window #sm-addon-settings-root .sm-addon-page-count {
+    color: #777777;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-grid {
+    background: #313131;
+
+    border-bottom: 1px solid var(--settings-border);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-row {
+    min-height: 43px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.025);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-text strong {
+    color: #c5c5c5;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-text small {
+    color: #6f6f6f;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-toolbar {
+    min-height: 36px;
+
+    background: #2d2d2d;
+
+    border-bottom: 1px solid var(--settings-border);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-search-wrap,
+.settings-window #sm-addon-settings-root .sm-addon-select,
+.settings-window #sm-addon-settings-root .sm-addon-category-filter,
+.settings-window #sm-addon-settings-root .sm-addon-pref-control {
+    background: var(--settings-control);
+
+    border: 1px solid var(--settings-border);
+
+    color: #cccccc;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-search-wrap:focus-within,
+.settings-window #sm-addon-settings-root .sm-addon-select:focus,
+.settings-window #sm-addon-settings-root .sm-addon-category-filter:focus,
+.settings-window #sm-addon-settings-root .sm-addon-pref-control:focus {
+    border-color: rgba(199, 123, 54, 0.62);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-toolbar-btn {
+    color: #969696;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-toolbar-btn:hover {
+    color: #e2e2e2;
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-list {
+    gap: 3px;
+
+    padding: 7px 10px 12px;
+
+    background: var(--settings-bg);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-card {
+    background: #333333;
+
+    border: 1px solid transparent;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-card:hover {
+    background: #363636;
+
+    border-color: var(--settings-border);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-card.open {
+    background: #343434;
+
+    border-color: var(--settings-border-strong);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-icon {
+    color: #8b8b8b;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-card-title {
+    color: #dddddd;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-card-meta,
+.settings-window #sm-addon-settings-root .sm-addon-card-meta code {
+    color: #6f6f6f;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-description {
+    color: #838383;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-details {
+    background: #2f2f2f;
+
+    border-top: 1px solid var(--settings-border);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-detail-title {
+    color: #757575;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-pref-text strong {
+    color: #b3b3b3;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-pref-text small {
+    color: #686868;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-command-btn {
+    color: #aaaaaa;
+    background: #373737;
+
+    border: 1px solid var(--settings-border);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-command-btn:hover:not(:disabled) {
+    color: #ffffff;
+    background: #404040;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-runtime-grid > div {
+    background: #333333;
+
+    border: 1px solid rgba(255, 255, 255, 0.035);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-switch span {
+    background: #454545;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-switch input:checked + span {
+    background: #6a5745;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-switch input:checked + span::after {
+    background: #e0e0e0;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-state.enabled {
+    color: #8fb49a;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-state.blocked {
+    color: #c19b6e;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-state.error {
+    color: #ca8580;
+}
+
+/* --------------------------------------------------------------------------
+   SCROLLBARS
+   -------------------------------------------------------------------------- */
+
+.settings-window * {
+    scrollbar-width: thin;
+    scrollbar-color: #505050 transparent;
+}
+
+.settings-window *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.settings-window *::-webkit-scrollbar-thumb {
+    background: #505050;
+
+    border: 2px solid transparent;
+    border-radius: 2px;
+
+    background-clip: padding-box;
+}
+
+.settings-window *::-webkit-scrollbar-thumb:hover {
+    background: #626262;
+
+    border: 2px solid transparent;
+
+    background-clip: padding-box;
+}
+
+.settings-window *::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   ACCESSIBILITY / FOCUS
+   -------------------------------------------------------------------------- */
+
+.settings-window button:focus-visible,
+.settings-window [tabindex]:focus-visible {
+    outline: 1px solid rgba(199, 123, 54, 0.78);
+    outline-offset: -1px;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+    .settings-window {
+        width: calc(100vw - 16px);
+        height: calc(100vh - 16px);
+    }
+
+    .settings-sidebar {
+        width: 48px;
+    }
+
+    .settings-section {
+        padding: 8px;
+    }
+
+    .settings-row {
+        grid-template-columns: 1fr;
+
+        gap: 5px;
+
+        padding: 3px 0;
+    }
+
+    .settings-label {
+        text-align: left;
+    }
+
+    .settings-window #sm-addon-settings-root .sm-addon-policy-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* ==========================================================================
+   SM ENGINE SETTINGS — READABILITY / LIGHTER CONTRAST PASS v3
+   --------------------------------------------------------------------------
+   Final override layer.
+   Keeps the complete existing SettingsPanel CSS and behavior intact while
+   making the panel lighter, clearer and easier to read.
+   ========================================================================== */
+
+:root {
+    --settings-bg: #3a3d42;
+    --settings-bg-deep: #30343a;
+    --settings-bg-sidebar: #35383d;
+
+    --settings-surface: #40444a;
+    --settings-surface-soft: #464a50;
+    --settings-surface-hover: #4d5258;
+    --settings-surface-active: #555b62;
+
+    --settings-border: rgba(255, 255, 255, 0.095);
+    --settings-border-strong: rgba(255, 255, 255, 0.145);
+
+    --settings-text: #f0f2f5;
+    --settings-text-soft: #d8dde4;
+    --settings-muted: #b3bac3;
+    --settings-muted-deep: #8d949d;
+
+    --settings-control: #2f3338;
+    --settings-control-hover: #383d43;
+    --settings-control-focus: #41474e;
+
+    --settings-accent: #d48b43;
+    --settings-accent-soft: rgba(212, 139, 67, 0.18);
+
+    --settings-danger: #cb554d;
+}
+
+/* WINDOW / DOCUMENT SURFACE */
+
+.settings-window {
+    background: var(--settings-bg);
+    color: var(--settings-text);
+
+    border-color: var(--settings-border-strong);
+
+    box-shadow:
+        0 20px 58px rgba(0, 0, 0, 0.34),
+        0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.settings-window::before {
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+}
+
+/* TITLEBAR */
+
+.settings-window-titlebar {
+    background: #30343a;
+    border-bottom-color: var(--settings-border);
+}
+
+.settings-window-title {
+    color: #f4f6f8;
+}
+
+.settings-window-title i {
+    color: var(--settings-accent);
+}
+
+.settings-titlebar-shortcuts {
+    color: var(--settings-muted);
+    border-left-color: var(--settings-border);
+}
+
+.settings-titlebar-shortcuts:hover,
+.settings-titlebar-shortcuts:focus-visible {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.settings-titlebar-shortcuts kbd {
+    color: #dfe3e8;
+    background: #3a3e44;
+    border-color: var(--settings-border-strong);
+}
+
+.settings-window-control {
+    color: #d7dbe0;
+}
+
+.settings-window-control:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.085);
+}
+
+/* BODY */
+
+.settings-window-body {
+    background: var(--settings-bg);
+}
+
+/* SIDEBAR */
+
+.settings-sidebar {
+    background: var(--settings-bg-sidebar);
+    border-right-color: var(--settings-border);
+}
+
+.settings-sidebar-group {
+    border-bottom-color: rgba(255, 255, 255, 0.075);
+}
+
+.settings-nav-btn {
+    color: #d2d7de;
+}
+
+.settings-nav-btn i {
+    color: #aab1ba;
+}
+
+.settings-nav-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.075);
+}
+
+.settings-nav-btn:hover i {
+    color: #d8dde3;
+}
+
+.settings-nav-btn.active {
+    color: #ffffff;
+    background: var(--settings-surface-active);
+}
+
+.settings-nav-btn.active i {
+    color: #ffffff;
+}
+
+.settings-nav-btn.active::before {
+    background: var(--settings-accent);
+}
+
+/* MAIN */
+
+.settings-main {
+    background: #3b3f45;
+}
+
+.settings-section {
+    background: transparent;
+}
+
+.settings-section-block {
+    background: #454950;
+
+    border-top-color: var(--settings-border-strong);
+    border-bottom-color: rgba(0, 0, 0, 0.17);
+}
+
+.settings-section-block:hover {
+    background: #4a4f56;
+}
+
+.settings-section-header {
+    color: #eef1f4;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.settings-section-header:hover {
+    background: rgba(255, 255, 255, 0.055);
+}
+
+.settings-section-header > i {
+    color: #c3c9d1;
+}
+
+.settings-section-content {
+    background: #40444a;
+}
+
+/* SETTING ROWS */
+
+.settings-row {
+    color: var(--settings-text-soft);
+}
+
+.settings-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.settings-label {
+    color: #e2e6eb;
+    font-weight: 500;
+}
+
+.settings-row:hover .settings-label {
+    color: #ffffff;
+}
+
+/* CONTROLS */
+
+.settings-select-wide,
+.settings-number-input,
+.settings-window input[type="text"],
+.settings-window input[type="search"],
+.settings-window input[type="number"],
+.settings-window select {
+    color: #f0f2f5;
+    background: var(--settings-control);
+
+    border-color: var(--settings-border-strong);
+}
+
+.settings-select-wide:hover,
+.settings-number-input:hover,
+.settings-window input[type="text"]:hover,
+.settings-window input[type="search"]:hover,
+.settings-window input[type="number"]:hover,
+.settings-window select:hover {
+    background: var(--settings-control-hover);
+    border-color: rgba(255, 255, 255, 0.19);
+}
+
+.settings-select-wide:focus,
+.settings-number-input:focus,
+.settings-window input[type="text"]:focus,
+.settings-window input[type="search"]:focus,
+.settings-window input[type="number"]:focus,
+.settings-window select:focus {
+    color: #ffffff;
+    background: var(--settings-control-focus);
+    border-color: rgba(212, 139, 67, 0.75);
+}
+
+.settings-window input::placeholder {
+    color: #959ca5;
+}
+
+/* RANGE */
+
+.settings-range,
+.settings-range::-webkit-slider-runnable-track {
+    background: #292d32;
+}
+
+.settings-range::-webkit-slider-thumb {
+    background: #d7dce2;
+    border-color: #23272c;
+}
+
+.settings-range:hover::-webkit-slider-thumb {
+    background: #f0f3f6;
+}
+
+.settings-range:focus-visible::-webkit-slider-thumb {
+    background: var(--settings-accent);
+}
+
+/* CHECKBOX */
+
+.settings-checkbox-row {
+    color: #e1e5ea;
+}
+
+.settings-window input[type="checkbox"] {
+    accent-color: var(--settings-accent);
+}
+
+/* PLACEHOLDER */
+
+.settings-placeholder {
+    color: #bcc2ca;
+}
+
+.settings-placeholder i {
+    color: #a6adb7;
+}
+
+.settings-placeholder h3 {
+    color: #f1f3f5;
+}
+
+.settings-placeholder p {
+    color: #b3bac3;
+}
+
+/* KEYMAP */
+
+.settings-keymap-page {
+    background: #3b3f45;
+}
+
+.settings-keymap-page-header {
+    border-bottom-color: var(--settings-border);
+}
+
+.settings-keymap-page-header h2 {
+    color: #f0f2f5;
+}
+
+.settings-keymap-page-header p,
+.settings-keymap-hint {
+    color: #c2c8d0;
+}
+
+.settings-keymap-hint kbd,
+.settings-keymap-shortcuts kbd {
+    color: #edf1f5;
+    background: #3a3e44;
+    border-color: var(--settings-border-strong);
+}
+
+.settings-window .shortcuts-embedded .shortcuts-tabs {
+    border-bottom-color: var(--settings-border);
+}
+
+.settings-window .shortcuts-embedded .tab-btn {
+    color: #c2c8d0;
+}
+
+.settings-window .shortcuts-embedded .tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.065);
+}
+
+.settings-window .shortcuts-embedded .tab-btn.active {
+    color: #ffffff;
+    background: #4a4f56;
+    box-shadow: 0 -2px 0 var(--settings-accent) inset;
+}
+
+.settings-window .shortcuts-embedded .shortcuts-table tr:not(:last-child) {
+    border-color: var(--settings-border);
+}
+
+.settings-window .shortcuts-embedded .shortcuts-table tr:hover {
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.settings-window .shortcuts-embedded .desc-cell {
+    color: #d5dbe2;
+}
+
+.settings-window .shortcuts-embedded #shortcut-search,
+.settings-window .shortcuts-embedded #category-dropdown,
+.settings-window .shortcuts-embedded .desc-input,
+.settings-window .shortcuts-embedded .key-capture-btn {
+    color: #edf1f4;
+    background: #35393f;
+
+    border-color: var(--settings-border-strong);
+}
+
+.settings-window .shortcuts-embedded #shortcut-search:focus {
+    border-color: rgba(212, 139, 67, 0.75);
+}
+
+.settings-window .shortcuts-embedded .search-results {
+    background: #3b4046;
+    border-color: var(--settings-border-strong);
+}
+
+.settings-window .shortcuts-embedded .result-category {
+    color: #d4dae1;
+    background: #4a4f56;
+}
+
+.settings-window .shortcuts-embedded .primary-btn,
+.settings-window .shortcuts-embedded .outline-btn {
+    color: #f0f2f5;
+    background: #454a51;
+
+    border-color: var(--settings-border-strong);
+}
+
+.settings-window .shortcuts-embedded .primary-btn:hover,
+.settings-window .shortcuts-embedded .outline-btn:hover {
+    color: #ffffff;
+    background: #525860;
+}
+
+.settings-window .shortcuts-embedded .shortcut-editor {
+    background: #3a3f45;
+    border-color: var(--settings-border);
+}
+
+/* ADD-ONS */
+
+.settings-window #sm-addon-settings-root {
+    background: #3b3f45;
+    color: var(--settings-text);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-page-head,
+.settings-window #sm-addon-settings-root .sm-addon-toolbar {
+    background: #373b41;
+    border-bottom-color: var(--settings-border);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-page-title > i {
+    color: var(--settings-accent);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-page-title strong,
+.settings-window #sm-addon-settings-root .sm-addon-card-title {
+    color: #f0f2f5;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-page-title span,
+.settings-window #sm-addon-settings-root .sm-addon-page-count,
+.settings-window #sm-addon-settings-root .sm-addon-card-meta,
+.settings-window #sm-addon-settings-root .sm-addon-card-meta code,
+.settings-window #sm-addon-settings-root .sm-addon-description,
+.settings-window #sm-addon-settings-root .sm-addon-detail-title,
+.settings-window #sm-addon-settings-root .sm-addon-pref-text small {
+    color: #c3c9d1;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-grid,
+.settings-window #sm-addon-settings-root .sm-addon-details {
+    background: #41454c;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-row {
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-row:hover {
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-text strong {
+    color: #e2e6eb;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-policy-text small {
+    color: #b0b7c0;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-list {
+    background: #3b3f45;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-card {
+    background: #474b52;
+    border-color: rgba(255, 255, 255, 0.045);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-card:hover {
+    background: #4d5259;
+    border-color: var(--settings-border-strong);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-card.open {
+    background: #535860;
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-icon {
+    color: #c0c6ce;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-search-wrap,
+.settings-window #sm-addon-settings-root .sm-addon-select,
+.settings-window #sm-addon-settings-root .sm-addon-category-filter,
+.settings-window #sm-addon-settings-root .sm-addon-pref-control,
+.settings-window #sm-addon-settings-root .sm-addon-command-btn {
+    color: #edf1f5;
+    background: #373c42;
+
+    border-color: var(--settings-border-strong);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-toolbar-btn {
+    color: #c1c7cf;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-command-btn:hover:not(:disabled),
+.settings-window #sm-addon-settings-root .sm-addon-toolbar-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.085);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-pref-text strong {
+    color: #edf1f4;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-runtime-grid > div {
+    background: #454950;
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-switch span {
+    background: #60656c;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-switch input:checked + span {
+    background: #836546;
+}
+
+.settings-window #sm-addon-settings-root .sm-addon-switch input:checked + span::after {
+    background: #f1f3f5;
+}
+
+/* FILE PATHS PAGE */
+
+.settings-window #sm-file-paths-settings-root {
+    color: var(--settings-text);
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-header,
+.settings-window #sm-file-paths-settings-root .sm-fp-validation {
+    background: #373b41;
+    border-color: var(--settings-border);
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-modebar,
+.settings-window #sm-file-paths-settings-root .sm-fp-options,
+.settings-window #sm-file-paths-settings-root .sm-fp-group {
+    background: #41454c;
+    border-color: var(--settings-border);
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-group-head {
+    background: #474b52;
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-heading strong,
+.settings-window #sm-file-paths-settings-root .sm-fp-group-head strong,
+.settings-window #sm-file-paths-settings-root .sm-fp-label strong,
+.settings-window #sm-file-paths-settings-root .sm-fp-option strong {
+    color: #edf1f4;
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-heading span,
+.settings-window #sm-file-paths-settings-root .sm-fp-group-head span,
+.settings-window #sm-file-paths-settings-root .sm-fp-option small,
+.settings-window #sm-file-paths-settings-root .sm-fp-resolved {
+    color: #b9c0c9;
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-field input {
+    color: #f0f2f5;
+    background: #34383e;
+
+    border-color: var(--settings-border-strong);
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-field input:hover {
+    background: #3b4046;
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-field input:focus {
+    background: #43484f;
+    border-color: rgba(212, 139, 67, 0.75);
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-icon-btn {
+    color: #c3c9d1;
+    background: #41464d;
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-btn {
+    color: #c8ced6;
+}
+
+.settings-window #sm-file-paths-settings-root .sm-fp-btn:hover:not(:disabled),
+.settings-window #sm-file-paths-settings-root .sm-fp-icon-btn:hover:not(:disabled) {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* SCROLLBARS */
+
+.settings-window * {
+    scrollbar-color: #6e7680 transparent;
+}
+
+.settings-window *::-webkit-scrollbar-thumb {
+    background: #6e7680;
+}
+
+.settings-window *::-webkit-scrollbar-thumb:hover {
+    background: #87909a;
+}
+
+/* FOCUS */
+
+.settings-window button:focus-visible,
+.settings-window [tabindex]:focus-visible {
+    outline-color: rgba(212, 139, 67, 0.9);
+}

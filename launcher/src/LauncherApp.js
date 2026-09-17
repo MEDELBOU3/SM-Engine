@@ -592,9 +592,12 @@ class LauncherApp {
 
             case "open-url":
                 if (element.dataset.url) {
-                    window.launcherAPI?.openPath(element.dataset.url);
+                    // Must use openExternal for URLs — openPath triggers
+                    // a Windows "No app associated" error for https:// links.
+                    window.launcherAPI?.openExternal(element.dataset.url);
                 }
                 break;
+
 
             case "toggle-engine-menu": {
                 const version = element.dataset.version || '';

@@ -68,33 +68,44 @@ class UpdateService extends EventEmitter {
 
         const url = `https://api.github.com/repos/${this.githubRepo}/releases`;
         const headers = {
-            'User-Agent': 'SM-Engine-Launcher/1.0.0',
+            'User-Agent': 'SM-Engine-Launcher/1.0.2',
             'Accept': 'application/vnd.github.v3+json'
         };
 
         try {
             const data = await this._httpGetJson(url, headers);
             if (Array.isArray(data) && data.length > 0) {
-                this.cachedReleases = data.map(rel => ({
-                    id: String(rel.id),
-                    tag: rel.tag_name || rel.name,
-                    version: (rel.tag_name || rel.name || '1.0.0').replace(/^v/, ''),
-                    name: rel.name || rel.tag_name,
-                    body: rel.body || '',
-                    publishedAt: rel.published_at,
-                    prerelease: rel.prerelease || false,
-                    htmlUrl: rel.html_url,
-                    assets: (rel.assets || []).map(asset => ({
-                        id: asset.id,
-                        name: asset.name,
-                        size: asset.size,
-                        downloadUrl: asset.browser_download_url,
-                        contentType: asset.content_type
-                    })),
-                    engineAsset: this.selectEngineAsset(rel.assets || [])
-                }));
-                this.lastFetchTime = now;
-                return this.cachedReleases;
+                // Exclude launcher releases (e.g. launcher-v1.0.2) so only engine releases are listed
+                const engineReleases = data.filter(rel => {
+                    const tag = String(rel.tag_name || rel.name || '').toLowerCase();
+                    return !tag.startsWith('launcher-');
+                });
+
+                if (engineReleases.length > 0) {
+                    this.cachedReleases = engineReleases.map(rel => {
+                        const rawAssets = (rel.assets || []).map(asset => ({
+                            id: asset.id,
+                            name: asset.name,
+                            size: asset.size,
+                            downloadUrl: asset.browser_download_url,
+                            contentType: asset.content_type
+                        }));
+                        return {
+                            id: String(rel.id),
+                            tag: rel.tag_name || rel.name,
+                            version: (rel.tag_name || rel.name || '1.0.0').replace(/^v/, ''),
+                            name: rel.name || rel.tag_name,
+                            body: rel.body || '',
+                            publishedAt: rel.published_at,
+                            prerelease: rel.prerelease || false,
+                            htmlUrl: rel.html_url,
+                            assets: rawAssets,
+                            engineAsset: this.selectEngineAsset(rawAssets)
+                        };
+                    });
+                    this.lastFetchTime = now;
+                    return this.cachedReleases;
+                }
             }
         } catch (err) {
             console.warn('[UpdateService] Failed to fetch releases from GitHub:', err.message);
@@ -102,6 +113,24 @@ class UpdateService extends EventEmitter {
 
         // Fallback default release definition
         if (!this.cachedReleases) {
+            const defaultAssets = [
+                {
+                    name: 'SM-Engine-1.0.1-win-x64.zip',
+                    size: 140000000,
+                    downloadUrl: `https://github.com/${this.githubRepo}/releases/download/v1.0.1/SM-Engine-1.0.1-win-x64.zip`
+                },
+                {
+                    name: 'SM-Engine-Setup-1.0.1-x64.exe',
+                    size: 145000000,
+                    downloadUrl: `https://github.com/${this.githubRepo}/releases/download/v1.0.1/SM-Engine-Setup-1.0.1-x64.exe`
+                },
+                {
+                    name: 'SM-Engine-Portable-1.0.1-x64.exe',
+                    size: 140000000,
+                    downloadUrl: `https://github.com/${this.githubRepo}/releases/download/v1.0.1/SM-Engine-Portable-1.0.1-x64.exe`
+                }
+            ];
+
             this.cachedReleases = [
                 {
                     id: 'default-1.0.1',
@@ -112,18 +141,8 @@ class UpdateService extends EventEmitter {
                     publishedAt: new Date().toISOString(),
                     prerelease: false,
                     htmlUrl: `https://github.com/${this.githubRepo}/releases`,
-                    assets: [
-                        {
-                            name: 'SM-Engine-Setup-1.0.1.exe',
-                            size: 145000000,
-                            downloadUrl: `https://github.com/${this.githubRepo}/releases/download/v1.0.1/SM-Engine-Setup-1.0.1.exe`
-                        },
-                        {
-                            name: 'SM-Engine-1.0.1-win-x64.zip',
-                            size: 140000000,
-                            downloadUrl: `https://github.com/${this.githubRepo}/releases/download/v1.0.1/SM-Engine-1.0.1-win-x64.zip`
-                        }
-                    ]
+                    assets: defaultAssets,
+                    engineAsset: this.selectEngineAsset(defaultAssets)
                 }
             ];
         }
@@ -337,7 +356,7 @@ class UpdateService extends EventEmitter {
             };
 
             const client = url.startsWith('https') ? https : http;
-            const req = client.get(url, { headers: { 'User-Agent': 'SM-Engine-Launcher/1.0.0' } }, handleResponse);
+            const req = client.get(url, { headers: { 'User-Agent': 'SM-Engine-Launcher/1.0.2' } }, handleResponse);
 
             req.on('error', (err) => {
                 file.close();

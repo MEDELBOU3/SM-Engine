@@ -580,7 +580,9 @@ export class MarketplaceView {
                             if (url) {
                                 window
                                     .launcherAPI
-                                    ?.openPath?.(
+                                    // openExternal opens URLs in the default
+                                    // browser — openPath is for file paths only
+                                    ?.openExternal?.(
                                         url
                                     );
                             }

@@ -1,0 +1,353 @@
+/* ============================================================================
+   VFX & LOGIC NODE EDITOR - PROFESSIONAL THEME
+   Houdini / Unreal Blueprints Inspired Style
+   ============================================================================ */
+
+:root {
+    --vfx-bg-dark: #111111;
+    --vfx-bg-panel: #1e1e1e;
+    --vfx-bg-node: rgba(45, 45, 45, 0.96);
+    --vfx-border: #000000;
+    --vfx-border-light: #333333;
+    
+    --vfx-text-main: #eeeeee;
+    --vfx-text-dim: #aaaaaa;
+    
+    --vfx-wire-default: #888;
+    --vfx-wire-active: #fb8500;
+    
+    --vfx-cat-event: #e74c3c;   /* Red */
+    --vfx-cat-math: #3498db;    /* Blue */
+    --vfx-cat-scene: #f39c12;   /* Orange */
+    --vfx-cat-post: #9b59b6;    /* Purple */
+    --vfx-cat-input: #27ae60;   /* Green */
+    
+    --vfx-font-ui: 'Segoe UI', Tahoma, sans-serif;
+    --vfx-font-mono: 'Consolas', 'Monaco', monospace;
+}
+
+/* --- 1. Main Container Layout --- */
+
+/* The container created by vfx.js */
+#node-editor-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background-color: var(--vfx-bg-dark);
+    font-family: var(--vfx-font-ui);
+    color: var(--vfx-text-main);
+    overflow: hidden;
+    user-select: none;
+    font-size: 11px;
+}
+
+/* --- 2. Sidebars (Library & Properties) --- */
+
+.vfx-sidebar, 
+.vfx-properties {
+    width: 250px;
+    min-width: 250px;
+    background-color: var(--vfx-bg-panel);
+    display: flex;
+    flex-direction: column;
+    z-index: 20; /* Above canvas */
+}
+
+.vfx-sidebar { border-right: 1px solid var(--vfx-border); }
+.vfx-properties { border-left: 1px solid var(--vfx-border); }
+
+/* Headers */
+.vfx-header {
+    padding: 10px 12px;
+    background: #252525;
+    border-bottom: 1px solid var(--vfx-border);
+    font-weight: bold;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--vfx-cat-math); /* Accent color */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Library List */
+.vfx-category {
+    border-bottom: 1px solid var(--vfx-border-light);
+}
+
+.vfx-category summary {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    color: #999;
+    background: #222;
+    list-style: none;
+    text-transform: uppercase;
+}
+
+.vfx-category summary:hover {
+    color: #fff;
+    background: #2a2a2a;
+}
+
+/* Node Item Buttons in Library */
+.vfx-node-item {
+    padding: 6px 20px;
+    cursor: grab;
+    font-size: 11px;
+    color: #ccc;
+    background: transparent;
+    transition: background 0.1s;
+}
+
+.vfx-node-item:hover {
+    background: #333;
+    color: #fff;
+    border-left: 2px solid var(--vfx-cat-math);
+    padding-left: 18px;
+}
+
+.vfx-node-item:active { cursor: grabbing; }
+
+/* --- 3. Canvas Area --- */
+
+#node-editor-canvas {
+    flex: 1;
+    position: relative;
+    background-color: #121212;
+    overflow: hidden;
+    /* Infinite Dot Grid */
+    background-image: radial-gradient(circle, #2a2a2a 1px, transparent 1px);
+    background-size: 25px 25px;
+    cursor: grab;
+}
+
+#node-editor-canvas.panning { cursor: grabbing; }
+
+/* The Layer that holds nodes (transformed by pan/zoom) */
+#vfx-graph-content {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    transform-origin: 0 0;
+    pointer-events: none; /* Pass clicks to canvas for panning */
+}
+
+/* The SVG Layer for Wires */
+#vfx-connection-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 1;
+}
+
+/* The Node HTML Layer */
+#vfx-node-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* --- 4. The Nodes --- */
+
+.vfx-node {
+    position: absolute;
+    width: 160px;
+    background: var(--vfx-bg-node);
+    border: 1px solid var(--vfx-border);
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto; /* Re-enable clicks on nodes */
+    transition: box-shadow 0.1s, border-color 0.1s;
+}
+
+/* Selected State */
+.vfx-node.selected {
+    border: 1px solid var(--vfx-wire-active);
+    box-shadow: 0 0 0 1px var(--vfx-wire-active), 0 8px 20px rgba(0,0,0,0.8);
+    z-index: 100 !important;
+}
+
+/* Node Header */
+.vfx-node-header {
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #eee;
+    background: #333;
+    border-bottom: 1px solid var(--vfx-border);
+    border-radius: 3px 3px 0 0;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Category Color Coding (Left Border) */
+.vfx-node[data-cat="Event"] .vfx-node-header { border-left: 3px solid var(--vfx-cat-event); }
+.vfx-node[data-cat="Math"] .vfx-node-header { border-left: 3px solid var(--vfx-cat-math); }
+.vfx-node[data-cat="Scene"] .vfx-node-header { border-left: 3px solid var(--vfx-cat-scene); }
+.vfx-node[data-cat="Post"] .vfx-node-header { border-left: 3px solid var(--vfx-cat-post); }
+.vfx-node[data-cat="Input"] .vfx-node-header { border-left: 3px solid var(--vfx-cat-input); }
+
+/* Node Body */
+.vfx-node-body {
+    padding: 8px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.vfx-inputs { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+.vfx-outputs { flex: 1; display: flex; flex-direction: column; align-items: flex-end; }
+
+/* --- 5. Ports (Sockets) --- */
+
+.vfx-port-row {
+    position: relative;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.vfx-port-label {
+    font-family: var(--vfx-font-mono);
+    font-size: 9px;
+    color: #aaa;
+    pointer-events: none;
+    padding: 0 8px;
+}
+
+.vfx-port {
+    width: 10px;
+    height: 10px;
+    background: #1a1a1a;
+    border: 2px solid #777;
+    border-radius: 50%;
+    cursor: crosshair;
+    position: absolute;
+    top: 4px;
+    z-index: 5;
+    transition: transform 0.1s, background-color 0.1s;
+}
+
+/* Input Ports on Left, Output Ports on Right */
+.vfx-port.input { left: -6px; border-color: #888; }
+.vfx-port.output { right: -6px; border-color: var(--vfx-wire-active); }
+
+/* Port Hover */
+.vfx-port:hover {
+    background: #fff;
+    border-color: #fff;
+    transform: scale(1.3);
+}
+
+/* --- 6. Properties Panel (Right) --- */
+
+.vfx-prop-row {
+    margin-bottom: 12px;
+}
+
+.vfx-prop-row label {
+    display: block;
+    font-size: 10px;
+    color: var(--vfx-text-dim);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.vfx-prop-row input[type="text"],
+.vfx-prop-row input[type="number"],
+.vfx-prop-row select {
+    width: 100%;
+    background: var(--vfx-bg-dark);
+    border: 1px solid var(--vfx-border-light);
+    color: var(--vfx-text-main);
+    padding: 5px;
+    font-size: 11px;
+    border-radius: 2px;
+    box-sizing: border-box;
+    font-family: var(--vfx-font-mono);
+}
+
+.vfx-prop-row input:focus {
+    border-color: var(--vfx-cat-math);
+    outline: none;
+}
+
+
+/* Docked Graph Workspace layout. The VFX editor also supports a legacy floating
+   window, so these rules are deliberately scoped to its workspace wrapper. */
+#global-node-editor-container #vfx-graph-wrapper {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+#global-node-editor-container #vfx-graph-wrapper.active {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+#global-node-editor-container #vfx-graph-wrapper > #node-editor-container.vfx-editor-docked {
+    position: relative !important;
+    inset: auto !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    resize: none !important;
+    overflow: hidden !important;
+    display: grid !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    grid-template-columns: 240px minmax(0, 1fr) 250px !important;
+    grid-template-areas: "sidebar canvas properties" !important;
+}
+
+#global-node-editor-container #vfx-graph-wrapper .panel-header-vfx {
+    display: none !important;
+}
+
+#global-node-editor-container #vfx-graph-wrapper .node-sidebar,
+#global-node-editor-container #vfx-graph-wrapper .node-canvas,
+#global-node-editor-container #vfx-graph-wrapper .node-properties {
+    width: auto !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+#global-node-editor-container #vfx-graph-wrapper .node-sidebar {
+    grid-area: sidebar !important;
+}
+
+#global-node-editor-container #vfx-graph-wrapper .node-canvas {
+    grid-area: canvas !important;
+    overflow: hidden !important;
+}
+
+#global-node-editor-container #vfx-graph-wrapper .node-properties {
+    grid-area: properties !important;
+}
+
+@media (max-width: 900px) {
+    #global-node-editor-container #vfx-graph-wrapper > #node-editor-container.vfx-editor-docked {
+        grid-template-columns: 190px minmax(260px, 1fr) 210px !important;
+    }
+}

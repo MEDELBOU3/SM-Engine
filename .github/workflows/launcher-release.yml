@@ -36,8 +36,32 @@ jobs:
         with:
           name: SM Engine Launcher ${{ github.ref_name }}
           generate_release_notes: true
+          body: |
+            ### 📦 Available Downloads (Windows 64-bit / x64)
+
+            | Package | Type | Details |
+            | :--- | :--- | :--- |
+            | **`SM-Engine-Launcher-Setup-*.exe`** | **Installer (Recommended)** | Installs to user profile with Desktop & Start menu shortcuts (No Admin/UAC required). |
+            | **`SM-Engine-Launcher-Portable-*.exe`** | **Portable Executable** | Runs immediately without installing anything. |
+            | **`SM-Engine-Launcher-*-win-x64.zip`** | **ZIP Archive** | Extract and run from any folder or external drive. |
+
+            ---
+
+            ### 💻 System Requirements
+            * **Operating System**: Windows 10 / Windows 11 (64-bit)
+            * **Architecture**: x64 (AMD64 / Intel 64)
+            * **Disk Space**: ~500 MB for launcher, ~2 GB+ for 3D engine versions
+            * **RAM**: 4 GB minimum (8 GB+ recommended)
+
+            ---
+
+            ### 🛡️ Windows Defender SmartScreen Note
+            As an open-source release, Windows may display an *"Unrecognized app"* warning on the first run:
+            1. Click **More info** (*Plus d'infos* / *Weitere Informationen*)
+            2. Click **Run anyway** (*Exécuter quand même* / *Trotzdem ausführen*)
           files: |
             launcher/dist-win/*.exe
+            launcher/dist-win/*.zip
             launcher/dist-win/*.blockmap
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

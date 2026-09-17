@@ -1,0 +1,33 @@
+﻿/* ================================================================
+   BASE RESET & GLOBAL STYLES
+   Global reset, body, html base
+================================================================ */
+
+/* Spreadsheet & History panel width toggles */
+body.spreadsheet-active { --spreadsheet-width: 320px; }
+body.history-active      { --history-width: 300px; }
+
+/* 1. GLOBAL RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--primary-dark);
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+/* Logo */
+.logo { display: flex; align-items: center; margin-right: 15px; }
+.logo__svg { width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); transition: transform 0.2s; }
+.logo:hover .logo__svg { transform: scale(1.1); }
+.logo__text { letter-spacing: 0.5px; }
+.logo__text-pro { font-size: 0.5em; vertical-align: super; margin-left: 2px; color: var(--text-secondary); font-weight: 400; }
+
+/* Recording status */
+#statusBar { background: rgba(0,0,0,0.4); border-radius: 20px; padding: 2px 12px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); }
+#recordingTimer { font-weight: 700; font-family: 'Courier New', Courier, monospace; letter-spacing: 1px; color: #ff4d4d; }

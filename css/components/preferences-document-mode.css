@@ -1,0 +1,164 @@
+/* ==========================================================================
+   SM ENGINE — PREFERENCES DOCUMENT = EDITOR SCENE v3
+   Load AFTER your normal editor/settings CSS.
+   ========================================================================== */
+
+/*
+ * Important:
+ * Geometry is normally written by SettingsPanel from:
+ *
+ *   #editor-scene.getBoundingClientRect()
+ *
+ * So Preferences follows the REAL viewport when Hierarchy, Inspector,
+ * Spreadsheet, History or Timeline are resized.
+ */
+#sm-settings-document-surface {
+    position: fixed !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    display: none;
+
+    overflow: hidden !important;
+
+    background: var(--panel-bg, #333333);
+
+    /*
+     * Your #subToolBar is z-index:100 in the supplied CSS.
+     * Keep Preferences below it but above normal editor content.
+     */
+    z-index: 90 !important;
+}
+
+#sm-settings-document-surface.open {
+    display: block !important;
+}
+
+#sm-settings-document-surface
+> #settings-window.settings-document-mode {
+    position: absolute !important;
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    transform: none !important;
+    opacity: 1 !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+
+    overflow: hidden !important;
+
+    background: var(--panel-bg, #333333);
+}
+
+#sm-settings-document-surface
+> #settings-window.settings-document-mode
+> .settings-window-titlebar {
+    display: none !important;
+}
+
+#sm-settings-document-surface
+> #settings-window.settings-document-mode
+> .settings-window-body {
+    width: 100% !important;
+    height: 0 !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    flex: 1 1 0% !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+
+    overflow: hidden !important;
+}
+
+#sm-settings-document-surface
+#settings-window.settings-document-mode
+.settings-sidebar {
+    width: 174px !important;
+
+    min-height: 0 !important;
+
+    flex: 0 0 174px !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+#sm-settings-document-surface
+#settings-window.settings-document-mode
+.settings-main {
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    flex: 1 1 0% !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+#sm-settings-document-surface
+#settings-window.settings-document-mode
+.settings-section.active {
+    min-height: 100% !important;
+}
+
+/*
+ * CSS-only fallback if JavaScript cannot find #editor-scene.
+ * Same horizontal model as the supplied #subToolBar:
+ *
+ * left = hierarchy + spreadsheet + history
+ * right = inspector
+ *
+ * bottom = timeline
+ */
+#sm-settings-document-surface[data-bounds-source="layout-css-variables"] {
+    left:
+        calc(
+            var(--hierarchy-live-width, var(--hierarchy-width-default))
+            + var(--spreadsheet-width, 0px)
+            + var(--history-width, 0px)
+        ) !important;
+
+    top:
+        calc(
+            var(--toolbar-height, 36px)
+            + var(--sub-toolbar-height, 38px)
+        ) !important;
+
+    right:
+        var(--inspector-live-width, 0px) !important;
+
+    bottom:
+        var(
+            --timeline-live-height,
+            var(--timeline-height, 0px)
+        ) !important;
+
+    width: auto !important;
+    height: auto !important;
+}
+
+@media (max-width: 720px) {
+    #sm-settings-document-surface
+    #settings-window.settings-document-mode
+    .settings-sidebar {
+        width: 48px !important;
+        flex-basis: 48px !important;
+    }
+}

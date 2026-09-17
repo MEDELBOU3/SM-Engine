@@ -1,0 +1,151 @@
+﻿/* ================================================================
+   SOUND PANEL & METERS
+================================================================ */
+.meter-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.meter-group {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background-color: var(--secondary-dark);
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.meter-title {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+    text-align: center;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.meter-container {
+    height: 8px;
+    background-color: var(--input-bg);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.meter-fill {
+    height: 100%;
+    width: 0%;
+    background-color: var(--accent-success);
+    transition: width 0.1s ease-out;
+}
+
+.meter-fill.peak {
+    background-color: var(--accent-danger);
+}
+
+.main-content-sound {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.visualization-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.viz-panel {
+    background-color: var(--secondary-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.viz-header {
+    font-weight: bold;
+    color: var(--text-primary);
+    font-size: 13px;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.viz-panel canvas {
+    background-color: var(--primary-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    width: 100%;
+    height: 100px;
+}
+
+.effect-rack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.effect-module {
+    background-color: var(--secondary-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.effect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.effect-title {
+    font-weight: bold;
+    color: var(--accent-blue-dark);
+    font-size: 14px;
+}
+
+.effect-module .btn {
+    padding: 4px 8px;
+    background-color: var(--accent-blue-dark);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.effect-module .btn:hover {
+    background-color: color-mix(in srgb, var(--accent-blue-dark) 90%, white);
+}
+
+.effect-module .btn.off {
+    background-color: var(--input-bg);
+}
+
+.effect-module .btn.off:hover {
+    background-color: var(--hover-bg);
+}
+
+.eq-controls,
+.dynamics-controls,
+.reverb-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-around;
+}

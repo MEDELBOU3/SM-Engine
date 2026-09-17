@@ -76,12 +76,7 @@ function createBlenderGrid(size = 100, divisions = 100, centerColor = 0x444444, 
     gridHelper.position.y = 0;
     gridGroup.add(gridHelper);
 
-    // Create a smaller, more prominent grid at the center
-    const centerGrid = new THREE.GridHelper(10, 10, 0x4444ff, 0xaaaaaa);
-    centerGrid.material.transparent = true;
-    centerGrid.material.opacity = 0.5;
-    centerGrid.position.y = 0.001; // Slightly above the main grid to avoid z-fighting
-    gridGroup.add(centerGrid);
+    // Center grid removed to avoid unwanted white square overlay at origin
 
     // Create axis lines that extend beyond the grid
     const axisLength = size / 2 + 5;

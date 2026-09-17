@@ -1,0 +1,205 @@
+/* ==============================================================
+   SM ENGINE — VIDEO INSPECTOR SIDEBAR
+   Uses canonical roots.css tokens.
+   ============================================================== */
+
+/* The anchor occupies no layout outside Video Editing mode. */
+#video-inspector-sidebar-tools{
+    display:none!important;
+    width:100%;
+    flex:0 0 auto;
+    box-sizing:border-box;
+}
+
+/*
+ * IMPORTANT:
+ * Visibility depends ONLY on body.video-editing-mode.
+ * It no longer depends on a JS-added class, so the buttons appear even
+ * if the Inspector DOM was rebuilt during the workspace switch.
+ */
+body.video-editing-mode #video-inspector-sidebar-tools{
+    display:flex!important;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+}
+
+.video-inspector-side-btn{
+    position:relative;
+    color:var(--text-secondary)!important;
+    background:transparent!important;
+    border:0!important;
+    border-radius:0!important;
+    transition:
+        background var(--transition-fast,120ms),
+        color var(--transition-fast,120ms);
+}
+
+.video-inspector-side-btn:hover{
+    color:var(--text-primary)!important;
+    background:var(--hover-bg)!important;
+}
+
+.video-inspector-side-btn.active{
+    color:var(--text-primary)!important;
+    background:var(--active-bg)!important;
+    box-shadow:
+        inset 2px 0 0
+        var(--video-accent);
+}
+
+.video-inspector-side-btn.active::after{
+    content:"";
+    position:absolute;
+    right:2px;
+    top:50%;
+    width:3px;
+    height:3px;
+    border-radius:50%;
+    background:var(--video-accent);
+    transform:translateY(-50%);
+}
+
+.video-inspector-side-btn i{
+    width:15px;
+    text-align:center;
+    font-size:12px;
+}
+
+/* Main right Inspector host while a video panel is active. */
+body.video-editing-mode
+#inspector-main-content.video-inspector-panel-host{
+    min-width:0;
+    min-height:0;
+    height:100%;
+    overflow:auto;
+    padding:0;
+    background:var(--panel-bg);
+    color:var(--text-primary);
+    scrollbar-width:thin;
+    scrollbar-color:
+        var(--video-scroll-thumb)
+        var(--video-scroll-track);
+}
+
+body.video-editing-mode
+#inspector-main-content.video-inspector-panel-host::-webkit-scrollbar{
+    width:5px;
+    height:5px;
+}
+
+body.video-editing-mode
+#inspector-main-content.video-inspector-panel-host::-webkit-scrollbar-track{
+    background:var(--video-scroll-track);
+}
+
+body.video-editing-mode
+#inspector-main-content.video-inspector-panel-host::-webkit-scrollbar-thumb{
+    background:var(--video-scroll-thumb);
+    border-radius:999px;
+}
+
+body.video-editing-mode
+#inspector-main-content.video-inspector-panel-host::-webkit-scrollbar-thumb:hover{
+    background:var(--video-scroll-thumb-hover);
+}
+
+/* Effects Browser must stack in this narrow inspector host.
+   This is element-context styling, not viewport-media-query styling. */
+#inspector-main-content.video-inspector-panel-host .vefx-shell{
+    grid-template-columns:1fr!important;
+    width:100%!important;
+    max-width:100%!important;
+    overflow:hidden!important;
+}
+
+#inspector-main-content.video-inspector-panel-host .vefx-list{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:2px!important;
+    max-height:190px!important;
+}
+
+#inspector-main-content.video-inspector-panel-host .vefx-stack-body{
+    max-height:none!important;
+}
+
+#inspector-main-content.video-inspector-panel-host
+.video-tool-pane-main{
+    width:100%;
+    min-width:0;
+    box-sizing:border-box;
+}
+
+/* Existing advanced panels are allowed to fill the right Inspector
+   instead of inheriting widths intended for the timeline dock. */
+#inspector-main-content.video-inspector-panel-host
+.vea-card,
+#inspector-main-content.video-inspector-panel-host
+.sequencer-inspector,
+#inspector-main-content.video-inspector-panel-host
+.vetr-shell,
+#inspector-main-content.video-inspector-panel-host
+.vexp{
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    box-sizing:border-box;
+}
+
+#inspector-main-content.video-inspector-panel-host .vetr-shell{
+    grid-template-columns:1fr!important;
+}
+
+.video-inspector-empty-state{
+    min-height:180px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:20px;
+    box-sizing:border-box;
+    text-align:center;
+    color:var(--text-muted);
+}
+
+.video-inspector-empty-state i{
+    font-size:18px;
+    color:var(--video-accent);
+    opacity:.9;
+}
+
+.video-inspector-empty-state strong{
+    color:var(--text-secondary);
+    font-size:11px;
+}
+
+.video-inspector-empty-state span{
+    max-width:240px;
+    font-size:9px;
+    line-height:1.5;
+}
+
+/* Future small screens / very narrow Inspector. */
+@media(max-width:420px){
+    #inspector-main-content.video-inspector-panel-host .vefx-list{
+        grid-template-columns:1fr!important;
+    }
+}
+
+
+/* Hard visibility guard against generic .video-mode-element / panel rules. */
+body.video-editing-mode
+.inspector-sidebar
+#video-inspector-sidebar-tools
+.video-inspector-side-btn{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    flex:0 0 32px;
+    width:32px!important;
+    height:32px!important;
+    min-width:32px!important;
+    min-height:32px!important;
+}

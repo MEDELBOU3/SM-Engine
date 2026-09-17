@@ -1,0 +1,673 @@
+/* Terrain graph workspace. Scoped to avoid collisions with material/VFX node editors. */
+#terrain-editor-host{--tne-bg:var(--primary-dark);--tne-panel:var(--panel-bg);--tne-panel-raised:var(--secondary-dark);--tne-border:var(--border-color);--tne-border-strong:var(--input-border);--tne-text:var(--text-primary);--tne-muted:var(--text-secondary);--tne-faint:var(--text-muted);--tne-blue:var(--accent-blue);--tne-cyan:var(--accent-info);--tne-green:var(--accent-success);--tne-amber:var(--accent-orange-light);--tne-red:var(--accent-danger);--tne-violet:var(--accent-purple);color:var(--tne-text);font-family:Inter,"Segoe UI",sans-serif;}
+#terrain-node-panel{width:268px!important;min-width:240px!important;background:var(--tne-panel)!important;border-right:1px solid var(--tne-border)!important;}
+#terrain-node-panel > div:first-child{min-height:34px;background:var(--primary-dark);}
+.tne-tab{min-width:0;padding:0 8px;background:transparent;border:0;border-right:1px solid var(--header-bg);border-bottom:2px solid transparent;color:var(--tne-muted);font-size:10px;font-weight:700;letter-spacing:0;text-transform:uppercase;cursor:pointer;}
+.tne-tab:hover{color:var(--tne-text);background:var(--hover-bg);}
+.tne-tab-active{color:var(--tne-blue);background:var(--hover-bg);border-bottom-color:var(--tne-blue);}
+.tne-graph-toolbar{min-height:39px;padding:5px 8px!important;background:var(--secondary-dark)!important;border-bottom-color:var(--tne-border)!important;}
+.tne-graph-toolbar button{display:inline-grid;place-items:center;width:28px!important;height:28px!important;padding:0;background:var(--secondary-dark)!important;border:1px solid var(--border-color)!important;border-radius:4px!important;color:var(--tne-muted)!important;}
+.tne-graph-toolbar button:hover{border-color:var(--input-border)!important;background:var(--hover-bg)!important;color:var(--tne-text)!important;}
+.tne-graph-toolbar #node-apply-graph{color:var(--tne-cyan)!important;}
+.tne-live-indicator{display:inline-flex;align-items:center;gap:5px;margin-left:auto;color:var(--tne-muted);font:600 9px/1 "JetBrains Mono",Consolas,monospace;}
+.tne-live-indicator::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--tne-green);box-shadow:0 0 0 2px rgba(var(--accent-success-rgb),0.16);}
+.tne-palette-search{position:relative;padding:8px 8px 4px;background:var(--tne-panel);}
+.tne-palette-search i{position:absolute;left:17px;top:17px;color:var(--tne-faint);font-size:10px;pointer-events:none;}
+#terrain-node-search{width:100%;height:28px;box-sizing:border-box;padding:0 28px;border:1px solid var(--tne-border);border-radius:4px;outline:none;background:var(--input-bg);color:var(--tne-text);font-size:10px;}
+#terrain-node-search:focus{border-color:var(--tne-blue);box-shadow:0 0 0 1px rgba(var(--accent-blue-rgb),0.25);}
+#terrain-node-search::placeholder{color:var(--tne-faint);}
+.tne-tab-panel{padding:8px!important;background:var(--tne-panel);}
+.tne-section-label{display:flex;align-items:center;gap:7px;margin:12px 2px 7px!important;padding:0;border:0;color:var(--tne-faint);font-size:9px;font-weight:800;letter-spacing:0;text-transform:uppercase;}
+.tne-section-label::after{content:"";height:1px;flex:1;background:var(--tne-border);}
+.tne-node-btn,.tne-preset-btn{position:relative;display:flex;align-items:center;width:100%;min-height:31px;margin:0 0 4px;padding:5px 8px;gap:8px;overflow:hidden;background:var(--secondary-dark);border:1px solid var(--border-color);border-radius:4px;color:var(--text-secondary);font-size:10px;line-height:1.2;text-align:left;cursor:pointer;}
+.tne-node-btn::after,.tne-preset-btn::after{content:"+";margin-left:auto;color:var(--tne-faint);font:600 13px/1 "JetBrains Mono",Consolas,monospace;}
+.tne-node-btn:hover,.tne-preset-btn:hover{background:var(--hover-bg);border-color:var(--input-border);color:var(--text-primary);transform:none;box-shadow:none;}
+.tne-node-btn:hover::after,.tne-preset-btn:hover::after{color:var(--tne-blue);}
+.tne-node-btn svg{flex:0 0 auto;opacity:0.9;}
+.tne-paint-btn{display:flex;align-items:center;justify-content:center;gap:7px;min-height:30px;background:var(--secondary-dark);border:1px solid var(--border-color);border-radius:4px;color:var(--tne-muted);font-size:10px;cursor:pointer;}
+.tne-paint-btn:hover{background:var(--hover-bg);border-color:var(--input-border);color:var(--tne-text);}
+.tne-paint-active{color:var(--tne-cyan);border-color:rgba(var(--accent-info-rgb),0.65);background:rgba(var(--accent-info-rgb),0.08);}
+#node-params-container{max-height:310px!important;padding:0!important;background:var(--primary-dark)!important;border-top:1px solid var(--tne-border)!important;color:var(--tne-muted)!important;}
+.tne-param-header{position:sticky;top:0;z-index:3;display:flex;align-items:center;min-height:40px;padding:7px 10px;gap:8px;background:var(--panel-bg);border-bottom:1px solid var(--tne-border);}
+.tne-param-icon{display:grid;place-items:center;width:24px;height:24px;border-radius:4px;background:color-mix(in srgb,var(--node-color,var(--tne-blue)) 16%,var(--primary-dark));color:var(--node-color,var(--tne-blue));}
+.tne-param-title{min-width:0;flex:1;}
+.tne-param-title strong,.tne-param-title span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tne-param-title strong{color:var(--tne-text);font-size:10px;font-weight:750;}
+.tne-param-title span{margin-top:2px;color:var(--tne-faint);font-size:8px;text-transform:uppercase;}
+.tne-param-list{padding:8px 10px 11px;}
+.tne-param-field{margin-bottom:10px;}
+.tne-param-field:last-child{margin-bottom:0;}
+.tne-param-field label{display:flex!important;align-items:center;min-height:17px;margin:0 0 3px!important;gap:7px;color:var(--tne-muted)!important;font-size:9px!important;}
+.tne-param-field label > span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tne-param-value{margin-left:auto;min-width:48px;padding:2px 5px;border:1px solid var(--input-border);border-radius:3px;background:var(--input-bg);color:var(--text-secondary);font:500 9px/1.2 "JetBrains Mono",Consolas,monospace;text-align:right;}
+#node-params-container input[type="range"]{width:100%;height:3px;margin:4px 0 0;appearance:none;border-radius:0;background:var(--border-color);accent-color:var(--node-color,var(--tne-blue));}
+#node-params-container input[type="range"]::-webkit-slider-thumb{width:10px;height:10px;appearance:none;border:2px solid var(--text-primary);border-radius:50%;background:var(--node-color,var(--tne-blue));cursor:ew-resize;}
+#node-params-container input[type="checkbox"]{margin-left:auto;accent-color:var(--node-color,var(--tne-blue));}
+#node-graph-container{isolation:isolate;background-color:var(--tne-bg)!important;background-image:linear-gradient(rgba(var(--text-primary-rgb),.045) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--text-primary-rgb),.045) 1px,transparent 1px),linear-gradient(rgba(var(--text-primary-rgb),.022) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--text-primary-rgb),.022) 1px,transparent 1px)!important;background-size:100px 100px,100px 100px,20px 20px,20px 20px!important;box-shadow:inset 0 1px 0 rgba(var(--text-primary-rgb),0.02),inset 18px 0 40px rgba(var(--primary-dark-rgb),0.16)!important;user-select:none;}
+#node-graph-content{pointer-events:none;overflow:visible;}
+#node-connection-canvas{position:absolute!important;inset:0;z-index:2!important;}
+.tne-canvas-hud{position:absolute;top:9px;right:10px;z-index:140;display:flex;align-items:center;gap:1px;height:25px;overflow:hidden;border:1px solid var(--border-color);border-radius:4px;background:rgba(var(--primary-dark-rgb),0.94);color:var(--tne-muted);font:600 9px/1 "JetBrains Mono",Consolas,monospace;pointer-events:none;}
+.tne-canvas-hud span{display:inline-flex;align-items:center;height:100%;padding:0 8px;border-right:1px solid var(--border-color);}
+.tne-canvas-hud span:last-child{border-right:0;}
+.tne-canvas-hud strong{margin-right:4px;color:var(--tne-text);font-weight:700;}
+#terrain-editor-host .node-box{--node-color:var(--tne-blue);position:absolute;display:flex;flex-direction:column;width:210px;min-width:210px;overflow:visible;background:var(--panel-bg);border:1px solid var(--border-color);border-top:2px solid var(--node-color);border-radius:5px;box-shadow:0 10px 24px rgba(var(--primary-dark-rgb),0.36);color:var(--tne-text);pointer-events:auto;transform:translateZ(0);transition:border-color 120ms ease,box-shadow 120ms ease;}
+#terrain-editor-host .node-box[data-category="generator"]{--node-color:var(--tne-blue);}
+#terrain-editor-host .node-box[data-category="shape"]{--node-color:var(--accent-orange-light);}
+#terrain-editor-host .node-box[data-category="filter"]{--node-color:var(--tne-green);}
+#terrain-editor-host .node-box[data-category="mask"]{--node-color:var(--tne-violet);}
+#terrain-editor-host .node-box[data-category="simulation"]{--node-color:var(--tne-cyan);}
+#terrain-editor-host .node-box:hover{border-color:var(--input-border);box-shadow:0 13px 30px rgba(var(--primary-dark-rgb),0.44);}
+#terrain-editor-host .node-box.selected{border-color:var(--node-color);box-shadow:0 0 0 1px var(--node-color),0 14px 32px rgba(var(--primary-dark-rgb),0.48);}
+#terrain-editor-host .node-box.is-output::after{content:"OUT";position:absolute;right:6px;bottom:-17px;padding:2px 5px;border-radius:3px;background:var(--node-color);color:var(--primary-dark);font:800 8px/1 "JetBrains Mono",Consolas,monospace;}
+#terrain-editor-host .node-box.is-bypassed{opacity:0.58;filter:saturate(0.35);}
+#terrain-editor-host .node-header{display:flex;align-items:center;min-height:34px;padding:0 7px 0 8px;gap:7px;background:var(--header-bg);border:0;border-bottom:1px solid var(--border-color);border-radius:3px 3px 0 0;cursor:grab;}
+.node-type-icon{display:grid;place-items:center;width:20px;height:20px;flex:0 0 auto;border-radius:4px;background:color-mix(in srgb,var(--node-color) 17%,var(--primary-dark));color:var(--node-color);font-size:10px;}
+.node-title-stack{min-width:0;flex:1;}
+.node-title-stack strong,.node-title-stack span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.node-title-stack strong{color:var(--text-primary);font-size:10px;font-weight:800;text-transform:uppercase;}
+.node-title-stack span{margin-top:1px;color:var(--text-muted);font-size:8px;font-weight:600;text-transform:uppercase;}
+.node-header-actions{display:flex;align-items:center;gap:2px;}
+.node-header-actions button{display:grid;place-items:center;width:19px;height:19px;padding:0;border:0;border-radius:3px;background:transparent;color:var(--text-muted);font-size:9px;cursor:pointer;}
+.node-header-actions button:hover{background:var(--border-color);color:var(--text-primary);}
+.node-header-actions .node-bypass-btn.active{color:var(--accent-warning);}
+.node-header-actions .node-remove-btn{position:static;opacity:1;line-height:1;}
+.node-header-actions .node-remove-btn:hover{background:rgba(var(--accent-danger-rgb),0.12);color:var(--tne-red);}
+.node-summary{display:flex;align-items:center;min-height:27px;padding:0 9px;gap:7px;border-bottom:1px solid var(--border-color);color:var(--text-muted);font-size:8px;}
+.node-summary strong{color:var(--text-secondary);font:600 8px/1 "JetBrains Mono",Consolas,monospace;}
+.node-summary .node-state{margin-left:auto;color:var(--node-color);font-weight:750;text-transform:uppercase;}
+#terrain-editor-host .node-ports-wrapper{display:flex;flex-direction:column;padding:7px 0;gap:4px;background:var(--panel-bg);}
+.node-port-row{display:flex;align-items:center;min-height:22px;padding:0 9px;color:var(--text-muted);font-size:9px;}
+.node-port-row.output{justify-content:flex-end;}
+.node-port-label{padding:0!important;color:var(--text-muted)!important;font:500 9px/1 Inter,"Segoe UI",sans-serif!important;}
+#terrain-editor-host .node-port{width:10px;height:10px;box-sizing:border-box;flex:0 0 auto;border:2px solid var(--text-secondary);border-radius:50%;background:var(--primary-dark);box-shadow:0 0 0 2px var(--panel-bg);cursor:crosshair;}
+#terrain-editor-host .node-input{margin-left:-14px;margin-right:9px;border-color:var(--text-secondary);}
+#terrain-editor-host .node-output{margin-right:-14px;margin-left:9px;border-color:var(--node-color);background:color-mix(in srgb,var(--node-color) 35%,var(--primary-dark));}
+#terrain-editor-host .node-port:hover{transform:scale(1.35);box-shadow:0 0 0 3px color-mix(in srgb,var(--node-color) 25%,transparent);}
+.node-footer{display:flex;align-items:center;min-height:23px;padding:0 8px;border-top:1px solid var(--border-subtle);color:var(--text-muted);font:600 8px/1 "JetBrains Mono",Consolas,monospace;text-transform:uppercase;}
+.node-footer span:last-child{margin-left:auto;color:var(--node-color);}
+.tne-tab-panel::-webkit-scrollbar,#node-params-container::-webkit-scrollbar{width:6px;}
+.tne-tab-panel::-webkit-scrollbar-track,#node-params-container::-webkit-scrollbar-track{background:transparent;}
+.tne-tab-panel::-webkit-scrollbar-thumb,#node-params-container::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px;}
+@media (max-width:1050px){#terrain-node-panel{width:232px!important;min-width:220px!important;}#terrain-editor-host .node-box{width:196px;min-width:196px;}}
+.tne-param-number{width:58px;height:20px;box-sizing:border-box;outline:none;}
+.tne-param-number:focus{border-color:var(--node-color,var(--tne-blue));}
+.tne-param-number::-webkit-inner-spin-button,.tne-param-number::-webkit-outer-spin-button{opacity:0.35;}
+.tne-params-empty,.tne-empty-graph{display:flex;align-items:center;justify-content:center;color:var(--tne-faint);}
+.tne-params-empty{min-height:84px;flex-direction:column;gap:8px;font-size:9px;text-transform:uppercase;}
+.tne-params-empty i{font-size:15px;color:var(--text-muted);}
+.tne-empty-graph{position:absolute;inset:0;flex-direction:column;gap:7px;pointer-events:none;}
+.tne-empty-graph i{margin-bottom:3px;color:var(--text-muted);font-size:24px;}
+.tne-empty-graph strong{color:var(--text-muted);font-size:11px;font-weight:700;}
+.tne-empty-graph span{color:var(--text-muted);font:700 8px/1 "JetBrains Mono",Consolas,monospace;}
+.node-header-actions .node-output-btn.active{background:color-mix(in srgb,var(--node-color) 16%,transparent);color:var(--node-color);}
+#terrain-editor-host .node-output.connecting{transform:scale(1.4);background:var(--node-color);box-shadow:0 0 0 4px color-mix(in srgb,var(--node-color) 22%,transparent);}
+.tne-node-btn[hidden],.tne-preset-btn[hidden]{display:none;}
+#terrain-editor-host .node-header,#terrain-editor-host .node-title-stack strong,#terrain-editor-host .node-title-stack span{letter-spacing:0;}
+.tne-graph-toolbar button.active{border-color:var(--tne-cyan)!important;color:var(--tne-cyan)!important;background:rgba(var(--accent-info-rgb),0.09)!important;}
+/* Terrain graph must consume the full node-editor body. This overrides the legacy compact #node-graph-container rule in components/search.css. */
+#global-node-editor-container .node-editor-body{min-height:0!important;}
+#global-node-editor-container #terrain-graph-wrapper{display:none!important;flex:1 1 0!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:hidden!important;}
+#global-node-editor-container #terrain-graph-wrapper.active{display:flex!important;}
+#global-node-editor-container #terrain-editor-host{display:flex!important;align-items:stretch!important;flex:1 1 0!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:hidden!important;}
+#global-node-editor-container #terrain-node-panel{align-self:stretch!important;height:100%!important;min-height:0!important;max-height:none!important;margin:0!important;}
+#global-node-editor-container #terrain-editor-host > #node-graph-container{display:block!important;align-self:stretch!important;flex:1 1 0!important;width:auto!important;height:100%!important;min-width:0!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;overflow:hidden!important;box-sizing:border-box!important;}
+
+/* ==========================================================================
+   SM Engine - Terrain Node Editor layout fix
+   Goal:
+   - Node Library remains usable while selected node controls are open.
+   - Library and Parameters get independent scroll areas.
+   - Inspector header stays visible.
+   - Works well inside a narrow docked panel.
+   ========================================================================== */
+
+/* Main editor panel */
+#terrain-node-panel {
+    --tne-gap: 8px;
+    --tne-surface: #202226;
+    --tne-surface-2: #26292e;
+    --tne-surface-3: #2d3036;
+    --tne-border: rgba(255, 255, 255, 0.08);
+    --tne-text: #d7dbe2;
+    --tne-muted: #8f97a3;
+    --tne-accent: #4e9bff;
+
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden !important;
+}
+
+/* Active tab must be a proper flex column */
+#terrain-node-panel .tne-tab-panel {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* NODES tab:
+   Library on top, parameter inspector at bottom.
+   Each section scrolls independently. */
+#terrain-node-panel #tne-nodes {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 48%;
+    min-height: 120px;
+    max-height: 48%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    border-bottom: 1px solid var(--tne-border);
+    background: var(--tne-surface);
+}
+
+/* Parameter inspector always gets its own scroll area */
+#terrain-node-panel #node-params-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 52%;
+    min-height: 150px;
+    max-height: 52%;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    background: var(--tne-surface-2);
+    border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+/* If your Nodes tab wrapper has one of these common ids/classes,
+   force it to split Library + Parameters vertically. */
+#terrain-node-panel #terrain-node-nodes,
+#terrain-node-panel #terrain-nodes-tab,
+#terrain-node-panel .tne-nodes-panel,
+#terrain-node-panel [data-tab="nodes"].tne-tab-panel,
+#terrain-node-panel .tne-tab-panel.tne-nodes {
+    display: flex !important;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden !important;
+}
+
+/* Search / toolbar stays visible above the node library */
+#terrain-node-panel .tne-search,
+#terrain-node-panel .tne-node-search,
+#terrain-node-panel #terrain-node-search {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    flex: 0 0 auto;
+    background: var(--tne-surface);
+    border-bottom: 1px solid var(--tne-border);
+}
+
+/* Category titles stay visible while scrolling node library */
+#terrain-node-panel .tne-node-category-title {
+    position: sticky;
+    top: 0;
+    z-index: 8;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: rgba(31, 33, 37, 0.96);
+    border-bottom: 1px solid var(--tne-border);
+    color: var(--tne-text);
+    backdrop-filter: blur(6px);
+}
+
+/* Compact library rows */
+#terrain-node-panel .tne-node-category {
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+#terrain-node-panel .tne-node-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 34px;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) 22px;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 7px;
+    border: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.045);
+    background: transparent;
+    color: var(--tne-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+#terrain-node-panel .tne-node-btn:hover {
+    background: rgba(255,255,255,0.055);
+}
+
+#terrain-node-panel .tne-node-btn > i {
+    width: 18px;
+    text-align: center;
+    opacity: 0.9;
+}
+
+#terrain-node-panel .tne-node-btn > span {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    overflow: hidden;
+}
+
+#terrain-node-panel .tne-node-btn strong {
+    flex: 0 0 auto;
+    max-width: 58%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    font-weight: 650;
+}
+
+#terrain-node-panel .tne-node-btn small {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--tne-muted);
+    font-size: 9px;
+}
+
+/* Optional "+" affordance without requiring HTML changes */
+#terrain-node-panel .tne-node-btn::after {
+    content: "+";
+    justify-self: end;
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 4px;
+    color: #b7bec9;
+    background: rgba(255,255,255,0.035);
+}
+
+/* Inspector header stays visible while parameter list scrolls */
+#terrain-node-panel .tne-param-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    flex: 0 0 auto;
+    min-height: 44px;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    align-items: center;
+    gap: 7px;
+    padding: 7px 9px;
+    background: #25282d;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid var(--tne-border);
+    box-shadow: inset 3px 0 0 var(--node-color, var(--tne-accent));
+}
+
+#terrain-node-panel .tne-param-icon {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.04);
+    color: var(--node-color, var(--tne-accent));
+}
+
+#terrain-node-panel .tne-param-title {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+#terrain-node-panel .tne-param-title strong,
+#terrain-node-panel .tne-param-title span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#terrain-node-panel .tne-param-title strong {
+    color: var(--tne-text);
+    font-size: 11px;
+}
+
+#terrain-node-panel .tne-param-title span {
+    color: var(--tne-muted);
+    font-size: 9px;
+}
+
+/* Parameter controls */
+#terrain-node-panel .tne-param-list {
+    flex: 0 0 auto;
+    min-width: 0;
+    padding: 7px 8px 14px;
+}
+
+#terrain-node-panel .tne-param-field {
+    min-width: 0;
+    padding: 5px 0 7px;
+    border-bottom: 1px solid rgba(255,255,255,0.035);
+}
+
+#terrain-node-panel .tne-param-field > label {
+    min-width: 0;
+    display: grid !important;
+    grid-template-columns: minmax(72px, 1fr) minmax(78px, 0.95fr);
+    align-items: center;
+    gap: 8px;
+    color: var(--tne-muted);
+    font-size: 10px;
+}
+
+#terrain-node-panel .tne-param-field > label > span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Inputs should not stretch the whole inspector */
+#terrain-node-panel .tne-param-field input[type="number"],
+#terrain-node-panel .tne-param-field select {
+    width: 100%;
+    min-width: 0;
+    height: 26px;
+    padding: 3px 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 3px;
+    outline: none;
+    background: #1e2024;
+    color: #dfe3e9;
+    font-size: 10px;
+}
+
+#terrain-node-panel .tne-param-field input[type="number"]:focus,
+#terrain-node-panel .tne-param-field select:focus {
+    border-color: rgba(78,155,255,0.75);
+}
+
+/* Range sliders stay compact if present */
+#terrain-node-panel .tne-param-field input[type="range"] {
+    width: 100%;
+    min-width: 0;
+    accent-color: var(--node-color, var(--tne-accent));
+}
+
+/* Better narrow-panel scrollbars */
+#terrain-node-panel #tne-nodes::-webkit-scrollbar,
+#terrain-node-panel #node-params-container::-webkit-scrollbar {
+    width: 7px;
+}
+
+#terrain-node-panel #tne-nodes::-webkit-scrollbar-track,
+#terrain-node-panel #node-params-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#terrain-node-panel #tne-nodes::-webkit-scrollbar-thumb,
+#terrain-node-panel #node-params-container::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.14);
+    border-radius: 8px;
+}
+
+#terrain-node-panel #tne-nodes::-webkit-scrollbar-thumb:hover,
+#terrain-node-panel #node-params-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.22);
+}
+
+/* ------------------------------------------------------------
+   Wider dock / floating window:
+   Library and Parameters become two columns.
+   ------------------------------------------------------------ */
+@media (min-width: 430px) {
+    #terrain-node-panel #terrain-node-nodes,
+    #terrain-node-panel #terrain-nodes-tab,
+    #terrain-node-panel .tne-nodes-panel,
+    #terrain-node-panel [data-tab="nodes"].tne-tab-panel,
+    #terrain-node-panel .tne-tab-panel.tne-nodes {
+        display: grid !important;
+        grid-template-columns: minmax(180px, 0.9fr) minmax(220px, 1.1fr);
+        grid-template-rows: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    #terrain-node-panel #tne-nodes,
+    #terrain-node-panel #node-params-container {
+        max-height: none;
+        height: 100%;
+        min-height: 0;
+    }
+
+    #terrain-node-panel #tne-nodes {
+        border-right: 1px solid var(--tne-border);
+        border-bottom: 0;
+    }
+
+    #terrain-node-panel #node-params-container {
+        border-top: 0;
+    }
+}
+/* SM Engine - Terrain Presets Cards FIX */
+#terrain-node-panel #tne-presets{
+display:flex!important;
+flex-direction:column!important;
+min-height:0!important;
+overflow-y:auto!important;
+overflow-x:hidden!important;
+padding:8px!important;
+gap:8px!important;
+background:#1b1d21!important;
+}
+#terrain-node-panel #tne-presets .tne-presets-header{
+display:flex!important;
+align-items:center!important;
+justify-content:space-between!important;
+gap:8px!important;
+flex:0 0 auto!important;
+padding:6px 7px 9px!important;
+margin:0 0 4px!important;
+border-bottom:1px solid rgba(255,255,255,.07)!important;
+}
+#terrain-node-panel #tne-presets .tne-presets-header>div{
+display:flex!important;
+flex-direction:column!important;
+align-items:flex-start!important;
+gap:2px!important;
+min-width:0!important;
+}
+#terrain-node-panel #tne-presets .tne-presets-header strong{
+display:block!important;
+font-size:11px!important;
+font-weight:700!important;
+line-height:1.2!important;
+color:#e8ebf0!important;
+white-space:nowrap!important;
+}
+#terrain-node-panel #tne-presets .tne-presets-header span{
+display:block!important;
+font-size:9px!important;
+line-height:1.25!important;
+color:#7f8792!important;
+white-space:normal!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-count{
+display:grid!important;
+place-items:center!important;
+min-width:25px!important;
+height:21px!important;
+padding:0 6px!important;
+border:1px solid rgba(78,155,255,.25)!important;
+border-radius:999px!important;
+background:rgba(78,155,255,.08)!important;
+color:#8fc0ff!important;
+font:700 9px/1 monospace!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-grid{
+display:grid!important;
+grid-template-columns:minmax(0,1fr)!important;
+gap:7px!important;
+width:100%!important;
+min-width:0!important;
+padding:0 0 10px!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-card{
+appearance:none!important;
+-webkit-appearance:none!important;
+position:relative!important;
+display:grid!important;
+grid-template-columns:32px minmax(0,1fr)!important;
+align-items:start!important;
+gap:8px!important;
+width:100%!important;
+min-width:0!important;
+min-height:76px!important;
+margin:0!important;
+padding:9px!important;
+overflow:hidden!important;
+border:1px solid rgba(255,255,255,.075)!important;
+border-radius:7px!important;
+background:linear-gradient(180deg,#26292f 0%,#212329 100%)!important;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+color:#dfe4ea!important;
+text-align:left!important;
+font:inherit!important;
+cursor:pointer!important;
+transition:border-color .14s ease,background .14s ease,transform .14s ease!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-card:hover{
+border-color:rgba(78,155,255,.4)!important;
+background:linear-gradient(180deg,#2b2f36 0%,#25282e 100%)!important;
+transform:translateY(-1px)!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-card:active{
+transform:translateY(0)!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-card:focus-visible{
+outline:1px solid #4e9bff!important;
+outline-offset:1px!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-icon{
+display:grid!important;
+place-items:center!important;
+width:32px!important;
+height:32px!important;
+min-width:32px!important;
+min-height:32px!important;
+margin:0!important;
+padding:0!important;
+border:1px solid rgba(255,255,255,.05)!important;
+border-radius:6px!important;
+background:#1c1f24!important;
+font-size:17px!important;
+line-height:1!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-copy{
+display:flex!important;
+flex-direction:column!important;
+align-items:stretch!important;
+gap:4px!important;
+width:100%!important;
+min-width:0!important;
+margin:0!important;
+padding:0!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-top{
+display:grid!important;
+grid-template-columns:minmax(0,1fr) auto!important;
+align-items:start!important;
+gap:7px!important;
+width:100%!important;
+min-width:0!important;
+margin:0!important;
+padding:0!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-top strong{
+display:block!important;
+min-width:0!important;
+margin:0!important;
+padding:0!important;
+overflow:hidden!important;
+text-overflow:ellipsis!important;
+white-space:nowrap!important;
+font-size:10.5px!important;
+font-weight:700!important;
+line-height:1.25!important;
+color:#f1f4f7!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-top em{
+display:inline-flex!important;
+align-items:center!important;
+justify-content:center!important;
+min-width:28px!important;
+height:16px!important;
+margin:0!important;
+padding:0 5px!important;
+border-radius:4px!important;
+background:rgba(255,255,255,.045)!important;
+color:#8c95a1!important;
+font:700 7px/1 monospace!important;
+font-style:normal!important;
+letter-spacing:.03em!important;
+white-space:nowrap!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-copy small{
+display:-webkit-box!important;
+-webkit-box-orient:vertical!important;
+-webkit-line-clamp:2!important;
+overflow:hidden!important;
+width:100%!important;
+min-width:0!important;
+margin:0!important;
+padding:0!important;
+color:#9098a4!important;
+font-size:8.5px!important;
+font-weight:400!important;
+line-height:1.38!important;
+white-space:normal!important;
+word-break:normal!important;
+overflow-wrap:anywhere!important;
+}
+#terrain-node-panel #tne-presets .tne-preset-tag{
+display:inline-flex!important;
+align-items:center!important;
+align-self:flex-start!important;
+width:auto!important;
+max-width:100%!important;
+min-height:15px!important;
+margin:1px 0 0!important;
+padding:2px 6px!important;
+overflow:hidden!important;
+border:1px solid rgba(78,155,255,.12)!important;
+border-radius:3px!important;
+background:rgba(78,155,255,.07)!important;
+color:#7fb5f6!important;
+font:700 7px/1.1 monospace!important;
+letter-spacing:.045em!important;
+text-overflow:ellipsis!important;
+white-space:nowrap!important;
+}
+#terrain-node-panel #tne-presets::-webkit-scrollbar{
+width:7px!important;
+}
+#terrain-node-panel #tne-presets::-webkit-scrollbar-track{
+background:transparent!important;
+}
+#terrain-node-panel #tne-presets::-webkit-scrollbar-thumb{
+border-radius:999px!important;
+background:rgba(255,255,255,.13)!important;
+}
+#terrain-node-panel #tne-presets::-webkit-scrollbar-thumb:hover{
+background:rgba(255,255,255,.2)!important;
+}
+@media (min-width:340px){
+#terrain-node-panel #tne-presets .tne-preset-grid{
+grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+}

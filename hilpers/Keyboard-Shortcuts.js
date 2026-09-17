@@ -490,9 +490,7 @@ function initShortcutsPanel() {
     const panel = createShortcutsPanel();
     const button = createShortcutsButton();
 
-    const togglePanel = (forceState) => {
-        panel.classList.toggle('is-visible', forceState);
-    };
+    const togglePanel = (forceState) => window.toggleKeyboardShortcuts?.(forceState);
 
     button.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -553,6 +551,8 @@ function initShortcutsPanel() {
     });
 
     document.addEventListener('click', e => {
+        if (panel.classList.contains('shortcuts-embedded')) return;
+
         if (panel.classList.contains('is-visible') && !panel.contains(e.target) && e.target !== button && !button.contains(e.target)) {
             togglePanel(false);
         }
@@ -560,7 +560,11 @@ function initShortcutsPanel() {
 
     document.addEventListener('keydown', e => {
         if (panel.classList.contains('is-visible') && e.key === 'Escape') {
-            togglePanel(false);
+            if (panel.classList.contains('shortcuts-embedded')) {
+                window.closeKeyboardShortcuts?.();
+            } else {
+                togglePanel(false);
+            }
         } else if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
             if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
                 e.preventDefault();
@@ -569,6 +573,65 @@ function initShortcutsPanel() {
         }
     });
 }
+
+// Public helpers keep the shortcut reference inside Preferences when that
+// window is available, with the original floating panel as a safe fallback.
+window.openKeyboardShortcuts = function openKeyboardShortcuts() {
+    if (typeof window.showSettingsKeyboardShortcuts === 'function') {
+        window.showSettingsKeyboardShortcuts();
+        return;
+    }
+
+    const panel = createShortcutsPanel();
+    panel.classList.add('is-visible');
+    panel.setAttribute('aria-hidden', 'false');
+
+    window.requestAnimationFrame(() => {
+        panel.querySelector('#shortcut-search')?.focus();
+    });
+};
+
+window.closeKeyboardShortcuts = function closeKeyboardShortcuts() {
+    const panel = document.getElementById('shortcuts-panel');
+    if (!panel) return;
+
+    if (panel.classList.contains('shortcuts-embedded')) {
+        window.closeSettingsKeyboardShortcuts?.();
+        return;
+    }
+
+    panel.classList.remove('is-visible');
+    panel.setAttribute('aria-hidden', 'true');
+};
+
+window.toggleKeyboardShortcuts = function toggleKeyboardShortcuts(forceState) {
+    const panel = createShortcutsPanel();
+
+    if (panel.classList.contains('shortcuts-embedded')) {
+        window.showSettingsKeyboardShortcuts?.();
+        return;
+    }
+
+    const shouldOpen = typeof forceState === 'boolean'
+        ? forceState
+        : !panel.classList.contains('is-visible');
+
+    if (shouldOpen) {
+        window.openKeyboardShortcuts();
+    } else {
+        window.closeKeyboardShortcuts();
+    }
+};
+
+window.mountKeyboardShortcuts = function mountKeyboardShortcuts(container) {
+    if (!container) return null;
+
+    const panel = createShortcutsPanel();
+    container.replaceChildren(panel);
+    panel.classList.add('shortcuts-embedded', 'is-visible');
+    panel.setAttribute('aria-hidden', 'false');
+    return panel;
+};
 
 function loadCustomShortcuts() {
     try {

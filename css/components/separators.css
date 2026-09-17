@@ -1,0 +1,9 @@
+﻿/* ================================================================
+   SEPARATORS
+================================================================ */
+.separator,
+.tool-separator {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 10px 0;
+}

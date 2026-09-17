@@ -1,0 +1,361 @@
+/* --- DEFINITIONS (Ensure these exist) --- */
+:root {
+    --secondary-dark: #252526;
+    --panel-bg: #1e1e1e;
+    --border-color: #3e3e42;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --accent-warning: #d7ba7d;
+    --accent-info: #569cd6;
+    --accent-blue: #4fc1ff;
+    --input-bg: #3c3c3c;
+    --input-border: #333333;
+    --tool-btn-bg: #333333;
+}
+
+/* Trigger Button Style */
+.engine-main-btn {
+    background: #00d4ff;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Modal Overlay */
+.max-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-size: 11px;
+    color: #eee;
+}
+
+.max-modal-overlay.active {
+    display: flex;
+}
+
+/* Main Window */
+.max-window {
+    width: 520px;
+    height: 650px;
+    background: #383838;
+    border: 1px solid #555;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* 3ds Max Style Title Bar */
+.max-title-bar {
+    background: #2d2d2d;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #222;
+}
+
+.max-title-controls button {
+    background: none;
+    border: none;
+    color: #bbb;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.max-title-controls button:hover {
+    color: white;
+}
+
+.max-body {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Scrollable panel */
+.max-scroll-area {
+    flex: 1;
+    background: #424242;
+    border: 1px solid #222;
+    overflow-y: auto;
+    margin-top: 8px;
+}
+
+/* Collapsible Tree Nodes */
+.max-tree-node summary {
+    padding: 5px;
+    background: #333;
+    cursor: pointer;
+    font-weight: bold;
+    border-bottom: 1px solid #222;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    outline: none;
+}
+
+.max-tree-node summary::before {
+    content: '▶';
+    font-size: 8px;
+    margin-right: 8px;
+    transition: 0.1s;
+}
+
+.max-tree-node[open]>summary::before {
+    transform: rotate(90deg);
+}
+
+.max-tree-node summary:hover {
+    background: #444;
+}
+
+.indented {
+    padding: 8px 25px;
+    color: #ccc;
+}
+
+.max-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+    cursor: pointer;
+}
+
+.max-select {
+    background: #2b2b2b;
+    color: #eee;
+    border: 1px solid #222;
+    font-size: 11px;
+    padding: 3px;
+    width: 150px;
+}
+
+.info-stats p {
+    margin: 5px 0;
+    font-size: 12px;
+}
+
+.info-stats span {
+    color: #00d4ff;
+    font-weight: bold;
+}
+
+/* Progress Bar logic */
+.max-progress-container {
+    margin-top: 15px;
+    display: none;
+    border: 1px solid #555;
+    padding: 5px;
+    background: #222;
+}
+
+.max-progress-container.active {
+    display: block;
+}
+
+.max-progress-bar {
+    width: 100%;
+    height: 14px;
+    background: #111;
+    position: relative;
+}
+
+.max-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #00d4ff;
+    transition: width 0.3s;
+}
+
+.max-progress-label {
+    margin-top: 6px;
+    color: #00d4ff;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Footer Buttons */
+.max-footer {
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    background: #383838;
+    border-top: 1px solid #222;
+}
+
+.max-btn {
+    background: #4d4d4d;
+    color: #eee;
+    border: 1px solid #222;
+    padding: 5px 20px;
+    cursor: pointer;
+    min-width: 80px;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.max-btn:hover {
+    background: #5a5a5a;
+}
+
+.max-btn.primary {
+    font-weight: bold;
+    background: #555;
+}
+
+.max-btn:active {
+    background: #333;
+}
+
+/* --- MAIN CONTAINER --- */
+.history-system {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: var(--panel-bg);
+    /* Ensure visibility */
+    border: 1px solid var(--border-color);
+    /* Ensure visibility */
+}
+
+/* Header for the whole system */
+.history-system>.panel-header {
+    padding: 8px 10px;
+    background-color: var(--secondary-dark);
+    color: var(--text-primary);
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* --- HISTORY PANEL --- */
+.history-panel {
+    background-color: var(--panel-bg);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid var(--border-color);
+}
+
+.panel-header-inner {
+    font-size: 12px;
+    color: var(--accent-warning);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+#history-items {
+    background-color: #111;
+    /* Darker for contrast */
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    height: 100px;
+    /* Give it fixed height so it shows */
+    padding: 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
+    /* Fix padding issues */
+}
+
+.history-item {
+    padding: 4px 8px;
+    font-size: 11px;
+    color: var(--accent-blue);
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+}
+
+.history-item:hover {
+    background-color: #333;
+}
+
+/* --- ADVANCED TOOLS --- */
+.advanced-tools {
+    background-color: var(--panel-bg);
+    padding: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-around;
+}
+
+/* Styling for the SVG buttons */
+.panel-button-tool {
+    background: var(--tool-btn-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.panel-button-tool:hover {
+    background-color: #555;
+    border-color: var(--accent-blue);
+}
+
+/* --- EXPORT PANEL --- */
+.export-panel {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.export-panel .panel-header {
+    padding: 8px 10px;
+    font-size: 14px;
+    color: var(--accent-info);
+    background-color: var(--secondary-dark);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: bold;
+}
+
+/* Corrected Class Name */
+.export-method {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--panel-bg);
+}
+
+#exportFormat {
+    flex-grow: 1;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: white;
+    padding: 6px;
+    border-radius: 4px;
+}
