@@ -1,0 +1,221 @@
+.sm-entity-card .inspector-card-header,
+.sm-component-card .inspector-card-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.sm-entity-card .inspector-card-header small,
+.sm-component-card .inspector-card-header small {
+    margin-left: auto;
+    max-width: 120px;
+    color: #898989;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 9px/1.2 monospace;
+}
+
+.sm-entity-card.sm-no-entity {
+    opacity: .64;
+}
+
+.sm-scene-field,
+.sm-component-property {
+    display: grid;
+    grid-template-columns: 68px minmax(0, 1fr);
+    align-items: center;
+    gap: 7px;
+    margin: 5px 0;
+    color: #bdbdbd;
+    font-size: 10px;
+}
+
+.sm-scene-field input,
+.sm-component-property input,
+.sm-component-picker input {
+    min-width: 0;
+    height: 24px;
+    box-sizing: border-box;
+    border: 1px solid #4a4a4a;
+    border-radius: 2px;
+    background: #292929;
+    color: #dedede;
+    padding: 3px 6px;
+    outline: none;
+}
+
+.sm-scene-field input:focus,
+.sm-component-property input:focus,
+.sm-component-picker input:focus {
+    border-color: #777;
+    background: #303030;
+}
+
+.sm-scene-toggle-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    padding: 4px 0 7px;
+    color: #c5c5c5;
+    font-size: 10px;
+}
+
+.sm-scene-toggle-row label,
+.sm-component-property:has(input[type="checkbox"]) {
+    cursor: pointer;
+}
+
+.sm-world-transform-summary {
+    float: right;
+    margin: 2px 7px 0 auto;
+    color: #858585;
+    font-size: 8px;
+    font-weight: 400;
+}
+
+.sm-entity-components {
+    display: contents;
+}
+
+.sm-component-card .inspector-card-body {
+    padding-top: 5px;
+}
+
+.sm-component-summary,
+.sm-component-empty {
+    padding: 9px;
+    color: #8f8f8f;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.sm-remove-component {
+    width: 20px;
+    height: 20px;
+    border: 0;
+    background: transparent;
+    color: #777;
+    cursor: pointer;
+}
+
+.sm-remove-component:hover {
+    color: #e06b6b;
+    background: #3b2d2d;
+}
+
+#addComponentContainer {
+    position: relative;
+}
+
+.sm-component-picker {
+    position: absolute;
+    z-index: 35;
+    left: 7px;
+    right: 7px;
+    bottom: calc(100% + 5px);
+    max-height: 320px;
+    overflow: hidden;
+    border: 1px solid #505050;
+    border-radius: 3px;
+    background: #333;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .52);
+}
+
+.sm-component-picker[hidden] {
+    display: none;
+}
+
+.sm-component-picker > input {
+    width: calc(100% - 12px);
+    margin: 6px;
+}
+
+.sm-component-options {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 0 4px 5px;
+}
+
+.sm-component-options button {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 7px 8px;
+    border: 0;
+    border-radius: 2px;
+    background: transparent;
+    color: #d2d2d2;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sm-component-options button:hover {
+    background: #414141;
+}
+
+.sm-component-options button > i {
+    width: 16px;
+    color: #aaa;
+    text-align: center;
+}
+
+.sm-component-options button span {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.sm-component-options button strong {
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.sm-component-options button small {
+    color: #818181;
+    font-size: 8px;
+}
+
+.hm-row.hm-row-inactive .hm-name {
+    opacity: .48;
+    text-decoration: line-through;
+}
+
+.hm-header-create {
+    margin-left: auto;
+    padding: 3px 7px;
+    border: 1px solid #4c4c4c;
+    border-radius: 2px;
+    background: #333;
+    color: #c7c7c7;
+    font-size: 9px;
+    cursor: pointer;
+}
+
+.hm-header-create:hover {
+    background: #414141;
+    color: #fff;
+}
+
+.hm-world-root {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 25px;
+    padding: 0 8px;
+    border-bottom: 1px solid #3c3c3c;
+    background: #303030;
+    color: #cfcfcf;
+    font-size: 10px;
+}
+
+.hm-world-root span {
+    margin-left: auto;
+    color: #777;
+    font-size: 8px;
+}
+
+.hm-action.hm-active-off {
+    color: #7a7a7a;
+}

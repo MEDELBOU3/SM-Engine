@@ -443,7 +443,7 @@ function showMeshStructure(object) {
     const geometry = object.geometry;
     const positions = geometry.attributes.position;
     const matrix = object.matrixWorld.clone();
-    const vertexSize = (parseFloat(document.getElementById('vertexSizeSlider').value) || 0.5) * 0.1;
+    const vertexSize = (parseFloat(document.getElementById('vertexSizeSlider').value) || 0.5) * 0.06;
     const totalVertices = positions.count;
 
     // In performance mode, only show a subset of helpers if the vertex count is high
@@ -1754,9 +1754,9 @@ function handleModelingKeyDown(event) {
     
     // Tool shortcuts
     switch (key) {
-        case 'G': transformControls.setMode('translate'); break;
-        case 'R': transformControls.setMode('rotate'); break;
-        case 'S': transformControls.setMode('scale'); break;
+        case 'G': window.setTransformMode?.('translate'); break;
+        case 'R': window.setTransformMode?.('rotate'); break;
+        case 'S': window.setTransformMode?.('scale'); break;
         case '1': setSelectionMode('vertex'); break;
         case '2': setSelectionMode('edge'); break;
         case '3': setSelectionMode('face'); break;

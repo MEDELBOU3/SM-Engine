@@ -1,0 +1,173 @@
+SM ENGINE — GAMEPLAY SAMPLE MOTION MATCHING v1
+================================================
+
+WHAT THIS PACKAGE DOES
+----------------------
+This is a practical hybrid Motion Matching layer for the current SM Player stack.
+It keeps the existing FBX retargeter / AnimationMixer, adds trajectory-based
+locomotion scoring, and adds automatic traversal selection for Gameplay Sample
+obstacles.
+
+It is NOT yet Unreal Engine's full per-frame Pose Search database.  The current
+FBX set is loaded as whole clips, so v1 matches clip metadata + predicted
+trajectory and drives traversal root motion in code.  The architecture is ready
+for per-frame pose features later.
+
+FILES TO REPLACE IN /player
+---------------------------
+PlayerConfig.js
+PlayerAnimationManifest.js
+PlayerInputController.js
+PlayerState.js
+SMPlayerSystem.js
+
+NEW FILES TO ADD IN /player
+---------------------------
+PlayerMotionMatchingDatabase.js
+PlayerTraversalDetector.js
+PlayerMotionMatchingSystem.js
+
+KEEP YOUR EXISTING PLAYER FILES
+-------------------------------
+PlayerCharacter.js
+PlayerAnimationLoader.js
+PlayerAnimationController.js
+PlayerRotationController.js
+PlayerCameraController.js
+PlayerMovementController.js
+PlayerAnimationStateMachine.js
+PlayerUtils.js (if your build uses it)
+
+FILES TO REPLACE FOR GAMEPLAY SAMPLE
+------------------------------------
+SMGameplaySampleCourse.js
+SMGameplaySampleEnvironment.js
+
+ANIMATIONS USED FROM assets/fbx-player-animation
+------------------------------------------------
+Parkour/Big Jump.fbx
+Parkour/Climbing Up Wall.fbx
+Parkour/Climbing.fbx
+Parkour/Falling To Roll.fbx
+Parkour/Uphill skiing.fbx
+Parkour/Vault Over Obstacle.fbx
+Firing Rifle.fbx
+Left Turn.fbx
+Right Turn.fbx
+Run Backwards.fbx
+Run Forward Right.fbx
+Running Backward.fbx
+Running forward.fbx
+Running Jump.fbx
+Sitting Drinking.fbx
+Walk Forward.fbx
+Walk With Briefcase.fbx
+Walking and show Backwards.fbx
+Walking Backward.fbx
+
+RECOMMENDED SCRIPT LOAD ORDER
+-----------------------------
+1. PlayerConfig.js
+2. PlayerAnimationManifest.js
+3. PlayerState.js
+4. PlayerInputController.js
+5. PlayerCharacter.js
+6. PlayerAnimationLoader.js
+7. PlayerAnimationController.js
+8. PlayerRotationController.js
+9. PlayerCameraController.js
+10. PlayerMovementController.js
+11. PlayerAnimationStateMachine.js
+12. PlayerMotionMatchingDatabase.js
+13. PlayerTraversalDetector.js
+14. PlayerMotionMatchingSystem.js
+15. SMPlayerSystem.js
+16. SMGameplaySampleCourse.js
+17. SMGameplaySampleEnvironment.js
+
+CONTROLS
+--------
+W/A/S/D       movement
+Shift         sprint
+Space         jump OR request context traversal
+Shift+Space   big jump when no traversal obstacle is detected
+Left Mouse    fire
+
+AUTO TRAVERSAL
+--------------
+When autoTraversal=true, running forward near a tagged traversal obstacle can
+start the correct traversal without pressing Space.
+
+The updated Gameplay Sample adds a dedicated Motion Matching test lane:
+- SMMotionVaultBarrier  -> Vault Over Obstacle.fbx
+- SMMotionClimbObstacle -> Climbing.fbx
+- SMMotionHighWall      -> Climbing Up Wall.fbx
+
+The course stores these meshes in world.traversalMeshes.  The environment exports
+that same world as window.gameplaySampleWorld; there is no duplicate collision
+world.
+
+HOW MATCHING WORKS
+------------------
+Locomotion candidates are scored from:
+- current horizontal speed
+- desired forward/right direction
+- sprint intent
+- grounded state
+- predicted trajectory at 0.20s / 0.45s / 0.80s
+- continuity bias to avoid animation flicker
+
+Traversal selection is context-driven:
+- short obstacle -> VAULT
+- medium obstacle -> CLIMB
+- high wall -> CLIMB_WALL
+- Space without an obstacle -> RUNNING_JUMP / BIG_JUMP
+- jump landing -> FALL_ROLL when available
+
+WHY ROOT MOVEMENT IS CODE-DRIVEN FOR TRAVERSAL
+----------------------------------------------
+Your existing PlayerAnimationLoader intentionally removes horizontal root X/Z
+translation from imported clips to avoid duplicated/unsafe root motion on FBX
+skeletons.  Therefore traversal animations provide the visual pose while
+PlayerMotionMatchingSystem moves the player root along a controlled arc/path.
+
+QUICK TEST
+----------
+1. Replace/add the files above.
+2. Hard refresh the editor (Ctrl+F5).
+3. Enter GAMEPLAY_SAMPLE.
+4. Start Play mode / possess the player camera.
+5. Run toward one of the three Motion Matching lane obstacles at Z ~= 32.
+6. Try Space and Shift+Space away from obstacles.
+
+CONSOLE DEBUG
+-------------
+playerSystem.getAnimationState();
+playerSystem.getDebugState();
+debugPlayerMotionMatching();
+Array.from(playerSystem.animation.actions.keys());
+
+You should see animation keys such as:
+VAULT, CLIMB, CLIMB_UP_WALL, BIG_JUMP, RUNNING_JUMP, FALL_ROLL,
+RUN_FORWARD, RUN_FORWARD_RIGHT, RUN_BACKWARD, WALK_FORWARD...
+
+TUNING
+------
+All important values are in PlayerConfig.js:
+motionMatchInterval
+motionContinuityBias
+motionDirectionWeight
+motionSpeedWeight
+motionTrajectoryWeight
+traversalProbeDistance
+vaultMaxHeight
+climbMaxHeight
+wallClimbMaxHeight
+jumpDistance
+bigJumpDistance
+jumpArcHeight
+bigJumpArcHeight
+
+Set:
+motionMatchingDebug: true
+for traversal logs.

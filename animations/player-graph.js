@@ -39,39 +39,41 @@ class PlayerGraphEditor {
         triggerButton.addEventListener('click', () => this.toggleVisibility());
 
         this.graph.playerInstance = this.player;
+        this.graph._editor = this;
         this.createEditorPanel();
         this.initPreviewSystem(); // ★ NEW: Initialize the preview
         this.registerPlayerNodes();
         this.setupEventListeners();
-        
-        // Override for context menu and search box (unchanged)
-        const originalShowContextMenu = this.graphCanvas.showContextMenu.bind(this.graphCanvas);
-        this.graphCanvas.showContextMenu = (e) => {
-            originalShowContextMenu(e);
-            const contextMenu = document.querySelector(".litegraph.litecontextmenu");
-            if (contextMenu) {
-                this.editorPanel.appendChild(contextMenu);
-                const panelRect = this.editorPanel.getBoundingClientRect();
-                contextMenu.style.left = (e.clientX - panelRect.left) + 'px';
-                contextMenu.style.top = (e.clientY - panelRect.top) + 'px';
-            }
-        };
+        // Route LiteGraph popups into the docked player graph panel when the host API exposes these hooks.
+        if (this.graphCanvas && typeof this.graphCanvas.showContextMenu === 'function') {
+            const originalShowContextMenu = this.graphCanvas.showContextMenu.bind(this.graphCanvas);
+            this.graphCanvas.showContextMenu = (e) => {
+                originalShowContextMenu(e);
+                const contextMenu = document.querySelector(".litegraph.litecontextmenu");
+                if (contextMenu) {
+                    this.editorPanel.appendChild(contextMenu);
+                    const panelRect = this.editorPanel.getBoundingClientRect();
+                    contextMenu.style.left = (e.clientX - panelRect.left) + 'px';
+                    contextMenu.style.top = (e.clientY - panelRect.top) + 'px';
+                }
+            };
+        }
 
-        const originalShowSearchBox = this.graphCanvas.showSearchBox.bind(this.graphCanvas);
-        this.graphCanvas.showSearchBox = (e) => {
-            originalShowSearchBox(e);
-            const searchBox = document.querySelector(".litegraph.litesearchbox");
-            if (searchBox) {
-                this.editorPanel.appendChild(searchBox);
-                const panelRect = this.editorPanel.getBoundingClientRect();
-                searchBox.style.left = (e.clientX - panelRect.left) + 'px';
-                searchBox.style.top = (e.clientY - panelRect.top) + 'px';
-                const input = searchBox.querySelector("input");
-                if (input) input.focus();
-            }
-        };
-
-        // ★ NEW: Hook into node selection to auto-preview objects
+        if (this.graphCanvas && typeof this.graphCanvas.showSearchBox === 'function') {
+            const originalShowSearchBox = this.graphCanvas.showSearchBox.bind(this.graphCanvas);
+            this.graphCanvas.showSearchBox = (e) => {
+                originalShowSearchBox(e);
+                const searchBox = document.querySelector(".litegraph.litesearchbox");
+                if (searchBox) {
+                    this.editorPanel.appendChild(searchBox);
+                    const panelRect = this.editorPanel.getBoundingClientRect();
+                    searchBox.style.left = (e.clientX - panelRect.left) + 'px';
+                    searchBox.style.top = (e.clientY - panelRect.top) + 'px';
+                    const input = searchBox.querySelector("input");
+                    if (input) input.focus();
+                }
+            };
+        }        // ★ NEW: Hook into node selection to auto-preview objects
         this.graphCanvas.onNodeSelected = this.onNodeSelected.bind(this);
 
         // ★ NEW: Hook into graph execution to update preview dynamically
@@ -472,7 +474,8 @@ class PlayerGraphEditor {
         triggerButton.addEventListener('click', () => this.toggleVisibility());
 
         // --- 4. SETUP THE EDITOR ---
-        this.graph.playerInstance = this.player; // Make player instance accessible to all nodes
+        this.graph.playerInstance = this.player;
+        this.graph._editor = this; // Make player instance accessible to all nodes
         this.createEditorPanel();
         this.registerPlayerNodes();
         this.setupEventListeners();

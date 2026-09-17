@@ -1,0 +1,15 @@
+/* Inspector tool dock — intentionally flat and based only on roots.css tokens. */
+.inspector-tool-dock{display:flex;flex:0 0 auto;flex-direction:column;min-width:0;width:100%;margin:0 0 10px;border:1px solid var(--border-color);border-radius:0;background:var(--panel-bg)!important;box-sizing:border-box;}
+.inspector-dock-tabs{display:flex;align-items:stretch;min-width:0;min-height:30px;overflow-x:auto;overflow-y:hidden;background:var(--secondary-dark);border-bottom:1px solid var(--border-color);scrollbar-width:thin;}
+body .inspector-dock-tabs[hidden],body #inspector-dock-content>.panel-dock-view[hidden]{display:none!important;}
+.inspector-dock-tab{display:inline-flex;align-items:center;min-width:0;max-width:150px;height:30px;padding:0 10px;border:0;border-right:1px solid var(--border-color);border-radius:0;background:var(--secondary-dark);color:var(--text-muted);font:700 10px/1 "Segoe UI",sans-serif;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;cursor:pointer;}
+.inspector-dock-tab>i:first-child{display:none;}.inspector-dock-tab span{overflow:hidden;text-overflow:ellipsis;}
+.inspector-dock-tab:hover{background:var(--hover-bg);color:var(--text-primary);}.inspector-dock-tab.is-active{background:var(--panel-bg);color:var(--text-primary);box-shadow:inset 0 2px 0 var(--accent-blue-dark);}
+.inspector-dock-content{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel-bg)!important;}
+.inspector-dock-content>.panel-dock-view{display:flex;flex:0 0 auto;flex-direction:column;position:relative!important;inset:auto!important;min-width:0;width:100%!important;min-height:0;height:auto!important;max-height:none!important;margin:0!important;overflow:visible!important;background:var(--panel-bg)!important;box-sizing:border-box;}
+.inspector-dock-content>#sculpting-panel .sculpting-tools,.inspector-dock-content>#sculpting-panel .sw-content-scroll{height:auto;overflow:visible;}.inspector-dock-content>#global-sculpt-panel .gsm-panel{height:auto;flex:0 0 auto;}.inspector-dock-content>#physics-controls{background:var(--panel-bg)!important;}
+
+/* Keep the original tool UIs in charge of their own controls. */
+#inspector-dock-content .gsm-header,#inspector-dock-content .gsm-section,#inspector-dock-content .gsm-btn,#inspector-dock-content .gsm-brush,#inspector-dock-content .gsm-toggle-row select{border-radius:0;}
+#inspector-dock-content>#global-sculpt-panel,#inspector-dock-content>#global-sculpt-panel .gsm-panel{background:var(--panel-bg)!important;}
+@media (max-width:1200px){.inspector-dock-tab{max-width:126px;padding-inline:8px;}}

@@ -1,0 +1,21 @@
+{
+  "Name": "com.example.my-plugin",
+  "FriendlyName": "My Plugin",
+  "VersionName": "1.0.0",
+  "Description": "Describe what this plugin contributes to SM Engine.",
+  "CreatedBy": "Your Name",
+  "Category": "Other",
+  "EnabledByDefault": false,
+  "CanContainContent": false,
+  "Modules": [
+    {
+      "Name": "MyPlugin",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [],
+  "Scripts": [
+    "MyPlugin.js"
+  ]
+}

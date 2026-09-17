@@ -10,8 +10,6 @@ let materialBrushSettings = {
     blendMode: 'normal'
 };
 
-
-
 // ADVANCED MATERIAL PAINTING FUNCTION
 function applyAdvancedMaterialPaint(event, isSymmetricCall = false) {
     if (!terrain || !terrain.userData.textureCanvas || !uploadedMaterial) {

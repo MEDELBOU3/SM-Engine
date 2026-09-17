@@ -1,0 +1,33 @@
+// SM Engine — Architecture system load order
+// THREE must already be loaded.
+
+"engine/architecture/core/SMBuildingSchema.js",
+"engine/architecture/core/SMBuildingMapParser.js",
+"engine/architecture/core/SMBuildingGraph.js",
+
+"engine/architecture/materials/SMBuildingMaterialResolver.js",
+
+"engine/architecture/geometry/SMArchitecturalGeometry.js",
+"engine/architecture/geometry/SMOpeningLayout.js",
+"engine/architecture/geometry/SMArchitecturalUV.js",
+"engine/architecture/geometry/SMBuildingMeshOptimizer.js",
+
+"engine/architecture/generators/SMWallGenerator.js",
+"engine/architecture/generators/SMFloorGenerator.js",
+"engine/architecture/generators/SMRoomGenerator.js",
+"engine/architecture/generators/SMDoorGenerator.js",
+"engine/architecture/generators/SMWindowGenerator.js",
+"engine/architecture/generators/SMColumnGenerator.js",
+"engine/architecture/generators/SMStairGenerator.js",
+"engine/architecture/generators/SMRoofGenerator.js",
+"engine/architecture/generators/SMBuildingGenerator.js",
+
+"engine/architecture/importers/SMSVGFloorPlanImporter.js",
+"engine/architecture/importers/SMDXFImporter.js",
+"engine/architecture/importers/SMPlanVisionBridge.js",
+
+// Load after AssetsPanel core if you want .smbuilding.json import support.
+"engine/architecture/integration/SMArchitectureAssetsBridge.js",
+
+"engine/architecture/editor/SMBuildingPanel.js",
+"engine/architecture/SMArchitectureBootstrap.js",

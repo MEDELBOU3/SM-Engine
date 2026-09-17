@@ -1,0 +1,8 @@
+(function(global){'use strict';
+class SMTextureManager{
+ constructor(renderer=global.renderer){this.renderer=renderer||null;this.loader=new THREE.TextureLoader();this.cache=new Map();const max=this.renderer?.capabilities?.getMaxAnisotropy?.()||1;this.defaultAnisotropy=Math.max(1,Math.min(8,max));}
+ _configure(t,o={}){if(!t)return t;t.wrapS=o.wrapS??THREE.RepeatWrapping;t.wrapT=o.wrapT??THREE.RepeatWrapping;t.minFilter=o.minFilter??THREE.LinearMipmapLinearFilter;t.magFilter=o.magFilter??THREE.LinearFilter;t.anisotropy=Math.max(1,Math.min(o.anisotropy??this.defaultAnisotropy,this.renderer?.capabilities?.getMaxAnisotropy?.()||1));if(o.flipY!==undefined)t.flipY=!!o.flipY;const s=String(o.semantic||'').toLowerCase();const isColor=['basecolor','albedo','emissive','color'].includes(s);if('colorSpace'in t){const cs=isColor?THREE.SRGBColorSpace:THREE.NoColorSpace;if(cs!==undefined)t.colorSpace=cs;}else if('encoding'in t){const encoding=isColor?THREE.sRGBEncoding:THREE.LinearEncoding;if(encoding!==undefined)t.encoding=encoding;}t.needsUpdate=true;return t;}
+ load(url,o={}){if(!url)return Promise.resolve(null);const key=`${url}|${o.semantic||''}|${o.flipY??''}`;if(this.cache.has(key))return this.cache.get(key).promise;let resolve,reject;const promise=new Promise((r,j)=>{resolve=r;reject=j;});const entry={texture:null,promise,refs:1};this.cache.set(key,entry);this.loader.load(url,t=>{entry.texture=this._configure(t,o);resolve(entry.texture);},undefined,e=>{this.cache.delete(key);reject(e);});return promise;}
+ dispose(){for(const e of this.cache.values())e.texture?.dispose?.();this.cache.clear();}
+}
+global.SMTextureManager=SMTextureManager;})(window);

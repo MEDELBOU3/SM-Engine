@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تصدير اللعبة - SM Engine</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .export-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .export-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .export-steps:before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background: #ddd;
+            z-index: 1;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            width: 25%;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .step.active .step-number {
+            background: #2196F3;
+            box-shadow: 0 0 0 5px rgba(33, 150, 243, 0.2);
+        }
+        
+        .step-text {
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .export-options {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .option-group {
+            margin-bottom: 25px;
+        }
+        
+        .option-group h3 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-item input {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .export-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .export-btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .export-btn.primary {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+        }
+        
+        .export-btn.secondary {
+            background: #555;
+            color: white;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .progress-container {
+            display: none;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #2E7D32);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: #f0fff4;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+        }
+        
+        .success-icon {
+            font-size: 60px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        
+        .download-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="export-container">
+        <div class="header">
+            <h1>📦 تصدير اللعبة</h1>
+            <p>قم بتصدير مشروعك كلعبة كاملة للاستخدام</p>
+        </div>
+        
+        <div class="export-steps">
+            <div class="step active">
+                <div class="step-number">1</div>
+                <div class="step-text">الاعدادات</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">المعالجة</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">التجميع</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-text">التحميل</div>
+            </div>
+        </div>
+        
+        <div class="export-options">
+            <div class="option-group">
+                <h3>📁 محتويات التصدير</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="opt-models" checked>
+                        <label for="opt-models">النماذج 3D</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="opt-textures" checked>
+                        <label for="opt-textures">الملمسات</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="opt-animations" checked>
+                        <label for="opt-animations">الرسوميات المتحركة</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="opt-scripts" checked>
+                        <label for="opt-scripts">السكريبتات</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="option-group">
+                <h3>🌐 المنصة المستهدفة</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="radio" name="platform" id="platform-web" checked>
+                        <label for="platform-web">ويب (HTML5)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="radio" name="platform" id="platform-windows">
+                        <label for="platform-windows">Windows</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="radio" name="platform" id="platform-android">
+                        <label for="platform-android">Android</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="export-actions">
+            <button class="export-btn secondary">
+                <span>👁️</span>
+                معاينة
+            </button>
+            <button class="export-btn primary" id="start-export-btn">
+                <span>🚀</span>
+                بدء التصدير
+            </button>
+        </div>
+        
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text" id="progress-text">جاري التحضير...</div>
+        </div>
+        
+        <div class="success-message" id="success-message">
+            <div class="success-icon">✅</div>
+            <h2>تم التصدير بنجاح!</h2>
+            <p>لعبتك جاهزة للاستخدام. قم بتحميل الملف وابدأ اللعب!</p>
+            <a href="#" class="download-link" id="download-link">📥 تحميل اللعبة</a>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script>
+        // محاكاة نظام التصدير
+        document.getElementById('start-export-btn').addEventListener('click', function() {
+            const btn = this;
+            const progressContainer = document.getElementById('progress-container');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            const successMessage = document.getElementById('success-message');
+            
+            // إظهار شريط التقدم
+            progressContainer.style.display = 'block';
+            btn.disabled = true;
+            
+            // محاكاة عملية التصدير
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressFill.style.width = progress + '%';
+                
+                if (progress <= 30) {
+                    progressText.textContent = 'جاري جمع البيانات...';
+                } else if (progress <= 60) {
+                    progressText.textContent = 'جاري معالجة الأصول...';
+                } else if (progress <= 90) {
+                    progressText.textContent = 'جاري إنشاء الملفات...';
+                } else {
+                    progressText.textContent = 'جاري ضغط الملفات...';
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressContainer.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    
+                    // إنشاء ملف تجريبي للتحميل
+                    const zip = new JSZip();
+                    zip.file("README.txt", "This is your exported game from SM Engine!\nOpen index.html to play.");
+                    zip.generateAsync({type:"blob"}).then(function(content) {
+                        const url = URL.createObjectURL(content);
+                        document.getElementById('download-link').href = url;
+                        document.getElementById('download-link').download = "my-game.zip";
+                    });
+                }
+            }, 300);
+        });
+    </script>
+</body>
+</html>

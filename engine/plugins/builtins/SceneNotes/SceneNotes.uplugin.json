@@ -1,0 +1,30 @@
+{
+  "Name": "sm.scene-notes",
+  "FriendlyName": "Scene Notes",
+  "VersionName": "1.0.0",
+  "Description": "Adds a lightweight note command for the active scene.",
+  "CreatedBy": "SM Engine",
+  "Category": "Editor",
+  "Installed": true,
+  "EnabledByDefault": false,
+  "CanContainContent": false,
+  "Modules": [
+    {
+      "Name": "SceneNotes",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Settings": [
+    {
+      "id": "prefix",
+      "label": "Default Note Prefix",
+      "description": "Text placed at the beginning of notes created by the plugin.",
+      "type": "string",
+      "default": "Note"
+    }
+  ],
+  "Scripts": [
+    "SceneNotesPlugin.js"
+  ]
+}

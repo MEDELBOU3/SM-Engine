@@ -1,91 +1,3 @@
-/*function initSettingsPanel(ground, obstaclesGroup) {
-  const panel = document.getElementById("settingsPanel");
-  const toggleBtn = document.getElementById("settingsToggle"); // main toggle
-  const settingsBtn = document.getElementById("settingsBtn"); // optional extra btn
-
-  // --- Panel toggle ---
-  if (toggleBtn) {
-    toggleBtn.addEventListener("click", () => {
-      panel.classList.toggle("hidden");
-    });
-  }
-
-  if (settingsBtn) {
-    settingsBtn.addEventListener("click", () => {
-      panel.classList.toggle("show");
-    });
-  }
-
-  // --- Dropdown open/close ---
-  document.querySelectorAll(".dropdown-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const content = btn.nextElementSibling;
-      content.style.display = (content.style.display === "block") ? "none" : "block";
-    });
-  });
-
-  // --- Floor controls ---
-  const floorColorInput = document.getElementById("floorColor");
-  if (floorColorInput) {
-    floorColorInput.addEventListener("input", (e) => {
-      const color = new THREE.Color(e.target.value);
-      ground.material.color.copy(color);
-      ground.material.needsUpdate = true;
-    });
-  }
-
-  const floorSizeInput = document.getElementById("floorSize");
-  if (floorSizeInput) {
-    floorSizeInput.addEventListener("change", (e) => {
-      const newSize = parseInt(e.target.value);
-      if (!isNaN(newSize) && newSize > 0) {
-        ground.geometry.dispose();
-        ground.geometry = new THREE.PlaneGeometry(newSize, newSize);
-      }
-    });
-  }
-
-  // --- Obstacle controls ---
-  const wallColorInput = document.getElementById("wallColor");
-  if (wallColorInput) {
-    wallColorInput.addEventListener("input", (e) => {
-      const color = new THREE.Color(e.target.value);
-      obstaclesGroup.children.forEach(mesh => {
-        if (mesh.name.includes("Wall")) {
-          mesh.material.color.copy(color);
-          mesh.material.needsUpdate = true;
-        }
-      });
-    });
-  }
-
-  const boxScaleInput = document.getElementById("boxScale");
-  if (boxScaleInput) {
-    boxScaleInput.addEventListener("input", (e) => {
-      const scale = parseFloat(e.target.value);
-      obstaclesGroup.children.forEach(mesh => {
-        if (mesh.name.includes("ClimbBox")) {
-          mesh.scale.set(scale, scale, scale);
-        }
-      });
-    });
-  }
-
-  const platformSizeInput = document.getElementById("platformSize");
-  if (platformSizeInput) {
-    platformSizeInput.addEventListener("input", (e) => {
-      const size = parseFloat(e.target.value);
-      obstaclesGroup.children.forEach(mesh => {
-        if (mesh.name.includes("Platform")) {
-          mesh.scale.set(size / 4, 1, size / 4); // Keep proportions
-        }
-      });
-    });
-  }
-
-  console.log("✅ Settings panel initialized with live controls.");
-}*/
-
 function initAdvancedColorPicker(ground, obstaclesGroup) {
     // Store recent colors (up to 5 per picker)
     const recentColors = {
@@ -397,84 +309,84 @@ function initSettingsPanel(ground, obstaclesGroup) {
     console.log("✅ Settings panel initialized with advanced color pickers.");
 }
 
-  document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('search-input');
-            const searchResultsBar = document.getElementById('search-results-bar');
-            
-            // Define searchable content with their container IDs and display names
-            const searchableContent = [
-                { id: 'transformContainer', name: 'Transform', keywords: ['position', 'rotation', 'scale', 'transform', 'pos', 'rot', 'scl'] },
-                { id: 'physics-controls', name: 'Physics', keywords: ['physics', 'mass', 'friction', 'bounce', 'simulation', 'atom'] },
-                { id: 'material-editor', name: 'Material Editor', keywords: ['material', 'color', 'metalness', 'roughness', 'shader', 'texture'] }
-            ];
-            
-            // Function to perform search
-            function performSearch(searchTerm) {
-                searchTerm = searchTerm.toLowerCase().trim();
-                
-                // Clear previous results
-                searchResultsBar.innerHTML = '';
-                
-                if (searchTerm === '') {
-                    searchResultsBar.style.display = 'none';
-                    return;
-                }
-                
-                // Filter matching content
-                const matches = searchableContent.filter(item => {
-                    return item.name.toLowerCase().includes(searchTerm) || 
-                           item.keywords.some(keyword => keyword.includes(searchTerm));
-                });
-                
-                if (matches.length > 0) {
-                    // Display results
-                    searchResultsBar.style.display = 'block';
-                    
-                    matches.forEach(match => {
-                        const resultItem = document.createElement('div');
-                        resultItem.className = 'search-result-item';
-                        resultItem.textContent = match.name;
-                        resultItem.addEventListener('click', () => {
-                            // Scroll to the matching section
-                            const element = document.getElementById(match.id);
-                            if (element) {
-                                element.scrollIntoView({ behavior: 'smooth' });
-                                element.classList.add('highlight');
-                                setTimeout(() => {
-                                    element.classList.remove('highlight');
-                                }, 2000);
-                            }
-                            
-                            // Clear search
-                            searchInput.value = '';
-                            searchResultsBar.style.display = 'none';
-                        });
-                        
-                        searchResultsBar.appendChild(resultItem);
-                    });
-                } else {
-                    searchResultsBar.style.display = 'block';
-                    searchResultsBar.innerHTML = '<div class="search-result-item">No results found</div>';
-                }
-            }
-            
-            // Add event listener for search input
-            searchInput.addEventListener('input', function() {
-                performSearch(this.value);
-            });
-            
-            // Close search results when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!searchInput.contains(event.target) && !searchResultsBar.contains(event.target)) {
-                    searchResultsBar.style.display = 'none';
-                }
-            });
-            
-            // Keep search results visible when clicking inside the search bar
-            searchInput.addEventListener('click', function(event) {
-                if (this.value.trim() !== '') {
-                    performSearch(this.value);
-                }
-                event.stopPropagation();
-            });
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('search-input');
+    const searchResultsBar = document.getElementById('search-results-bar');
+
+    // Define searchable content with their container IDs and display names
+    const searchableContent = [
+        { id: 'transformContainer', name: 'Transform', keywords: ['position', 'rotation', 'scale', 'transform', 'pos', 'rot', 'scl'] },
+        { id: 'physics-controls', name: 'Physics', keywords: ['physics', 'mass', 'friction', 'bounce', 'simulation', 'atom'] },
+        { id: 'material-editor', name: 'Material Editor', keywords: ['material', 'color', 'metalness', 'roughness', 'shader', 'texture'] }
+    ];
+
+    // Function to perform search
+    function performSearch(searchTerm) {
+        searchTerm = searchTerm.toLowerCase().trim();
+
+        // Clear previous results
+        searchResultsBar.innerHTML = '';
+
+        if (searchTerm === '') {
+            searchResultsBar.style.display = 'none';
+            return;
+        }
+
+        // Filter matching content
+        const matches = searchableContent.filter(item => {
+            return item.name.toLowerCase().includes(searchTerm) ||
+                item.keywords.some(keyword => keyword.includes(searchTerm));
         });
+
+        if (matches.length > 0) {
+            // Display results
+            searchResultsBar.style.display = 'block';
+
+            matches.forEach(match => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'search-result-item';
+                resultItem.textContent = match.name;
+                resultItem.addEventListener('click', () => {
+                    // Scroll to the matching section
+                    const element = document.getElementById(match.id);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                        element.classList.add('highlight');
+                        setTimeout(() => {
+                            element.classList.remove('highlight');
+                        }, 2000);
+                    }
+
+                    // Clear search
+                    searchInput.value = '';
+                    searchResultsBar.style.display = 'none';
+                });
+
+                searchResultsBar.appendChild(resultItem);
+            });
+        } else {
+            searchResultsBar.style.display = 'block';
+            searchResultsBar.innerHTML = '<div class="search-result-item">No results found</div>';
+        }
+    }
+
+    // Add event listener for search input
+    searchInput.addEventListener('input', function () {
+        performSearch(this.value);
+    });
+
+    // Close search results when clicking outside
+    document.addEventListener('click', function (event) {
+        if (!searchInput.contains(event.target) && !searchResultsBar.contains(event.target)) {
+            searchResultsBar.style.display = 'none';
+        }
+    });
+
+    // Keep search results visible when clicking inside the search bar
+    searchInput.addEventListener('click', function (event) {
+        if (this.value.trim() !== '') {
+            performSearch(this.value);
+        }
+        event.stopPropagation();
+    });
+});
