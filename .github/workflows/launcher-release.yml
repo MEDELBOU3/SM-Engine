@@ -37,7 +37,7 @@ jobs:
           name: SM Engine Launcher ${{ github.ref_name }}
           generate_release_notes: true
           body: |
-            ### 📦 Available Downloads (Windows 64-bit / x64)
+            ###  Available Downloads (Windows 64-bit / x64)
 
             | Package | Type | Details |
             | :--- | :--- | :--- |
@@ -47,7 +47,7 @@ jobs:
 
             ---
 
-            ### 💻 System Requirements
+            ### System Requirements
             * **Operating System**: Windows 10 / Windows 11 (64-bit)
             * **Architecture**: x64 (AMD64 / Intel 64)
             * **Disk Space**: ~500 MB for launcher, ~2 GB+ for 3D engine versions
@@ -55,7 +55,7 @@ jobs:
 
             ---
 
-            ### 🛡️ Windows Defender SmartScreen Note
+            ###  Windows Defender SmartScreen Note
             As an open-source release, Windows may display an *"Unrecognized app"* warning on the first run:
             1. Click **More info** (*Plus d'infos* / *Weitere Informationen*)
             2. Click **Run anyway** (*Exécuter quand même* / *Trotzdem ausführen*)
